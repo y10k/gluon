@@ -17,7 +17,11 @@ module Gluon
       save_umask = File.umask(022)
       begin
 	FileUtils.mkdir_p(@install_dir, :verbose => true)
-	FileUtils.install(File.join(RUN_DIR, 'config.rb'), @install_dir, :mode => 0644, :verbose => true)
+	if (File.exist? File.join(@install_dir, 'config.rb')) then
+	  puts 'skip install config.rb'
+	else
+	  FileUtils.install(File.join(RUN_DIR, 'config.rb'), @install_dir, :mode => 0644, :verbose => true)
+	end
 
 	bin_dir = File.join(@install_dir, 'bin')
 	FileUtils.mkdir_p(bin_dir)
