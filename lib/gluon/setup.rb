@@ -16,30 +16,35 @@ module Gluon
     def install
       save_umask = File.umask(022)
       begin
-	FileUtils.mkdir_p(@install_dir, :verbose => true)
-	if (File.exist? File.join(@install_dir, 'config.rb')) then
-	  puts 'skip install config.rb'
-	else
-	  FileUtils.install(File.join(RUN_DIR, 'config.rb'), @install_dir, :mode => 0644, :verbose => true)
-	end
+        FileUtils.mkdir_p(@install_dir, :verbose => true)
+        if (File.exist? File.join(@install_dir, 'config.rb')) then
+          puts 'skip install config.rb'
+        else
+          FileUtils.install(File.join(RUN_DIR, 'config.rb'), @install_dir, :mode => 0644, :verbose => true)
+        end
 
-	bin_dir = File.join(@install_dir, 'bin')
-	FileUtils.mkdir_p(bin_dir)
-	FileUtils.install(File.join(RUN_DIR, 'bin', 'run.rb'), bin_dir, :mode => 0755, :verbose => true)
-	FileUtils.install(File.join(RUN_DIR, 'bin', 'run.cgi'), bin_dir, :mode => 0755, :verbose => true)
+        bin_dir = File.join(@install_dir, 'bin')
+        FileUtils.mkdir_p(bin_dir)
+        FileUtils.install(File.join(RUN_DIR, 'bin', 'run.rb'), bin_dir, :mode => 0755, :verbose => true)
+        FileUtils.install(File.join(RUN_DIR, 'bin', 'run.cgi'), bin_dir, :mode => 0755, :verbose => true)
 
-	lib_dir = File.join(@install_dir, 'lib')
-	FileUtils.mkdir_p(lib_dir)
-	FileUtils.install(File.join(RUN_DIR, 'lib', 'Welcom.rb'), lib_dir, :mode => 0644, :verbose => true)
+        lib_dir = File.join(@install_dir, 'lib')
+        FileUtils.mkdir_p(lib_dir)
+        FileUtils.install(File.join(RUN_DIR, 'lib', 'Welcom.rb'), lib_dir, :mode => 0644, :verbose => true)
 
-	view_dir = File.join(@install_dir, 'view')
-	FileUtils.mkdir_p(view_dir)
-	FileUtils.install(File.join(RUN_DIR, 'view', 'Welcom.rhtml'), view_dir, :mode => 0644, :verbose => true)
+        view_dir = File.join(@install_dir, 'view')
+        FileUtils.mkdir_p(view_dir)
+        FileUtils.install(File.join(RUN_DIR, 'view', 'Welcom.rhtml'), view_dir, :mode => 0644, :verbose => true)
       ensure
-	File.umask(save_umask)
+        File.umask(save_umask)
       end
 
       nil
     end
   end
 end
+
+# Local Variables:
+# mode: Ruby
+# indent-tabs-mode: nil
+# End:

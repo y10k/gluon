@@ -17,17 +17,17 @@ module Gluon
 
     def view_name
       if (@page.respond_to? :view_name) then
-	@page.view_name
+        @page.view_name
       else
-	@page.class.name.gsub(/::/, '/') + '.rhtml'
+        @page.class.name.gsub(/::/, '/') + '.rhtml'
       end
     end
 
     def getopts(options, default_options)
       for key, value in default_options
-	unless (options.key? key) then
-	  options[key] = value
-	end
+        unless (options.key? key) then
+          options[key] = value
+        end
       end
       options
     end
@@ -35,9 +35,9 @@ module Gluon
 
     def funcall(name, *args)
       @stack.reverse_each do |c|
-	if (c.respond_to? name) then
-	  return c.__send__(name, *args)
-	end
+        if (c.respond_to? name) then
+          return c.__send__(name, *args)
+        end
       end
       @page.__send__(name, *args)
     end
@@ -53,25 +53,25 @@ module Gluon
     def cond(name, options={})
       getopts(options, :not => false)
       unless (options[:not]) then
-	if (funcall(name)) then
-	  yield
-	end
+        if (funcall(name)) then
+          yield
+        end
       else
-	unless (funcall(name)) then
-	  yield
-	end
+        unless (funcall(name)) then
+          yield
+        end
       end
       nil
     end
 
     def foreach(name, options={})
       funcall(name).each_with_index do |child, i|
-	@stack.push(child)
-	begin
-	  yield(i)
-	ensure
-	  @stack.pop
-	end
+        @stack.push(child)
+        begin
+          yield(i)
+        ensure
+          @stack.pop
+        end
       end
       nil
     end
@@ -79,11 +79,11 @@ module Gluon
     def link(prefix, name, options={})
       case (name)
       when Symbol
-	href = prefix + apply(name)
+        href = prefix + apply(name)
       when String
-	href = prefix + name
+        href = prefix + name
       else
-	raise "unknon name type: #{name.class}"
+        raise "unknon name type: #{name.class}"
       end
 
       elem = '<a'
@@ -91,17 +91,17 @@ module Gluon
       elem << ' href="' << ERB::Util.html_escape(href) << '"'
       elem << '>'
       if (options.key? :text) then
-	case (options[:text])
-	when Symbol
-	  text = apply(options[:text])
-	when String
-	  text = options[:text]
-	else
-	  raise "unknown text type: #{name.class}"
-	end
-	elem << ERB::Util.html_escape(text)
+        case (options[:text])
+        when Symbol
+          text = apply(options[:text])
+        when String
+          text = options[:text]
+        else
+          raise "unknown text type: #{name.class}"
+        end
+        elem << ERB::Util.html_escape(text)
       else
-	elem << ERB::Util.html_escape(href)
+        elem << ERB::Util.html_escape(href)
       end
       elem << '</a>'
     end
@@ -125,13 +125,13 @@ module Gluon
 
     class << self
       def context_binding(_)
-	_.instance_eval{ binding }
+        _.instance_eval{ binding }
       end
 
       def render(context, eruby_script)
-	b = context_binding(context)
-	erb = ERB.new(eruby_script)
-	erb.result(b)
+        b = context_binding(context)
+        erb = ERB.new(eruby_script)
+        erb.result(b)
       end
     end
 
@@ -152,3 +152,8 @@ module Gluon
     def_delegator :@po, :link_path
   end
 end
+
+# Local Variables:
+# mode: Ruby
+# indent-tabs-mode: nil
+# End:

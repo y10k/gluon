@@ -21,4 +21,9 @@ builder.load_conf
 app_context = builder.build
 
 Rack::Handler::WEBrick.run(app_context[:application],
-			   :Port => app_context[:port])
+                           :Port => app_context[:port])
+
+# Local Variables:
+# mode: Ruby
+# indent-tabs-mode: nil
+# End:

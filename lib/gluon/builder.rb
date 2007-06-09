@@ -12,14 +12,14 @@ module Gluon
 
     def self.require_path(lib_dir)
       unless ($:.include? lib_dir) then
-	$: << lib_dir
+        $: << lib_dir
       end
       nil
     end
 
     def initialize(options={})
       if (options.key? :lib_dir) then
-	Builder.require_path(options[:lib_dir])
+        Builder.require_path(options[:lib_dir])
       end
       @base_dir = options[:base_dir]
       @view_dir = options[:view_dir]
@@ -31,14 +31,14 @@ module Gluon
 
     def expand_path(path)
       path.gsub(/@./) {|special_token|
-	case (special_token)
-	when '@?'
-	  @base_dir
-	when '@@'
-	  '@'
-	else
-	  special_token
-	end
+        case (special_token)
+        when '@?'
+          @base_dir
+        when '@@'
+          '@'
+        else
+          special_token
+        end
       }
     end
     private :expand_path
@@ -67,36 +67,41 @@ module Gluon
     def build
       dispatcher = Dispatcher.new(@url_map)
       app = proc{|env|
-	req = Rack::Request.new(env)
-	res = Rack::Response.new
-	if (page_type = dispatcher.look_up(req.path_info)) then
-	  page = page_type.new
-	  action = Action.new(page, req, res)
-	  po = PresentationObject.new(page, req, res)
-	  context = ERBContext.new(po, req, res)
+        req = Rack::Request.new(env)
+        res = Rack::Response.new
+        if (page_type = dispatcher.look_up(req.path_info)) then
+          page = page_type.new
+          action = Action.new(page, req, res)
+          po = PresentationObject.new(page, req, res)
+          context = ERBContext.new(po, req, res)
 
-	  action.apply{
-	    erb_script = IO.read(File.join(@view_dir, po.view_name))
-	    res.write(Gluon::ERBContext.render(context, erb_script))
-	  }
+          action.apply{
+            erb_script = IO.read(File.join(@view_dir, po.view_name))
+            res.write(Gluon::ERBContext.render(context, erb_script))
+          }
 
-	  res.finish
-	else
-	  [ 404, { "Content-Type" => "text/plain" }, [ "Not Found: #{req.path_info}" ] ]
-	end
+          res.finish
+        else
+          [ 404, { "Content-Type" => "text/plain" }, [ "Not Found: #{req.path_info}" ] ]
+        end
       }
 
       app = Rack::ShowExceptions.new(app)
       if (@access_log) then
-	logger = File.open(@access_log, 'a')
-	logger.binmode
-	logger.sync = true
-	app = Rack::CommonLogger.new(app, logger)
+        logger = File.open(@access_log, 'a')
+        logger.binmode
+        logger.sync = true
+        app = Rack::CommonLogger.new(app, logger)
       else
-	app = Rack::CommonLogger.new(app)
+        app = Rack::CommonLogger.new(app)
       end
 
       { :application => app, :port => @port }
     end
   end
 end
+
+# Local Variables:
+# mode: Ruby
+# indent-tabs-mode: nil
+# End:

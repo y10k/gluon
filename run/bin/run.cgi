@@ -21,3 +21,8 @@ builder.load_conf
 app_context = builder.build
 
 Rack::Handler::CGI.run(app_context[:application])
+
+# Local Variables:
+# mode: Ruby
+# indent-tabs-mode: nil
+# End:

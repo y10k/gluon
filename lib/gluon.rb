@@ -11,3 +11,8 @@ module Gluon
   autoload :PresentationObject, 'gluon/po'
   autoload :Setup, 'gluon/setup'
 end
+
+# Local Variables:
+# mode: Ruby
+# indent-tabs-mode: nil
+# End:

@@ -13,18 +13,18 @@ module Gluon
 
     def funcall(name, *args)
       if (@page.respond_to? name) then
-	@page.__send__(name, *args)
+        @page.__send__(name, *args)
       end
     end
     private :funcall
 
     def funcall_hook(name, *args)
       if (@page.respond_to? name) then
-	@page.__send__(name, *args) {
-	  yield
-	}
+        @page.__send__(name, *args) {
+          yield
+        }
       else
-	yield
+        yield
       end
     end
     private :funcall_hook
@@ -33,14 +33,19 @@ module Gluon
       funcall(:req=, @req)
       funcall(:res=, @res)
       funcall_hook(:page_hook) {
-	funcall(:page_start)
-	begin
-	  yield
-	ensure
-	  funcall(:page_end)
-	end
+        funcall(:page_start)
+        begin
+          yield
+        ensure
+          funcall(:page_end)
+        end
       }
       self
     end
   end
 end
+
+# Local Variables:
+# mode: Ruby
+# indent-tabs-mode: nil
+# End:
