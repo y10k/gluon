@@ -7,6 +7,7 @@ module Gluon
   autoload :Action, 'gluon/action'
   autoload :Builder, 'gluon/builder'
   autoload :Dispatcher, 'gluon/dispatcher'
-  autoload :PresentationObject, 'gluon/po'
   autoload :ERBContext, 'gluon/po'
+  autoload :PresentationObject, 'gluon/po'
+  autoload :Setup, 'gluon/setup'
 end
