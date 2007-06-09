@@ -21,6 +21,7 @@ module Gluon
       if (options.key? :lib_dir) then
 	Builder.require_path(options[:lib_dir])
       end
+      @base_dir = options[:base_dir]
       @view_dir = options[:view_dir]
       @conf_path = options[:conf_path]
       @access_log = nil
@@ -28,8 +29,22 @@ module Gluon
       @url_map = []
     end
 
+    def expand_path(path)
+      path.gsub(/@./) {|special_token|
+	case (special_token)
+	when '@?'
+	  @base_dir
+	when '@@'
+	  '@'
+	else
+	  special_token
+	end
+      }
+    end
+    private :expand_path
+
     def access_log(path)
-      @access_log = path
+      @access_log = expand_path(path)
       nil
     end
 

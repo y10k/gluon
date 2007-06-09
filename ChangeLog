@@ -1,5 +1,8 @@
 2007-06-10  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/builder.rb: path expansion: `@?' -> application base
+	directory.
+
 	* bin/gluon_setup.rb, lib/gluon/setup.rb: setup tool.
 	`run' directory of initial application skeleton.
 

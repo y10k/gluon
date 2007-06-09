@@ -10,6 +10,7 @@ require 'rack'
 base_dir = File.join(File.dirname($0), '..')
 
 options = {
+  :base_dir => base_dir,
   :lib_dir => File.join(base_dir, 'lib'),
   :view_dir => File.join(base_dir, 'view'),
   :conf_path => File.join(base_dir, 'config.rb')
