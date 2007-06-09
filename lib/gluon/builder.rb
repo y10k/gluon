@@ -22,7 +22,9 @@ module Gluon
 	Builder.require_path(options[:lib_dir])
       end
       @view_dir = options[:view_dir]
+      @conf_path = options[:conf_path]
       @access_log = nil
+      @port = 9202
       @url_map = []
     end
 
@@ -31,14 +33,19 @@ module Gluon
       nil
     end
 
+    def port(num)
+      @port = num
+      nil
+    end
+
     def mount(page_type, path)
       @url_map << [ path, page_type ]
       nil
     end
 
-    def load_conf(path)
-      script = IO.read(path)
-      eval(script, binding, path)
+    def load_conf
+      script = IO.read(@conf_path)
+      eval(script, binding, @conf_path)
       nil
     end
 
@@ -74,7 +81,7 @@ module Gluon
 	app = Rack::CommonLogger.new(app)
       end
 
-      app
+      { :application => app, :port => @port }
     end
   end
 end
