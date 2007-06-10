@@ -157,6 +157,16 @@ module Gluon::Test
                    render_page('<%= link_uri :ruby_home_uri, :text => :ruby_home_text, :id => "ruby" %>'))
     end
 
+    def test_link_uri_error
+      build_page(PageForLinkURI)
+      assert_raise(RuntimeError) {
+        render_page('<%= link_uri 123 %>')
+      }
+      assert_raise(RuntimeError) {
+        render_page('<%= link_uri "foo", :text => 123 %>')
+      }
+    end
+
     class PageForLinkPath
       def foo_path
         '/Foo'
@@ -183,6 +193,16 @@ module Gluon::Test
                    render_page('<%= link_path :foo_path, :text => :foo_text %>'))
       assert_equal('<a id="foo" href="/bar.cgi/Foo">foo</a>',
                    render_page('<%= link_path :foo_path, :text => :foo_text, :id => "foo" %>'))
+    end
+
+    def test_link_path_error
+      build_page(PageForLinkPath)
+      assert_raise(RuntimeError) {
+        render_page('<%= link_path 123 %>')
+      }
+      assert_raise(RuntimeError) {
+        render_page('<%= link_path "foo", :text => 123 %>')
+      }
     end
   end
 end
