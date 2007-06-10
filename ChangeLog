@@ -1,5 +1,8 @@
 2007-06-10  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/po.rb: (Gluon::PresentationObject class) target
+	attribute of link method.
+
 	* test/test_dispatcher.rb: unit test for dispatcher.
 
 	* test/test_action.rb: unit test for action.

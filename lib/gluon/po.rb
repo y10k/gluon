@@ -89,12 +89,13 @@ module Gluon
       when String
         href = prefix + name
       else
-        raise "unknon name type: #{name.class}"
+        raise "unknon link name type: #{name.class}"
       end
 
       elem = '<a'
       elem << ' id="' << ERB::Util.html_escape(options[:id]) << '"' if (options.key? :id)
       elem << ' href="' << ERB::Util.html_escape(href) << '"'
+      elem << ' target="' << ERB::Util.html_escape(options[:target]) << '"' if (options.key? :target)
       elem << '>'
       if (options.key? :text) then
         case (options[:text])
@@ -103,7 +104,7 @@ module Gluon
         when String
           text = options[:text]
         else
-          raise "unknown text type: #{name.class}"
+          raise "unknown link text type: #{name.class}"
         end
         elem << ERB::Util.html_escape(text)
       else

@@ -148,6 +148,8 @@ module Gluon::Test
                    render_page('<%= link_uri "http://www.ruby-lang.org", :text => "Ruby" %>'))
       assert_equal('<a id="ruby" href="http://www.ruby-lang.org">Ruby</a>',
                    render_page('<%= link_uri "http://www.ruby-lang.org", :text => "Ruby", :id => "ruby" %>'))
+      assert_equal('<a href="http://www.ruby-lang.org" target="_blank">Ruby</a>',
+                   render_page('<%= link_uri "http://www.ruby-lang.org", :text => "Ruby", :target => "_blank" %>'))
 
       assert_equal('<a href="http://www.ruby-lang.org">http://www.ruby-lang.org</a>',
                    render_page('<%= link_uri :ruby_home_uri %>'))
@@ -155,6 +157,8 @@ module Gluon::Test
                    render_page('<%= link_uri :ruby_home_uri, :text => :ruby_home_text %>'))
       assert_equal('<a id="ruby" href="http://www.ruby-lang.org">Ruby</a>',
                    render_page('<%= link_uri :ruby_home_uri, :text => :ruby_home_text, :id => "ruby" %>'))
+      assert_equal('<a href="http://www.ruby-lang.org" target="_blank">Ruby</a>',
+                   render_page('<%= link_uri :ruby_home_uri, :text => :ruby_home_text, :target => "_blank" %>'))
     end
 
     def test_link_uri_error
@@ -186,6 +190,8 @@ module Gluon::Test
                    render_page('<%= link_path "/Foo", :text => "foo" %>'))
       assert_equal('<a id="foo" href="/bar.cgi/Foo">foo</a>',
                    render_page('<%= link_path "/Foo", :text => "foo", :id => "foo" %>'))
+      assert_equal('<a href="/bar.cgi/Foo" target="_blank">foo</a>',
+                   render_page('<%= link_path "/Foo", :text => "foo", :target => "_blank" %>'))
 
       assert_equal('<a href="/bar.cgi/Foo">/bar.cgi/Foo</a>',
                    render_page('<%= link_path :foo_path %>'))
@@ -193,6 +199,8 @@ module Gluon::Test
                    render_page('<%= link_path :foo_path, :text => :foo_text %>'))
       assert_equal('<a id="foo" href="/bar.cgi/Foo">foo</a>',
                    render_page('<%= link_path :foo_path, :text => :foo_text, :id => "foo" %>'))
+      assert_equal('<a href="/bar.cgi/Foo" target="_blank">foo</a>',
+                   render_page('<%= link_path :foo_path, :text => :foo_text, :target => "_blank" %>'))
     end
 
     def test_link_path_error
