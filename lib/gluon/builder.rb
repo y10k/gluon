@@ -74,7 +74,7 @@ module Gluon
         if (page_type = dispatcher.look_up(req.path_info)) then
           page = page_type.new
           action = Action.new(page, req, res)
-          po = PresentationObject.new(page, req, res)
+          po = PresentationObject.new(page, req, res, renderer)
           context = ERBContext.new(po, req, res)
           action.apply{ res.write(renderer.render(context)) }
           res.finish

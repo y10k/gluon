@@ -1,6 +1,8 @@
 #!/usr/local/bin/ruby
 
+require 'fileutils'
 require 'gluon/po'
+require 'gluon/view'
 require 'rack'
 require 'test/unit'
 
@@ -14,11 +16,18 @@ module Gluon::Test
                                        'SCRIPT_NAME' => '/bar.cgi')
       @req = Rack::Request.new(@env)
       @res = Rack::Response.new
+      @view_dir = 'view'
+      @renderer = Gluon::ViewRenderer.new(@view_dir)
+      FileUtils.mkdir_p(@view_dir)
+    end
+
+    def teardown
+      FileUtils.rm_rf(@view_dir)
     end
 
     def build_page(page_type)
       @page = page_type.new
-      @po = Gluon::PresentationObject.new(@page, @req, @res)
+      @po = Gluon::PresentationObject.new(@page, @req, @res, @renderer)
       @context = Gluon::ERBContext.new(@po, @req, @res)
     end
     private :build_page
@@ -273,6 +282,33 @@ module Gluon::Test
       assert_raise(RuntimeError) {
         render_page('<%= frame_path 123 %>')
       }
+    end
+
+    class PageForImport
+      def another_page
+        AnotherPage
+      end
+    end
+
+    class AnotherPage
+      def view_name
+        'AnotherPage.rhtml'
+      end
+
+      def hello
+        'Hello world.'
+      end
+    end
+
+    def test_import
+      File.open(File.join(@view_dir, 'AnotherPage.rhtml'), 'w') {|out|
+        out.binmode
+        out << '<%= value :hello %>'
+      }
+      build_page(PageForImport)
+
+      assert_equal('[Hello world.]', render_page("[<%= import #{AnotherPage} %>]"))
+      assert_equal('[Hello world.]', render_page('[<%= import :another_page %>]'))
     end
   end
 end

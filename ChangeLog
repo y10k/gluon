@@ -1,5 +1,8 @@
 2007-06-10  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/po.rb: (Gluon::PresentationObject class) import
+	method.
+
 	* lib/gluon/view.rb: (Gluon::ViewRenderer class) view directory
 	and view rendering method are collected to one place.
 
