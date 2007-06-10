@@ -1,5 +1,7 @@
 2007-06-10  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* test/test_dispatcher.rb: unit test for dispatcher.
+
 	* test/test_action.rb: unit test for action.
 
 	* test/test_po.rb: unit test for presentation object.
