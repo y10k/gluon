@@ -1,6 +1,8 @@
 2007-06-10  TOKI Yoshinori  <toki@freedom.ne.jp>
 
-	* test/test_po.rb: unit test.
+	* test/test_action.rb: unit test for action.
+
+	* test/test_po.rb: unit test for presentation object.
 
 	* test/Rakefile, test/run.rb: utilities for unit test.
 
