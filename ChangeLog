@@ -1,10 +1,14 @@
 2007-06-10  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* test/test_po.rb: unit test.
+
+	* test/Rakefile, test/run.rb: utilities for unit test.
+
 	* lib/gluon/builder.rb: path expansion: `@?' -> application base
 	directory.
 
 	* bin/gluon_setup.rb, lib/gluon/setup.rb: setup tool.
 	`run' directory of initial application skeleton.
 
-	* gluon.rb: project start.
+	* lib/gluon.rb: project start.
 

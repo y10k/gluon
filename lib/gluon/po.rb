@@ -64,6 +64,12 @@ module Gluon
       nil
     end
 
+    def not_cond(name)
+      cond(name, :not => true) {
+        yield
+      }
+    end
+
     def foreach(name, options={})
       funcall(name).each_with_index do |child, i|
         @stack.push(child)
@@ -79,7 +85,7 @@ module Gluon
     def link(prefix, name, options={})
       case (name)
       when Symbol
-        href = prefix + apply(name)
+        href = prefix + funcall(name)
       when String
         href = prefix + name
       else
@@ -93,7 +99,7 @@ module Gluon
       if (options.key? :text) then
         case (options[:text])
         when Symbol
-          text = apply(options[:text])
+          text = funcall(options[:text])
         when String
           text = options[:text]
         else
@@ -147,6 +153,7 @@ module Gluon
 
     def_delegator :@po, :value
     def_delegator :@po, :cond
+    def_delegator :@po, :not_cond
     def_delegator :@po, :foreach
     def_delegator :@po, :link_uri
     def_delegator :@po, :link_path
