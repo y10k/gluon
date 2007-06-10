@@ -2,13 +2,15 @@
 
 require 'erb'
 require 'forwardable'
+require 'gluon/action'
 
 module Gluon
   class PresentationObject
     # for ident(1)
     CVS_ID = '$Id$'
 
-    def initialize(page, req, res)
+    def initialize(page, req, res, parent_name=nil)
+      @parent_name = parent_name
       @page = page
       @req = req
       @res = res
@@ -23,6 +25,14 @@ module Gluon
       end
     end
 
+    def parent_name
+      name_list = []
+      name_list << @parent_name if @parent_name
+      name_list += @stack.map{|n, c| n }
+      name_list.join('.')
+    end
+    private :parent_name
+
     def getopts(options, default_options)
       for key, value in default_options
         unless (options.key? key) then
@@ -34,9 +44,9 @@ module Gluon
     private :getopts
 
     def funcall(name, *args)
-      @stack.reverse_each do |c|
-        if (c.respond_to? name) then
-          return c.__send__(name, *args)
+      @stack.reverse_each do |parent_name, child|
+        if (child.respond_to? name) then
+          return child.__send__(name, *args)
         end
       end
       @page.__send__(name, *args)
@@ -72,9 +82,10 @@ module Gluon
 
     def foreach(name, options={})
       funcall(name).each_with_index do |child, i|
-        @stack.push(child)
+        @stack.push [ "#{name}[#{i}]", child ]
         begin
-          yield(i)
+          action = Action.new(child, @req, @res, parent_name)
+          action.apply{ yield(i) }
         ensure
           @stack.pop
         end

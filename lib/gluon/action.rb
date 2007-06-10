@@ -5,7 +5,8 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    def initialize(page, req, res)
+    def initialize(page, req, res, parent_name=nil)
+      @parent_name = parent_name
       @page = page
       @req = req
       @res = res
