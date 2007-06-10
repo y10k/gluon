@@ -3,6 +3,7 @@
 require 'gluon/action'
 require 'gluon/dispatcher'
 require 'gluon/po'
+require 'gluon/view'
 require 'rack'
 
 module Gluon
@@ -66,6 +67,7 @@ module Gluon
 
     def build
       dispatcher = Dispatcher.new(@url_map)
+      renderer = ViewRenderer.new(@view_dir)
       app = proc{|env|
         req = Rack::Request.new(env)
         res = Rack::Response.new
@@ -74,12 +76,7 @@ module Gluon
           action = Action.new(page, req, res)
           po = PresentationObject.new(page, req, res)
           context = ERBContext.new(po, req, res)
-
-          action.apply{
-            erb_script = IO.read(File.join(@view_dir, po.view_name))
-            res.write(Gluon::ERBContext.render(context, erb_script))
-          }
-
+          action.apply{ res.write(renderer.render(context)) }
           res.finish
         else
           [ 404, { "Content-Type" => "text/plain" }, [ "Not Found: #{req.path_info}" ] ]

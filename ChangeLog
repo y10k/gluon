@@ -1,5 +1,8 @@
 2007-06-10  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/view.rb: (Gluon::ViewRenderer class) view directory
+	and view rendering method are collected to one place.
+
 	* lib/gluon/po.rb: (Gluon::PresentationObject class) frame method.
 
 	* lib/gluon/po.rb: (Gluon::PresentationObject class) target
