@@ -1,0 +1,18 @@
+<html>
+<head>
+<title>gluon example menu</title>
+</head>
+<body>
+<h1>examples</h1>
+
+<p><%= link_path '/', :target => '_top', :text => 'return top.' %></p>
+<ul>
+  <li><%= link_path '/example/value',   :target => 'main', :text => 'value' %></li>
+  <li><%= link_path '/example/cond',    :target => 'main', :text => 'cond' %></li>
+  <li><%= link_path '/example/foreach', :target => 'main', :text => 'foreach' %></li>
+  <li><%= link_path '/example/link',    :target => 'main', :text => 'link' %></li>
+  <li><%= link_path '/example/import',  :target => 'main', :text => 'import' %></li>
+</ul>
+
+</body>
+</html>

@@ -9,8 +9,9 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    def initialize(page, req, res, parent_name=nil)
+    def initialize(page, req, res, renderer, parent_name=nil)
       @parent_name = parent_name
+      @renderer = renderer
       @page = page
       @req = req
       @res = res
@@ -74,8 +75,9 @@ module Gluon
       nil
     end
 
-    def not_cond(name)
-      cond(name, :not => true) {
+    def not_cond(name, options={})
+      options[:not] = true
+      cond(name, options) {
         yield
       }
     end
@@ -158,6 +160,27 @@ module Gluon
     def frame_path(name, options={})
       frame(@req.script_name, name, options)
     end
+
+    def import(name, options={})
+      case (name)
+      when Symbol
+        page_type = funcall(name)
+      when Class
+        page_type = name
+      else
+        raise "unknown import name type: #{name.class}"
+      end
+
+      parent_name = parent_name()
+      page = page_type.new
+      action = Action.new(page, @req, @res, parent_name)
+      po = PresentationObject.new(page, @req, @res, @renderer, parent_name)
+      context = ERBContext.new(po, @req, @res)
+
+      result = nil
+      action.apply{ result = @renderer.render(context) }
+      result
+    end
   end
 
   class ERBContext
@@ -197,6 +220,7 @@ module Gluon
     def_delegator :@po, :link_path
     def_delegator :@po, :frame_uri
     def_delegator :@po, :frame_path
+    def_delegator :@po, :import
   end
 end
 

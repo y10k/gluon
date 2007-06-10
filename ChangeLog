@@ -1,5 +1,9 @@
 2007-06-10  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* run/lib/Example.rb, run/view/Example.rhtml: example of gluon.
+
+	* lib/gluon/setup.rb: recursive copy for installation.
+
 	* lib/gluon/po.rb: (Gluon::PresentationObject class) import
 	method.
 
