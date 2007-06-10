@@ -212,6 +212,68 @@ module Gluon::Test
         render_page('<%= link_path "foo", :text => 123 %>')
       }
     end
+
+    class PageForFrameURI
+      def ruby_home
+        'http://www.ruby-lang.org'
+      end
+    end
+
+    def test_frame_uri
+      build_page(PageForFrameURI)
+
+      assert_equal('<frame src="http://www.ruby-lang.org" />',
+                   render_page('<%= frame_uri "http://www.ruby-lang.org" %>'))
+      assert_equal('<frame id="ruby" src="http://www.ruby-lang.org" />',
+                   render_page('<%= frame_uri "http://www.ruby-lang.org", :id => "ruby" %>'))
+      assert_equal('<frame src="http://www.ruby-lang.org" name="ruby" />',
+                   render_page('<%= frame_uri "http://www.ruby-lang.org", :name => "ruby" %>'))
+
+      assert_equal('<frame src="http://www.ruby-lang.org" />',
+                   render_page('<%= frame_uri :ruby_home %>'))
+      assert_equal('<frame id="ruby" src="http://www.ruby-lang.org" />',
+                   render_page('<%= frame_uri :ruby_home, :id => "ruby" %>'))
+      assert_equal('<frame src="http://www.ruby-lang.org" name="ruby" />',
+                   render_page('<%= frame_uri :ruby_home, :name => "ruby" %>'))
+    end
+
+    def test_frame_uri_error
+      build_page(PageForFrameURI)
+      assert_raise(RuntimeError) {
+        render_page('<%= frame_uri 123 %>')
+      }
+    end
+
+    class PageForFramePath
+      def foo
+        '/Foo'
+      end
+    end
+
+    def test_frame_uri
+      build_page(PageForFramePath)
+
+      assert_equal('<frame src="/bar.cgi/Foo" />',
+                   render_page('<%= frame_path "/Foo" %>'))
+      assert_equal('<frame id="foo" src="/bar.cgi/Foo" />',
+                   render_page('<%= frame_path "/Foo", :id => "foo" %>'))
+      assert_equal('<frame src="/bar.cgi/Foo" name="foo" />',
+                   render_page('<%= frame_path "/Foo", :name => "foo" %>'))
+
+      assert_equal('<frame src="/bar.cgi/Foo" />',
+                   render_page('<%= frame_path :foo %>'))
+      assert_equal('<frame id="foo" src="/bar.cgi/Foo" />',
+                   render_page('<%= frame_path :foo, :id => "foo" %>'))
+      assert_equal('<frame src="/bar.cgi/Foo" name="foo" />',
+                   render_page('<%= frame_path :foo, :name => "foo" %>'))
+    end
+
+    def test_frame_path_error
+      build_page(PageForFramePath)
+      assert_raise(RuntimeError) {
+        render_page('<%= frame_path 123 %>')
+      }
+    end
   end
 end
 

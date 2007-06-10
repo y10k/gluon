@@ -121,6 +121,32 @@ module Gluon
     def link_path(name, options={})
       link(@req.script_name, name, options)
     end
+
+    def frame(prefix, name, options={})
+      case (name)
+      when Symbol
+        src = prefix + funcall(name)
+      when String
+        src = prefix + name
+      else
+        raise "unknown frame src type: #{src.class}"
+      end
+
+      elem = '<frame'
+      elem << ' id="' << ERB::Util.html_escape(options[:id]) << '"' if (options.key? :id)
+      elem << ' src="' << ERB::Util.html_escape(src) << '"'
+      elem << ' name="' << ERB::Util.html_escape(options[:name]) << '"' if (options.key? :name)
+      elem << ' />'
+    end
+    private :frame
+
+    def frame_uri(name, options={})
+      frame('', name, options)
+    end
+
+    def frame_path(name, options={})
+      frame(@req.script_name, name, options)
+    end
   end
 
   class ERBContext
@@ -158,6 +184,8 @@ module Gluon
     def_delegator :@po, :foreach
     def_delegator :@po, :link_uri
     def_delegator :@po, :link_path
+    def_delegator :@po, :frame_uri
+    def_delegator :@po, :frame_path
   end
 end
 
