@@ -1,10 +1,13 @@
 # for ident(1)
 CVS_ID = '$Id$'
 
+BIN_DIR = 'bin'
 LIB_DIR = 'lib'
 TEST_DIR = 'test'
 RDOC_DIR = 'api'
 RDOC_MAIN = 'gluon.rb'
+EXAMPLE_DIR = 'welcom'
+GLUON_SETUP = File.join(BIN_DIR, 'gluon_setup')
 
 def cd_v(dir)
   cd(dir, :verbose => true) {
@@ -26,6 +29,10 @@ task :rdoc do
   }
 end
 
+task :example do
+  ruby '-I', LIB_DIR, GLUON_SETUP, 'welcom'
+end
+
 require 'rake/gempackagetask'
 spec = Gem::Specification.new{|s|
   s.name = 'gluon'
@@ -45,6 +52,10 @@ end
 
 task :clean => [ :clobber_package ] do
   rm_rf RDOC_DIR
+end
+
+task :clean_all => :clean do
+  rm_rf EXAMPLE_DIR
 end
 
 # Local Variables:
