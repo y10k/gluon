@@ -1,3 +1,7 @@
+2007-06-12  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* bin/gluon_setup: rename from bin/gluon_setup.rb
+
 2007-06-10  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* run/lib/Example.rb, run/view/Example.rhtml: example of gluon.
