@@ -1,23 +1,12 @@
 # example top page
 
 class Example
-  class Menu
-  end
-
-  class Value
-  end
-
-  class Cond
-  end
-
-  class Foreach
-  end
-
-  class Link
-  end
-
-  class Import
-  end
+  autoload :Menu, 'Example/Menu'
+  autoload :Value, 'Example/Value'
+  autoload :Cond, 'Example/Cond'
+  autoload :Foreach, 'Example/Foreach'
+  autoload :Link, 'Example/Link'
+  autoload :Import, 'Example/Import'
 end
 
 # Local Variables:
