@@ -1,5 +1,7 @@
 2007-06-12  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* Rakefile: top level Rakefile.
+
 	* bin/gluon_setup: rename from bin/gluon_setup.rb
 
 2007-06-10  TOKI Yoshinori  <toki@freedom.ne.jp>
