@@ -6,14 +6,12 @@ access_log '@?/access.log'
 require 'Welcom'
 require 'Example'
 
-mount Welcom,           '/'
-mount Example,          '/example'
-mount Example::Menu,    '/example/menu'
-mount Example::Value,   '/example/value'
-mount Example::Cond,    '/example/cond'
-mount Example::Foreach, '/example/foreach'
-mount Example::Link,    '/example/link'
-mount Example::Import,  '/example/import'
+mount Welcom,                '/'
+mount Example,               '/example'
+mount Example::Menu,         '/example/menu'
+mount Example::ExamplePanel, '/example/ex_panel'
+mount Example::CodePanel,    '/example/code_panel'
+mount Example::ViewPanel,    '/example/view_panel'
 
 # Local Variables:
 # mode: Ruby
