@@ -195,9 +195,10 @@ module Gluon
         _.instance_eval{ binding }
       end
 
-      def render(context, eruby_script)
+      def render(context, eruby_script, filename)
         b = context_binding(context)
         erb = ERB.new(eruby_script)
+        erb.filename = filename
         erb.result(b)
       end
     end

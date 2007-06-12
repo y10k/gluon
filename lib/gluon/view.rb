@@ -14,7 +14,7 @@ module Gluon
     def render(context)
       view_name = context.po.view_name
       erb_script = IO.read(File.join(@view_dir, view_name))
-      Gluon::ERBContext.render(context, erb_script)
+      Gluon::ERBContext.render(context, erb_script, view_name)
     end
   end
 end

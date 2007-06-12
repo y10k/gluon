@@ -1,3 +1,7 @@
+2007-06-13  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/po.rb: ERB evaluation with filename.
+
 2007-06-12  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* Rakefile: top level Rakefile.
