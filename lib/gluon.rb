@@ -10,7 +10,7 @@ module Gluon
   autoload :ERBContext, 'gluon/po'
   autoload :PresentationObject, 'gluon/po'
   autoload :Setup, 'gluon/setup'
-  autoload :ViewRenderer, 'gluon/view'
+  autoload :ViewRenderer, 'gluon/renderer'
 end
 
 # Local Variables:

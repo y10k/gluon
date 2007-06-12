@@ -1,4 +1,4 @@
-require 'Example/dispatch'
+require 'Example/Dispatch'
 
 class Example
   class ExamplePanel
@@ -9,3 +9,8 @@ class Example
     end
   end
 end
+
+# Local Variables:
+# mode: Ruby
+# indent-tabs-mode: nil
+# End:
