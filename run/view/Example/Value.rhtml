@@ -1,1 +1,11 @@
-<h1>value example</h1>
+<h2>1. simple value</h2>
+
+<p><%= value :hello %></p>
+
+<h2>2. escape</h2>
+
+<p><%= value :emphasis_hello, :escape => true %></p>
+
+<h2>3. no escape</h2>
+
+<p><%= value :emphasis_hello, :escape => false %></p>

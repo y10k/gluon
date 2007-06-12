@@ -1,16 +1,17 @@
 # example top page
 
 class Example
-  autoload :Menu,         'Example/Menu'
-  autoload :Header,       'Example/Header'
-  autoload :ExamplePanel, 'Example/ExamplePanel'
   autoload :CodePanel,    'Example/CodePanel'
-  autoload :ViewPanel,    'Example/ViewPanel'
-  autoload :Value,        'Example/Value'
   autoload :Cond,         'Example/Cond'
+  autoload :Dispatch,     'Example/Dispatch'
+  autoload :ExamplePanel, 'Example/ExamplePanel'
   autoload :Foreach,      'Example/Foreach'
-  autoload :Link,         'Example/Link'
+  autoload :Header,       'Example/Header'
   autoload :Import,       'Example/Import'
+  autoload :Link,         'Example/Link'
+  autoload :Menu,         'Example/Menu'
+  autoload :Value,        'Example/Value'
+  autoload :ViewPanel,    'Example/ViewPanel'
 end
 
 # Local Variables:

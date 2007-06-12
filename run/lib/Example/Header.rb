@@ -1,8 +1,3 @@
-require 'Example/CodePanel'
-require 'Example/Dispatch'
-require 'Example/ExamplePanel'
-require 'Example/ViewPanel'
-
 class Example
   class Header
     include Dispatch

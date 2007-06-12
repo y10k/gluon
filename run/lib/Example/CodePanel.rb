@@ -1,8 +1,8 @@
-require 'Example/Dispatch'
-
 class Example
   class CodePanel
     include Dispatch
+
+    attr_reader :key
 
     def code_page
       IO.read(@code)
