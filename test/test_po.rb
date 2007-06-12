@@ -33,7 +33,7 @@ module Gluon::Test
     private :build_page
 
     def render_page(eruby_script)
-      Gluon::ERBContext.render(@context, eruby_script, '(erb)')
+      Gluon::ViewRenderer.render(@context, eruby_script, '(erb)')
     end
     private :render_page
 

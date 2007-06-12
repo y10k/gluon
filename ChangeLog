@@ -1,5 +1,8 @@
 2007-06-13  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/renderer.rb: (Gluon::ViewRenderer class) `render'
+	class method is moved from Gluon::ERBContext class.
+
 	* lib/gluon/renderer.rb: rename from lib/gluon/view.rb
 
 	* lib/gluon/po.rb: ERB evaluation with filename.

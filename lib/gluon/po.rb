@@ -190,19 +190,6 @@ module Gluon
     extend Forwardable
     include ERB::Util
 
-    class << self
-      def context_binding(_)
-        _.instance_eval{ binding }
-      end
-
-      def render(context, eruby_script, filename)
-        b = context_binding(context)
-        erb = ERB.new(eruby_script)
-        erb.filename = filename
-        erb.result(b)
-      end
-    end
-
     def initialize(po, req, res)
       @po = po
       @req = req
