@@ -1,5 +1,7 @@
 # gluon - simple web application framework
 
+require 'gluon/version'
+
 module Gluon
   # for ident(1)
   CVS_ID = '$Id$'

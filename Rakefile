@@ -34,9 +34,10 @@ task :example do
 end
 
 require 'rake/gempackagetask'
+require 'lib/gluon/version'
 spec = Gem::Specification.new{|s|
   s.name = 'gluon'
-  s.version = '0.0.0'
+  s.version = Gluon::VERSION
   s.summary = 'transactional storage'
   s.author = 'TOKI Yoshinori'
   s.email = 'toki@freedom.ne.jp'

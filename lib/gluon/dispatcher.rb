@@ -17,7 +17,7 @@ module Gluon
         if (location == path[0, location.size] &&
             (path[location.size] == nil || path[location.size] == ?/))
         then
-          return page_type
+          return page_type, path[location.size..-1]
         end
       }
       nil

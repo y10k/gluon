@@ -1,6 +1,11 @@
 2007-06-13  TOKI Yoshinori  <toki@freedom.ne.jp>
 
-	* lib/gluon/builder.rb: request parameter of 'gluon.curr_page'
+	* lib/gluon/builder.rb: some request parameters, `gluon.path_info'
+	and `gluon.version'
+
+	* lib/gluon/dispatcher.rb: path_info.
+
+	* lib/gluon/builder.rb: request parameter of `gluon.curr_page'
 
 	* lib/gluon/renderer.rb: (Gluon::ViewRenderer class) `render'
 	class method is moved from Gluon::ERBContext class.

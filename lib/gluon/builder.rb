@@ -4,6 +4,7 @@ require 'gluon/action'
 require 'gluon/dispatcher'
 require 'gluon/po'
 require 'gluon/renderer'
+require 'gluon/version'
 require 'rack'
 
 module Gluon
@@ -71,8 +72,11 @@ module Gluon
       app = proc{|env|
         req = Rack::Request.new(env)
         res = Rack::Response.new
-        if (page_type = dispatcher.look_up(req.path_info)) then
+        page_type, gluon_path_info = dispatcher.look_up(req.path_info)
+        if (page_type) then
+          req.env['gluon.version'] = VERSION
           req.env['gluon.curr_page'] = page_type
+          req.env['gluon.path_info'] = gluon_path_info
           page = page_type.new
           action = Action.new(page, req, res)
           po = PresentationObject.new(page, req, res, renderer)
