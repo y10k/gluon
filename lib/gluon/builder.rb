@@ -72,6 +72,7 @@ module Gluon
         req = Rack::Request.new(env)
         res = Rack::Response.new
         if (page_type = dispatcher.look_up(req.path_info)) then
+          req.env['gluon.curr_page'] = page_type
           page = page_type.new
           action = Action.new(page, req, res)
           po = PresentationObject.new(page, req, res, renderer)

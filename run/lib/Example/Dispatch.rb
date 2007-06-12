@@ -25,18 +25,6 @@ class Example
       @code = ex[:code]
       @view = ex[:view]
     end
-
-    def example
-      "/example/ex_panel?example=#{@key}"
-    end
-
-    def code
-      "/example/code_panel?example=#{@key}"
-    end
-
-    def view
-      "/example/view_panel?example=#{@key}"
-    end
   end
 end
 

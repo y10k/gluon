@@ -2,6 +2,7 @@
 
 class Example
   autoload :Menu,         'Example/Menu'
+  autoload :Header,       'Example/Header'
   autoload :ExamplePanel, 'Example/ExamplePanel'
   autoload :CodePanel,    'Example/CodePanel'
   autoload :ViewPanel,    'Example/ViewPanel'
