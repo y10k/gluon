@@ -2,7 +2,7 @@
 
 require 'fileutils'
 require 'gluon/po'
-require 'gluon/view'
+require 'gluon/renderer'
 require 'rack'
 require 'test/unit'
 

@@ -3,7 +3,7 @@
 require 'gluon/action'
 require 'gluon/dispatcher'
 require 'gluon/po'
-require 'gluon/view'
+require 'gluon/renderer'
 require 'rack'
 
 module Gluon

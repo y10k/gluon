@@ -1,5 +1,7 @@
 2007-06-13  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/renderer.rb: rename from lib/gluon/view.rb
+
 	* lib/gluon/po.rb: ERB evaluation with filename.
 
 2007-06-12  TOKI Yoshinori  <toki@freedom.ne.jp>
