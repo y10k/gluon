@@ -95,7 +95,7 @@ module Gluon
       nil
     end
 
-    def link(prefix, name, options={})
+    def _link(prefix, name, options={})
       case (name)
       when Symbol
         href = prefix + funcall(name)
@@ -125,17 +125,17 @@ module Gluon
       end
       elem << '</a>'
     end
-    private :link
+    private :_link
+
+    def link(name, options={})
+      _link(@req.script_name, name, options)
+    end
 
     def link_uri(name, options={})
-      link('', name, options)
+      _link('', name, options)
     end
 
-    def link_path(name, options={})
-      link(@req.script_name, name, options)
-    end
-
-    def frame(prefix, name, options={})
+    def _frame(prefix, name, options={})
       case (name)
       when Symbol
         src = prefix + funcall(name)
@@ -151,14 +151,14 @@ module Gluon
       elem << ' name="' << ERB::Util.html_escape(options[:name]) << '"' if (options.key? :name)
       elem << ' />'
     end
-    private :frame
+    private :_frame
 
-    def frame_uri(name, options={})
-      frame('', name, options)
+    def frame(name, options={})
+      _frame(@req.script_name, name, options)
     end
 
-    def frame_path(name, options={})
-      frame(@req.script_name, name, options)
+    def frame_uri(name, options={})
+      _frame('', name, options)
     end
 
     def import(name, options={})
@@ -204,10 +204,10 @@ module Gluon
     def_delegator :@po, :cond
     def_delegator :@po, :not_cond
     def_delegator :@po, :foreach
+    def_delegator :@po, :link
     def_delegator :@po, :link_uri
-    def_delegator :@po, :link_path
+    def_delegator :@po, :frame
     def_delegator :@po, :frame_uri
-    def_delegator :@po, :frame_path
     def_delegator :@po, :import
   end
 end

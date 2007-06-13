@@ -138,6 +138,48 @@ module Gluon::Test
                    render_page('<% foreach :bar do |i| %>[<%= i.succ %>.<%= value %>]<% end %>'))
     end
 
+    class PageForLink
+      def foo_path
+        '/Foo'
+      end
+
+      def foo_text
+        'foo'
+      end
+    end
+
+    def test_link
+      build_page(PageForLink)
+
+      assert_equal('<a href="/bar.cgi/Foo">/bar.cgi/Foo</a>',
+                   render_page('<%= link "/Foo" %>'))
+      assert_equal('<a href="/bar.cgi/Foo">foo</a>',
+                   render_page('<%= link "/Foo", :text => "foo" %>'))
+      assert_equal('<a id="foo" href="/bar.cgi/Foo">foo</a>',
+                   render_page('<%= link "/Foo", :text => "foo", :id => "foo" %>'))
+      assert_equal('<a href="/bar.cgi/Foo" target="_blank">foo</a>',
+                   render_page('<%= link "/Foo", :text => "foo", :target => "_blank" %>'))
+
+      assert_equal('<a href="/bar.cgi/Foo">/bar.cgi/Foo</a>',
+                   render_page('<%= link :foo_path %>'))
+      assert_equal('<a href="/bar.cgi/Foo">foo</a>',
+                   render_page('<%= link :foo_path, :text => :foo_text %>'))
+      assert_equal('<a id="foo" href="/bar.cgi/Foo">foo</a>',
+                   render_page('<%= link :foo_path, :text => :foo_text, :id => "foo" %>'))
+      assert_equal('<a href="/bar.cgi/Foo" target="_blank">foo</a>',
+                   render_page('<%= link :foo_path, :text => :foo_text, :target => "_blank" %>'))
+    end
+
+    def test_link_error
+      build_page(PageForLink)
+      assert_raise(RuntimeError) {
+        render_page('<%= link 123 %>')
+      }
+      assert_raise(RuntimeError) {
+        render_page('<%= link "foo", :text => 123 %>')
+      }
+    end
+
     class PageForLinkURI
       def ruby_home_uri
         'http://www.ruby-lang.org'
@@ -180,45 +222,34 @@ module Gluon::Test
       }
     end
 
-    class PageForLinkPath
-      def foo_path
+    class PageForFrame
+      def foo
         '/Foo'
       end
-
-      def foo_text
-        'foo'
-      end
     end
 
-    def test_link_path
-      build_page(PageForLinkPath)
+    def test_frame
+      build_page(PageForFrame)
 
-      assert_equal('<a href="/bar.cgi/Foo">/bar.cgi/Foo</a>',
-                   render_page('<%= link_path "/Foo" %>'))
-      assert_equal('<a href="/bar.cgi/Foo">foo</a>',
-                   render_page('<%= link_path "/Foo", :text => "foo" %>'))
-      assert_equal('<a id="foo" href="/bar.cgi/Foo">foo</a>',
-                   render_page('<%= link_path "/Foo", :text => "foo", :id => "foo" %>'))
-      assert_equal('<a href="/bar.cgi/Foo" target="_blank">foo</a>',
-                   render_page('<%= link_path "/Foo", :text => "foo", :target => "_blank" %>'))
+      assert_equal('<frame src="/bar.cgi/Foo" />',
+                   render_page('<%= frame "/Foo" %>'))
+      assert_equal('<frame id="foo" src="/bar.cgi/Foo" />',
+                   render_page('<%= frame "/Foo", :id => "foo" %>'))
+      assert_equal('<frame src="/bar.cgi/Foo" name="foo" />',
+                   render_page('<%= frame "/Foo", :name => "foo" %>'))
 
-      assert_equal('<a href="/bar.cgi/Foo">/bar.cgi/Foo</a>',
-                   render_page('<%= link_path :foo_path %>'))
-      assert_equal('<a href="/bar.cgi/Foo">foo</a>',
-                   render_page('<%= link_path :foo_path, :text => :foo_text %>'))
-      assert_equal('<a id="foo" href="/bar.cgi/Foo">foo</a>',
-                   render_page('<%= link_path :foo_path, :text => :foo_text, :id => "foo" %>'))
-      assert_equal('<a href="/bar.cgi/Foo" target="_blank">foo</a>',
-                   render_page('<%= link_path :foo_path, :text => :foo_text, :target => "_blank" %>'))
+      assert_equal('<frame src="/bar.cgi/Foo" />',
+                   render_page('<%= frame :foo %>'))
+      assert_equal('<frame id="foo" src="/bar.cgi/Foo" />',
+                   render_page('<%= frame :foo, :id => "foo" %>'))
+      assert_equal('<frame src="/bar.cgi/Foo" name="foo" />',
+                   render_page('<%= frame :foo, :name => "foo" %>'))
     end
 
-    def test_link_path_error
-      build_page(PageForLinkPath)
+    def test_frame_error
+      build_page(PageForFrame)
       assert_raise(RuntimeError) {
-        render_page('<%= link_path 123 %>')
-      }
-      assert_raise(RuntimeError) {
-        render_page('<%= link_path "foo", :text => 123 %>')
+        render_page('<%= frame 123 %>')
       }
     end
 
@@ -250,37 +281,6 @@ module Gluon::Test
       build_page(PageForFrameURI)
       assert_raise(RuntimeError) {
         render_page('<%= frame_uri 123 %>')
-      }
-    end
-
-    class PageForFramePath
-      def foo
-        '/Foo'
-      end
-    end
-
-    def test_frame_uri
-      build_page(PageForFramePath)
-
-      assert_equal('<frame src="/bar.cgi/Foo" />',
-                   render_page('<%= frame_path "/Foo" %>'))
-      assert_equal('<frame id="foo" src="/bar.cgi/Foo" />',
-                   render_page('<%= frame_path "/Foo", :id => "foo" %>'))
-      assert_equal('<frame src="/bar.cgi/Foo" name="foo" />',
-                   render_page('<%= frame_path "/Foo", :name => "foo" %>'))
-
-      assert_equal('<frame src="/bar.cgi/Foo" />',
-                   render_page('<%= frame_path :foo %>'))
-      assert_equal('<frame id="foo" src="/bar.cgi/Foo" />',
-                   render_page('<%= frame_path :foo, :id => "foo" %>'))
-      assert_equal('<frame src="/bar.cgi/Foo" name="foo" />',
-                   render_page('<%= frame_path :foo, :name => "foo" %>'))
-    end
-
-    def test_frame_path_error
-      build_page(PageForFramePath)
-      assert_raise(RuntimeError) {
-        render_page('<%= frame_path 123 %>')
       }
     end
 
