@@ -4,7 +4,7 @@ class Example
 
     attr_reader :key
 
-    def view_page
+    def view
       IO.read(@view)
     end
   end

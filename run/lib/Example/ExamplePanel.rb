@@ -4,7 +4,7 @@ class Example
 
     attr_reader :key
 
-    def example_page
+    def example
       @class
     end
   end
