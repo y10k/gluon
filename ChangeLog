@@ -1,5 +1,8 @@
 2007-06-14  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/dispatcher.rb: (Gluon::Dispatcher class) class2path
+	method.
+
 	* lib/gluon/po.rb: (Gluon::PresentationObject class) rename
 	methods. `link_path' -> `link', `frame_path' -> `frame'
 

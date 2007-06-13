@@ -9,8 +9,9 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    def initialize(page, req, res, renderer, parent_name=nil)
+    def initialize(page, req, res, dispatcher, renderer, parent_name=nil)
       @parent_name = parent_name
+      @dispatcher = dispatcher
       @renderer = renderer
       @page = page
       @req = req
@@ -95,16 +96,7 @@ module Gluon
       nil
     end
 
-    def _link(prefix, name, options={})
-      case (name)
-      when Symbol
-        href = prefix + funcall(name)
-      when String
-        href = prefix + name
-      else
-        raise "unknon link name type: #{name.class}"
-      end
-
+    def mklink(href, options={})
       elem = '<a'
       elem << ' id="' << ERB::Util.html_escape(options[:id]) << '"' if (options.key? :id)
       elem << ' href="' << ERB::Util.html_escape(href) << '"'
@@ -117,7 +109,7 @@ module Gluon
         when String
           text = options[:text]
         else
-          raise "unknown link text type: #{name.class}"
+          raise "unknown link text type: #{options[:text].class}"
         end
         elem << ERB::Util.html_escape(text)
       else
@@ -125,40 +117,63 @@ module Gluon
       end
       elem << '</a>'
     end
-    private :_link
+    private :mklink
 
     def link(name, options={})
-      _link(@req.script_name, name, options)
+      name = funcall(name) if (name.kind_of? Symbol)
+      case (name)
+      when Class
+        path = @dispatcher.class2path(name) or raise "not mounted: #{name}"
+      when String
+        path = name
+      else
+        raise "unknon link name type: #{name.class}"
+      end
+      mklink(@req.script_name + path, options)
     end
 
     def link_uri(name, options={})
-      _link('', name, options)
+      name = funcall(name) if (name.kind_of? Symbol)
+      case (name)
+      when String
+        path = name
+      else
+        raise "unknon link name type: #{name.class}"
+      end
+      mklink(path, options)
     end
 
-    def _frame(prefix, name, options={})
-      case (name)
-      when Symbol
-        src = prefix + funcall(name)
-      when String
-        src = prefix + name
-      else
-        raise "unknown frame src type: #{src.class}"
-      end
-
+    def mkframe(src, options={})
       elem = '<frame'
       elem << ' id="' << ERB::Util.html_escape(options[:id]) << '"' if (options.key? :id)
       elem << ' src="' << ERB::Util.html_escape(src) << '"'
       elem << ' name="' << ERB::Util.html_escape(options[:name]) << '"' if (options.key? :name)
       elem << ' />'
     end
-    private :_frame
+    private :mkframe
 
     def frame(name, options={})
-      _frame(@req.script_name, name, options)
+      name = funcall(name) if (name.kind_of? Symbol)
+      case (name)
+      when Class
+        src = @dispatcher.class2path(name)
+      when String
+        src = name
+      else
+        raise "unknown frame src type: #{name.class}"
+      end
+      mkframe(@req.script_name + src, options)
     end
 
     def frame_uri(name, options={})
-      _frame('', name, options)
+      name = funcall(name) if (name.kind_of? Symbol)
+      case (name)
+      when String
+        src = name
+      else
+        raise "unknown frame src type: #{name.class}"
+      end
+      mkframe(src, options)
     end
 
     def import(name, options={})

@@ -79,7 +79,7 @@ module Gluon
           req.env['gluon.path_info'] = gluon_path_info
           page = page_type.new
           action = Action.new(page, req, res)
-          po = PresentationObject.new(page, req, res, renderer)
+          po = PresentationObject.new(page, req, res, dispatcher, renderer)
           context = ERBContext.new(po, req, res)
           action.apply{ res.write(renderer.render(context)) }
           res.finish

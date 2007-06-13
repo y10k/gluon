@@ -1,6 +1,7 @@
 #!/usr/local/bin/ruby
 
 require 'fileutils'
+require 'gluon/dispatcher'
 require 'gluon/po'
 require 'gluon/renderer'
 require 'rack'
@@ -17,6 +18,7 @@ module Gluon::Test
       @req = Rack::Request.new(@env)
       @res = Rack::Response.new
       @view_dir = 'view'
+      @dispatcher = Gluon::Dispatcher.new([])
       @renderer = Gluon::ViewRenderer.new(@view_dir)
       FileUtils.mkdir_p(@view_dir)
     end
@@ -27,7 +29,7 @@ module Gluon::Test
 
     def build_page(page_type)
       @page = page_type.new
-      @po = Gluon::PresentationObject.new(@page, @req, @res, @renderer)
+      @po = Gluon::PresentationObject.new(@page, @req, @res, @dispatcher, @renderer)
       @context = Gluon::ERBContext.new(@po, @req, @res)
     end
     private :build_page

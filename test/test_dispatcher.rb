@@ -47,7 +47,7 @@ module Gluon::Test
       assert_equal([ Baz, '/something' ], dispatcher.look_up('/baz/something'))
     end
 
-    def test_not_found
+    def test_look_up_not_found
       url_map = [
 	[ '/foo', Foo ]
       ]
@@ -64,6 +64,32 @@ module Gluon::Test
       assert_equal(nil, dispatcher.look_up('/bar'))
       assert_equal(nil, dispatcher.look_up('/bar/'))
       assert_equal(nil, dispatcher.look_up('/bar/something'))
+    end
+
+    def test_class2path
+      url_map = [
+	[ '/', Root ],
+	[ '/foo', Foo ],
+	[ '/foo/bar', Bar ],
+	[ '/baz', Baz ]
+      ]
+      dispatcher = Gluon::Dispatcher.new(url_map)
+
+      assert_equal('/',        dispatcher.class2path(Root))
+      assert_equal('/foo',     dispatcher.class2path(Foo))
+      assert_equal('/foo/bar', dispatcher.class2path(Bar))
+      assert_equal('/baz',     dispatcher.class2path(Baz))
+    end
+
+    def test_class2path_not_found
+      url_map = [
+	[ '/foo', Foo ]
+      ]
+      dispatcher = Gluon::Dispatcher.new(url_map)
+
+      assert_equal(nil,    dispatcher.class2path(Root))
+      assert_equal('/foo', dispatcher.class2path(Foo))
+      assert_equal(nil,    dispatcher.class2path(Bar))
     end
   end
 end

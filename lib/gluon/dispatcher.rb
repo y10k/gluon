@@ -10,6 +10,11 @@ module Gluon
         location = '' if (location == '/')
         [ location, page_type ]
       }.sort_by{|location, page_type| -(location.size) }
+      @c2p = {}
+      for location, page_type in @mapping
+        location = '/' if (location == '')
+        @c2p[page_type] = location
+      end
     end
 
     def look_up(path)
@@ -21,6 +26,10 @@ module Gluon
         end
       }
       nil
+    end
+
+    def class2path(page_type)
+      @c2p[page_type]
     end
   end
 end
