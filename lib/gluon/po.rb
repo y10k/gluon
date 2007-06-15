@@ -140,14 +140,20 @@ module Gluon
     end
     private :mklink
 
-    def link(name, options={})
-      name = funcall(name) if (name.kind_of? Symbol)
+    def expand_path(name)
       case (name)
       when Class
-        path = @dispatcher.class2path(name) or raise "not mounted: #{name}"
-      when String
-        path = name
+        @dispatcher.class2path(name) or raise "not mounted: #{name}"
       else
+        name
+      end
+    end
+    private :expand_path
+
+    def link(name, options={})
+      name = funcall(name) if (name.kind_of? Symbol)
+      path = expand_path(name)
+      unless (path.kind_of? String) then
         raise "unknon link name type: #{name.class}"
       end
       mklink(@req.script_name + path, options)
@@ -155,10 +161,8 @@ module Gluon
 
     def link_uri(name, options={})
       name = funcall(name) if (name.kind_of? Symbol)
-      case (name)
-      when String
-        path = name
-      else
+      path = expand_path(name)
+      unless (path.kind_of? String) then
         raise "unknon link name type: #{name.class}"
       end
       mklink(path, options)
@@ -175,12 +179,8 @@ module Gluon
 
     def frame(name, options={})
       name = funcall(name) if (name.kind_of? Symbol)
-      case (name)
-      when Class
-        src = @dispatcher.class2path(name)
-      when String
-        src = name
-      else
+      src = expand_path(name)
+      unless (src.kind_of? String) then
         raise "unknown frame src type: #{name.class}"
       end
       mkframe(@req.script_name + src, options)
@@ -188,10 +188,8 @@ module Gluon
 
     def frame_uri(name, options={})
       name = funcall(name) if (name.kind_of? Symbol)
-      case (name)
-      when String
-        src = name
-      else
+      src = expand_path(name)
+      unless (src.kind_of? String) then
         raise "unknown frame src type: #{name.class}"
       end
       mkframe(src, options)
