@@ -2,10 +2,10 @@ class Example
   class Header
     include Dispatch
 
-    attr_accessor :req
+    attr_accessor :c
 
     def example?
-      @req.env['gluon.curr_page'] == ExamplePanel
+      @c.curr_page == ExamplePanel
     end
 
     def example
@@ -13,7 +13,7 @@ class Example
     end
 
     def code?
-      @req.env['gluon.curr_page'] == CodePanel
+      @c.curr_page == CodePanel
     end
 
     def code
@@ -21,7 +21,7 @@ class Example
     end
 
     def view?
-      @req.env['gluon.curr_page'] == ViewPanel
+      @c.curr_page == ViewPanel
     end
 
     def view

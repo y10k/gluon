@@ -11,6 +11,7 @@ module Gluon
   autoload :Dispatcher, 'gluon/dispatcher'
   autoload :ERBContext, 'gluon/po'
   autoload :PresentationObject, 'gluon/po'
+  autoload :RequestResponseContext, 'gluon/rs'
   autoload :Setup, 'gluon/setup'
   autoload :ViewRenderer, 'gluon/renderer'
 end

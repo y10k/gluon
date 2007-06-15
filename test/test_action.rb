@@ -1,6 +1,8 @@
 #!/usr/local/bin/ruby
 
 require 'gluon/action'
+require 'gluon/dispatcher'
+require 'gluon/rs'
 require 'rack'
 require 'test/unit'
 
@@ -14,11 +16,13 @@ module Gluon::Test
                                        'SCRIPT_NAME' => '/bar.cgi')
       @req = Rack::Request.new(@env)
       @res = Rack::Response.new
+      @dispatcher = Gluon::Dispatcher.new([])
+      @c = Gluon::RequestResponseContext.new(@req, @res, @dispatcher)
     end
 
     def build_page(page_type)
       @page = page_type.new
-      @action = Gluon::Action.new(@page, @req, @res)
+      @action = Gluon::Action.new(@page, @c)
     end
     private :build_page
 
@@ -37,8 +41,7 @@ module Gluon::Test
     end
 
     class PageWithReqRes
-      attr_accessor :req
-      attr_accessor :res
+      attr_accessor :c
     end
 
     def test_apply_with_req_res
@@ -50,8 +53,7 @@ module Gluon::Test
       }
 
       assert_equal(1, count)
-      assert_equal(@req, @page.req)
-      assert_equal(@res, @page.res)
+      assert_equal(@c, @page.c)
     end
 
     class PageWithHooks

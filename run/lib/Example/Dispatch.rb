@@ -16,10 +16,10 @@ class Example
       }
     end
 
-    attr_accessor :req
+    attr_accessor :c
 
     def page_start
-      @key = @req['example'] or raise "not found a query parameter: example"
+      @key = @c.req['example'] or raise "not found a query parameter: example"
       ex = EXAMPLES[@key] or raise "not found a example: #{@key}"
       @class = ex[:class]
       @code = ex[:code]

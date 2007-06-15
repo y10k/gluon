@@ -5,6 +5,7 @@ require 'gluon/action'
 require 'gluon/dispatcher'
 require 'gluon/po'
 require 'gluon/renderer'
+require 'gluon/rs'
 require 'gluon/version'
 require 'rack'
 
@@ -89,10 +90,11 @@ module Gluon
           req.env['gluon.version'] = VERSION
           req.env['gluon.curr_page'] = page_type
           req.env['gluon.path_info'] = gluon_path_info
+          rs_context = RequestResponseContext.new(req, res, dispatcher)
           page = page_type.new
-          action = Action.new(page, req, res)
-          po = PresentationObject.new(page, req, res, dispatcher, renderer)
-          context = ERBContext.new(po, req, res)
+          action = Action.new(page, rs_context)
+          po = PresentationObject.new(page, rs_context, renderer)
+          context = ERBContext.new(po, rs_context)
           action.apply{ res.write(renderer.render(context)) }
           res.finish
         else

@@ -4,6 +4,7 @@ require 'fileutils'
 require 'gluon/dispatcher'
 require 'gluon/po'
 require 'gluon/renderer'
+require 'gluon/rs'
 require 'rack'
 require 'test/unit'
 
@@ -16,14 +17,15 @@ module Gluon::Test
     end
 
     def setup
-      @env = Rack::MockRequest.env_for('http://foo:8080/bar.cgi',
-                                       'SCRIPT_NAME' => '/bar.cgi')
+      @view_dir = 'view'
+      FileUtils.mkdir_p(@view_dir)
+      @renderer = Gluon::ViewRenderer.new(@view_dir)
+
+      @env = Rack::MockRequest.env_for('http://foo:8080/bar.cgi', 'SCRIPT_NAME' => '/bar.cgi')
       @req = Rack::Request.new(@env)
       @res = Rack::Response.new
-      @view_dir = 'view'
       @dispatcher = Gluon::Dispatcher.new([ [ '/another_page', AnotherPage ] ])
-      @renderer = Gluon::ViewRenderer.new(@view_dir)
-      FileUtils.mkdir_p(@view_dir)
+      @c = Gluon::RequestResponseContext.new(@req, @res, @dispatcher)
     end
 
     def teardown
@@ -32,8 +34,8 @@ module Gluon::Test
 
     def build_page(page_type)
       @page = page_type.new
-      @po = Gluon::PresentationObject.new(@page, @req, @res, @dispatcher, @renderer)
-      @context = Gluon::ERBContext.new(@po, @req, @res)
+      @po = Gluon::PresentationObject.new(@page, @c, @renderer)
+      @context = Gluon::ERBContext.new(@po, @c)
     end
     private :build_page
 

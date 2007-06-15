@@ -9,13 +9,11 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    def initialize(page, req, res, dispatcher, renderer, parent_name=nil)
-      @parent_name = parent_name
-      @dispatcher = dispatcher
-      @renderer = renderer
+    def initialize(page, rs_context, renderer, parent_name=nil)
       @page = page
-      @req = req
-      @res = res
+      @c = rs_context
+      @renderer = renderer
+      @parent_name = parent_name
       @stack = []
     end
 
@@ -121,7 +119,7 @@ module Gluon
       funcall(name).each_with_index do |child, i|
         @stack.push [ "#{name}[#{i}]", child ]
         begin
-          action = Action.new(child, @req, @res, parent_name)
+          action = Action.new(child, @c, parent_name)
           action.apply{ yield(i) }
         ensure
           @stack.pop
@@ -165,7 +163,7 @@ module Gluon
     def expand_path(name)
       case (name)
       when Class
-        @dispatcher.class2path(name) or raise "not mounted: #{name}"
+        @c.class2path(name) or raise "not mounted: #{name}"
       else
         name
       end
@@ -179,7 +177,7 @@ module Gluon
       unless (path.kind_of? String) then
         raise "unknon link name type: #{name.class}"
       end
-      mklink(@req.script_name + path, options)
+      mklink(@c.req.script_name + path, options)
     end
 
     def link_uri(name, options={})
@@ -208,7 +206,7 @@ module Gluon
       unless (src.kind_of? String) then
         raise "unknown frame src type: #{name.class}"
       end
-      mkframe(@req.script_name + src, options)
+      mkframe(@c.req.script_name + src, options)
     end
 
     def frame_uri(name, options={})
@@ -233,9 +231,9 @@ module Gluon
 
       parent_name = parent_name()
       page = page_type.new
-      action = Action.new(page, @req, @res, parent_name)
-      po = PresentationObject.new(page, @req, @res, @dispatcher, @renderer, parent_name)
-      context = ERBContext.new(po, @req, @res)
+      action = Action.new(page, @c, parent_name)
+      po = PresentationObject.new(page, @c, @renderer, parent_name)
+      context = ERBContext.new(po, @c)
 
       result = nil
       action.apply{ result = @renderer.render(context) }
@@ -250,15 +248,14 @@ module Gluon
     extend Forwardable
     include ERB::Util
 
-    def initialize(po, req, res)
+    def initialize(po, rs_context)
       @po = po
-      @req = req
-      @res = res
+      @c = rs_context
     end
 
     attr_reader :po
-    attr_reader :req
-    attr_reader :res
+    def_delegator :@c, :req
+    def_delegator :@c, :res
 
     def_delegator :@po, :value
     def_delegator :@po, :cond

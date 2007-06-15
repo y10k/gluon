@@ -5,11 +5,10 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    def initialize(page, req, res, parent_name=nil)
+    def initialize(page, rs_context, parent_name=nil)
       @parent_name = parent_name
       @page = page
-      @req = req
-      @res = res
+      @rs_context = rs_context
     end
 
     def funcall(name, *args)
@@ -31,8 +30,7 @@ module Gluon
     private :funcall_hook
 
     def apply
-      funcall(:req=, @req)
-      funcall(:res=, @res)
+      funcall(:c=, @rs_context)
       funcall_hook(:page_hook) {
         funcall(:page_start)
         begin
