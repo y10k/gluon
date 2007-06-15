@@ -311,6 +311,8 @@ module Gluon::Test
                    render_page('<%= frame_uri "http://www.ruby-lang.org", :id => "ruby" %>'))
       assert_equal('<frame src="http://www.ruby-lang.org" name="ruby" />',
                    render_page('<%= frame_uri "http://www.ruby-lang.org", :name => "ruby" %>'))
+      assert_equal('<frame src="http://www.ruby-lang.org?lang=ja" />',
+                   render_page('<%= frame_uri "http://www.ruby-lang.org", :query => { "lang" => "ja" } %>'))
 
       assert_equal('<frame src="http://www.ruby-lang.org" />',
                    render_page('<%= frame_uri :ruby_home %>'))
@@ -318,6 +320,8 @@ module Gluon::Test
                    render_page('<%= frame_uri :ruby_home, :id => "ruby" %>'))
       assert_equal('<frame src="http://www.ruby-lang.org" name="ruby" />',
                    render_page('<%= frame_uri :ruby_home, :name => "ruby" %>'))
+      assert_equal('<frame src="http://www.ruby-lang.org?lang=ja" />',
+                   render_page('<%= frame_uri :ruby_home, :query => { "lang" => "ja" } %>'))
     end
 
     def test_frame_uri_error
