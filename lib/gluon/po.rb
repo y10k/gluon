@@ -108,10 +108,19 @@ module Gluon
       nil
     end
 
+    def mkpath(path, options={})
+      if (options.key? :query) then
+        path + '?' + PresentationObject.query(options[:query])
+      else
+        path
+      end
+    end
+    private :mkpath
+
     def mklink(href, options={})
       elem = '<a'
       elem << ' id="' << ERB::Util.html_escape(options[:id]) << '"' if (options.key? :id)
-      elem << ' href="' << ERB::Util.html_escape(href) << '"'
+      elem << ' href="' << ERB::Util.html_escape(mkpath(href, options)) << '"'
       elem << ' target="' << ERB::Util.html_escape(options[:target]) << '"' if (options.key? :target)
       elem << '>'
       if (options.key? :text) then

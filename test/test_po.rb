@@ -167,6 +167,8 @@ module Gluon::Test
                    render_page('<%= link "/Foo", :text => "foo", :id => "foo" %>'))
       assert_equal('<a href="/bar.cgi/Foo" target="_blank">foo</a>',
                    render_page('<%= link "/Foo", :text => "foo", :target => "_blank" %>'))
+      assert_equal('<a href="/bar.cgi/Foo?foo=bar">foo</a>',
+                   render_page('<%= link "/Foo", :query => { "foo" => "bar" }, :text => "foo" %>'))
 
       assert_equal('<a href="/bar.cgi/Foo">/bar.cgi/Foo</a>',
                    render_page('<%= link :foo_path %>'))
@@ -176,6 +178,8 @@ module Gluon::Test
                    render_page('<%= link :foo_path, :text => :foo_text, :id => "foo" %>'))
       assert_equal('<a href="/bar.cgi/Foo" target="_blank">foo</a>',
                    render_page('<%= link :foo_path, :text => :foo_text, :target => "_blank" %>'))
+      assert_equal('<a href="/bar.cgi/Foo?foo=bar">foo</a>',
+                   render_page('<%= link :foo_path, :query => { "foo" => "bar" }, :text => "foo" %>'))
 
       assert_equal('<a href="/bar.cgi/another_page">/bar.cgi/another_page</a>',
                    render_page("<%= link #{AnotherPage} %>"))
@@ -185,6 +189,8 @@ module Gluon::Test
                    render_page("<%= link #{AnotherPage}, :text => 'another page', :id => 'another_page' %>"))
       assert_equal('<a href="/bar.cgi/another_page" target="_blank">another page</a>',
                    render_page("<%= link #{AnotherPage}, :text => 'another page', :target => '_blank' %>"))
+      assert_equal('<a href="/bar.cgi/another_page?foo=bar">another page</a>',
+                   render_page("<%= link #{AnotherPage}, :query => { 'foo' => 'bar' }, :text => 'another page' %>"))
     end
 
     def test_link_error
@@ -221,6 +227,8 @@ module Gluon::Test
                    render_page('<%= link_uri "http://www.ruby-lang.org", :text => "Ruby", :id => "ruby" %>'))
       assert_equal('<a href="http://www.ruby-lang.org" target="_blank">Ruby</a>',
                    render_page('<%= link_uri "http://www.ruby-lang.org", :text => "Ruby", :target => "_blank" %>'))
+      assert_equal('<a href="http://www.ruby-lang.org?lang=ja">Ruby</a>',
+                   render_page('<%= link_uri "http://www.ruby-lang.org", :query => { "lang" => "ja" }, :text => "Ruby" %>'))
 
       assert_equal('<a href="http://www.ruby-lang.org">http://www.ruby-lang.org</a>',
                    render_page('<%= link_uri :ruby_home_uri %>'))
@@ -230,6 +238,8 @@ module Gluon::Test
                    render_page('<%= link_uri :ruby_home_uri, :text => :ruby_home_text, :id => "ruby" %>'))
       assert_equal('<a href="http://www.ruby-lang.org" target="_blank">Ruby</a>',
                    render_page('<%= link_uri :ruby_home_uri, :text => :ruby_home_text, :target => "_blank" %>'))
+      assert_equal('<a href="http://www.ruby-lang.org?lang=ja">Ruby</a>',
+                   render_page('<%= link_uri :ruby_home_uri, :query => { "lang" => "ja" }, :text => :ruby_home_text %>'))
     end
 
     def test_link_uri_error
@@ -264,6 +274,11 @@ module Gluon::Test
                    render_page('<%= frame :foo, :id => "foo" %>'))
       assert_equal('<frame src="/bar.cgi/Foo" name="foo" />',
                    render_page('<%= frame :foo, :name => "foo" %>'))
+
+      assert_equal('<frame src="/bar.cgi/another_page" />',
+                   render_page("<%= frame #{AnotherPage} %>"))
+      assert_equal('<frame id="foo" src="/bar.cgi/another_page" />',
+                   render_page("<%= frame #{AnotherPage}, :id => 'foo' %>"))
     end
 
     def test_frame_error
