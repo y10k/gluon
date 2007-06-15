@@ -4,6 +4,6 @@
 </head>
 <frameset cols="20%,80%">
   <%= frame Example::Menu, :name => 'menu' %>
-  <%= frame '/example/ex_panel?example=value', :name => 'main' %>
+  <%= frame Example::ExamplePanel, :query => { 'example' => 'value' }, :name => 'main' %>
 </frameset>
 </html>

@@ -9,7 +9,7 @@ class Example
     end
 
     def example
-      "/example/ex_panel?example=#{@key}"
+      return ExamplePanel, :query => { 'example' => @key }
     end
 
     def code?
@@ -17,7 +17,7 @@ class Example
     end
 
     def code
-      "/example/code_panel?example=#{@key}"
+      return CodePanel, :query => { 'example' => @key }
     end
 
     def view?
@@ -25,7 +25,7 @@ class Example
     end
 
     def view
-      "/example/view_panel?example=#{@key}"
+      return ViewPanel, :query => { 'example' => @key }
     end
   end
 end
