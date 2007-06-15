@@ -1,3 +1,7 @@
+2007-06-16  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/po.rb: (Gluon::PresentationObject class) query class method.
+
 2007-06-14  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/dispatcher.rb: (Gluon::Dispatcher class) class2path

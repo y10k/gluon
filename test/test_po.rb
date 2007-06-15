@@ -312,6 +312,28 @@ module Gluon::Test
       assert_equal('[Hello world.]', render_page("[<%= import #{AnotherPage} %>]"))
       assert_equal('[Hello world.]', render_page('[<%= import :another_page %>]'))
     end
+
+    def test_query
+      params = {}
+      def params.each
+        alist = self.to_a
+        alist.sort!{|a, b| a[0] <=> b[0] }
+        alist.each do |name, value|
+          yield(name, value)
+        end
+        self
+      end
+
+      params['foo'] = 'bar'
+      params['baz'] = nil
+      assert_equal('baz&foo=bar', Gluon::PresentationObject.query(params))
+
+      params.clear
+      params['foo'] = '&'
+      params['bar'] = '='
+      params['baz'] = '%'
+      assert_equal('bar=%3D&baz=%25&foo=%26', Gluon::PresentationObject.query(params))
+    end
   end
 end
 

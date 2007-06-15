@@ -27,6 +27,18 @@ module Gluon
       end
     end
 
+    def self.query(params)
+      s = ''
+      sep = ''
+      for name, value in params
+        s << sep
+        s << ERB::Util.url_encode(name)
+        s << '=' << ERB::Util.url_encode(value) if value
+        sep = '&'
+      end
+      s
+    end
+
     def parent_name
       name_list = []
       name_list << @parent_name if @parent_name
