@@ -31,22 +31,12 @@ module Gluon
       @url_map = []
     end
 
-    def expand_path(path)
-      path.gsub(/@./) {|special_token|
-        case (special_token)
-        when '@?'
-          @base_dir
-        when '@@'
-          '@'
-        else
-          special_token
-        end
-      }
-    end
-    private :expand_path
+    attr_reader :base_dir
+    attr_reader :view_dir
+    attr_reader :conf_path
 
     def access_log(path)
-      @access_log = expand_path(path)
+      @access_log = path
       nil
     end
 
