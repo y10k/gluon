@@ -1,5 +1,6 @@
 # application builder
 
+require 'forwardable'
 require 'gluon/action'
 require 'gluon/dispatcher'
 require 'gluon/po'
@@ -50,9 +51,30 @@ module Gluon
       nil
     end
 
+    class Context
+      extend Forwardable
+
+      def initialize(builder)
+        @builder = builder
+      end
+
+      def_delegator :@builder, :base_dir
+      def_delegator :@builder, :view_dir
+      def_delegator :@builder, :conf_path
+      def_delegator :@builder, :access_log
+      def_delegator :@builder, :port
+      def_delegator :@builder, :mount
+    end
+
+    def context_binding(_)
+      _.instance_eval{ binding }
+    end
+    private :context_binding
+
     def load_conf
       script = IO.read(@conf_path)
-      eval(script, binding, @conf_path)
+      context = Context.new(self)
+      eval(script, context_binding(context), @conf_path)
       nil
     end
 
