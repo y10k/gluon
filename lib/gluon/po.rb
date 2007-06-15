@@ -57,6 +57,28 @@ module Gluon
     end
     private :getopts
 
+    def merge_opts(*opts_list)
+      opts_list = opts_list.compact
+      if (opts_list.length == 1) then
+        return opts_list[0]
+      end
+
+      options = {}
+      opts_list.reverse_each do |o|
+        options.update(o)
+      end
+
+      query = nil
+      opts_list.map{|opts| opts[:query] }.compact.reverse_each do |q|
+        query = {} unless query
+        query.update(q)
+      end
+      options[:query] = query if query
+
+      options
+    end
+    private :merge_opts
+
     def funcall(name, *args)
       @stack.reverse_each do |parent_name, child|
         if (child.respond_to? name) then
@@ -151,8 +173,9 @@ module Gluon
     private :expand_path
 
     def link(name, options={})
-      name = funcall(name) if (name.kind_of? Symbol)
+      name, options2 = funcall(name) if (name.kind_of? Symbol)
       path = expand_path(name)
+      options = merge_opts(options, options2)
       unless (path.kind_of? String) then
         raise "unknon link name type: #{name.class}"
       end
@@ -160,8 +183,9 @@ module Gluon
     end
 
     def link_uri(name, options={})
-      name = funcall(name) if (name.kind_of? Symbol)
+      name, options2 = funcall(name) if (name.kind_of? Symbol)
       path = expand_path(name)
+      options = merge_opts(options, options2)
       unless (path.kind_of? String) then
         raise "unknon link name type: #{name.class}"
       end
@@ -178,8 +202,9 @@ module Gluon
     private :mkframe
 
     def frame(name, options={})
-      name = funcall(name) if (name.kind_of? Symbol)
+      name, options2 = funcall(name) if (name.kind_of? Symbol)
       src = expand_path(name)
+      options = merge_opts(options, options2)
       unless (src.kind_of? String) then
         raise "unknown frame src type: #{name.class}"
       end
@@ -187,8 +212,9 @@ module Gluon
     end
 
     def frame_uri(name, options={})
-      name = funcall(name) if (name.kind_of? Symbol)
+      name, options2 = funcall(name) if (name.kind_of? Symbol)
       src = expand_path(name)
+      options = merge_opts(options, options2)
       unless (src.kind_of? String) then
         raise "unknown frame src type: #{name.class}"
       end

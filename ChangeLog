@@ -1,6 +1,7 @@
 2007-06-16  TOKI Yoshinori  <toki@freedom.ne.jp>
 
-	* lib/gluon/po.rb: (Gluon::PresentationObject class) query class method.
+	* lib/gluon/po.rb: (Gluon::PresentationObject class) query class
+	method. query option of link and frame.
 
 2007-06-14  TOKI Yoshinori  <toki@freedom.ne.jp>
 
