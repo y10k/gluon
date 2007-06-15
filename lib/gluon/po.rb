@@ -234,7 +234,7 @@ module Gluon
       parent_name = parent_name()
       page = page_type.new
       action = Action.new(page, @req, @res, parent_name)
-      po = PresentationObject.new(page, @req, @res, @renderer, parent_name)
+      po = PresentationObject.new(page, @req, @res, @dispatcher, @renderer, parent_name)
       context = ERBContext.new(po, @req, @res)
 
       result = nil
