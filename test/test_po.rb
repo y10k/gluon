@@ -12,13 +12,16 @@ module Gluon::Test
     # for ident(1)
     CVS_ID = '$Id$'
 
+    class AnotherPage
+    end
+
     def setup
       @env = Rack::MockRequest.env_for('http://foo:8080/bar.cgi',
                                        'SCRIPT_NAME' => '/bar.cgi')
       @req = Rack::Request.new(@env)
       @res = Rack::Response.new
       @view_dir = 'view'
-      @dispatcher = Gluon::Dispatcher.new([])
+      @dispatcher = Gluon::Dispatcher.new([ [ '/another_page', AnotherPage ] ])
       @renderer = Gluon::ViewRenderer.new(@view_dir)
       FileUtils.mkdir_p(@view_dir)
     end
@@ -150,6 +153,9 @@ module Gluon::Test
       end
     end
 
+    class NotMountedPage
+    end
+
     def test_link
       build_page(PageForLink)
 
@@ -170,6 +176,15 @@ module Gluon::Test
                    render_page('<%= link :foo_path, :text => :foo_text, :id => "foo" %>'))
       assert_equal('<a href="/bar.cgi/Foo" target="_blank">foo</a>',
                    render_page('<%= link :foo_path, :text => :foo_text, :target => "_blank" %>'))
+
+      assert_equal('<a href="/bar.cgi/another_page">/bar.cgi/another_page</a>',
+                   render_page("<%= link #{AnotherPage} %>"))
+      assert_equal('<a href="/bar.cgi/another_page">another page</a>',
+                   render_page("<%= link #{AnotherPage}, :text => 'another page' %>"))
+      assert_equal('<a id="another_page" href="/bar.cgi/another_page">another page</a>',
+                   render_page("<%= link #{AnotherPage}, :text => 'another page', :id => 'another_page' %>"))
+      assert_equal('<a href="/bar.cgi/another_page" target="_blank">another page</a>',
+                   render_page("<%= link #{AnotherPage}, :text => 'another page', :target => '_blank' %>"))
     end
 
     def test_link_error
@@ -179,6 +194,9 @@ module Gluon::Test
       }
       assert_raise(RuntimeError) {
         render_page('<%= link "foo", :text => 123 %>')
+      }
+      assert_raise(RuntimeError) {
+        render_page("<%= link #{NotMountedPage} %>")
       }
     end
 
