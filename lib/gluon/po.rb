@@ -167,7 +167,7 @@ module Gluon
     def mkframe(src, options={})
       elem = '<frame'
       elem << ' id="' << ERB::Util.html_escape(options[:id]) << '"' if (options.key? :id)
-      elem << ' src="' << ERB::Util.html_escape(src) << '"'
+      elem << ' src="' << ERB::Util.html_escape(mkpath(src, options)) << '"'
       elem << ' name="' << ERB::Util.html_escape(options[:name]) << '"' if (options.key? :name)
       elem << ' />'
     end

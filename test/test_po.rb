@@ -267,6 +267,8 @@ module Gluon::Test
                    render_page('<%= frame "/Foo", :id => "foo" %>'))
       assert_equal('<frame src="/bar.cgi/Foo" name="foo" />',
                    render_page('<%= frame "/Foo", :name => "foo" %>'))
+      assert_equal('<frame src="/bar.cgi/Foo?foo=bar" />',
+                   render_page('<%= frame "/Foo", :query => { "foo" => "bar" } %>'))
 
       assert_equal('<frame src="/bar.cgi/Foo" />',
                    render_page('<%= frame :foo %>'))
@@ -274,11 +276,17 @@ module Gluon::Test
                    render_page('<%= frame :foo, :id => "foo" %>'))
       assert_equal('<frame src="/bar.cgi/Foo" name="foo" />',
                    render_page('<%= frame :foo, :name => "foo" %>'))
+      assert_equal('<frame src="/bar.cgi/Foo?foo=bar" />',
+                   render_page('<%= frame :foo, :query => { "foo" => "bar" } %>'))
 
       assert_equal('<frame src="/bar.cgi/another_page" />',
                    render_page("<%= frame #{AnotherPage} %>"))
       assert_equal('<frame id="foo" src="/bar.cgi/another_page" />',
                    render_page("<%= frame #{AnotherPage}, :id => 'foo' %>"))
+      assert_equal('<frame src="/bar.cgi/another_page" name="foo" />',
+                   render_page("<%= frame #{AnotherPage}, :name => 'foo' %>"))
+      assert_equal('<frame src="/bar.cgi/another_page?foo=bar" />',
+                   render_page("<%= frame #{AnotherPage}, :query => { 'foo' => 'bar' } %>"))
     end
 
     def test_frame_error
