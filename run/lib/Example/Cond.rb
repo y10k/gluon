@@ -1,5 +1,12 @@
 class Example
   class Cond
+    def true_test
+      true
+    end
+
+    def false_test
+      false
+    end
   end
 end
 

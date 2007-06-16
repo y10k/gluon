@@ -1,0 +1,15 @@
+<h2>1. true condition</h2>
+
+<p>
+  condition is
+  <% cond :true_test do %>true.<% end %>
+  <% not_cond :true_test do %>false.<% end %>
+</p>
+
+<h2>2. false condition</h2>
+
+<p>
+  condition is
+  <% cond :false_test do %>true.<% end %>
+  <% not_cond :false_test do %>false.<% end %>
+</p>
