@@ -241,17 +241,12 @@ module Gluon
     end
 
     def import(name, options={})
-      case (name)
-      when Symbol
-        page_type = funcall(name)
-      when Class
-        page_type = name
-      else
+      name = funcall(name) if (name.kind_of? Symbol)
+      unless (name.kind_of? Class) then
         raise "unknown import name type: #{name.class}"
       end
-
       parent_name = parent_name()
-      page = page_type.new
+      page = name.new
       action = Action.new(page, @c, parent_name)
       po = PresentationObject.new(page, @c, @renderer, parent_name)
       context = ERBContext.new(po, @c)
