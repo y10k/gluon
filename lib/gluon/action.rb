@@ -33,6 +33,26 @@ module Gluon
     end
     private :funcall_hook
 
+    def set_params
+      if (@parent_name) then
+        parent_name = "#{@parent_name}."
+      else
+        parent_name = ''
+      end
+
+      @c.req.params.keys.find_all{|n|
+        n[0, parent_name.size] == parent_name && n[-1] != ?] && n[-1] != ?)
+      }.map{|n|
+        n[parent_name.size..-1]
+      }.reject{|n|
+        n.index(?.) || @object_methods[n]
+      }.each do |name|
+        value, = @c.req[name]
+        funcall("#{name}=", value)
+      end
+    end
+    private :set_params
+
     def call_actions
       if (@parent_name) then
         parent_name = "#{@parent_name}."
@@ -40,13 +60,13 @@ module Gluon
         parent_name = ''
       end
 
-      @c.req.params.find_all{|n, v|
-        n[0, parent_name.length] == parent_name && n =~ /\(\)$/
-      }.map{|n, v|
-        n[parent_name.length..-3]
-      }.reject{|n, v|
-        @object_methods[n] || n.index(?.)
-      }.each do |name, value|
+      @c.req.params.keys.find_all{|n|
+        n[0, parent_name.size] == parent_name && n =~ /\(\)$/
+      }.map{|n|
+        n[parent_name.size..-3]
+      }.reject{|n|
+        n.index(?.) || @object_methods[n]
+      }.each do |name|
         funcall("#{name}_action")
       end
     end
@@ -54,6 +74,7 @@ module Gluon
 
     def apply
       funcall(:c=, @c)
+      set_params
       funcall_hook(:page_hook) {
         funcall(:page_start)
         begin

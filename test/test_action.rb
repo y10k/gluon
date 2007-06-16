@@ -126,5 +126,30 @@ module Gluon::Test
       }
       assert_equal(1, count)
     end
+
+    class PageWithParams
+      attr_accessor :foo
+      attr_accessor :bar
+    end
+
+    def test_apply_with_params
+      params = {
+	'foo' => 'Apple',
+	'bar()' => 'Banana',
+	'foo.bar' => 'Orange'
+      }
+      @env.update(Rack::MockRequest.env_for('http://foo:8080/bar.cgi',
+					    'SCRIPT_NAME' => '/bar.cgi',
+					    'QUERY_STRING' => Gluon::PresentationObject.query(params)))
+      build_page(PageWithParams)
+
+      count = 0
+      @action.apply{
+	count += 1
+	assert_equal('Apple', @page.foo)
+	assert_equal(nil,     @page.bar)
+      }
+      assert_equal(1, count)
+    end
   end
 end
