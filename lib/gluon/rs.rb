@@ -4,6 +4,9 @@ require 'forwardable'
 
 module Gluon
   class RequestResponseContext
+    # for idnet(1)
+    CVS_ID = '$Id$'
+
     extend Forwardable
 
     def initialize(req, res, dispatcher)
