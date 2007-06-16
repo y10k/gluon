@@ -1,5 +1,8 @@
 2007-06-16  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/action.rb: (Gluon::Action class) call actions in apply
+	method.
+
 	* lib/gluon/rs.rb: (Gluon::RequestResponseContext class)
 	integrated request response manipulations.
 
