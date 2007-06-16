@@ -8,7 +8,7 @@ module Gluon
     def initialize(page, rs_context, parent_name=nil)
       @parent_name = parent_name
       @page = page
-      @rs_context = rs_context
+      @c = rs_context
     end
 
     def funcall(name, *args)
@@ -30,7 +30,7 @@ module Gluon
     private :funcall_hook
 
     def apply
-      funcall(:c=, @rs_context)
+      funcall(:c=, @c)
       funcall_hook(:page_hook) {
         funcall(:page_start)
         begin
