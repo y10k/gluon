@@ -1,3 +1,7 @@
+2007-06-17  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/po.rb: (Gluon::PresentationObject class) action.
+
 2007-06-16  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/action.rb: (Gluon::Action class) call actions in apply

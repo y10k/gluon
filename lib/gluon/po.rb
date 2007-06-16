@@ -45,6 +45,13 @@ module Gluon
     end
     private :parent_name
 
+    def parent_prefix
+      parent_name = parent_name()
+      parent_name += '.' unless parent_name.empty?
+      parent_name
+    end
+    private :parent_prefix
+
     def getopts(options, default_options)
       for key, value in default_options
         unless (options.key? key) then
@@ -180,12 +187,27 @@ module Gluon
       mklink(@c.req.script_name + path, options)
     end
 
-    def link_uri(name, options={})
-      name, options2 = funcall(name) if (name.kind_of? Symbol)
-      path = expand_path(name)
+    def link_uri(path, options={})
+      path, options2 = funcall(path) if (path.kind_of? Symbol)
       options = merge_opts(options, options2)
       unless (path.kind_of? String) then
-        raise "unknon link name type: #{name.class}"
+        raise "unknon link path type: #{path.class}"
+      end
+      mklink(path, options)
+    end
+
+    def action(name, options={})
+      options[:query] = {} unless (options.key? :query)
+      options[:query]["#{parent_prefix}#{name}()"] = nil
+      options[:text] = name.to_s unless (options.key? :text)
+      if (page = options[:page]) then
+        path = expand_path(page)
+        unless (path.kind_of? String) then
+          raise "unknown action page type: #{path.class}"
+        end
+        path = @c.req.env['SCRIPT_NAME'] + path
+      else
+        path = @c.req.env['SCRIPT_NAME'] + @c.req.env['PATH_INFO']
       end
       mklink(path, options)
     end
@@ -209,12 +231,11 @@ module Gluon
       mkframe(@c.req.script_name + src, options)
     end
 
-    def frame_uri(name, options={})
-      name, options2 = funcall(name) if (name.kind_of? Symbol)
-      src = expand_path(name)
+    def frame_uri(src, options={})
+      src, options2 = funcall(src) if (src.kind_of? Symbol)
       options = merge_opts(options, options2)
       unless (src.kind_of? String) then
-        raise "unknown frame src type: #{name.class}"
+        raise "unknown frame src type: #{src.class}"
       end
       mkframe(src, options)
     end
@@ -263,6 +284,7 @@ module Gluon
     def_delegator :@po, :foreach
     def_delegator :@po, :link
     def_delegator :@po, :link_uri
+    def_delegator :@po, :action
     def_delegator :@po, :frame
     def_delegator :@po, :frame_uri
     def_delegator :@po, :import

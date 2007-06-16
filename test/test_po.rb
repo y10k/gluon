@@ -21,7 +21,9 @@ module Gluon::Test
       FileUtils.mkdir_p(@view_dir)
       @renderer = Gluon::ViewRenderer.new(@view_dir)
 
-      @env = Rack::MockRequest.env_for('http://foo:8080/bar.cgi', 'SCRIPT_NAME' => '/bar.cgi')
+      @env = Rack::MockRequest.env_for('http://foo:8080/bar.cgi')
+      @env['SCRIPT_NAME'] = '/bar.cgi'
+      @env['PATH_INFO'] = ''
       @req = Rack::Request.new(@env)
       @res = Rack::Response.new
       @dispatcher = Gluon::Dispatcher.new([ [ '/another_page', AnotherPage ] ])
@@ -270,6 +272,25 @@ module Gluon::Test
       assert_raise(RuntimeError) {
         render_page('<%= link_uri "foo", :text => 123 %>')
       }
+    end
+
+    class PageForAction
+      def foo
+      end
+    end
+
+    def test_action
+      build_page(PageForAction)
+      assert_equal('<a href="/bar.cgi?foo%28%29">foo</a>',
+                   render_page('<%= action :foo %>'))
+      assert_equal('<a href="/bar.cgi?foo%28%29">action</a>',
+                   render_page('<%= action :foo, :text => "action" %>'))
+      assert_equal('<a id="foo" href="/bar.cgi?foo%28%29">action</a>',
+                   render_page('<%= action :foo, :text => "action", :id => "foo" %>'))
+      assert_equal('<a href="/bar.cgi?foo%28%29" target="_blank">action</a>',
+                   render_page('<%= action :foo, :text => "action", :target => "_blank" %>'))
+      assert_equal('<a href="/bar.cgi/another_page?foo%28%29">action</a>',
+                   render_page("<%= action :foo, :text => 'action', :page => #{AnotherPage} %>"))
     end
 
     class PageForFrame
