@@ -1,0 +1,26 @@
+<h2>1. simple values</h2>
+
+<ol>
+  <% foreach :fruits do %>
+    <li><%= value %></li> <!-- call fruits[i].to_s -->
+  <% end %>
+</ol>
+
+<h2>2. loop index</h2>
+<ul>
+  <% foreach :fruits do |i| %> <!-- i is loop index -->
+    <li>fruits[<%= h(i) %>] =&gt; <%= value %></li>
+  <% end %>
+</ul>
+
+<h2>3. complexed values</h2>
+
+<ol>
+  <% foreach :users do %>
+    <li>
+      name: <%= value :name %>, <!-- call users[i].name -->
+      age: <%= value :age %>, <!-- call users[i].age -->
+      country: <%= value :country %> <!-- call country -->
+    </li>
+  <% end %>
+</ol>
