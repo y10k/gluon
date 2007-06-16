@@ -13,8 +13,9 @@ module Gluon::Test
     CVS_ID = '$Id$'
 
     def setup
-      @env = Rack::MockRequest.env_for('http://foo:8080/bar.cgi',
-                                       'SCRIPT_NAME' => '/bar.cgi')
+      @env = Rack::MockRequest.env_for('http://foo:8080/bar.cgi')
+      @env['SCRIPT_NAME'] = '/bar.cgi'
+      @env['PATH_INFO'] = ''
       @req = Rack::Request.new(@env)
       @res = Rack::Response.new
       @dispatcher = Gluon::Dispatcher.new([])
@@ -114,9 +115,7 @@ module Gluon::Test
 	'bar' => nil,
 	'foo.bar()' => nil
       }
-      @env.update(Rack::MockRequest.env_for('http://foo:8080/bar.cgi',
-					    'SCRIPT_NAME' => '/bar.cgi',
-					    'QUERY_STRING' => Gluon::PresentationObject.query(params)))
+      @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
       build_page(PageWithActions)
 
       count = 0
@@ -135,12 +134,10 @@ module Gluon::Test
     def test_apply_with_params
       params = {
 	'foo' => 'Apple',
-	'bar()' => 'Banana',
+	#'bar()' => 'Banana',
 	'foo.bar' => 'Orange'
       }
-      @env.update(Rack::MockRequest.env_for('http://foo:8080/bar.cgi',
-					    'SCRIPT_NAME' => '/bar.cgi',
-					    'QUERY_STRING' => Gluon::PresentationObject.query(params)))
+      @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
       build_page(PageWithParams)
 
       count = 0
