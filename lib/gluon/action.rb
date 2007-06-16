@@ -35,7 +35,7 @@ module Gluon
 
     def call_actions
       if (@parent_name) then
-        parent_name  "#{@parent_name}."
+        parent_name = "#{@parent_name}."
       else
         parent_name = ''
       end
