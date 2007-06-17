@@ -1,0 +1,21 @@
+<h2>1. link by class</h2>
+
+<p><%= link Welcom, :target => '_top', :text => 'return to welcom page.' %></p>
+
+<h2>2. link by path</h2>
+
+<p><%= link '/', :target => '_top', :text => 'return to welcom page.' %></p>
+
+<h2>3. link by object method</h2>
+
+<!-- call welcom and description methods -->
+<p><%= link :welcom, :target => '_top', :text => :description %></p>
+
+<h2>5. link URI</h2>
+
+<p><%= link_uri 'http://www.ruby-lang.org/', :target => '_blank' %></p>
+
+<h2>6. link URI by object method</h2>
+
+<!-- call ruby_home method -->
+<p><%= link_uri :ruby_home, :target => '_blank' %></p>
