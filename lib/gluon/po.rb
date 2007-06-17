@@ -41,14 +41,18 @@ module Gluon
       name_list = []
       name_list << @parent_name if @parent_name
       name_list += @stack.map{|n, c| n }
-      name_list.join('.')
+      unless (name_list.empty?) then
+        name_list.join('.')
+      end
     end
     private :parent_name
 
     def parent_prefix
-      parent_name = parent_name()
-      parent_name += '.' unless parent_name.empty?
-      parent_name
+      if (parent_name = parent_name()) then
+        parent_name + '.'
+      else
+        ''
+      end
     end
     private :parent_prefix
 

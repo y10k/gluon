@@ -7,6 +7,7 @@ class Example
       %w[ cond Cond ],
       %w[ foreach Foreach ],
       %w[ link Link ],
+      %w[ action Action ],
       %w[ import Import ]
     ]
 

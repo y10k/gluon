@@ -134,7 +134,7 @@ module Gluon::Test
     def test_apply_with_params
       params = {
 	'foo' => 'Apple',
-	#'bar()' => 'Banana',
+	'bar()' => 'Banana',
 	'foo.bar' => 'Orange'
       }
       @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)

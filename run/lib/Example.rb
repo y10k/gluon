@@ -1,6 +1,7 @@
 # example top page
 
 class Example
+  autoload :Action,       'Example/Action'
   autoload :CodePanel,    'Example/CodePanel'
   autoload :Cond,         'Example/Cond'
   autoload :Dispatch,     'Example/Dispatch'
