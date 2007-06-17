@@ -1,9 +1,6 @@
 #!/usr/local/bin/ruby
 
-require 'gluon/action'
-require 'gluon/dispatcher'
-require 'gluon/po'
-require 'gluon/rs'
+require 'gluon'
 require 'rack'
 require 'test/unit'
 
@@ -20,11 +17,12 @@ module Gluon::Test
       @res = Rack::Response.new
       @dispatcher = Gluon::Dispatcher.new([])
       @c = Gluon::RequestResponseContext.new(@req, @res, @dispatcher)
+      @plugin = {}
     end
 
     def build_page(page_type)
       @page = page_type.new
-      @action = Gluon::Action.new(@page, @c)
+      @action = Gluon::Action.new(@page, @c, @plugin)
     end
     private :build_page
 
@@ -145,6 +143,37 @@ module Gluon::Test
 	count += 1
 	assert_equal('Apple', @page.foo)
 	assert_equal(nil,     @page.bar)
+      }
+      assert_equal(1, count)
+    end
+
+    class PageWithPlugin
+      attr_accessor :foo
+      attr_accessor :bar_action
+    end
+
+    def test_apply_with_plugin
+      @plugin[:foo] = 'test of plugin'
+      build_page(PageWithPlugin)
+
+      count = 0
+      @action.apply{
+	count += 1
+	assert_equal('test of plugin', @page.foo)
+      }
+      assert_equal(1, count)
+    end
+
+    def test_apply_with_plugin_and_params
+      @plugin[:foo] = 'test of plugin'
+      params = { 'foo' => 'test of parameter'}
+      @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
+      build_page(PageWithPlugin)
+
+      count = 0
+      @action.apply{
+	count += 1
+	assert_equal('test of plugin', @page.foo, 'prior plugin')
       }
       assert_equal(1, count)
     end

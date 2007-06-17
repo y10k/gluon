@@ -1,5 +1,8 @@
 2007-06-17  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/action.rb: (Gluon::Action class) set plugin in apply
+	method.
+
 	* lib/gluon/builder.rb: (Gluon::Builder class) initial block and
 	final block at config.rb
 

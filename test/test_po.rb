@@ -1,10 +1,7 @@
 #!/usr/local/bin/ruby
 
 require 'fileutils'
-require 'gluon/dispatcher'
-require 'gluon/po'
-require 'gluon/renderer'
-require 'gluon/rs'
+require 'gluon'
 require 'rack'
 require 'test/unit'
 
@@ -28,6 +25,7 @@ module Gluon::Test
       @res = Rack::Response.new
       @dispatcher = Gluon::Dispatcher.new([ [ '/another_page', AnotherPage ] ])
       @c = Gluon::RequestResponseContext.new(@req, @res, @dispatcher)
+      @plugin = {}
     end
 
     def teardown
@@ -36,7 +34,8 @@ module Gluon::Test
 
     def build_page(page_type)
       @page = page_type.new
-      @po = Gluon::PresentationObject.new(@page, @c, @renderer)
+      @action = Gluon::Action.new(@page, @c, @plugin)
+      @po = Gluon::PresentationObject.new(@page, @c, @renderer, @action)
       @context = Gluon::ERBContext.new(@po, @c)
     end
     private :build_page

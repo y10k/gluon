@@ -2,17 +2,17 @@
 
 require 'erb'
 require 'forwardable'
-require 'gluon/action'
 
 module Gluon
   class PresentationObject
     # for ident(1)
     CVS_ID = '$Id$'
 
-    def initialize(page, rs_context, renderer, parent_name=nil)
+    def initialize(page, rs_context, renderer, action, parent_name=nil)
       @page = page
       @c = rs_context
       @renderer = renderer
+      @action = action
       @parent_name = parent_name
       @stack = []
     end
@@ -130,7 +130,7 @@ module Gluon
       funcall(name).each_with_index do |child, i|
         @stack.push [ "#{name}[#{i}]", child ]
         begin
-          action = Action.new(child, @c, parent_name)
+          action = @action.new(child, @c, parent_name)
           action.apply{ yield(i) }
         ensure
           @stack.pop
@@ -251,8 +251,8 @@ module Gluon
       end
       parent_name = parent_name()
       page = name.new
-      action = Action.new(page, @c, parent_name)
-      po = PresentationObject.new(page, @c, @renderer, parent_name)
+      action = @action.new(page, @c, parent_name)
+      po = PresentationObject.new(page, @c, @renderer, action, parent_name)
       context = ERBContext.new(po, @c)
 
       result = nil

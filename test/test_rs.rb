@@ -1,7 +1,6 @@
 #!/usr/local/bin/ruby
 
-require 'gluon/dispatcher'
-require 'gluon/rs'
+require 'gluon'
 require 'rack'
 require 'test/unit'
 

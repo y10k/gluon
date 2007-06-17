@@ -5,14 +5,19 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    def initialize(page, rs_context, parent_name=nil)
-      @parent_name = parent_name
+    def initialize(page, rs_context, plugin, parent_name=nil)
       @page = page
       @c = rs_context
+      @plugin = plugin
+      @parent_name = parent_name
       @object_methods = {}
       Object.instance_methods.each do |name|
         @object_methods[name] = true
       end
+    end
+
+    def new(page, rs_context, parent_name=nil)
+      Action.new(page, rs_context, @plugin, parent_name)
     end
 
     def funcall(name, *args)
@@ -33,6 +38,13 @@ module Gluon
     end
     private :funcall_hook
 
+    def set_plugin
+      for name, value in @plugin
+        funcall("#{name}=", value)
+      end
+    end
+    private :set_plugin
+
     def set_params
       if (@parent_name) then
         parent_name = "#{@parent_name}."
@@ -45,7 +57,9 @@ module Gluon
       }.map{|n|
         n[parent_name.size..-1]
       }.reject{|n|
-        n.index(?.) || @object_methods[n]
+        n.index(?.) ||
+          (@plugin.key? n) || (@plugin.key? n.to_sym) ||
+          (@object_methods.key? n)
       }.each do |name|
         value, = @c.req[name]
         funcall("#{name}=", value)
@@ -63,17 +77,18 @@ module Gluon
       @c.req.params.keys.find_all{|n|
         n[0, parent_name.size] == parent_name && n =~ /\(\)$/
       }.map{|n|
-        n[parent_name.size..-3]
+        n[parent_name.size..-3] + '_action'
       }.reject{|n|
-        n.index(?.) || @object_methods[n]
+        n.index(?.) || (@object_methods.key? n)
       }.each do |name|
-        funcall("#{name}_action")
+        funcall(name)
       end
     end
     private :call_actions
 
     def apply
       funcall(:c=, @c)
+      set_plugin
       set_params
       funcall_hook(:page_hook) {
         funcall(:page_start)
