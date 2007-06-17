@@ -28,6 +28,8 @@ module Gluon
       @base_dir = options[:base_dir]
       @view_dir = options[:view_dir]
       @conf_path = options[:conf_path]
+      @plugin = {}
+      @finalizer = proc{}
       @access_log = nil
       @port = 9202
       @url_map = []
@@ -52,6 +54,25 @@ module Gluon
       nil
     end
 
+    def plugin_get(name)
+      @plugin[name]
+    end
+
+    def plugin_set(plugins)
+      @plugin.update(plugins)
+      nil
+    end
+
+    def initial(&block)
+      InitialContext.new(self).instance_eval(&block)
+      nil
+    end
+
+    def final(&block)
+      @finalizer = block
+      nil
+    end
+
     class Context
       extend Forwardable
 
@@ -62,9 +83,22 @@ module Gluon
       def_delegator :@builder, :base_dir
       def_delegator :@builder, :view_dir
       def_delegator :@builder, :conf_path
+    end
+
+    class TopLevelContext < Context
       def_delegator :@builder, :access_log
       def_delegator :@builder, :port
       def_delegator :@builder, :mount
+      def_delegator :@builder, :initial
+      def_delegator :@builder, :final
+    end
+
+    class InitialContext < Context
+      def_delegator :@builder, :plugin_set, :plugin
+    end
+
+    class FinalContext < Context
+      def_delegator :@builder, :plugin_get, :plugin
     end
 
     def context_binding(_)
@@ -74,7 +108,7 @@ module Gluon
 
     def load_conf
       script = IO.read(@conf_path)
-      context = Context.new(self)
+      context = TopLevelContext.new(self)
       eval(script, context_binding(context), @conf_path)
       nil
     end
@@ -113,6 +147,15 @@ module Gluon
       end
 
       { :application => app, :port => @port }
+    end
+
+    def run(handler, app, *opts)
+      begin
+        handler.run(app, *opts)
+      ensure
+        FinalContext.new(self).instance_eval(&@finalizer)
+      end
+      nil
     end
   end
 end

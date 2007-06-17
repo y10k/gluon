@@ -1,5 +1,8 @@
 2007-06-17  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/builder.rb: (Gluon::Builder class) initial block and
+	final block at config.rb
+
 	* lib/gluon/po.rb: (Gluon::PresentationObject class) action.
 
 2007-06-16  TOKI Yoshinori  <toki@freedom.ne.jp>
