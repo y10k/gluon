@@ -58,8 +58,8 @@ module Gluon
       @plugin[name]
     end
 
-    def plugin_set(plugins)
-      @plugin.update(plugins)
+    def plugin_set(values)
+      @plugin.update(values)
       nil
     end
 
