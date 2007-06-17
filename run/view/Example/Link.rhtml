@@ -11,6 +11,11 @@
 <!-- call welcom and description methods -->
 <p><%= link :welcom, :target => '_top', :text => :description %></p>
 
+<h2>4. link with query</h2>
+
+<p><%= link Example::ExamplePanel, :query => { 'foo()' => nil, 'example' => 'action' },
+       :text => 'foo action at action example page.' %></p>
+
 <h2>5. link URI</h2>
 
 <p><%= link_uri 'http://www.ruby-lang.org/', :target => '_blank' %></p>
