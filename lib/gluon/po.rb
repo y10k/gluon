@@ -139,6 +139,21 @@ module Gluon
       nil
     end
 
+    def mkelem_start(name, options={})
+      elem = "<#{name}"
+      for name in [ :id, :class ]
+        if (options.key? name) then
+          elem << ' ' << name.to_s << '="' << ERB::Util.html_escape(options[:id]) << '"'
+        end
+      end
+      if (options.key? :attrs) then
+        for name, value in options[:attrs]
+          elem << ' ' << name.to_s << '="' << ERB::Util.html_escape(options[:attrs][name]) << '"'
+        end
+      end
+      elem
+    end
+
     def mkpath(path, options={})
       if (options.key? :query) then
         path + '?' + PresentationObject.query(options[:query])
@@ -149,8 +164,7 @@ module Gluon
     private :mkpath
 
     def mklink(href, options={})
-      elem = '<a'
-      elem << ' id="' << ERB::Util.html_escape(options[:id]) << '"' if (options.key? :id)
+      elem = mkelem_start('a', options)
       elem << ' href="' << ERB::Util.html_escape(mkpath(href, options)) << '"'
       elem << ' target="' << ERB::Util.html_escape(options[:target]) << '"' if (options.key? :target)
       elem << '>'
@@ -217,8 +231,7 @@ module Gluon
     end
 
     def mkframe(src, options={})
-      elem = '<frame'
-      elem << ' id="' << ERB::Util.html_escape(options[:id]) << '"' if (options.key? :id)
+      elem = mkelem_start('frame', options)
       elem << ' src="' << ERB::Util.html_escape(mkpath(src, options)) << '"'
       elem << ' name="' << ERB::Util.html_escape(options[:name]) << '"' if (options.key? :name)
       elem << ' />'
