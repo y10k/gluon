@@ -276,7 +276,6 @@ module Gluon
     attr_reader :po
     def_delegator :@c, :req
     def_delegator :@c, :res
-
     def_delegator :@po, :value
     def_delegator :@po, :cond
     def_delegator :@po, :not_cond
