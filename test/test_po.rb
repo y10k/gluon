@@ -117,9 +117,9 @@ module Gluon::Test
                    render_page('<% cond :bar, :not => true do %>HALO<% end %>'))
 
       assert_equal('',
-                   render_page('<% not_cond :foo do %>HALO<% end %>'))
+                   render_page('<% cond_not :foo do %>HALO<% end %>'))
       assert_equal('HALO',
-                   render_page('<% not_cond :bar do %>HALO<% end %>'))
+                   render_page('<% cond_not :bar do %>HALO<% end %>'))
     end
 
     class PageForForeach

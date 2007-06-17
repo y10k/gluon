@@ -119,7 +119,7 @@ module Gluon
       nil
     end
 
-    def not_cond(name, options={})
+    def cond_not(name, options={})
       options[:not] = true
       cond(name, options) {
         yield
@@ -278,7 +278,7 @@ module Gluon
     def_delegator :@c, :res
     def_delegator :@po, :value
     def_delegator :@po, :cond
-    def_delegator :@po, :not_cond
+    def_delegator :@po, :cond_not
     def_delegator :@po, :foreach
     def_delegator :@po, :link
     def_delegator :@po, :link_uri

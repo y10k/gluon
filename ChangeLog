@@ -1,5 +1,8 @@
 2007-06-17  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/po.rb: (Gluon::PresentationObject class) not_cond ->
+	cond_not.
+
 	* lib/gluon/action.rb: (Gluon::Action class) set plugin in apply
 	method.
 
