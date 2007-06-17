@@ -7,8 +7,8 @@
 
 <p><%= link '/', :target => '_top', :text => 'return top.' %></p>
 <ul>
-  <% for key in %w[ value cond foreach link import ] %>
-    <li><%= link Example::ExamplePanel, :query => { 'example' => key }, :target => 'main', :text => key %></li>
+  <% foreach :examples do %>
+    <li><%= link :example, :target => 'main', :text => :name %></li>
   <% end %>
 </ul>
 

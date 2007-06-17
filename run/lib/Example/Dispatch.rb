@@ -2,13 +2,17 @@ class Example
   module Dispatch
     BASE_DIR = File.join(File.dirname(__FILE__), '..', '..')
 
-    EXAMPLES = {}
-    [ %w[ value Value ],
+    example_alist = [
+      %w[ value Value ],
       %w[ cond Cond ],
       %w[ foreach Foreach ],
       %w[ link Link ],
       %w[ import Import ]
-    ].each do |key, name|
+    ]
+
+    EXAMPLE_KEYS = example_alist.map{|k, n| k }
+    EXAMPLES = {}
+    for key, name in example_alist
       EXAMPLES[key] = {
 	:class => Example.const_get(name),
 	:code => File.join(BASE_DIR, 'lib', 'Example', "#{name}.rb"),
