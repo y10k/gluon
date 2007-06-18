@@ -55,7 +55,11 @@ module Gluon
     end
 
     def plugin_get(name)
-      @plugin[name]
+      if (block_given?) then
+        yield(@plugin[name])
+      else
+        @plugin[name]
+      end
     end
 
     def plugin_set(values)
