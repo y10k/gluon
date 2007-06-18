@@ -1,0 +1,19 @@
+<h2>1. submit buttons</h2>
+
+<form>
+<p><%= submit :foo, :value => 'foo' %></p> <!-- action to call foo_action method -->
+<p><%= submit :bar, :value => 'bar' %></p> <!-- action to call bar_action method -->
+</form>
+
+<!-- <\!-- query is hack to dispatch example -\-> -->
+<!-- <p><%= action :foo, :query => { 'example' => req['example'] } %></p> <\!-- action to call foo_action method -\-> -->
+<!-- <p><%= action :bar, :query => { 'example' => req['example'] } %></p> <\!-- action to call bar_action method -\-> -->
+
+<h2>2. results</h2>
+
+<% cond :no_action? do %>
+  <p><em>no action.</em></p>
+<% end %>
+<% cond_not :no_action? do %>
+  <p><%= value :results %></p>
+<% end %>

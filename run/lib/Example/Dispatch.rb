@@ -8,7 +8,8 @@ class Example
       %w[ foreach Foreach ],
       %w[ link Link ],
       %w[ action Action ],
-      %w[ import Import ]
+      %w[ import Import ],
+      %w[ submit Submit ]
     ]
 
     EXAMPLE_KEYS = example_alist.map{|k, n| k }
