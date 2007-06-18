@@ -272,6 +272,39 @@ module Gluon
       action.apply{ result = @renderer.render(context) }
       result
     end
+
+    def form_value(name)
+      if (@stack.empty?) then
+        @page.__send__(name)
+      else
+        @stack[-1].__send__(name)
+      end
+    end
+    private :form_value
+
+    def text(name, options={})
+      elem = mkelem_start('input', options)
+      elem << ' type="text"'
+      elem << ' name="' << ERB::Util.html_escape("#{parent_prefix}#{name}") << '"'
+      elem << ' value="' << ERB::Util.html_escape(form_value(name)) << '"'
+      elem << ' />'
+    end
+
+    def password(name, options={})
+      elem = mkelem_start('input', options)
+      elem << ' type="password"'
+      elem << ' name="' << ERB::Util.html_escape("#{parent_prefix}#{name}") << '"'
+      elem << ' value="' << ERB::Util.html_escape(form_value(name)) << '"'
+      elem << ' />'
+    end
+
+    def submit(name, options={})
+      elem = mkelem_start('input', options)
+      elem << ' type="submit"'
+      elem << ' name="' << ERB::Util.html_escape("#{parent_prefix}#{name}()") << '"'
+      elem << ' value="' << ERB::Util.html_escape(options[:value]) << '"' if (options.key? :value)
+      elem << ' />'
+    end
   end
 
   class ERBContext
@@ -299,6 +332,9 @@ module Gluon
     def_delegator :@po, :frame
     def_delegator :@po, :frame_uri
     def_delegator :@po, :import
+    def_delegator :@po, :text
+    def_delegator :@po, :password
+    def_delegator :@po, :submit
   end
 end
 

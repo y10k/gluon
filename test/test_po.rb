@@ -416,6 +416,45 @@ module Gluon::Test
       assert_equal('[Hello world.]', render_page('[<%= import :another_page %>]'))
     end
 
+    class PageWithText
+      attr_accessor :foo
+    end
+
+    def test_text
+      build_page(PageWithText)
+
+      assert_equal('<input type="text" name="foo" value="" />', render_page('<%= text :foo %>'))
+
+      @page.foo = 'Hello world.'
+      assert_equal('<input type="text" name="foo" value="Hello world." />', render_page('<%= text :foo %>'))
+    end
+
+    class PageWithPassword
+      attr_accessor :foo
+    end
+
+    def test_password
+      build_page(PageWithPassword)
+
+      assert_equal('<input type="password" name="foo" value="" />', render_page('<%= password :foo %>'))
+
+      @page.foo = 'Hello world.'
+      assert_equal('<input type="password" name="foo" value="Hello world." />', render_page('<%= password :foo %>'))
+    end
+
+    class PageWithSubmit
+      def foo_action
+      end
+    end
+
+    def test_submit
+      build_page(PageWithSubmit)
+
+      assert_equal('<input type="submit" name="foo()" />', render_page('<%= submit :foo %>'))
+      assert_equal('<input type="submit" name="foo()" value="Push!" />',
+                   render_page('<%= submit :foo, :value => "Push!" %>'))
+    end
+
     def test_query
       params = {}
       def params.each

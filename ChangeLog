@@ -1,3 +1,8 @@
+2007-06-19  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/po.rb: (Gluon::PresentationObject class) naivete
+	implementation of form control methods. text, password and submit.
+
 2007-06-17  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/po.rb: (Gluon::PresentationObject class) not_cond ->
