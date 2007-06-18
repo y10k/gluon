@@ -305,6 +305,14 @@ module Gluon
       elem << ' value="' << ERB::Util.html_escape(options[:value]) << '"' if (options.key? :value)
       elem << ' />'
     end
+
+    def hidden(name, options={})
+      elem = mkelem_start('input', options)
+      elem << ' type="hidden"'
+      elem << ' name="' << ERB::Util.html_escape("#{parent_prefix}#{name}") << '"'
+      elem << ' value="' << ERB::Util.html_escape(form_value(name)) << '"'
+      elem << ' />'
+    end
   end
 
   class ERBContext
@@ -335,6 +343,7 @@ module Gluon
     def_delegator :@po, :text
     def_delegator :@po, :password
     def_delegator :@po, :submit
+    def_delegator :@po, :hidden
   end
 end
 

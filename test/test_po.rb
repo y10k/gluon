@@ -455,6 +455,19 @@ module Gluon::Test
                    render_page('<%= submit :foo, :value => "Push!" %>'))
     end
 
+    class PageWithHidden
+      attr_accessor :foo
+    end
+
+    def test_hidden
+      build_page(PageWithHidden)
+
+      assert_equal('<input type="hidden" name="foo" value="" />', render_page('<%= hidden :foo %>'))
+
+      @page.foo = 'Hello world.'
+      assert_equal('<input type="hidden" name="foo" value="Hello world." />', render_page('<%= hidden :foo %>'))
+    end
+
     def test_query
       params = {}
       def params.each

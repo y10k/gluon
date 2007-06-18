@@ -17,6 +17,9 @@ class Example
     end
 
     attr_reader :results
+
+    # hack to dispatch example
+    attr_accessor :example
   end
 end
 
