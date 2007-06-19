@@ -5,11 +5,11 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    def initialize(page, rs_context, plugin, parent_name=nil)
+    def initialize(page, rs_context, plugin, prefix='')
       @page = page
       @c = rs_context
       @plugin = plugin
-      @parent_name = parent_name
+      @prefix = prefix
       @object_methods = {}
       Object.instance_methods.each do |name|
         @object_methods[name] = true
@@ -46,38 +46,25 @@ module Gluon
     private :set_plugin
 
     def set_params
-      if (@parent_name) then
-        parent_name = "#{@parent_name}."
-      else
-        parent_name = ''
-      end
-
-      @c.req.params.keys.find_all{|n|
-        n[0, parent_name.size] == parent_name && n[-1] != ?] && n[-1] != ?)
-      }.map{|n|
-        n[parent_name.size..-1]
-      }.reject{|n|
+      @c.req.params.find_all{|n, v|
+        n[0, @prefix.size] == @prefix && n !~ /\]$/ && n !~ /\)$/
+      }.map{|n, v|
+        [ n[@prefix.size..-1], v ]
+      }.reject{|n, v|
         n.index(?.) ||
           (@plugin.key? n) || (@plugin.key? n.to_sym) ||
           (@object_methods.key? n)
-      }.each do |name|
-        value, = @c.req[name]
+      }.each do |name, value|
         funcall("#{name}=", value)
       end
     end
     private :set_params
 
     def call_actions
-      if (@parent_name) then
-        parent_name = "#{@parent_name}."
-      else
-        parent_name = ''
-      end
-
       @c.req.params.keys.find_all{|n|
-        n[0, parent_name.size] == parent_name && n =~ /\(\)$/
+        n[0, @prefix.size] == @prefix && n =~ /\(\)$/
       }.map{|n|
-        n[parent_name.size..-3] + '_action'
+        n[@prefix.size..-3] + '_action'
       }.reject{|n|
         n.index(?.) || (@object_methods.key? n)
       }.each do |name|

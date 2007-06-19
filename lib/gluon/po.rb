@@ -8,12 +8,12 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    def initialize(page, rs_context, renderer, action, parent_name=nil)
+    def initialize(page, rs_context, renderer, action, prefix='')
       @page = page
       @c = rs_context
       @renderer = renderer
       @action = action
-      @parent_name = parent_name
+      @prefix = prefix
       @stack = []
     end
 
@@ -37,24 +37,14 @@ module Gluon
       s
     end
 
-    def parent_name
-      name_list = []
-      name_list << @parent_name if @parent_name
-      name_list += @stack.map{|n, c| n }
-      unless (name_list.empty?) then
-        name_list.join('.')
+    def prefix
+      s = @prefix.dup
+      for prefix, child in @stack
+        s << prefix << '.'
       end
+      s
     end
-    private :parent_name
-
-    def parent_prefix
-      if (parent_name = parent_name()) then
-        parent_name + '.'
-      else
-        ''
-      end
-    end
-    private :parent_prefix
+    private :prefix
 
     def getopts(options, default_options)
       for key, value in default_options
@@ -89,7 +79,7 @@ module Gluon
     private :merge_opts
 
     def funcall(name, *args)
-      @stack.reverse_each do |parent_name, child|
+      @stack.reverse_each do |prefix, child|
         if (child.respond_to? name) then
           return child.__send__(name, *args)
         end
@@ -130,7 +120,7 @@ module Gluon
       funcall(name).each_with_index do |child, i|
         @stack.push [ "#{name}[#{i}]", child ]
         begin
-          action = @action.new(child, @c, parent_name)
+          action = @action.new(child, @c, prefix)
           action.apply{ yield(i) }
         ensure
           @stack.pop
@@ -216,7 +206,7 @@ module Gluon
 
     def action(name, options={})
       options[:query] = {} unless (options.key? :query)
-      options[:query]["#{parent_prefix}#{name}()"] = nil
+      options[:query]["#{prefix}#{name}()"] = nil
       options[:text] = name.to_s unless (options.key? :text)
       if (page = options[:page]) then
         path = expand_path(page)
@@ -262,10 +252,10 @@ module Gluon
       unless (name.kind_of? Class) then
         raise "unknown import name type: #{name.class}"
       end
-      parent_name = parent_name()
+      prefix = prefix()
       page = name.new
-      action = @action.new(page, @c, parent_name)
-      po = PresentationObject.new(page, @c, @renderer, action, parent_name)
+      action = @action.new(page, @c, prefix)
+      po = PresentationObject.new(page, @c, @renderer, action, prefix)
       context = ERBContext.new(po, @c)
 
       result = nil
@@ -285,7 +275,7 @@ module Gluon
     def text(name, options={})
       elem = mkelem_start('input', options)
       elem << ' type="text"'
-      elem << ' name="' << ERB::Util.html_escape("#{parent_prefix}#{name}") << '"'
+      elem << ' name="' << ERB::Util.html_escape("#{prefix}#{name}") << '"'
       elem << ' value="' << ERB::Util.html_escape(form_value(name)) << '"'
       elem << ' />'
     end
@@ -293,7 +283,7 @@ module Gluon
     def password(name, options={})
       elem = mkelem_start('input', options)
       elem << ' type="password"'
-      elem << ' name="' << ERB::Util.html_escape("#{parent_prefix}#{name}") << '"'
+      elem << ' name="' << ERB::Util.html_escape("#{prefix}#{name}") << '"'
       elem << ' value="' << ERB::Util.html_escape(form_value(name)) << '"'
       elem << ' />'
     end
@@ -301,7 +291,7 @@ module Gluon
     def submit(name, options={})
       elem = mkelem_start('input', options)
       elem << ' type="submit"'
-      elem << ' name="' << ERB::Util.html_escape("#{parent_prefix}#{name}()") << '"'
+      elem << ' name="' << ERB::Util.html_escape("#{prefix}#{name}()") << '"'
       elem << ' value="' << ERB::Util.html_escape(options[:value]) << '"' if (options.key? :value)
       elem << ' />'
     end
@@ -309,7 +299,7 @@ module Gluon
     def hidden(name, options={})
       elem = mkelem_start('input', options)
       elem << ' type="hidden"'
-      elem << ' name="' << ERB::Util.html_escape("#{parent_prefix}#{name}") << '"'
+      elem << ' name="' << ERB::Util.html_escape("#{prefix}#{name}") << '"'
       elem << ' value="' << ERB::Util.html_escape(form_value(name)) << '"'
       elem << ' />'
     end
