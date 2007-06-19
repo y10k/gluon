@@ -17,9 +17,9 @@ module Gluon
       @stack = []
     end
 
-    def view_name
-      if (@page.respond_to? :view_name) then
-        @page.view_name
+    def __view__
+      if (@page.respond_to? :__view__) then
+        @page.__view__
       else
         @page.class.name.gsub(/::/, '/') + '.rhtml'
       end

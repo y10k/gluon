@@ -48,20 +48,20 @@ module Gluon::Test
     class PageForImplicitViewName
     end
 
-    def test_view_name_implicit
+    def test_view_implicit
       build_page(PageForImplicitViewName)
-      assert_equal('Gluon/Test/PresentationObjectTest/PageForImplicitViewName.rhtml', @po.view_name)
+      assert_equal('Gluon/Test/PresentationObjectTest/PageForImplicitViewName.rhtml', @po.__view__)
     end
 
     class PageForExplicitViewName
-      def view_name
+      def __view__
         'foo.rhtml'
       end
     end
 
-    def test_view_name_explicit
+    def test_view_explicit
       build_page(PageForExplicitViewName)
-      assert_equal('foo.rhtml', @po.view_name)
+      assert_equal('foo.rhtml', @po.__view__)
     end
 
     class PageForValue
@@ -396,7 +396,7 @@ module Gluon::Test
     end
 
     class AnotherPage
-      def view_name
+      def __view__
         'AnotherPage.rhtml'
       end
 

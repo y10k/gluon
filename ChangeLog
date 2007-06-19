@@ -1,3 +1,8 @@
+2007-06-20  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/po.rb: (Gluon::PresentationObject class) view_name
+	method -> __view__ method.
+
 2007-06-19  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/po.rb: (Gluon::PresentationObject class) naivete
