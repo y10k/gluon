@@ -143,6 +143,7 @@ module Gluon
       end
       elem
     end
+    private :mkelem_start
 
     def mkpath(path, options={})
       if (options.key? :query) then
