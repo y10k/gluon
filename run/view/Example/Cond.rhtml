@@ -13,3 +13,11 @@
   <% cond :false_test do %>true.<% end %>
   <% cond_not :false_test do %>false.<% end %>
 </p>
+
+<h3>3. optional false condition</h3>
+
+<p>
+  condition is
+  <% cond :false_test do %>true.<% end %>
+  <% cond :false_test, :not => true do %>false.<% end %>
+</p>
