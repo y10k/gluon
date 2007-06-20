@@ -1,7 +1,10 @@
 class Example
   class Submit
+    attr_accessor :c
+
     def page_start
       @results = ''
+      @example = @c.req['example'] # hack to dispatch example
     end
 
     def foo_action
@@ -17,9 +20,7 @@ class Example
     end
 
     attr_reader :results
-
-    # hack to dispatch example
-    attr_accessor :example
+    attr_reader :example        # hack to dispatch example
   end
 end
 

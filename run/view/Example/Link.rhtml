@@ -13,7 +13,8 @@
 
 <h2>4. link with query</h2>
 
-<p><%= link Example::ExamplePanel, :query => { 'foo()' => nil, 'example' => 'action' },
+<p><%= link Example::ExamplePanel,
+       :query => { 'example.foo()' => nil, 'example' => 'action' },
        :text => 'foo action at action example page.' %></p>
 
 <h2>5. link URI</h2>

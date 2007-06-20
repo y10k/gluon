@@ -249,11 +249,12 @@ module Gluon
     end
 
     def import(name, options={})
+      curr_prefix = name.to_s
       name = funcall(name) if (name.kind_of? Symbol)
       unless (name.kind_of? Class) then
         raise "unknown import name type: #{name.class}"
       end
-      prefix = prefix()
+      prefix = prefix() + curr_prefix + '.'
       page = name.new
       action = @action.new(page, @c, prefix)
       po = PresentationObject.new(page, @c, @renderer, action, prefix)
@@ -263,6 +264,19 @@ module Gluon
       action.apply{ result = @renderer.render(context) }
       result
     end
+
+    def mkinput(type, name, options)
+      elem = mkelem_start('input', options)
+      elem << ' type="' << ERB::Util.html_escape(type) << '"'
+      if (options[:direct]) then
+        elem << ' name="' << ERB::Util.html_escape(name) << '"'
+      else
+        elem << ' name="' << ERB::Util.html_escape("#{prefix}#{name}") << '"'
+      end
+      elem << ' value="' << ERB::Util.html_escape(options[:value]) << '"' if (options.key? :value)
+      elem << ' />'
+    end
+    private :mkinput
 
     def form_value(name)
       if (@stack.empty?) then
@@ -274,35 +288,19 @@ module Gluon
     private :form_value
 
     def text(name, options={})
-      elem = mkelem_start('input', options)
-      elem << ' type="text"'
-      elem << ' name="' << ERB::Util.html_escape("#{prefix}#{name}") << '"'
-      elem << ' value="' << ERB::Util.html_escape(form_value(name)) << '"'
-      elem << ' />'
+      mkinput('text', name, options.dup.update(:value => form_value(name)))
     end
 
     def password(name, options={})
-      elem = mkelem_start('input', options)
-      elem << ' type="password"'
-      elem << ' name="' << ERB::Util.html_escape("#{prefix}#{name}") << '"'
-      elem << ' value="' << ERB::Util.html_escape(form_value(name)) << '"'
-      elem << ' />'
+      mkinput('password', name, options.dup.update(:value => form_value(name)))
     end
 
     def submit(name, options={})
-      elem = mkelem_start('input', options)
-      elem << ' type="submit"'
-      elem << ' name="' << ERB::Util.html_escape("#{prefix}#{name}()") << '"'
-      elem << ' value="' << ERB::Util.html_escape(options[:value]) << '"' if (options.key? :value)
-      elem << ' />'
+      mkinput('submit', "#{name}()", options)
     end
 
     def hidden(name, options={})
-      elem = mkelem_start('input', options)
-      elem << ' type="hidden"'
-      elem << ' name="' << ERB::Util.html_escape("#{prefix}#{name}") << '"'
-      elem << ' value="' << ERB::Util.html_escape(form_value(name)) << '"'
-      elem << ' />'
+      mkinput('hidden', name, options.dup.update(:value => form_value(name)))
     end
   end
 
