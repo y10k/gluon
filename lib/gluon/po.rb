@@ -116,7 +116,7 @@ module Gluon
       }
     end
 
-    def foreach(name, options={})
+    def foreach(name=:to_a, options={})
       funcall(name).each_with_index do |child, i|
         @stack.push [ "#{name}[#{i}]", child ]
         begin
