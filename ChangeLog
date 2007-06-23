@@ -1,3 +1,8 @@
+2007-06-23  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/po.rb: (Gluon::PresentationObject class) path_info
+	option of mklink method.
+
 2007-06-21  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/po.rb: (Gluon::PresentationObject class) import adds

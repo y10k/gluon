@@ -155,6 +155,7 @@ module Gluon
     private :mkpath
 
     def mklink(href, options={})
+      href += options[:path_info] if (options.key? :path_info)
       elem = mkelem_start('a', options)
       elem << ' href="' << ERB::Util.html_escape(mkpath(href, options)) << '"'
       elem << ' target="' << ERB::Util.html_escape(options[:target]) << '"' if (options.key? :target)
