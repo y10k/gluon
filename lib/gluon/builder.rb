@@ -55,6 +55,7 @@ module Gluon
     end
 
     def plugin_get(name)
+      name = name.to_sym
       if (block_given?) then
         yield(@plugin[name])
       else
@@ -62,8 +63,16 @@ module Gluon
       end
     end
 
-    def plugin_set(values)
-      @plugin.update(values)
+    def plugin_set(args)
+      if (block_given?) then
+        name = args.to_sym
+        @plugin[name] = yield
+      else
+        for name, value in args
+          name = name.to_sym
+          @plugin[name] = value
+        end
+      end
       nil
     end
 
