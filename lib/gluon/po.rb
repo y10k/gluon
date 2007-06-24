@@ -170,6 +170,10 @@ module Gluon
           raise "unknown link text type: #{options[:text].class}"
         end
         elem << ERB::Util.html_escape(text)
+      elsif (block_given?) then
+        out = ''
+        yield(out)
+        elem << out
       else
         elem << ERB::Util.html_escape(href)
       end
@@ -187,26 +191,26 @@ module Gluon
     end
     private :expand_path
 
-    def link(name, options={})
+    def link(name, options={}, &block)
       name, options2 = funcall(name) if (name.kind_of? Symbol)
       path = expand_path(name)
       options = merge_opts(options, options2)
       unless (path.kind_of? String) then
         raise "unknon link name type: #{name.class}"
       end
-      mklink(@c.req.script_name + path, options)
+      mklink(@c.req.script_name + path, options, &block)
     end
 
-    def link_uri(path, options={})
+    def link_uri(path, options={}, &block)
       path, options2 = funcall(path) if (path.kind_of? Symbol)
       options = merge_opts(options, options2)
       unless (path.kind_of? String) then
         raise "unknon link path type: #{path.class}"
       end
-      mklink(path, options)
+      mklink(path, options, &block)
     end
 
-    def action(name, options={})
+    def action(name, options={}, &block)
       options[:query] = {} unless (options.key? :query)
       options[:query]["#{prefix}#{name}()"] = nil
       options[:text] = name.to_s unless (options.key? :text)
@@ -219,7 +223,7 @@ module Gluon
       else
         path = @c.req.env['SCRIPT_NAME'] + @c.req.env['PATH_INFO']
       end
-      mklink(path, options)
+      mklink(path, options, &block)
     end
 
     def mkframe(src, options={})
