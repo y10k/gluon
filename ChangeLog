@@ -1,3 +1,8 @@
+2007-06-30  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/dispatcher.rb: (Gluon::Dispatcher class) change
+	location path of root.
+
 2007-06-23  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/po.rb: (Gluon::PresentationObject class) path_info

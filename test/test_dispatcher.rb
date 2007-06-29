@@ -75,7 +75,7 @@ module Gluon::Test
       ]
       dispatcher = Gluon::Dispatcher.new(url_map)
 
-      assert_equal('/',        dispatcher.class2path(Root))
+      assert_equal('',         dispatcher.class2path(Root))
       assert_equal('/foo',     dispatcher.class2path(Foo))
       assert_equal('/foo/bar', dispatcher.class2path(Bar))
       assert_equal('/baz',     dispatcher.class2path(Baz))

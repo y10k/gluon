@@ -12,7 +12,6 @@ module Gluon
       }.sort_by{|location, page_type| -(location.size) }
       @c2p = {}
       for location, page_type in @mapping
-        location = '/' if (location == '')
         @c2p[page_type] = location
       end
     end
