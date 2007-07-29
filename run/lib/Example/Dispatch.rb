@@ -9,7 +9,8 @@ class Example
       %w[ link Link ],
       %w[ action Action ],
       %w[ import Import ],
-      %w[ submit Submit ]
+      %w[ submit Submit ],
+      %w[ text Text ]
     ]
 
     EXAMPLE_KEYS = example_alist.map{|k, n| k }
@@ -31,6 +32,8 @@ class Example
       @code = ex[:code]
       @view = ex[:view]
     end
+
+    attr_reader :key
   end
 end
 

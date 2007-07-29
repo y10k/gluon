@@ -1,9 +1,9 @@
 <h2>1. submit</h2>
 
 <form>
+<div><%= hidden :example, :direct => true %></div> <!-- hack to dispatch example -->
 <p><%= submit :foo, :value => 'foo' %></p> <!-- action to call foo_action method -->
 <p><%= submit :bar, :value => 'bar' %></p> <!-- action to call bar_action method -->
-<div><%= hidden :example, :direct => true %></div> <!-- hack to dispatch example -->
 </form>
 
 <h2>2. results</h2>

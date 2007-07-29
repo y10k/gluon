@@ -3,9 +3,11 @@ class Example
     attr_accessor :c
 
     def page_start
-      @results = ''
       @example = @c.req['example'] # hack to dispatch example
+      @results = ''
     end
+
+    attr_reader :example        # hack to dispatch example
 
     def foo_action
       @results << 'foo is called.'
@@ -20,7 +22,6 @@ class Example
     end
 
     attr_reader :results
-    attr_reader :example        # hack to dispatch example
   end
 end
 

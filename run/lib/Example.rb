@@ -15,6 +15,7 @@ class Example
   autoload :Submit,       'Example/Submit'
   autoload :Value,        'Example/Value'
   autoload :ViewPanel,    'Example/ViewPanel'
+  autoload :Text,         'Example/Text'
 end
 
 # Local Variables:

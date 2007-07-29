@@ -2,8 +2,6 @@ class Example
   class ViewPanel
     include Dispatch
 
-    attr_reader :key
-
     def view
       IO.read(@view)
     end

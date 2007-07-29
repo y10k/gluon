@@ -2,8 +2,6 @@ class Example
   class ExamplePanel
     include Dispatch
 
-    attr_reader :key
-
     def example
       @class
     end

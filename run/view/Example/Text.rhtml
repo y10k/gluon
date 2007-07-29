@@ -1,0 +1,12 @@
+<h2>1. text</h2>
+
+<form>
+<div><%= hidden :example, :direct => true %></div> <!-- hack to dispatch example -->
+<p><label for="foo">input:</label>
+   <%= text :foo, :id => 'foo' %>
+</p>
+<p><%= submit :ok, :value => 'OK' %></p>
+</form>
+
+<h2>2. form value</h2>
+<p><%= value :foo %></p>
