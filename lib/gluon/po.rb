@@ -146,6 +146,7 @@ module Gluon
     private :mkelem_start
 
     def mkpath(path, options={})
+      path = '/' if path.empty?
       if (options.key? :query) then
         path + '?' + PresentationObject.query(options[:query])
       else
