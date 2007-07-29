@@ -10,7 +10,8 @@ class Example
       %w[ action Action ],
       %w[ import Import ],
       %w[ submit Submit ],
-      %w[ text Text ]
+      %w[ text Text ],
+      %w[ password Password ]
     ]
 
     EXAMPLE_KEYS = example_alist.map{|k, n| k }

@@ -12,10 +12,11 @@ class Example
   autoload :Link,         'Example/Link'
   autoload :Menu,         'Example/Menu'
   autoload :PartPage,     'Example/PartPage'
+  autoload :Password,     'Example/Password'
   autoload :Submit,       'Example/Submit'
+  autoload :Text,         'Example/Text'
   autoload :Value,        'Example/Value'
   autoload :ViewPanel,    'Example/ViewPanel'
-  autoload :Text,         'Example/Text'
 end
 
 # Local Variables:
