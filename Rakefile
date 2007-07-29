@@ -42,7 +42,8 @@ spec = Gem::Specification.new{|s|
   s.author = 'TOKI Yoshinori'
   s.email = 'toki@freedom.ne.jp'
   s.executables << 'gluon_setup'
-  s.files = Dir['{lib,run,test}/**/*.{rb,rhtml,cgi}'] << 'ChangeLog' << 'Rakefile'
+  s.files = Dir['{lib,run,test}/**/*.{rb,rhtml,cgi}'] + Dir['run/server/[a-z]*']
+  s.files << 'ChangeLog' << 'Rakefile'
   s.test_files = [ 'test/run.rb' ]
   s.has_rdoc = false
 }
