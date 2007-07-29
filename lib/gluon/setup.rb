@@ -37,18 +37,23 @@ module Gluon
           FileUtils.install(File.join(RUN_DIR, 'config.rb'), @install_dir, :mode => 0644, :verbose => true)
         end
 
-        bin_dir = File.join(@install_dir, 'bin')
-        FileUtils.mkdir_p(bin_dir, :verbose => true)
-        FileUtils.install(File.join(RUN_DIR, 'bin', 'run.rb'), bin_dir, :mode => 0755, :verbose => true)
-        FileUtils.install(File.join(RUN_DIR, 'bin', 'run.cgi'), bin_dir, :mode => 0755, :verbose => true)
+        [ [ 'server', %w[ webrick ] ],
+          [ 'cgi-bin', %w[ run.cgi ] ]
+        ].each do |dir, targets|
+          from_dir = File.join(RUN_DIR, dir)
+          to_dir = File.join(@install_dir, dir)
+          FileUtils.mkdir_p(to_dir, :verbose => true)
+          for target in targets
+            FileUtils.install(File.join(from_dir, target), to_dir, :mode => 0755, :verbose => true)
+          end
+        end
 
-        lib_dir = File.join(@install_dir, 'lib')
-        FileUtils.mkdir_p(lib_dir, :verbose => true)
-        install_r(File.join(RUN_DIR, 'lib'), lib_dir)
-
-        view_dir = File.join(@install_dir, 'view')
-        FileUtils.mkdir_p(view_dir, :verbose => true)
-        install_r(File.join(RUN_DIR, 'view'), view_dir)
+        %w[ lib view ].each do |dir|
+          from_dir = File.join(RUN_DIR, dir)
+          to_dir = File.join(@install_dir, dir)
+          FileUtils.mkdir_p(to_dir, :verbose => true)
+          install_r(from_dir, to_dir)
+        end
       ensure
         File.umask(save_umask)
       end
