@@ -1,3 +1,8 @@
+2007-07-31  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/action.rb: (Gluon::Action class) strict call check for
+	action method.
+
 2007-06-30  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/dispatcher.rb: (Gluon::Dispatcher class) change

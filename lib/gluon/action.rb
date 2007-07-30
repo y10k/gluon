@@ -68,7 +68,7 @@ module Gluon
       }.reject{|n|
         n.index(?.) || (@object_methods.key? n)
       }.each do |name|
-        funcall(name)
+        @page.__send__(name)
       end
     end
     private :call_actions
