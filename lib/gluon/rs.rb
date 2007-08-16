@@ -38,7 +38,7 @@ module Gluon
     end
 
     def redirect_to(page)
-      location(@req.script_name + @c.class2path(path))
+      location(@req.script_name + @dispatcher.class2path(path))
     end
   end
 end
