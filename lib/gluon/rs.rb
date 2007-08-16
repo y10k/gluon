@@ -31,6 +31,15 @@ module Gluon
     def path_info
       @req.env['gluon.path_info']
     end
+
+    def location(uri)
+      @res['Location'] = uri
+      self
+    end
+
+    def redirect_to(page)
+      location(@req.script_name + @c.class2path(path))
+    end
   end
 end
 
