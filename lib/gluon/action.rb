@@ -64,7 +64,7 @@ module Gluon
       @c.req.params.keys.find_all{|n|
         n[0, @prefix.size] == @prefix && n =~ /\(\)$/
       }.map{|n|
-        n[@prefix.size..-3] + '_action'
+        n[@prefix.size..-3]
       }.reject{|n|
         n.index(?.) || (@object_methods.key? n)
       }.each do |name|

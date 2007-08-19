@@ -9,11 +9,11 @@ class Example
 
     attr_reader :example        # hack to dispatch example
 
-    def foo_action
+    def foo
       @results << 'foo is called.'
     end
 
-    def bar_action
+    def bar
       @results << 'bar is called.'
     end
 

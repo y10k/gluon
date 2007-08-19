@@ -4,11 +4,11 @@ class Example
       @results = ''
     end
 
-    def foo_action
+    def foo
       @results << 'foo is called.'
     end
 
-    def bar_action
+    def bar
       @results << 'bar is called.'
     end
 

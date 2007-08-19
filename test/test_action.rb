@@ -98,11 +98,11 @@ module Gluon::Test
 
       attr_reader :calls
 
-      def foo_action
+      def foo
 	@calls << :foo_action
       end
 
-      def bar_action
+      def bar
 	@calls << :bar_action
       end
     end
@@ -149,7 +149,7 @@ module Gluon::Test
 
     class PageWithPlugin
       attr_accessor :foo
-      attr_accessor :bar_action
+      attr_accessor :bar
     end
 
     def test_apply_with_plugin
