@@ -467,7 +467,9 @@ module Gluon::Test
       @page.foo = 'Hello world.'
       assert_equal('<input type="hidden" name="foo" value="Hello world." />', render_page('<%= hidden :foo %>'))
     end
+  end
 
+  class PresentationObjectQueryTest < Test::Unit::TestCase
     def test_query
       params = {}
       def params.each
