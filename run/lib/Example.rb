@@ -2,6 +2,7 @@
 
 class Example
   autoload :Action,       'Example/Action'
+  autoload :Checkbox,     'Example/Checkbox'
   autoload :CodePanel,    'Example/CodePanel'
   autoload :Cond,         'Example/Cond'
   autoload :Dispatch,     'Example/Dispatch'

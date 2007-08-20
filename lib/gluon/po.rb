@@ -312,13 +312,17 @@ module Gluon
     end
 
     def checkbox(name, options={})
-      mkinput('checkbox', name, options.dup.update(:checked => form_value(name)))
+      options = options.dup
+      options[:value] = 't' unless (options.key? :value)
+      options[:checked] = form_value(name) ? true : false
+      mkinput('checkbox', name, options)
     end
 
     def radio(name, value, options={})
-      mkinput('radio', name,
-              options.dup.update(:value => value,
-                                 :checked => value == form_value(name)))
+      options = options.dup
+      options[:value] = value
+      options[:checked] = value == form_value(name)
+      mkinput('radio', name, options)
     end
   end
 
