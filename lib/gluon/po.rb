@@ -314,6 +314,12 @@ module Gluon
     def checkbox(name, options={})
       mkinput('checkbox', name, options.dup.update(:checked => form_value(name)))
     end
+
+    def radio(name, value, options={})
+      mkinput('radio', name,
+              options.dup.update(:value => value,
+                                 :checked == value == form_value(name)))
+    end
   end
 
   class ERBContext
