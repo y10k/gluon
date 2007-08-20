@@ -46,34 +46,52 @@ module Gluon
     private :set_plugin
 
     def set_params
-      is_bool = {}
-      bools = @c.req.params['@bool']
-      unless (bools.kind_of? Array) then
-        bools = [ bools ]
-      end
-      for name in bools
-        is_bool[name] = true
-      end
+      param_alist = @c.req.params.find_all{|name, value|
+        name[0, @prefix.size] == @prefix &&
+          name !~ /\]$/ && name !~ /\)$/
+      }
 
-      @c.req.params.find_all{|n, v|
-        n[0, @prefix.size] == @prefix && n !~ /\]$/ && n !~ /\)$/
-      }.map{|n, v|
-        [ n[@prefix.size..-1], v ]
-      }.reject{|n, v|
-        n.index(?.) ||
-          (@plugin.key? n) || (@plugin.key? n.to_sym) ||
-          (@object_methods.key? n)
-      }.each do |name, value|
-        if (is_bool[name]) then
-          funcall("#{name}=", true)
-          is_bool.delete(name)
-        else
-          funcall("#{name}=", value)
+      param_alist.map!{|name, value|
+        [ name, name[@prefix.size..-1], value ]
+      }
+
+      types = {}
+      for long_name, short_name, value in param_alist
+        if (short_name =~ /@type$/) then
+          types[short_name] = value
         end
       end
 
-      is_bool.each_key do |name|
-        funcall("#{name}=", false)
+      param_alist.delete_if{|long_name, short_name, value|
+        short_name.index(?.) ||
+          short_name =~ /@type$/ ||
+          (@plugin.key? short_name) ||
+          (@plugin.key? short_name.to_sym)
+      }
+
+      for long_name, short_name, value in param_alist
+        type = types["#{short_name}@type"] || 'scalar'
+        case (type)
+        when 'scalar'
+          funcall("#{short_name}=", value)
+        when 'bool'
+          funcall("#{short_name}=", true)
+        else
+          raise "unknown #{long_name}@type: #{type}"
+        end
+        types.delete("#{short_name}@type")
+      end
+
+      for key, type in types
+        case (type)
+        when 'scalar'
+          # nothing to do.
+        when 'bool'
+          name = key.sub(/@type$/, '')
+          funcall("#{name}=", false)
+        else
+          raise "unknown #{long_name}@type: #{type}"
+        end
       end
     end
     private :set_params

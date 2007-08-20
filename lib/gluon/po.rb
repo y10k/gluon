@@ -318,9 +318,14 @@ module Gluon
 
     def checkbox(name, options={})
       options = options.dup
-      options[:value] = 't' unless (options.key? :value)
+      options[:value] = 'true' unless (options.key? :value)
       options[:checked] = form_value(name) ? true : false
-      mkinput('checkbox', name, options)
+      name = "#{prefix}#{name}" unless options[:direct]
+      options[:direct] = true
+      elem = '<input type="hidden"'
+      elem << ' name="' << ERB::Util.html_escape("#{name}@type") << '"'
+      elem << ' value="bool" />'
+      elem << mkinput('checkbox', name, options)
     end
 
     def radio(name, value, options={})

@@ -4,9 +4,9 @@ class Example
 
     def page_start
       @example = @c.req['example'] # hack to dispatch example
-      @foo = nil
-      @bar = nil
-      @baz = 't'
+      @foo = false
+      @bar = false
+      @baz = true
     end
 
     attr_reader :example	# hack to dispatch example

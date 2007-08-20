@@ -166,7 +166,9 @@ module Gluon::Test
 
     def test_apply_with_boolean_params
       params = {
-	'@bool' => %w[ foo bar baz ],
+	'foo@type' => 'bool',
+	'bar@type' => 'bool',
+	'baz@type' => 'bool',
 	'bar' => ''
       }
       @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
