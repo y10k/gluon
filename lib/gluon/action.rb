@@ -76,10 +76,10 @@ module Gluon
     def apply
       funcall(:c=, @c)
       set_plugin
-      set_params
       funcall_hook(:page_hook) {
         funcall(:page_start)
         begin
+          set_params
           call_actions
           yield
         ensure

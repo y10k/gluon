@@ -92,7 +92,7 @@ module Gluon::Test
     end
 
     class PageWithActions
-      def initialize
+      def page_start
 	@calls = []
       end
 
@@ -125,6 +125,11 @@ module Gluon::Test
     end
 
     class PageWithParams
+      def page_start
+	@foo = nil
+	@bar = nil
+      end
+
       attr_accessor :foo
       attr_accessor :bar
     end
@@ -164,7 +169,7 @@ module Gluon::Test
       assert_equal(1, count)
     end
 
-    def test_apply_with_plugin_and_params
+    def test_plugin_override_params
       @plugin[:foo] = 'test of plugin'
       params = { 'foo' => 'test of parameter'}
       @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
