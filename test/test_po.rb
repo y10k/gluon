@@ -494,6 +494,11 @@ module Gluon::Test
       @params['baz'] = '%'
       assert_equal('bar=%3D&baz=%25&foo=%26', Gluon::PresentationObject.query(@params))
     end
+
+    def test_query_list
+      @params['foo'] = %w[ apple banana orange ]
+      assert_equal('foo=apple&foo=banana&foo=orange', Gluon::PresentationObject.query(@params))
+    end
   end
 end
 
