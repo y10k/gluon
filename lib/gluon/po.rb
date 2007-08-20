@@ -318,7 +318,7 @@ module Gluon
     def radio(name, value, options={})
       mkinput('radio', name,
               options.dup.update(:value => value,
-                                 :checked == value == form_value(name)))
+                                 :checked => value == form_value(name)))
     end
   end
 
