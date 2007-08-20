@@ -351,6 +351,8 @@ module Gluon
     def_delegator :@po, :password
     def_delegator :@po, :submit
     def_delegator :@po, :hidden
+    def_delegator :@po, :checkbox
+    def_delegator :@po, :radio
   end
 end
 
