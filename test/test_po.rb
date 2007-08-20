@@ -470,9 +470,9 @@ module Gluon::Test
   end
 
   class PresentationObjectQueryTest < Test::Unit::TestCase
-    def test_query
-      params = {}
-      def params.each
+    def setup
+      @params = {}
+      def @params.each
         alist = self.to_a
         alist.sort!{|a, b| a[0] <=> b[0] }
         alist.each do |name, value|
@@ -480,16 +480,19 @@ module Gluon::Test
         end
         self
       end
+    end
 
-      params['foo'] = 'bar'
-      params['baz'] = nil
-      assert_equal('baz&foo=bar', Gluon::PresentationObject.query(params))
+    def test_query_simple_value
+      @params['foo'] = 'bar'
+      @params['baz'] = nil
+      assert_equal('baz&foo=bar', Gluon::PresentationObject.query(@params))
+    end
 
-      params.clear
-      params['foo'] = '&'
-      params['bar'] = '='
-      params['baz'] = '%'
-      assert_equal('bar=%3D&baz=%25&foo=%26', Gluon::PresentationObject.query(params))
+    def test_query_special_characters
+      @params['foo'] = '&'
+      @params['bar'] = '='
+      @params['baz'] = '%'
+      assert_equal('bar=%3D&baz=%25&foo=%26', Gluon::PresentationObject.query(@params))
     end
   end
 end

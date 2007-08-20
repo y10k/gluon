@@ -124,7 +124,7 @@ module Gluon::Test
       assert_equal(1, count)
     end
 
-    class PageWithParams
+    class PageWithScalarParams
       def page_start
 	@foo = nil
 	@bar = nil
@@ -134,14 +134,14 @@ module Gluon::Test
       attr_accessor :bar
     end
 
-    def test_apply_with_params
+    def test_apply_with_scalar_params
       params = {
 	'foo' => 'Apple',
 	#'bar()' => 'Banana',
 	'foo.bar' => 'Orange'
       }
       @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
-      build_page(PageWithParams)
+      build_page(PageWithScalarParams)
 
       count = 0
       @action.apply{
