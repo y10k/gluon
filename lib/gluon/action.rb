@@ -46,6 +46,15 @@ module Gluon
     private :set_plugin
 
     def set_params
+      is_bool = {}
+      bools = @c.req.params['@bool']
+      unless (bools.kind_of? Array) then
+        bools = [ bools ]
+      end
+      for name in bools
+        is_bool[name] = true
+      end
+
       @c.req.params.find_all{|n, v|
         n[0, @prefix.size] == @prefix && n !~ /\]$/ && n !~ /\)$/
       }.map{|n, v|
@@ -55,7 +64,16 @@ module Gluon
           (@plugin.key? n) || (@plugin.key? n.to_sym) ||
           (@object_methods.key? n)
       }.each do |name, value|
-        funcall("#{name}=", value)
+        if (is_bool[name]) then
+          funcall("#{name}=", true)
+          is_bool.delete(name)
+        else
+          funcall("#{name}=", value)
+        end
+      end
+
+      is_bool.each_key do |name|
+        funcall("#{name}=", false)
       end
     end
     private :set_params

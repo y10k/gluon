@@ -28,14 +28,11 @@ module Gluon
     def self.query(params)
       s = ''
       sep = ''
-      for name, value_or_list in params
-        case (value_or_list)
-        when Array
-          list = value_or_list
-        else
-          list = [ value_or_list ]
+      for name, value_list in params
+        unless (value_list.kind_of? Array) then
+          value_list = [ value_list ]
         end
-        for value in list
+        for value in value_list
           s << sep
           s << ERB::Util.url_encode(name)
           s << '=' << ERB::Util.url_encode(value) if value

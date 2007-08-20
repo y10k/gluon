@@ -152,6 +152,36 @@ module Gluon::Test
       assert_equal(1, count)
     end
 
+    class PageWithBooleanParams
+      def page_start
+	@foo = true
+	@bar = false
+	@baz = false
+      end
+
+      attr_accessor :foo
+      attr_accessor :bar
+      attr_accessor :baz
+    end
+
+    def test_apply_with_boolean_params
+      params = {
+	'@bool' => %w[ foo bar baz ],
+	'bar' => ''
+      }
+      @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
+      build_page(PageWithBooleanParams)
+
+      count = 0
+      @action.apply{
+	count += 1
+	assert_equal(false, @page.foo)
+	assert_equal(true,  @page.bar)
+	assert_equal(false, @page.baz)
+      }
+      assert_equal(1, count)
+    end
+
     class PageWithPlugin
       attr_accessor :foo
       attr_accessor :bar
