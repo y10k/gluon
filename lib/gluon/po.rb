@@ -280,6 +280,8 @@ module Gluon
         elem << ' name="' << ERB::Util.html_escape("#{prefix}#{name}") << '"'
       end
       elem << ' value="' << ERB::Util.html_escape(options[:value]) << '"' if (options.key? :value)
+      elem << ' size="' << ERB::Util.html_escape(options[:size]) << '"' if (options.key? :size)
+      elem << ' checked="checked"' if options[:checked]
       elem << ' />'
     end
     private :mkinput
@@ -307,6 +309,10 @@ module Gluon
 
     def hidden(name, options={})
       mkinput('hidden', name, options.dup.update(:value => form_value(name)))
+    end
+
+    def checkbox(name, options={})
+      mkinput('checkbox', name, options.dup.update(:checked => form_value(name)))
     end
   end
 
