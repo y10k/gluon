@@ -299,7 +299,7 @@ module Gluon
       for attr_key in [ :disabled, :readonly ]
         if (options.key? attr_key) then
           value = options[attr_key]
-          value = form_value(value) if (value.is_kind? Symbol)
+          value = form_value(value) if (value.kind_of? Symbol)
           elem << ' ' << attr_key.to_s << '="' << attr_key.to_s << '"' if value
         end
       end
@@ -353,22 +353,21 @@ module Gluon
       elem << ' multiple="multiple"' if options[:multiple]
       if (options.key? :disabled) then
         value = options[:disabled]
-        value = form_value(value) if (value.is_kind? Symbol)
+        value = form_value(value) if (value.kind_of? Symbol)
         elem << ' disabled="disabled"' if value
       end
       elem << '>'
 
       list = form_value(list) if (list.kind_of? Symbol)
       selects = form_value(name)
-      selects = [ selects ] unless (selects.is_kind? Array)
+      selects = [ selects ] unless (selects.kind_of? Array)
       selected = {}
       for value in selects
         selected[value] = true
       end
 
-      selected = form_value(name)
       for value, text in list
-        text = value unless label
+        text = value unless text
         elem << '<option value="' << ERB::Util.html_escape(value) << '"'
         elem << ' selected="selected"' if selected[value]
         elem << '>'
@@ -411,6 +410,7 @@ module Gluon
     def_delegator :@po, :hidden
     def_delegator :@po, :checkbox
     def_delegator :@po, :radio
+    def_delegator :@po, :select
   end
 end
 
