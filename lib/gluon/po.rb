@@ -341,6 +341,43 @@ module Gluon
       options[:checked] = value == form_value(name)
       mkinput('radio', name, options)
     end
+
+    def select(name, list, options={})
+      elem = mkelem_start('select', options)
+      if (options[:direct]) then
+        elem << ' name="' << ERB::Util.html_escape(name) << '"'
+      else
+        elem << ' name="' << ERB::Util.html_escape("#{prefix}#{name}") << '"'
+      end
+      elem << ' size="' << ERB::Util.html_escape(options[:size]) << '"' if (options.key? :size)
+      elem << ' multiple="multiple"' if options[:multiple]
+      if (options.key? :disabled) then
+        value = options[:disabled]
+        value = form_value(value) if (value.is_kind? Symbol)
+        elem << ' disabled="disabled"' if value
+      end
+      elem << '>'
+
+      list = form_value(list) if (list.kind_of? Symbol)
+      selects = form_value(name)
+      selects = [ selects ] unless (selects.is_kind? Array)
+      selected = {}
+      for value in selects
+        selected[value] = true
+      end
+
+      selected = form_value(name)
+      for value, text in list
+        text = value unless label
+        elem << '<option value="' << ERB::Util.html_escape(value) << '"'
+        elem << ' selected="selected"' if selected[value]
+        elem << '>'
+        elem << ERB::Util.html_escape(text)
+        elem << '</option>'
+      end
+
+      elem << '</select>'
+    end
   end
 
   class ERBContext
