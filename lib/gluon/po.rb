@@ -276,6 +276,15 @@ module Gluon
       result
     end
 
+    def form_value(name)
+      if (@stack.empty?) then
+        @page.__send__(name)
+      else
+        @stack[-1].__send__(name)
+      end
+    end
+    private :form_value
+
     def mkinput(type, name, options)
       elem = mkelem_start('input', options)
       elem << ' type="' << ERB::Util.html_escape(type) << '"'
@@ -287,18 +296,16 @@ module Gluon
       elem << ' value="' << ERB::Util.html_escape(options[:value]) << '"' if (options.key? :value)
       elem << ' size="' << ERB::Util.html_escape(options[:size]) << '"' if (options.key? :size)
       elem << ' checked="checked"' if options[:checked]
+      for attr_key in [ :disabled, :readonly ]
+        if (options.key? attr_key) then
+          value = options[attr_key]
+          value = form_value(value) if (value.is_kind? Symbol)
+          elem << ' ' << attr_key.to_s << '="' << attr_key.to_s << '"' if value
+        end
+      end
       elem << ' />'
     end
     private :mkinput
-
-    def form_value(name)
-      if (@stack.empty?) then
-        @page.__send__(name)
-      else
-        @stack[-1].__send__(name)
-      end
-    end
-    private :form_value
 
     def text(name, options={})
       mkinput('text', name, options.dup.update(:value => form_value(name)))
