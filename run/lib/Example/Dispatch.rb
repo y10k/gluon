@@ -12,7 +12,8 @@ class Example
       %w[ submit Submit ],
       %w[ text Text ],
       %w[ password Password ],
-      %w[ checkbox Checkbox ]
+      %w[ checkbox Checkbox ],
+      %w[ radio Radio ]
     ]
 
     EXAMPLE_KEYS = example_alist.map{|k, n| k }

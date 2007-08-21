@@ -14,6 +14,7 @@ class Example
   autoload :Menu,         'Example/Menu'
   autoload :PartPage,     'Example/PartPage'
   autoload :Password,     'Example/Password'
+  autoload :Radio,        'Example/Radio'
   autoload :Submit,       'Example/Submit'
   autoload :Text,         'Example/Text'
   autoload :Value,        'Example/Value'
