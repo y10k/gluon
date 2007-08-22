@@ -104,13 +104,21 @@ module Gluon
     private :set_params
 
     def call_actions
-      @c.req.params.keys.find_all{|n|
-        n[0, @prefix.size] == @prefix && n =~ /\(\)$/
-      }.map{|n|
-        n[@prefix.size..-3]
-      }.reject{|n|
-        n.index(?.) || (@object_methods.key? n)
-      }.each do |name|
+      name_list = @c.req.params.keys
+
+      name_list.delete_if{|name|
+        name[0, @prefix.size] != @prefix || name !~ /\(\)$/
+      }
+
+      name_list.map!{|name|
+        name[0...-2]
+      }
+
+      name_list.delete_if{|name|
+        name.index(?.) || (@object_methods.key? name)
+      }
+
+      for name in name_list
         @page.__send__(name)
       end
     end
