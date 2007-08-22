@@ -152,6 +152,39 @@ module Gluon::Test
       assert_equal(1, count)
     end
 
+    class PageWithListParams
+      def page_start
+        @foo = nil
+        @bar = nil
+        @baz = nil
+      end
+
+      attr_accessor :foo
+      attr_accessor :bar
+      attr_accessor :baz
+    end
+
+    def test_apply_with_list_params
+      params = {
+        'foo@type' => 'list',
+        'bar@type' => 'list',
+        'baz@type' => 'list',
+        'bar' => 'apple',
+        'baz' => %w[ banana orange ]
+      }
+      @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
+      build_page(PageWithListParams)
+
+      count = 0
+      @action.apply{
+        count += 1
+        assert_equal([], @page.foo)
+        assert_equal(%w[ apple ], @page.bar)
+        assert_equal(%w[ banana orange ], @page.baz)
+      }
+      assert_equal(1, count)
+    end
+
     class PageWithBooleanParams
       def page_start
 	@foo = true

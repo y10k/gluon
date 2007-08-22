@@ -58,7 +58,7 @@ module Gluon
       types = {}
       for long_name, short_name, value in param_alist
         if (short_name =~ /@type$/) then
-          types[short_name] = value
+          types[$`] = value
         end
       end
 
@@ -70,27 +70,34 @@ module Gluon
       }
 
       for long_name, short_name, value in param_alist
-        type = types["#{short_name}@type"] || 'scalar'
+        type = types.delete(short_name) || 'scalar'
         case (type)
         when 'scalar'
           funcall("#{short_name}=", value)
+        when 'list'
+          case (value)
+          when Array
+            funcall("#{short_name}=", value)
+          else
+            funcall("#{short_name}=", [ value ])
+          end
         when 'bool'
           funcall("#{short_name}=", true)
         else
           raise "unknown #{long_name}@type: #{type}"
         end
-        types.delete("#{short_name}@type")
       end
 
-      for key, type in types
+      for name, type in types
         case (type)
         when 'scalar'
           # nothing to do.
+        when 'list'
+          funcall("#{name}=", [])
         when 'bool'
-          name = key.sub(/@type$/, '')
           funcall("#{name}=", false)
         else
-          raise "unknown #{long_name}@type: #{type}"
+          raise "unknown #{name}@type: #{type}"
         end
       end
     end
