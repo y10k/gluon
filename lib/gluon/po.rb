@@ -383,6 +383,27 @@ module Gluon
 
       elem << '</select>'
     end
+
+    def textarea(name, options={})
+      elem = mkelem_start('textarea', options)
+      if (options[:direct]) then
+        elem << ' name="' << ERB::Util.html_escape(name) << '"'
+      else
+        elem << ' name="' << ERB::Util.html_escape("#{prefix}#{name}") << '"'
+      end
+      elem << ' rows="' << ERB::Util.html_escape(options[:rows]) << '"' if (options.key? :rows)
+      elem << ' cols="' << ERB::Util.html_escape(options[:cols]) << '"' if (options.key? :cols)
+      for attr_key in [ :disabled, :readonly ]
+        if (options.key? attr_key) then
+          value = options[attr_key]
+          value = form_value(value) if (value.kind_of? Symbol)
+          elem << ' ' << attr_key.to_s << '="' << attr_key.to_s << '"' if value
+        end
+      end
+      elem << '>'
+      elem << ERB::Util.html_escape(form_value(name))
+      elem << '</textarea>'
+    end
   end
 
   class ERBContext
@@ -417,6 +438,7 @@ module Gluon
     def_delegator :@po, :checkbox
     def_delegator :@po, :radio
     def_delegator :@po, :select
+    def_delegator :@po, :textarea
   end
 end
 

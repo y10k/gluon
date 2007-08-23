@@ -1,0 +1,12 @@
+<h2>1. textarea</h2>
+
+<form>
+<div><%= hidden :example, :direct => true %></div> <!-- hack to dispatch example -->
+<p><label for="foo">foo:</label><br />
+   <%= textarea :foo, :id => 'foo' %>
+</p>
+<p><%= submit :ok, :value => 'OK' %></p>
+</form>
+
+<h2>2. result</h2>
+<pre><%= value :foo %></pre>

@@ -18,6 +18,7 @@ class Example
   autoload :Select,       'Example/Select'
   autoload :Submit,       'Example/Submit'
   autoload :Text,         'Example/Text'
+  autoload :Textarea,     'Example/Textarea'
   autoload :Value,        'Example/Value'
   autoload :ViewPanel,    'Example/ViewPanel'
 end
