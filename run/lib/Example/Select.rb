@@ -7,7 +7,7 @@ class Example
       @fruit_list = %w[ apple banana orange ]
       @planet_list = %w[ Mercury Venus Earth Mars Jupiter Saturn Uranus Neptune ]
       @foo = 'apple'
-      @bar = 'Earth'
+      @bar = %w[ Earth Jupiter ]
     end
 
     attr_reader :example	# hack to dispatch example
@@ -17,12 +17,7 @@ class Example
     attr_accessor :bar
 
     def bar_join
-      case (@bar)
-      when Array 
-        @bar.join(', ')
-      else
-        @bar
-      end
+      @bar.join(', ')
     end
 
     def ok

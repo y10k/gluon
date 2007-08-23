@@ -323,16 +323,18 @@ module Gluon
       mkinput('hidden', name, options.dup.update(:value => form_value(name)))
     end
 
+    def make_hidden(name, value)
+      %Q'<input type="hidden" name="#{ERB::Util.html_escape(name)}" value="#{ERB::Util.html_escape(value)}" />'
+    end
+    private :make_hidden
+
     def checkbox(name, options={})
       options = options.dup
       options[:value] = 'true' unless (options.key? :value)
       options[:checked] = form_value(name) ? true : false
       name = "#{prefix}#{name}" unless options[:direct]
       options[:direct] = true
-      elem = '<input type="hidden"'
-      elem << ' name="' << ERB::Util.html_escape("#{name}@type") << '"'
-      elem << ' value="bool" />'
-      elem << mkinput('checkbox', name, options)
+      make_hidden("#{name}@type", 'bool') << mkinput('checkbox', name, options)
     end
 
     def radio(name, value, options={})
@@ -343,12 +345,16 @@ module Gluon
     end
 
     def select(name, list, options={})
-      elem = mkelem_start('select', options)
-      if (options[:direct]) then
-        elem << ' name="' << ERB::Util.html_escape(name) << '"'
+      name2 = "#{prefix}#{name}" unless options[:direct]
+
+      if (options[:multiple]) then
+        elem = make_hidden("#{name2}@type", 'list')
       else
-        elem << ' name="' << ERB::Util.html_escape("#{prefix}#{name}") << '"'
+        elem = ''
       end
+
+      elem << mkelem_start('select', options)
+      elem << ' name="' << ERB::Util.html_escape(name2) << '"'
       elem << ' size="' << ERB::Util.html_escape(options[:size]) << '"' if (options.key? :size)
       elem << ' multiple="multiple"' if options[:multiple]
       if (options.key? :disabled) then
