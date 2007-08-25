@@ -32,8 +32,9 @@ module Gluon
       @req.env['gluon.path_info']
     end
 
-    def location(uri)
-      @res['Location'] = uri
+    def location(path)
+      path = '/' if path.empty?
+      @res['Location'] = path
       self
     end
 
