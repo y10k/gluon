@@ -35,6 +35,7 @@ module Gluon
     def location(path)
       path = '/' if path.empty?
       @res['Location'] = path
+      @res.status = 302
       self
     end
 
