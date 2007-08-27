@@ -134,7 +134,11 @@ module Gluon
       }
 
       for name in name_list
-        @page.__send__(name)
+        if (@page.respond_to? name) then
+          @page.__send__(name)
+        else
+          raise NameError, "undefined method: #{name}"
+        end
       end
     end
     private :call_actions
