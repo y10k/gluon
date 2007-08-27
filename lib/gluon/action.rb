@@ -134,7 +134,7 @@ module Gluon
       }
 
       for name in name_list
-        if (@page.respond_to? name) then
+        if (@page.respond_to? name) then # check public method.
           @page.__send__(name)
         else
           raise NameError, "undefined method: #{name}"
