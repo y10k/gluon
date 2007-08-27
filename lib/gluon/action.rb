@@ -5,15 +5,23 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
+    RESERVED_WORDS = {
+      'c' => true,
+      'c=' => true,
+      'page_hook' => true,
+      'page_start' => true,
+      'page_end' => true
+    }
+
     def initialize(page, rs_context, plugin, prefix='')
       @page = page
       @c = rs_context
-      @plugin = plugin
-      @prefix = prefix
-      @object_methods = {}
-      Object.instance_methods.each do |name|
-        @object_methods[name] = true
+      @plugin = plugin.dup
+      for name in @plugin.keys
+        @plugin["#{name}="] = true
       end
+      @prefix = prefix
+      @object = Object.new
     end
 
     def new(page, rs_context, parent_name=nil)
@@ -65,8 +73,10 @@ module Gluon
       param_alist.delete_if{|long_name, short_name, value|
         short_name.index(?.) ||
           short_name =~ /@type$/ ||
+          (RESERVED_WORDS.key? short_name) ||
           (@plugin.key? short_name) ||
-          (@plugin.key? short_name.to_sym)
+          (@plugin.key? short_name.to_sym) ||
+          (@object.respond_to? short_name)
       }
 
       for long_name, short_name, value in param_alist
@@ -115,7 +125,12 @@ module Gluon
       }
 
       name_list.delete_if{|name|
-        name.index(?.) || (@object_methods.key? name)
+        name.index(?.) ||
+          name =~ /@type$/ ||
+          (RESERVED_WORDS.key? name) ||
+          (@plugin.key? name) ||
+          (@plugin.key? name.to_sym) ||
+          (@object.respond_to? name)
       }
 
       for name in name_list
