@@ -127,7 +127,6 @@ module Gluon
 
       name_list.delete_if{|name|
         name.index(?.) ||
-          name =~ /@type$/ ||
           (RESERVED_WORDS.key? name) ||
           (@plugin.key? name) ||
           (@plugin.key? name.to_sym) ||
@@ -135,11 +134,16 @@ module Gluon
       }
 
       for name in name_list
-        if (@page.respond_to? name) then # check public method.
-          @page.__send__(name)
-        else
-          raise NameError, "undefined method: #{name}"
+        if (! (@page.respond_to? name) ||
+            (RESERVED_WORDS.key? name) ||
+            (@plugin.key? name) ||
+            (@plugin.key? name.to_sym) ||
+            (@object.respond_to? name))
+        then
+          raise NoMethodError, "undefined method: #{name}"
         end
+
+        @page.__send__(name)
       end
     end
     private :call_actions
