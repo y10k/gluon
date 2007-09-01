@@ -37,7 +37,7 @@ module Gluon
           FileUtils.install(File.join(RUN_DIR, 'config.rb'), @install_dir, :mode => 0644, :verbose => true)
         end
 
-        [ [ 'server', %w[ webrick ] ],
+        [ [ 'server', %w[ webrick mongrel ] ],
           [ 'cgi-bin', %w[ run.cgi ] ]
         ].each do |dir, targets|
           from_dir = File.join(RUN_DIR, dir)
