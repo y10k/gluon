@@ -111,7 +111,7 @@ module Gluon::Test
       params = {
 	'foo()' => nil,
 	'bar' => nil,
-	'foo.bar()' => nil
+	#'foo.bar()' => nil
       }
       @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
       build_page(PageWithActions)
@@ -246,6 +246,51 @@ module Gluon::Test
 	assert_equal('test of plugin', @page.foo, 'prior plugin')
       }
       assert_equal(1, count)
+    end
+  end
+
+  class ActionParameterScanner < Test::Unit::TestCase
+    class Foo
+      attr_accessor :foo
+      attr_accessor :bar
+    end
+
+    class Bar
+      attr_accessor :baz
+    end
+
+    def test_each
+      foo = Foo.new
+      bar = Bar.new
+      foo.bar = bar
+
+      params = [
+	[ 'foo', 'apple' ],
+	[ 'bar.baz', 'banana' ]
+      ]
+
+      param_scan = Gluon::Action::ParameterScanner.new('', foo, params)
+      assert_equal([ [ foo, 'foo', 'foo', 'apple', ],
+		     [ bar, 'bar.baz', 'baz', 'banana' ]
+		   ], param_scan.to_a)
+    end
+
+    def test_each_with_array
+      foo = Foo.new
+      bar = [ Bar.new, Bar.new, Bar.new ]
+      foo.bar = bar
+
+      params = [
+	[ 'bar[0].baz', 'apple' ],
+	[ 'bar[1].baz', 'banana' ],
+	[ 'bar[2].baz', 'orange' ]
+      ]
+
+      param_scan = Gluon::Action::ParameterScanner.new('', foo, params)
+      assert_equal([ [ bar[0], 'bar[0].baz', 'baz', 'apple', ],
+		     [ bar[1], 'bar[1].baz', 'baz', 'banana', ],
+		     [ bar[2], 'bar[2].baz', 'baz', 'orange', ]
+		   ], param_scan.to_a)
     end
   end
 end

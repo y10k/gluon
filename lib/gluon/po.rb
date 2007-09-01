@@ -125,8 +125,7 @@ module Gluon
       funcall(name).each_with_index do |child, i|
         @stack.push [ "#{name}[#{i}]", child ]
         begin
-          action = @action.new(child, @c, prefix)
-          action.apply{ yield(i) }
+          yield(i)
         ensure
           @stack.pop
         end
@@ -280,7 +279,8 @@ module Gluon
       if (@stack.empty?) then
         @page.__send__(name)
       else
-        @stack[-1].__send__(name)
+        prefix, child = @stack[01]
+        child.__send__(name)
       end
     end
     private :form_value
