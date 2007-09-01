@@ -1,3 +1,7 @@
+2007-09-02  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* run/server/mongrel: mongrel.
+
 2007-07-31  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/action.rb: (Gluon::Action class) strict call check for
