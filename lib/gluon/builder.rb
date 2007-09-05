@@ -149,7 +149,7 @@ module Gluon
           end while (page_type)
           res.finish
         else
-          [ 404, { "Content-Type" => "text/plain" }, [ "Not Found: #{req.path_info}" ] ]
+          [ 404, { "Content-Type" => "text/plain" }, [ "Not Found: #{req.env['REQUEST_URI']}" ] ]
         end
       }
 
