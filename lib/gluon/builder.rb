@@ -138,11 +138,15 @@ module Gluon
           req.env['gluon.curr_page'] = page_type
           req.env['gluon.path_info'] = gluon_path_info
           rs_context = RequestResponseContext.new(req, res, dispatcher)
-          page = page_type.new
-          action = Action.new(page, rs_context, @plugin)
-          po = PresentationObject.new(page, rs_context, renderer, action)
-          context = ERBContext.new(po, rs_context)
-          action.apply{ res.write(renderer.render(context)) }
+          begin
+            page = page_type.new
+            action = Action.new(page, rs_context, @plugin)
+            po = PresentationObject.new(page, rs_context, renderer, action)
+            context = ERBContext.new(po, rs_context)
+            page_type = RequestResponseContext.switch_from{
+              action.apply{ res.write(renderer.render(context)) }
+            }
+          end while (page_type)
           res.finish
         else
           [ 404, { "Content-Type" => "text/plain" }, [ "Not Found: #{req.path_info}" ] ]

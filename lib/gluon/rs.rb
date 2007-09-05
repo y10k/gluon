@@ -42,6 +42,19 @@ module Gluon
     def redirect_to(page)
       location(@req.script_name + @dispatcher.class2path(page))
     end
+
+    SWITCH_LABEL = :gluon_switch
+
+    def switch_to(page)
+      throw(SWITCH_LABEL, page)
+    end
+
+    def self.switch_from
+      catch(SWITCH_LABEL) {
+        yield
+        nil
+      }
+    end
   end
 end
 

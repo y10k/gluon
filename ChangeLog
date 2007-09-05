@@ -1,3 +1,8 @@
+2007-09-06  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/rs.rb: (Gluon::RequestResponseContext class) switch to
+	another page.
+
 2007-09-05  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/action.rb: abort on action-call by reserved word.
