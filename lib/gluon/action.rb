@@ -64,12 +64,13 @@ module Gluon
     class ParameterScanner
       include Enumerable
 
-      def initialize(prefix, page, params, reserved_words={}, base_obj=Object.new)
+      def initialize(prefix, page, params, reserved_words={}, base_obj=Object.new, abort_on_reserved=false)
         @prefix = prefix
         @page = page
         @params = params
         @reserved_words = reserved_words
         @base_obj = base_obj
+        @abort_on_reserved = abort_on_reserved
       end
 
       def each
@@ -77,12 +78,13 @@ module Gluon
           curr_obj = @page
           short_name_list = long_name[@prefix.length..-1].split(/\./)
           while (short_name = short_name_list.shift)
-            if ((@reserved_words.key? short_name) || (@reserved_words.key? "#{short_name}=")) then
-              break
-            end
-
-            if (short_name !~ /^to_/) then
-              if (@base_obj.respond_to? short_name) then
+            if ((@reserved_words.key? short_name) ||
+                (@reserved_words.key? "#{short_name}=") ||
+                ((short_name !~ /^to_/) && (@base_obj.respond_to? short_name)))
+            then
+              if (@abort_on_reserved) then
+                raise NoMethodError, "undefined method `#{short_name}' of `#{long_name}'"
+              else
                 break
               end
             end
@@ -109,8 +111,8 @@ module Gluon
       end
     end
 
-    def each_param(param_alist)
-      param_scan = ParameterScanner.new(@prefix, @page, param_alist, @reserved_words, @object)
+    def each_param(param_alist, abort_on_reserved=false)
+      param_scan = ParameterScanner.new(@prefix, @page, param_alist, @reserved_words, @object, abort_on_reserved)
       for curr_obj, long_name, short_name, value in param_scan
         yield(curr_obj, long_name, short_name, value)
       end
@@ -178,7 +180,7 @@ module Gluon
         [ name[0...-2], value ]
       }
 
-      each_param(param_alist) do |curr_obj, long_name, short_name, value|
+      each_param(param_alist, true) do |curr_obj, long_name, short_name, value|
         case (curr_obj)
         when Class, Module
           next                  # skip import
