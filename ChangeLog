@@ -3,6 +3,8 @@
 	* lib/gluon/po.rb: (Gluon::PresentationObject class) NOT operator
 	notation for cond.
 
+	* Source Code Management: cvs -> svn.
+
 2007-09-06  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/rs.rb: (Gluon::RequestResponseContext class) switch to
