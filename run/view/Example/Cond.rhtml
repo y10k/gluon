@@ -3,7 +3,7 @@
 <p>
   condition is
   <% cond :true_test do %>true.<% end %>
-  <% cond_not :true_test do %>false.<% end %>
+  <% cond NOT(:true_test) do %>false.<% end %>
 </p>
 
 <h2>2. false condition</h2>
@@ -11,7 +11,7 @@
 <p>
   condition is
   <% cond :false_test do %>true.<% end %>
-  <% cond_not :false_test do %>false.<% end %>
+  <% cond NOT(:false_test) do %>false.<% end %>
 </p>
 
 <h3>3. optional false condition</h3>

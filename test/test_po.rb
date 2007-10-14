@@ -117,6 +117,11 @@ module Gluon::Test
                    render_page('<% cond :bar, :not => true do %>HALO<% end %>'))
 
       assert_equal('',
+                   render_page('<% cond NOT(:foo) do %>HALO<% end %>'))
+      assert_equal('HALO',
+                   render_page('<% cond NOT(:bar) do %>HALO<% end %>'))
+
+      assert_equal('',
                    render_page('<% cond_not :foo do %>HALO<% end %>'))
       assert_equal('HALO',
                    render_page('<% cond_not :bar do %>HALO<% end %>'))

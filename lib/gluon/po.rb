@@ -100,8 +100,20 @@ module Gluon
       s
     end
 
+    class NegativeCondition
+      def initialize(operand)
+        @operand = operand
+      end
+
+      attr_reader :operand
+    end
+
     def cond(name, options={})
       getopts(options, :not => false)
+      if (name.kind_of? NegativeCondition) then
+        name = name.operand
+        options[:not] = true
+      end
       unless (options[:not]) then
         if (funcall(name)) then
           yield
@@ -416,6 +428,11 @@ module Gluon
     def initialize(po, rs_context)
       @po = po
       @c = rs_context
+    end
+
+    # for Gluon::PresentationObject#cond
+    def NOT(operand)
+      PresentationObject::NegativeCondition.new(operand)
     end
 
     attr_reader :po
