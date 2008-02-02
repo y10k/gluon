@@ -163,6 +163,14 @@ module Gluon::Test
       def page_with_query
         return AnotherPage, :query => { 'foo' => 'bar' }
       end
+
+      def page_with_fragment
+        return AnotherPage, :fragment => 'foo'
+      end
+
+      def page_with_query_and_fragment
+        return AnotherPage, :query => { 'foo' => 'bar' }, :fragment => 'foo'
+      end
     end
 
     class NotMountedPage
@@ -179,8 +187,12 @@ module Gluon::Test
                    render_page('<%= link "/Foo", :text => "foo", :id => "foo" %>'))
       assert_equal('<a href="/bar.cgi/Foo" target="_blank">foo</a>',
                    render_page('<%= link "/Foo", :text => "foo", :target => "_blank" %>'))
+      assert_equal('<a href="/bar.cgi/Foo#foo">foo</a>',
+                   render_page('<%= link "/Foo", :text => "foo", :fragment => "foo" %>'))
       assert_equal('<a href="/bar.cgi/Foo?foo=bar">foo</a>',
                    render_page('<%= link "/Foo", :query => { "foo" => "bar" }, :text => "foo" %>'))
+      assert_equal('<a href="/bar.cgi/Foo?foo=bar#foo">foo</a>',
+                   render_page('<%= link "/Foo", :query => { "foo" => "bar" }, :fragment => "foo", :text => "foo" %>'))
 
       assert_equal('<a href="/bar.cgi/Foo">/bar.cgi/Foo</a>',
                    render_page('<%= link :foo_path %>'))
@@ -190,8 +202,12 @@ module Gluon::Test
                    render_page('<%= link :foo_path, :text => :foo_text, :id => "foo" %>'))
       assert_equal('<a href="/bar.cgi/Foo" target="_blank">foo</a>',
                    render_page('<%= link :foo_path, :text => :foo_text, :target => "_blank" %>'))
+      assert_equal('<a href="/bar.cgi/Foo#foo">foo</a>',
+                   render_page('<%= link :foo_path, :text => :foo_text, :fragment => "foo" %>'))
       assert_equal('<a href="/bar.cgi/Foo?foo=bar">foo</a>',
                    render_page('<%= link :foo_path, :query => { "foo" => "bar" }, :text => "foo" %>'))
+      assert_equal('<a href="/bar.cgi/Foo?foo=bar#foo">foo</a>',
+                   render_page('<%= link :foo_path, :query => { "foo" => "bar" }, :fragment => "foo", :text => "foo"%>'))
 
       assert_equal('<a href="/bar.cgi/another_page">/bar.cgi/another_page</a>',
                    render_page("<%= link #{AnotherPage} %>"))
@@ -201,13 +217,21 @@ module Gluon::Test
                    render_page("<%= link #{AnotherPage}, :text => 'another page', :id => 'another_page' %>"))
       assert_equal('<a href="/bar.cgi/another_page" target="_blank">another page</a>',
                    render_page("<%= link #{AnotherPage}, :text => 'another page', :target => '_blank' %>"))
+      assert_equal('<a href="/bar.cgi/another_page#foo">another page</a>',
+                   render_page("<%= link #{AnotherPage}, :text => 'another page', :fragment => 'foo' %>"))
       assert_equal('<a href="/bar.cgi/another_page?foo=bar">another page</a>',
                    render_page("<%= link #{AnotherPage}, :query => { 'foo' => 'bar' }, :text => 'another page' %>"))
+      assert_equal('<a href="/bar.cgi/another_page?foo=bar#foo">another page</a>',
+                   render_page("<%= link #{AnotherPage}, :query => { 'foo' => 'bar' }, :fragment => 'foo', :text => 'another page' %>"))
 
       assert_equal('<a href="/bar.cgi/another_page?foo=bar">query</a>',
                    render_page('<%= link :page_with_query, :text => "query" %>'))
       assert_equal('<a href="/bar.cgi/another_page?foo=baz">query</a>',
                    render_page('<%= link :page_with_query, :query => { "foo" => "baz" }, :text => "query" %>'))
+      assert_equal('<a href="/bar.cgi/another_page#foo">fragment</a>',
+                   render_page('<%= link :page_with_fragment, :text => "fragment" %>'))
+      assert_equal('<a href="/bar.cgi/another_page?foo=bar#foo">query and fragment</a>',
+                   render_page('<%= link :page_with_query_and_fragment, :text => "query and fragment" %>'))
     end
 
     def test_link_error
