@@ -9,6 +9,6 @@
 <% cond :no_action? do %>
   <p><em>no action.</em></p>
 <% end %>
-<% cond_not :no_action? do %>
+<% cond neg(:no_action?) do %>
   <p><%= value :results %></p>
 <% end %>

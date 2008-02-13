@@ -1,10 +1,10 @@
 <p>
   <% cond :example? do %><em>example</em><% end %>
-  <% cond_not :example? do %><%= link :example, :text => 'example' %><% end %>
+  <% cond neg(:example?) do %><%= link :example, :text => 'example' %><% end %>
 
   <% cond :code? do %><em>code</em><% end %>
-  <% cond_not :code? do %><%= link :code, :text => 'code' %><% end %>
+  <% cond neg(:code?) do %><%= link :code, :text => 'code' %><% end %>
 
   <% cond :view? do %><em>view</em><% end %>
-  <% cond_not :view? do %><%= link :view, :text => 'view' %><% end %>
+  <% cond neg(:view?) do %><%= link :view, :text => 'view' %><% end %>
 </p>

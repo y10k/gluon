@@ -109,12 +109,12 @@ module Gluon
     end
 
     def cond(name, options={})
-      getopts(options, :not => false)
+      getopts(options, :negate => false)
       if (name.kind_of? NegativeCondition) then
         name = name.operand
-        options[:not] = true
+        options[:negate] = true
       end
-      unless (options[:not]) then
+      unless (options[:negate]) then
         if (funcall(name)) then
           yield
         end
@@ -124,13 +124,6 @@ module Gluon
         end
       end
       nil
-    end
-
-    def cond_not(name, options={})
-      options[:not] = true
-      cond(name, options) {
-        yield
-      }
     end
 
     def foreach(name=:to_a, options={})
@@ -444,16 +437,17 @@ module Gluon
     end
 
     # for Gluon::PresentationObject#cond
-    def NOT(operand)
+    def neg(operand)
       PresentationObject::NegativeCondition.new(operand)
     end
+
+    alias NOT neg
 
     attr_reader :po
     def_delegator :@c, :req
     def_delegator :@c, :res
     def_delegator :@po, :value
     def_delegator :@po, :cond
-    def_delegator :@po, :cond_not
     def_delegator :@po, :foreach
     def_delegator :@po, :link
     def_delegator :@po, :link_uri

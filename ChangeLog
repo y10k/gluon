@@ -1,5 +1,7 @@
 2008-02-14  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/po.rb: (Gluon::PresentationObject class) negate option of cond.
+
 	* lib/gluon/po.rb: (Gluon::PresentationObject class) import with page object.
 
 2008-02-03  TOKI Yoshinori  <toki@freedom.ne.jp>
