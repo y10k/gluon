@@ -269,8 +269,6 @@ module Gluon
     end
 
     def import(name, options={})
-      curr_prefix = name.to_s
-
       case (name)
       when Symbol
         value = funcall(name)
@@ -285,7 +283,14 @@ module Gluon
         page = value
       end
 
+      case (name)
+      when Symbol
+        curr_prefix = name.to_s
+      else
+        curr_prefix = page.class.to_s
+      end
       prefix = prefix() + curr_prefix + '.'
+
       action = @action.new(page, @c, prefix)
       po = PresentationObject.new(page, @c, @renderer, action, prefix)
       context = ERBContext.new(po, @c)
