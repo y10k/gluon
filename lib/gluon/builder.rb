@@ -142,9 +142,9 @@ module Gluon
             page = page_type.new
             action = Action.new(page, rs_context, @plugin)
             po = PresentationObject.new(page, rs_context, renderer, action)
-            context = ERBContext.new(po, rs_context)
+            erb_context = ERBContext.new(po, rs_context)
             page_type = RequestResponseContext.switch_from{
-              action.apply{ res.write(renderer.render(context)) }
+              action.apply{ res.write(renderer.render(erb_context)) }
             }
           end while (page_type)
           res.finish

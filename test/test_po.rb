@@ -36,12 +36,12 @@ module Gluon::Test
       @page = page_type.new
       @action = Gluon::Action.new(@page, @c, @plugin)
       @po = Gluon::PresentationObject.new(@page, @c, @renderer, @action)
-      @context = Gluon::ERBContext.new(@po, @c)
+      @erb_context = Gluon::ERBContext.new(@po, @c)
     end
     private :build_page
 
     def render_page(eruby_script)
-      Gluon::ViewRenderer.render(@context, eruby_script, '(erb)')
+      Gluon::ViewRenderer.render(@erb_context, eruby_script, '(erb)')
     end
     private :render_page
 

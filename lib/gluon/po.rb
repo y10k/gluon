@@ -286,10 +286,10 @@ module Gluon
 
       action = @action.new(page, @c, prefix)
       po = PresentationObject.new(page, @c, @renderer, action, prefix)
-      context = ERBContext.new(po, @c)
+      erb_context = ERBContext.new(po, @c)
 
       result = nil
-      action.apply{ result = @renderer.render(context) }
+      action.apply{ result = @renderer.render(erb_context) }
       result
     end
 

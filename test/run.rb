@@ -3,8 +3,8 @@
 # for ident(1)
 CVS_ID = '$Id$'
 
-$: << File.join(File.dirname($0))
-$: << File.join(File.dirname($0), '..', 'lib')
+$:.unshift File.join(File.dirname($0))
+$:.unshift File.join(File.dirname($0), '..', 'lib')
 
 mask = //                       # any match
 if ($0 == __FILE__) then
