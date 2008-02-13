@@ -419,30 +419,44 @@ module Gluon::Test
     end
 
     class PageForImport
-      def another_page
+      def another_page_class
         AnotherPage
+      end
+
+      def another_page_instance
+        AnotherPage.new
+      end
+
+      def another_page_foo
+        AnotherPage.new('foo')
       end
     end
 
     class AnotherPage
-      def __view__
-        'AnotherPage.rhtml'
+      def initialize(message='Hello world.')
+        @message = message
       end
 
-      def hello
-        'Hello world.'
+      attr_reader :message
+
+      def __view__
+        'AnotherPage.rhtml'
       end
     end
 
     def test_import
       File.open(File.join(@view_dir, 'AnotherPage.rhtml'), 'w') {|out|
         out.binmode
-        out << '<%= value :hello %>'
+        out << '<%= value :message %>'
       }
       build_page(PageForImport)
 
+      assert_equal('[Hello world.]', render_page('[<%= import :another_page_class %>]'))
+      assert_equal('[Hello world.]', render_page('[<%= import :another_page_instance %>]'))
+      assert_equal('[foo]', render_page('[<%= import :another_page_foo %>]'))
       assert_equal('[Hello world.]', render_page("[<%= import #{AnotherPage} %>]"))
-      assert_equal('[Hello world.]', render_page('[<%= import :another_page %>]'))
+      assert_equal('[Hello world.]', render_page("[<%= import #{AnotherPage}.new %>]"))
+      assert_equal('[foo]', render_page("[<%= import #{AnotherPage}.new('foo') %>]"))
     end
 
     class PageWithText

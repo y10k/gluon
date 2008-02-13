@@ -270,12 +270,22 @@ module Gluon
 
     def import(name, options={})
       curr_prefix = name.to_s
-      name = funcall(name) if (name.kind_of? Symbol)
-      unless (name.kind_of? Class) then
-        raise "unknown import name type: #{name.class}"
+
+      case (name)
+      when Symbol
+        value = funcall(name)
+      else
+        value = name
       end
+
+      case (value)
+      when Class
+        page = value.new
+      else
+        page = value
+      end
+
       prefix = prefix() + curr_prefix + '.'
-      page = name.new
       action = @action.new(page, @c, prefix)
       po = PresentationObject.new(page, @c, @renderer, action, prefix)
       context = ERBContext.new(po, @c)

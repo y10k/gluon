@@ -1,6 +1,10 @@
+2008-02-14  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/po.rb: (Gluon::PresentationObject class) import with page object.
+
 2008-02-03  TOKI Yoshinori  <toki@freedom.ne.jp>
 
-	* lib/gluon/po.rb: URI fragment.
+	* lib/gluon/po.rb: (Gluon::PresentationObject class) URI fragment.
 
 2007-10-14  TOKI Yoshinori  <toki@freedom.ne.jp>
 
