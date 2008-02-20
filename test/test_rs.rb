@@ -143,6 +143,26 @@ module Gluon::Test
       }
       assert_match(%r"session_id=\S+; domain=www.foo.net; path=/", @res['Set-Cookie'])
     end
+
+    def test_auto_expire
+      life_time = 0.01
+      @man = Gluon::SessionManager.new(:store => @store, :life_time => life_time)
+      assert_equal(true, @man.auto_expire?)
+      assert_equal(life_time, @man.life_time)
+
+      @man.transaction(@req, @res) {|handler|
+        handler.new_session(true, :key => 'foo')
+      }
+      /foo=(\S*)/ =~ @res['Set-Cookie'] && id = $1 or flunk('not found a session id')
+
+      sleep(life_time * 1.5)
+
+      @man.transaction(@req, @res) {|handler|
+        handler.new_session(true, :key => 'bar')
+      }
+
+      assert_nil(@store.load(id))
+    end
   end
 
   class RequestResponseContextTest < Test::Unit::TestCase
