@@ -28,12 +28,12 @@ module Gluon
       @base_dir = options[:base_dir]
       @view_dir = options[:view_dir]
       @conf_path = options[:conf_path]
-      @plugin = {}
-      @finalizer = proc{}
-      @access_log = nil
+      @session_conf = SessionConfig.new
+      @access_log = File.join(@base_dir, 'access.log')
       @port = 9202
       @url_map = []
-      @session_conf = SessionConfig.new
+      @plugin = {}
+      @finalizer = proc{}
     end
 
     attr_reader :base_dir
@@ -41,19 +41,16 @@ module Gluon
     attr_reader :conf_path
     attr_reader :session_conf
 
-    def access_log(path)
-      @access_log = path
-      nil
-    end
-
-    def port(num)
-      @port = num
-      nil
-    end
+    attr_accessor :access_log
+    attr_accessor :port
 
     def mount(page_type, path)
       @url_map << [ path, page_type ]
       nil
+    end
+
+    def find(path)
+      (entry = @url_map.assoc(path)) && entry[1]
     end
 
     def plugin_get(name)
@@ -70,9 +67,14 @@ module Gluon
         name = args.to_sym
         @plugin[name] = yield
       else
-        for name, value in args
-          name = name.to_sym
-          @plugin[name] = value
+        case (args)
+        when Hash
+          for name, value in args
+            name = name.to_sym
+            @plugin[name] = value
+          end
+        else
+          raise "unknown arguments: #{args.inspect}"
         end
       end
       nil
@@ -145,11 +147,12 @@ module Gluon
     end
 
     class TopLevelContext < Context
-      def_delegator :@builder, :access_log
-      def_delegator :@builder, :port
+      def_delegator :@builder, :access_log=, :access_log
+      def_delegator :@builder, :port=, :port
       def_delegator :@builder, :mount
       def_delegator :@builder, :initial
       def_delegator :@builder, :final
+      def_delegator :@builder, :session
     end
 
     class InitialContext < Context
@@ -176,10 +179,14 @@ module Gluon
     end
     private :context_binding
 
-    def load_conf
-      script = IO.read(@conf_path)
+    def eval_conf(expr, *options)
       context = TopLevelContext.new(self)
-      eval(script, context_binding(context), @conf_path)
+      eval(expr, context_binding(context), *options)
+      nil
+    end
+
+    def load_conf
+      eval_conf(IO.read(@conf_path), @conf_path)
       nil
     end
 
