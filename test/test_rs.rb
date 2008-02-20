@@ -146,17 +146,17 @@ module Gluon::Test
     end
 
     def test_auto_expire
-      life_time = 0.01
-      @man = Gluon::SessionManager.new(:store => @store, :life_time => life_time)
+      time_to_live = 0.01
+      @man = Gluon::SessionManager.new(:store => @store, :time_to_live => time_to_live)
       assert_equal(true, @man.auto_expire?)
-      assert_equal(life_time, @man.life_time)
+      assert_equal(time_to_live, @man.time_to_live)
 
       @man.transaction(@req, @res) {|handler|
         handler.new_session(true, :key => 'foo')
       }
       /foo=(\S*)/ =~ @res['Set-Cookie'] && id = $1 or flunk('not found a session id')
 
-      sleep(life_time * 1.5)
+      sleep(time_to_live * 1.5)
 
       @man.transaction(@req, @res) {|handler|
         handler.new_session(true, :key => 'bar')
@@ -170,7 +170,7 @@ module Gluon::Test
                                        :default_domain => 'www.foo.net',
                                        :default_path => '/foo',
                                        :id_max_length => 100,
-                                       :life_time => 60 * 30,
+                                       :time_to_live => 60 * 30,
                                        :auto_expire => false,
                                        :digest => Digest::SHA512,
                                        :store => @store)
@@ -179,7 +179,7 @@ module Gluon::Test
       assert_equal('www.foo.net', @man.default_domain)
       assert_equal('/foo', @man.default_path)
       assert_equal(100, @man.id_max_length)
-      assert_equal(60 * 30, @man.life_time)
+      assert_equal(60 * 30, @man.time_to_live)
       assert_equal(false, @man.auto_expire?)
 
       @man.transaction(@req, @res) {|handler|

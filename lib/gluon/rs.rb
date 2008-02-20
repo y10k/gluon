@@ -79,7 +79,7 @@ module Gluon
       @default_domain = options[:default_domain]
       @default_path = options[:default_path]
       @id_max_length = options[:id_max_length] || 32
-      @life_time = options[:life_time] || 60 * 60
+      @time_to_live = options[:time_to_live] || 60 * 60
       @auto_expire = (options.key? :auto_expire) ? options[:auto_expire] : true
       @digest = options[:digest] || Digest::MD5
       @store = options[:store] || MemoryStore.new
@@ -89,7 +89,7 @@ module Gluon
     attr_reader :default_domain
     attr_reader :default_path
     attr_reader :id_max_length
-    attr_reader :life_time
+    attr_reader :time_to_live
 
     def auto_expire?
       @auto_expire
@@ -129,7 +129,7 @@ module Gluon
     end
 
     def expire(now=Time.now)
-      @store.expire(now - @life_time)
+      @store.expire(now - @time_to_live)
       nil
     end
 

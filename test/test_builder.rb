@@ -108,13 +108,13 @@ module Gluon::Test
                    @builder.session_conf.options)
     end
 
-    def test_config_session_life_time
+    def test_config_session_time_to_live
       @builder.eval_conf %q{
         session do
-          life_time 60 * 5
+          time_to_live 60 * 5
         end
       }
-      assert_equal({ :life_time => 60 * 5 },
+      assert_equal({ :time_to_live => 60 * 5 },
                    @builder.session_conf.options)
     end
 

@@ -103,8 +103,8 @@ module Gluon
         @options[:id_max_length] = value
       end
 
-      def life_time(value)
-        @options[:life_time] = value
+      def time_to_live(value)
+        @options[:time_to_live] = value
       end
 
       def auto_expire(value)
@@ -168,7 +168,7 @@ module Gluon
       def_delegator '@builder.session_conf', :default_domain
       def_delegator '@builder.session_conf', :default_path
       def_delegator '@builder.session_conf', :id_max_length
-      def_delegator '@builder.session_conf', :life_time
+      def_delegator '@builder.session_conf', :time_to_live
       def_delegator '@builder.session_conf', :auto_expire
       def_delegator '@builder.session_conf', :digest
       def_delegator '@builder.session_conf', :store
