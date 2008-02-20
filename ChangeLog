@@ -1,3 +1,7 @@
+2008-02-20  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/rs.rb: session manager.
+
 2008-02-14  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/po.rb: (Gluon::PresentationObject class) negate option of cond.
