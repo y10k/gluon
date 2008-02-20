@@ -200,11 +200,10 @@ module Gluon
 
     extend Forwardable
 
-    #def initialize(req, res, session, dispatcher)
-    def initialize(req, res, dispatcher)
+    def initialize(req, res, session, dispatcher)
       @req = req
       @res = res
-      #@session = session
+      @session = session
       @dispatcher = dispatcher
     end
 

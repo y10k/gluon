@@ -23,8 +23,9 @@ module Gluon::Test
       @env['PATH_INFO'] = ''
       @req = Rack::Request.new(@env)
       @res = Rack::Response.new
+      @session = Object.new     # dummy
       @dispatcher = Gluon::Dispatcher.new([ [ '/another_page', AnotherPage ] ])
-      @c = Gluon::RequestResponseContext.new(@req, @res, @dispatcher)
+      @c = Gluon::RequestResponseContext.new(@req, @res, @session, @dispatcher)
       @plugin = {}
     end
 

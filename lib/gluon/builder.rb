@@ -33,11 +33,13 @@ module Gluon
       @access_log = nil
       @port = 9202
       @url_map = []
+      @session_conf = SessionConfig.new
     end
 
     attr_reader :base_dir
     attr_reader :view_dir
     attr_reader :conf_path
+    attr_reader :session_conf
 
     def access_log(path)
       @access_log = path
@@ -76,6 +78,46 @@ module Gluon
       nil
     end
 
+    class SessionConfig
+      def initialize
+        @options = {}
+      end
+
+      attr_reader :options
+
+      def default_key(value)
+        @options[:default_key] = value
+      end
+
+      def default_domain(value)
+        @options[:default_domain] = value
+      end
+
+      def default_path(value)
+        @options[:default_path] = value
+      end
+
+      def id_max_length(value)
+        @options[:id_max_length] = value
+      end
+
+      def life_time(value)
+        @options[:life_time] = value
+      end
+
+      def auto_expire(value)
+        @options[:auto_expire] = value
+      end
+
+      def digest(value)
+        @options[:digest] = value
+      end
+
+      def store(value)
+        @options[:store] = value
+      end
+    end
+
     def initial(&block)
       InitialContext.new(self).instance_eval(&block)
       nil
@@ -84,6 +126,10 @@ module Gluon
     def final(&block)
       @finalizer = block
       nil
+    end
+
+    def session(&block)
+      SessionContext.new(self).instance_eval(&block)
     end
 
     class Context
@@ -114,6 +160,17 @@ module Gluon
       def_delegator :@builder, :plugin_get, :plugin
     end
 
+    class SessionContext < Context
+      def_delegator '@builder.session_conf', :default_key
+      def_delegator '@builder.session_conf', :default_domain
+      def_delegator '@builder.session_conf', :default_path
+      def_delegator '@builder.session_conf', :id_max_length
+      def_delegator '@builder.session_conf', :life_time
+      def_delegator '@builder.session_conf', :auto_expire
+      def_delegator '@builder.session_conf', :digest
+      def_delegator '@builder.session_conf', :store
+    end
+
     def context_binding(_)
       _.instance_eval{ binding }
     end
@@ -129,24 +186,27 @@ module Gluon
     def build
       dispatcher = Dispatcher.new(@url_map)
       renderer = ViewRenderer.new(@view_dir)
+      session_man = SessionManager.new(@session_conf.options)
       app = proc{|env|
         req = Rack::Request.new(env)
         res = Rack::Response.new
         page_type, gluon_path_info = dispatcher.look_up(req.path_info)
         if (page_type) then
-          req.env['gluon.version'] = VERSION
-          req.env['gluon.curr_page'] = page_type
-          req.env['gluon.path_info'] = gluon_path_info
-          rs_context = RequestResponseContext.new(req, res, dispatcher)
-          begin
-            page = page_type.new
-            action = Action.new(page, rs_context, @plugin)
-            po = PresentationObject.new(page, rs_context, renderer, action)
-            erb_context = ERBContext.new(po, rs_context)
-            page_type = RequestResponseContext.switch_from{
-              action.apply{ res.write(renderer.render(erb_context)) }
-            }
-          end while (page_type)
+          session_man.transaction(req, res) {|session|
+            req.env['gluon.version'] = VERSION
+            req.env['gluon.curr_page'] = page_type
+            req.env['gluon.path_info'] = gluon_path_info
+            rs_context = RequestResponseContext.new(req, res, session, dispatcher)
+            begin
+              page = page_type.new
+              action = Action.new(page, rs_context, @plugin)
+              po = PresentationObject.new(page, rs_context, renderer, action)
+              erb_context = ERBContext.new(po, rs_context)
+              page_type = RequestResponseContext.switch_from{
+                action.apply{ res.write(renderer.render(erb_context)) }
+              }
+            end while (page_type)
+          }
           res.finish
         else
           [ 404, { "Content-Type" => "text/plain" }, [ "404 Not Found: #{req.env['REQUEST_URI']}" ] ]

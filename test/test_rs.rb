@@ -212,8 +212,9 @@ module Gluon::Test
                                        'SCRIPT_NAME' => '/bar.cgi')
       @req = Rack::Request.new(@env)
       @res = Rack::Response.new
+      @session = Object.new     # dummy
       @dispatcher = Gluon::Dispatcher.new([ [ '/foo', Foo ] ])
-      @c = Gluon::RequestResponseContext.new(@req, @res, @dispatcher)
+      @c = Gluon::RequestResponseContext.new(@req, @res, @session, @dispatcher)
     end
 
     def test_req_res
