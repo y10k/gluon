@@ -184,26 +184,27 @@ module Gluon
     end
 
     def build
-      dispatcher = Dispatcher.new(@url_map)
-      renderer = ViewRenderer.new(@view_dir)
-      session_man = SessionManager.new(@session_conf.options)
-      app = proc{|env|
+      @dispatcher = Dispatcher.new(@url_map)
+      @renderer = ViewRenderer.new(@view_dir)
+      @session_man = SessionManager.new(@session_conf.options)
+
+      @app = proc{|env|
         req = Rack::Request.new(env)
         res = Rack::Response.new
-        page_type, gluon_path_info = dispatcher.look_up(req.path_info)
+        page_type, gluon_path_info = @dispatcher.look_up(req.path_info)
         if (page_type) then
-          session_man.transaction(req, res) {|session|
+          @session_man.transaction(req, res) {|session|
             req.env['gluon.version'] = VERSION
             req.env['gluon.curr_page'] = page_type
             req.env['gluon.path_info'] = gluon_path_info
-            rs_context = RequestResponseContext.new(req, res, session, dispatcher)
+            rs_context = RequestResponseContext.new(req, res, session, @dispatcher)
             begin
               page = page_type.new
               action = Action.new(page, rs_context, @plugin)
-              po = PresentationObject.new(page, rs_context, renderer, action)
+              po = PresentationObject.new(page, rs_context, @renderer, action)
               erb_context = ERBContext.new(po, rs_context)
               page_type = RequestResponseContext.switch_from{
-                action.apply{ res.write(renderer.render(erb_context)) }
+                action.apply{ res.write(@renderer.render(erb_context)) }
               }
             end while (page_type)
           }
@@ -213,23 +214,25 @@ module Gluon
         end
       }
 
-      app = Rack::ShowExceptions.new(app)
+      @app = Rack::ShowExceptions.new(@app)
       if (@access_log) then
-        logger = File.open(@access_log, 'a')
-        logger.binmode
-        logger.sync = true
-        app = Rack::CommonLogger.new(app, logger)
+        @logger = File.open(@access_log, 'a')
+        @logger.binmode
+        @logger.sync = true
+        @app = Rack::CommonLogger.new(@app, @logger)
       else
-        app = Rack::CommonLogger.new(app)
+        @app = Rack::CommonLogger.new(@app)
       end
 
-      { :application => app, :port => @port }
+      { :port => @port }
     end
 
-    def run(handler, app, *opts)
+    def run(handler, *opts)
       begin
-        handler.run(app, *opts)
+        handler.run(@app, *opts)
       ensure
+        @logger.close if @logger
+        @session_man.shutdown
         FinalContext.new(self).instance_eval(&@finalizer)
       end
       nil

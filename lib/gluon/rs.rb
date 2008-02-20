@@ -57,6 +57,14 @@ module Gluon
       }
       nil
     end
+
+    def close
+      @lock.synchronize{
+        @store.clear
+        @store.freeze
+      }
+      nil
+    end
   end
 
   class SessionNotFoundError < StandardError
@@ -134,6 +142,11 @@ module Gluon
         expire if @auto_expire
       end
       r
+    end
+
+    def shutdown
+      @store.close
+      nil
     end
   end
 
