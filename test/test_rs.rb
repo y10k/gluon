@@ -1,5 +1,6 @@
 #!/usr/local/bin/ruby
 
+require 'digest'
 require 'gluon'
 require 'rack'
 require 'test/unit'
@@ -162,6 +163,37 @@ module Gluon::Test
       }
 
       assert_nil(@store.load(id))
+    end
+
+    def test_default_settings
+      @man = Gluon::SessionManager.new(:default_key => 'foo',
+                                       :default_domain => 'www.foo.net',
+                                       :default_path => '/foo',
+                                       :id_max_length => 100,
+                                       :life_time => 60 * 30,
+                                       :auto_expire => false,
+                                       :digest => Digest::SHA512,
+                                       :store => @store)
+
+      assert_equal('foo', @man.default_key)
+      assert_equal('www.foo.net', @man.default_domain)
+      assert_equal('/foo', @man.default_path)
+      assert_equal(100, @man.id_max_length)
+      assert_equal(60 * 30, @man.life_time)
+      assert_equal(false, @man.auto_expire?)
+
+      @man.transaction(@req, @res) {|handler|
+        session = handler.new_session
+        session['foo'] = "Hello world.\n"
+      }
+
+      assert_match(/foo=\S*;/, @res['Set-Cookie'])
+      assert_match(/; domain=www\.foo\.net/, @res['Set-Cookie'])
+      assert_match(%r"; path=/foo", @res['Set-Cookie'])
+
+      /foo=(\S*);/ =~ @res['Set-Cookie'] && id = $1 or flunk('not found a session id')
+      assert_equal(100, id.length, "id: #{id}")
+      assert_equal({ 'foo' => "Hello world.\n" }, Marshal.load(@store.load(id)))
     end
   end
 
