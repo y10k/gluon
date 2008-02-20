@@ -172,10 +172,10 @@ module Gluon
     def new_session(create=true, options={})
       options = @default_options.dup.update(options)
       key = options.delete(:key) || @man.default_key
-      if (id = @req.cookies[key]) then
-        # nothing to do.
+      if (@req.cookies.key? key) then
+        id, *others = @req.cookies[key]
       elsif (@sessions.key? key) then
-        id = @sessions[key][0]
+        id, *others = @sessions[key]
       else
         unless (create) then
           raise SessionNotFoundError, "not found a session: #{key}"
@@ -188,7 +188,7 @@ module Gluon
     end
 
     def delete(key=@man.default_key)
-      id, session = @sessions.delete(key)
+      id, *others = @sessions.delete(key)
       @man.delete(id) if id
       nil
     end
