@@ -68,6 +68,8 @@ module Gluon
 
     def initialize(options={})
       @default_key = options[:default_key] || 'session_id'
+      @default_domain = options[:default_domain]
+      @default_path = options[:default_path]
       @id_max_length = options[:id_max_length] || 32
       @life_time = options[:life_time] || 60 * 60
       @auto_expire = (options.key? :auto_expire) ? options[:auto_expire] : true
@@ -76,6 +78,8 @@ module Gluon
     end
 
     attr_reader :default_key
+    attr_reader :default_domain
+    attr_reader :default_path
     attr_reader :id_max_length
     attr_reader :life_time
 
@@ -144,12 +148,17 @@ module Gluon
       @req = req
       @res = res
       @sessions = {}
+      @default_options = {}
+      @default_options[:domain] = @man.default_domain if @man.default_domain
+      @default_options[:path] = @man.default_path if @man.default_path
+      @default_options.freeze
     end
 
     def_delegator :@man, :default_key
 
     def new_session(create=true, options={})
-      key = options[:key] || @man.default_key
+      options = @default_options.dup.update(options)
+      key = options.delete(:key) || @man.default_key
       if (id = @req.cookies[key]) then
         # nothing to do.
       elsif (@sessions.key? key) then
@@ -177,7 +186,8 @@ module Gluon
         if (options.empty?) then
           @res.set_cookie(key, id)
         else
-          @res.set_cookie(key, options.dup.update(:value => id))
+          options[:value] = id
+          @res.set_cookie(key, options)
         end
       end
       nil
@@ -204,6 +214,8 @@ module Gluon
     def_delegator :@session, :new_session
     def_delegator :@session, :delete, :delete_session
     def_delegator :@session, :default_key, :default_session_key
+    def_delegator :@session, :default_domain, :default_session_domain
+    def_delegator :@session, :default_path, :default_session_path
 
     def_delegator :@dispatcher, :look_up
     def_delegator :@dispatcher, :class2path
