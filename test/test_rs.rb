@@ -68,7 +68,7 @@ module Gluon::Test
 
     def test_new_session
       @man.transaction(@req, @res) {|handler|
-        session = handler.new_session
+        session = handler.get
         assert_equal({}, session)
         session['foo'] = "Hello world.\n"
       }
@@ -79,8 +79,8 @@ module Gluon::Test
 
     def test_new_session2
       @man.transaction(@req, @res) {|handler|
-        handler.new_session(true, :key => 'foo')
-        handler.new_session(true, :key => 'bar')
+        handler.get(true, :key => 'foo')
+        handler.get(true, :key => 'bar')
       }
 
       foo_cookie = @res['Set-Cookie'].find{|c| c =~ /foo/ } or flunk('not found a session key')
@@ -95,14 +95,14 @@ module Gluon::Test
     def test_session_rollback
       # create a cookie for session
       @man.transaction(@req, @res) {|handler|
-        handler.new_session
+        handler.get
       }
       assert_match(/session_id=\S*/, @res['Set-Cookie'])
       /session_id=(\S*)/ =~ @res['Set-Cookie'] && id = $1 or flunk('not found a session id')
 
       begin
         @man.transaction(@req, @res) {|handler|
-          session = handler.new_session
+          session = handler.get
           session['foo'] = "Hello world.\n"
           raise RuntimeError
         }
@@ -116,7 +116,7 @@ module Gluon::Test
 
     def test_session_continue
       @man.transaction(@req, @res) {|handler|
-        session = handler.new_session
+        session = handler.get
         session['foo'] = "Hello world.\n"
       }
 
@@ -125,7 +125,7 @@ module Gluon::Test
       res2 = Rack::Response.new
 
       @man.transaction(req2, res2) {|handler|
-        session = handler.new_session
+        session = handler.get
         assert_equal({ 'foo' => "Hello world.\n" }, session)
       }
     end
@@ -133,14 +133,14 @@ module Gluon::Test
     def test_session_not_found
       @man.transaction(@req, @res) {|handler|
         assert_raise(Gluon::SessionNotFoundError) {
-          handler.new_session(false)
+          handler.get(false)
         }
       }
     end
 
     def test_session_with_options
       @man.transaction(@req, @res) {|handler|
-        handler.new_session(true, :domain => 'www.foo.net', :path => '/')
+        handler.get(true, :domain => 'www.foo.net', :path => '/')
       }
       assert_match(%r"session_id=\S+; domain=www.foo.net; path=/", @res['Set-Cookie'])
     end
@@ -152,14 +152,14 @@ module Gluon::Test
       assert_equal(time_to_live, @man.time_to_live)
 
       @man.transaction(@req, @res) {|handler|
-        handler.new_session(true, :key => 'foo')
+        handler.get(true, :key => 'foo')
       }
       /foo=(\S*)/ =~ @res['Set-Cookie'] && id = $1 or flunk('not found a session id')
 
       sleep(time_to_live * 1.5)
 
       @man.transaction(@req, @res) {|handler|
-        handler.new_session(true, :key => 'bar')
+        handler.get(true, :key => 'bar')
       }
 
       assert_nil(@store.load(id))
@@ -183,7 +183,7 @@ module Gluon::Test
       assert_equal(false, @man.auto_expire?)
 
       @man.transaction(@req, @res) {|handler|
-        session = handler.new_session
+        session = handler.get
         session['foo'] = "Hello world.\n"
       }
 

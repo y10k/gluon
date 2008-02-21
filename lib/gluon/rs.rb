@@ -169,7 +169,7 @@ module Gluon
 
     def_delegator :@man, :default_key
 
-    def new_session(create=true, options={})
+    def get(create=true, options={})
       options = @default_options.dup.update(options)
       key = options.delete(:key) || @man.default_key
       if (@req.cookies.key? key) then
@@ -223,11 +223,11 @@ module Gluon
     attr_reader :req
     attr_reader :res
 
-    def_delegator :@session, :new_session
-    def_delegator :@session, :delete, :delete_session
-    def_delegator :@session, :default_key, :default_session_key
-    def_delegator :@session, :default_domain, :default_session_domain
-    def_delegator :@session, :default_path, :default_session_path
+    def_delegator :@session, :get, :session_get
+    def_delegator :@session, :delete, :session_delete
+    def_delegator :@session, :default_key, :session_default_key
+    def_delegator :@session, :default_domain, :session_default_domain
+    def_delegator :@session, :default_path, :session_default_path
 
     def_delegator :@dispatcher, :look_up
     def_delegator :@dispatcher, :class2path
