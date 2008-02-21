@@ -67,9 +67,6 @@ module Gluon
     end
   end
 
-  class SessionNotFoundError < StandardError
-  end
-
   class SessionManager
     # for ident(1)
     CVS_ID = '$Id$'
@@ -176,11 +173,10 @@ module Gluon
         id, *others = @req.cookies[key]
       elsif (@sessions.key? key) then
         id, *others = @sessions[key]
-      else
-        unless (create) then
-          raise SessionNotFoundError, "not found a session: #{key}"
-        end
+      elsif (create) then
         id = @man.new_id
+      else
+        return
       end
       session = @man.load(id) || {}
       @sessions[key] = [ id, session, options ]

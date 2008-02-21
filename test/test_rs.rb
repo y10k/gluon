@@ -132,9 +132,7 @@ module Gluon::Test
 
     def test_session_not_found
       @man.transaction(@req, @res) {|handler|
-        assert_raise(Gluon::SessionNotFoundError) {
-          handler.get(false)
-        }
+        assert_nil(handler.get(false))
       }
     end
 
