@@ -191,6 +191,17 @@ module Gluon
       session
     end
 
+    def id(key=@man.default_key)
+      if (@req.cookies.key? key) then
+        id, *others = @req.cookies[key]
+      elsif (@sessions.key? key) then
+        id, *others = @sessions[key]
+      else
+        id = nil
+      end
+      id
+    end
+
     def delete(key=@man.default_key)
       id, session, options = @sessions.delete(key)
       @man.delete(id) if id
@@ -228,6 +239,7 @@ module Gluon
     attr_reader :res
 
     def_delegator :@session, :get, :session_get
+    def_delegator :@session, :id, :session_id
     def_delegator :@session, :delete, :session_delete
     def_delegator :@session, :default_key, :session_default_key
     def_delegator :@session, :default_domain, :session_default_domain

@@ -69,42 +69,71 @@ module Gluon::Test
     end
 
     def test_new_session
+      id = nil
       @man.transaction(@req, @res) {|handler|
         session = handler.get
+        id = handler.id
         assert_equal({}, session)
         session['foo'] = "Hello world.\n"
       }
-      assert_match(/session_id=\S*/, @res['Set-Cookie'])
-      /session_id=(\S*)/ =~ @res['Set-Cookie'] && id = $1 or flunk('not found a session id')
+      assert_match(/session_id=#{Regexp.quote(id)}/, @res['Set-Cookie'])
       assert_equal({ 'foo' => "Hello world.\n" }, Marshal.load(@store.load(id)))
     end
 
     def test_new_session2
+      foo_id = nil
+      bar_id = nil
+
       @man.transaction(@req, @res) {|handler|
         handler.get(true, :key => 'foo')
+        foo_id = handler.id('foo')
+
         handler.get(true, :key => 'bar')
+        bar_id = handler.id('bar')
       }
 
-      foo_cookie = @res['Set-Cookie'].find{|c| c =~ /foo/ } or flunk('not found a session key')
-      /foo=(\S*)/ =~ foo_cookie && foo_id = $1 or flunk('not found a session id')
+      foo_cookie = @res['Set-Cookie'].find{|c| c =~ /foo=#{Regexp.quote(foo_id)}/ } or flunk('not found a session key')
       assert_equal({}, Marshal.load(@store.load(foo_id)))
 
-      bar_cookie = @res['Set-Cookie'].find{|c| c =~ /bar/ } or flunk('not found a session key')
-      /bar=(\S*)/ =~ bar_cookie && bar_id = $1 or flunk('not found a session id')
+      bar_cookie = @res['Set-Cookie'].find{|c| c =~ /bar=#{Regexp.quote(bar_id)}/ } or flunk('not found a session key')
       assert_equal({}, Marshal.load(@store.load(bar_id)))
+    end
+
+    def test_session_continue
+      id = nil
+      @man.transaction(@req, @res) {|handler|
+        session = handler.get
+        id = handler.id
+        session['foo'] = "Hello world.\n"
+      }
+
+      /session_id=#{Regexp.quote(id)}/ =~ @res['Set-Cookie'] or flunk('not found a session id')
+      req2 = Rack::Request.new({ 'HTTP_COOKIE' => "session_id=#{id}" })
+      res2 = Rack::Response.new
+
+      @man.transaction(req2, res2) {|handler|
+        session = handler.get
+        assert_equal(id, handler.id)
+        assert_equal({ 'foo' => "Hello world.\n" }, session)
+      }
     end
 
     def test_session_rollback
       # create a cookie for session
+      id = nil
       @man.transaction(@req, @res) {|handler|
         handler.get
+        id = handler.id
       }
-      assert_match(/session_id=\S*/, @res['Set-Cookie'])
-      /session_id=(\S*)/ =~ @res['Set-Cookie'] && id = $1 or flunk('not found a session id')
+      assert_match(/session_id=#{Regexp.quote(id)}/, @res['Set-Cookie'])
+
+      req2 = Rack::Request.new({ 'HTTP_COOKIE' => "session_id=#{id}" })
+      res2 = Rack::Response.new
 
       begin
-        @man.transaction(@req, @res) {|handler|
+        @man.transaction(req2, res2) {|handler|
           session = handler.get
+          assert_equal(id, handler.id)
           session['foo'] = "Hello world.\n"
           raise RuntimeError
         }
@@ -112,29 +141,13 @@ module Gluon::Test
       rescue RuntimeError
         # nothing to do.
       end
-
       assert_equal({}, Marshal.load(@store.load(id)))
-    end
-
-    def test_session_continue
-      @man.transaction(@req, @res) {|handler|
-        session = handler.get
-        session['foo'] = "Hello world.\n"
-      }
-
-      /session_id=\S*/ =~ @res['Set-Cookie'] or flunk('not found a session id')
-      req2 = Rack::Request.new({ 'HTTP_COOKIE' => $& })
-      res2 = Rack::Response.new
-
-      @man.transaction(req2, res2) {|handler|
-        session = handler.get
-        assert_equal({ 'foo' => "Hello world.\n" }, session)
-      }
     end
 
     def test_session_not_found
       @man.transaction(@req, @res) {|handler|
         assert_nil(handler.get(false))
+        assert_nil(handler.id)
       }
     end
 
@@ -143,6 +156,40 @@ module Gluon::Test
         handler.get(true, :domain => 'www.foo.net', :path => '/')
       }
       assert_match(%r"session_id=\S+; domain=www.foo.net; path=/", @res['Set-Cookie'])
+    end
+
+    def test_delete
+      id = nil
+      @man.transaction(@req, @res) {|handler|
+        handler.get
+        id = handler.id
+        assert_equal({}, handler.delete)
+      }
+
+      assert_nil(@res['Set-Cookie'])
+      assert_nil(@store.load(id))
+    end
+
+    def test_delete2
+      id = nil
+      @man.transaction(@req, @res) {|handler|
+        session = handler.get
+        id = handler.id
+        session['foo'] = "Hello world.\n"
+      }
+      assert_match(/session_id=#{Regexp.quote(id)}/, @res['Set-Cookie'])
+      assert_equal({ 'foo' => "Hello world.\n" }, Marshal.load(@store.load(id)))
+
+      req2 = Rack::Request.new({ 'HTTP_COOKIE' => "session_id=#{id}" })
+      res2 = Rack::Response.new
+
+      @man.transaction(req2, res2) {|handler|
+        assert_equal({ 'foo' => "Hello world.\n" }, handler.get)
+        assert_equal(id, handler.id)
+        assert_equal({ 'foo' => "Hello world.\n" }, handler.delete)
+      }
+      assert_nil(res2['Set-Cookie'])
+      assert_nil(@store.load(id))
     end
 
     def test_auto_expire
