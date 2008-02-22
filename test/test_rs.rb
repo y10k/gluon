@@ -149,6 +149,7 @@ module Gluon::Test
       @man.transaction(@req, @res) {|handler|
         assert_nil(handler.get(false))
         assert_nil(handler.id)
+        assert_nil(handler.delete)
       }
     end
 
