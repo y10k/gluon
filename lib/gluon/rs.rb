@@ -180,7 +180,8 @@ module Gluon
       if (@req.cookies.key? key) then
         id, *others = @req.cookies[key]
       elsif (@sessions.key? key) then
-        id, *others = @sessions[key]
+        id, session, options = @sessions[key]
+        return session
       elsif (create) then
         id = @man.create({})
       else
@@ -194,12 +195,13 @@ module Gluon
     def id(key=@man.default_key)
       if (@req.cookies.key? key) then
         id, *others = @req.cookies[key]
+        return id
       elsif (@sessions.key? key) then
-        id, *others = @sessions[key]
-      else
-        id = nil
+        id, session, options = @sessions[key]
+        return id
       end
-      id
+
+      nil
     end
 
     def delete(key=@man.default_key)

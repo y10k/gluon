@@ -71,10 +71,11 @@ module Gluon::Test
     def test_new_session
       id = nil
       @man.transaction(@req, @res) {|handler|
-        session = handler.get
+        session = handler.get   # create
         id = handler.id
         assert_equal({}, session)
         session['foo'] = "Hello world.\n"
+        assert_equal(session, handler.get) # get
       }
       assert_match(/session_id=#{Regexp.quote(id)}/, @res['Set-Cookie'])
       assert_equal({ 'foo' => "Hello world.\n" }, Marshal.load(@store.load(id)))
