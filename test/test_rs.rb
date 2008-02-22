@@ -22,25 +22,27 @@ module Gluon::Test
 
     def test_delete
       @store.save('foo', "Hello world.\n")
-      @store.delete('foo')
+      assert_equal("Hello world.\n", @store.delete('foo'))
       assert_nil(@store.load('foo'))
     end
 
     def test_not_delete_other_session
       @store.save('foo', "Hello world.\n")
-      @store.delete('bar')
+      assert_nil(@store.delete('bar'))
       assert_equal("Hello world.\n", @store.load('foo'))
     end
 
-    def test_new_id
-      assert_equal('foo', @store.new_id{ 'foo' })
+    def test_create
+      assert_equal('foo', @store.create('') { 'foo' })
+      assert_equal('', @store.load('foo'))
     end
 
-    def test_new_id_search
+    def test_create_and_search_new_id
       @store.save('foo', '')
       @store.save('bar', '')
       id_list = %w[ foo bar baz ]
-      assert_equal('baz', @store.new_id{ id_list.shift || flunk })
+      assert_equal('baz', @store.create('') { id_list.shift || flunk })
+      assert_equal('', @store.load('baz'))
     end
 
     def test_expire

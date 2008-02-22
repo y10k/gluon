@@ -14,11 +14,15 @@ module Gluon
       @store = {}
     end
 
-    def new_id
+    def create(session)
       @lock.synchronize{
         begin
           id = yield
         end while (@store.key? id)
+        @store[id] = {
+          :session => session,
+          :last_modified => Time.now
+        }
         id
       }
     end
@@ -45,7 +49,9 @@ module Gluon
 
     def delete(id)
       @lock.synchronize{
-        @store.delete(id)
+        if (entry = @store.delete(id)) then
+          return entry[:session]
+        end
       }
     end
 
@@ -65,6 +71,9 @@ module Gluon
       }
       nil
     end
+  end
+
+  class SessionTimeoutError < StandardError
   end
 
   class SessionManager
@@ -92,7 +101,7 @@ module Gluon
       @auto_expire
     end
 
-    def create_new_id
+    def new_id
       now = Time.now
       id = @digest.new
       id.update(now.to_s)
@@ -102,10 +111,10 @@ module Gluon
       id.update(CVS_ID)
       id.hexdigest[0, @id_max_length]
     end
-    private :create_new_id
+    private :new_id
 
-    def new_id
-      @store.new_id{ create_new_id }
+    def create(session)
+      @store.create(Marshal.dump(session)) { new_id }
     end
 
     def save(id, session)
@@ -122,7 +131,6 @@ module Gluon
 
     def delete(id)
       @store.delete(id)
-      nil
     end
 
     def expire(now=Time.now)
@@ -174,19 +182,19 @@ module Gluon
       elsif (@sessions.key? key) then
         id, *others = @sessions[key]
       elsif (create) then
-        id = @man.new_id
+        id = @man.create({})
       else
         return
       end
-      session = @man.load(id) || {}
+      session = @man.load(id) or raise SessionTimeoutError, "expired session: #{key}(#{id})}"
       @sessions[key] = [ id, session, options ]
       session
     end
 
     def delete(key=@man.default_key)
-      id, *others = @sessions.delete(key)
+      id, session, options = @sessions.delete(key)
       @man.delete(id) if id
-      nil
+      session
     end
 
     def save_all
