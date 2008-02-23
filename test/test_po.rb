@@ -51,6 +51,7 @@ module Gluon::Test
 
     def test_view_implicit
       build_page(PageForImplicitView)
+      assert_equal(false, @po.view_explicit?)
       assert_equal('Gluon/Test/PresentationObjectTest/PageForImplicitView.rhtml', @po.__view__)
     end
 
@@ -71,6 +72,7 @@ module Gluon::Test
 
     def test_view_explicit
       build_page(PageForExplicitView)
+      assert_equal(true, @po.view_explicit?)
       assert_equal('foo.rhtml', @po.__view__)
     end
 
@@ -461,7 +463,6 @@ module Gluon::Test
 
     def test_import
       File.open(File.join(@view_dir, 'Subpage.rhtml'), 'w') {|out|
-        out.binmode
         out << '<%= value :message %>'
       }
       build_page(PageForImport)

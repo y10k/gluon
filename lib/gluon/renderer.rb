@@ -25,16 +25,20 @@ module Gluon
     end
 
     def render(erb_context)
-      view_path = File.join(@view_dir, erb_context.po.__view__)
-      if (File.exist? view_path) then
+      po = erb_context.po
+      view_path = File.join(@view_dir, po.__view__)
+      if (po.view_explicit?) then
         erb_script = IO.read(view_path)
         return ViewRenderer.render(erb_context, erb_script, view_path)
-      elsif (default_view_path = erb_context.po.__default_view__) then
+      elsif (File.exist? view_path) then
+        erb_script = IO.read(view_path)
+        return ViewRenderer.render(erb_context, erb_script, view_path)
+      elsif (default_view_path = po.__default_view__) then
         erb_script = IO.read(default_view_path)
         return ViewRenderer.render(erb_context, erb_script, default_view_path)
       end
 
-      raise 'no view'
+      raise "no view for #{po.page_type}"
     end
   end
 end

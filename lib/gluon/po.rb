@@ -21,8 +21,12 @@ module Gluon
 
     def_delegator :@page, :class, :page_type
 
+    def view_explicit?
+      @page.respond_to? :__view__
+    end
+
     def __view__
-      if (@page.respond_to? :__view__) then
+      if (view_explicit?) then
         @page.__view__
       else
         @page.class.name.gsub(/::/, '/') + '.rhtml'
