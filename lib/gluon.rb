@@ -12,7 +12,6 @@ module Gluon
   autoload :ERBContext, 'gluon/po'
   autoload :PresentationObject, 'gluon/po'
   autoload :MemoryStore, 'gluon/rs'
-  autoload :SessionTimeoutError, 'gluon/rs'
   autoload :SessionManager, 'gluon/rs'
   autoload :SessionHandler, 'gluon/rs'
   autoload :RequestResponseContext, 'gluon/rs'

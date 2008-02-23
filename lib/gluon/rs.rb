@@ -73,9 +73,6 @@ module Gluon
     end
   end
 
-  class SessionTimeoutError < StandardError
-  end
-
   class SessionManager
     # for ident(1)
     CVS_ID = '$Id$'
@@ -187,7 +184,7 @@ module Gluon
       else
         return
       end
-      session = @man.load(id) or raise SessionTimeoutError, "expired session: #{key}(#{id})}"
+      session = @man.load(id) or raise "expired session: #{key}(#{id})}"
       @sessions[key] = [ id, session, options ]
       session
     end
