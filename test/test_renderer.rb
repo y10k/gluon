@@ -11,6 +11,8 @@ module Gluon::Test
     CVS_ID = '$Id$'
 
     def setup
+      @lib_dir = 'lib'
+      FileUtils.rm_rf(@lib_dir) # for debug
       @view_dir = 'view'
       FileUtils.rm_rf(@view_dir) # for debug
       FileUtils.mkdir_p(@view_dir)
@@ -28,6 +30,7 @@ module Gluon::Test
     end
 
     def teardown
+      FileUtils.rm_rf(@lib_dir) unless $DEBUG
       FileUtils.rm_rf(@view_dir) unless $DEBUG
     end
 
@@ -39,20 +42,20 @@ module Gluon::Test
     end
     private :build_page
 
-    def make_view(filename)
+    def make_file(filename)
       FileUtils.mkdir_p(File.dirname(filename))
       File.open(filename, 'w') {|out|
         out.binmode
         yield(out)
       }
     end
-    private :make_view
+    private :make_file
 
     class PageForImplicitView
     end
 
     def test_view_implicit
-      make_view("#{@view_dir}/Gluon/Test/ViewRendererTest/PageForImplicitView.rhtml") {|out|
+      make_file("#{@view_dir}/Gluon/Test/ViewRendererTest/PageForImplicitView.rhtml") {|out|
         out << "Hello world.\n"
       }
       build_page(PageForImplicitView)
@@ -66,11 +69,78 @@ module Gluon::Test
     end
 
     def test_view_explicit
-      make_view("#{@view_dir}/Foo.rhtml") {|out|
+      make_file("#{@view_dir}/Foo.rhtml") {|out|
         out << "Hello world.\n"
       }
       build_page(PageForExplicitView)
       assert_equal("Hello world.\n", @renderer.render(@erb_context))
+    end
+
+    def test_default_view
+      page_path         = "#{@lib_dir}/Gluon/Test/ViewRendererTest/PageForDefaultView.rb"
+      default_view_path = "#{@lib_dir}/Gluon/Test/ViewRendererTest/PageForDefaultView.rhtml"
+
+      make_file(page_path) {|out|
+        out.write <<-'EOF'
+          module Gluon
+            module Test
+              class ViewRendererTest
+                class PageForDefaultView
+                  def __default_view__
+                    dir = File.dirname(__FILE__)
+                    name = File.basename(__FILE__, '.rb')
+                    File.join(dir, name + '.rhtml')
+                  end
+                end
+              end
+            end
+          end
+        EOF
+      }
+
+      make_file(default_view_path) {|out|
+        out << "Hello world.\n"
+      }
+
+      load(page_path)
+      build_page(PageForDefaultView)
+      assert_equal("Hello world.\n", @renderer.render(@erb_context))
+    end
+
+    def test_view_override_default_view
+      page_path         = "#{@lib_dir}/Gluon/Test/ViewRendererTest/PageForDefaultView.rb"
+      default_view_path = "#{@lib_dir}/Gluon/Test/ViewRendererTest/PageForDefaultView.rhtml"
+      view_path         = "#{@view_dir}/Gluon/Test/ViewRendererTest/PageForDefaultView.rhtml"
+
+      make_file(page_path) {|out|
+        out.write <<-'EOF'
+          module Gluon
+            module Test
+              class ViewRendererTest
+                class PageForDefaultView
+                  def __default_view__
+                    dir = File.dirname(__FILE__)
+                    name = File.basename(__FILE__, '.rb')
+                    File.join(dir, name + '.rhtml')
+                  end
+                end
+              end
+            end
+          end
+        EOF
+      }
+
+      make_file(default_view_path) {|out|
+        out << 'foo'
+      }
+
+      make_file(view_path) {|out|
+        out << 'bar'
+      }
+
+      load(page_path)
+      build_page(PageForDefaultView)
+      assert_equal('bar', @renderer.render(@erb_context))
     end
   end
 end

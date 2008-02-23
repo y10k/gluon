@@ -1,6 +1,6 @@
 2008-02-23  TOKI Yoshinori  <toki@freedom.ne.jp>
 
-	* lib/gluon/po.rb: default view.
+	* lib/gluon/po.rb, lib/gluon/renderer.rb: default view.
 
 2008-02-20  TOKI Yoshinori  <toki@freedom.ne.jp>
 
