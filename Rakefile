@@ -8,6 +8,7 @@ RDOC_DIR = 'api'
 RDOC_MAIN = 'gluon.rb'
 EXAMPLE_DIR = 'welcom'
 GLUON_SETUP = File.join(BIN_DIR, 'gluon_setup')
+GLUON_UPDATE = File.join(BIN_DIR, 'gluon_update')
 
 def cd_v(dir)
   cd(dir, :verbose => true) {
@@ -31,6 +32,10 @@ end
 
 task :example do
   ruby '-I', LIB_DIR, GLUON_SETUP, 'welcom'
+end
+
+task :example_update do
+  ruby '-I', LIB_DIR, GLUON_UPDATE, 'welcom'
 end
 
 require 'rake/gempackagetask'
