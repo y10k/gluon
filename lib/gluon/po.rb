@@ -8,6 +8,8 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
+    extend Forwardable
+
     def initialize(page, rs_context, renderer, action, prefix='')
       @page = page
       @c = rs_context
@@ -17,11 +19,21 @@ module Gluon
       @stack = []
     end
 
+    def_delegator :@page, :class, :page_type
+
     def __view__
       if (@page.respond_to? :__view__) then
         @page.__view__
       else
         @page.class.name.gsub(/::/, '/') + '.rhtml'
+      end
+    end
+
+    def __default_view__
+      if (@page.respond_to? :__default_view__) then
+        @page.__default_view__
+      else
+        nil
       end
     end
 

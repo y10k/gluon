@@ -46,23 +46,37 @@ module Gluon::Test
     end
     private :render_page
 
-    class PageForImplicitViewName
+    class PageForImplicitView
     end
 
     def test_view_implicit
-      build_page(PageForImplicitViewName)
-      assert_equal('Gluon/Test/PresentationObjectTest/PageForImplicitViewName.rhtml', @po.__view__)
+      build_page(PageForImplicitView)
+      assert_equal('Gluon/Test/PresentationObjectTest/PageForImplicitView.rhtml', @po.__view__)
     end
 
-    class PageForExplicitViewName
+    def test_default_view_undefined
+      build_page(PageForImplicitView)
+      assert_equal(nil, @po.__default_view__)
+    end
+
+    class PageForExplicitView
       def __view__
         'foo.rhtml'
+      end
+
+      def __default_view__
+        'default_foo.rhtml'
       end
     end
 
     def test_view_explicit
-      build_page(PageForExplicitViewName)
+      build_page(PageForExplicitView)
       assert_equal('foo.rhtml', @po.__view__)
+    end
+
+    def test_default_view_explicit
+      build_page(PageForExplicitView)
+      assert_equal('default_foo.rhtml', @po.__default_view__)
     end
 
     class PageForValue
@@ -421,19 +435,19 @@ module Gluon::Test
 
     class PageForImport
       def another_page_class
-        AnotherPage
+        Subpage
       end
 
       def another_page_instance
-        AnotherPage.new
+        Subpage.new
       end
 
       def another_page_foo
-        AnotherPage.new('foo')
+        Subpage.new('foo')
       end
     end
 
-    class AnotherPage
+    class Subpage
       def initialize(message='Hello world.')
         @message = message
       end
@@ -441,12 +455,12 @@ module Gluon::Test
       attr_reader :message
 
       def __view__
-        'AnotherPage.rhtml'
+        'Subpage.rhtml'
       end
     end
 
     def test_import
-      File.open(File.join(@view_dir, 'AnotherPage.rhtml'), 'w') {|out|
+      File.open(File.join(@view_dir, 'Subpage.rhtml'), 'w') {|out|
         out.binmode
         out << '<%= value :message %>'
       }
@@ -455,9 +469,9 @@ module Gluon::Test
       assert_equal('[Hello world.]', render_page('[<%= import :another_page_class %>]'))
       assert_equal('[Hello world.]', render_page('[<%= import :another_page_instance %>]'))
       assert_equal('[foo]', render_page('[<%= import :another_page_foo %>]'))
-      assert_equal('[Hello world.]', render_page("[<%= import #{AnotherPage} %>]"))
-      assert_equal('[Hello world.]', render_page("[<%= import #{AnotherPage}.new %>]"))
-      assert_equal('[foo]', render_page("[<%= import #{AnotherPage}.new('foo') %>]"))
+      assert_equal('[Hello world.]', render_page("[<%= import #{Subpage} %>]"))
+      assert_equal('[Hello world.]', render_page("[<%= import #{Subpage}.new %>]"))
+      assert_equal('[foo]', render_page("[<%= import #{Subpage}.new('foo') %>]"))
     end
 
     class PageWithText
