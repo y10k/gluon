@@ -18,8 +18,8 @@ options = {
 
 builder = Gluon::Builder.new(options)
 builder.load_conf
-app_context = builder.build
-builder.run(Rack::Handler::CGI, app_context[:application])
+params = builder.build
+builder.run(Rack::Handler::CGI)
 
 # Local Variables:
 # mode: Ruby
