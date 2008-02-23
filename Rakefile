@@ -43,10 +43,10 @@ require 'lib/gluon/version'
 spec = Gem::Specification.new{|s|
   s.name = 'gluon'
   s.version = Gluon::VERSION
-  s.summary = 'transactional storage'
+  s.summary = 'simple web application framework'
   s.author = 'TOKI Yoshinori'
   s.email = 'toki@freedom.ne.jp'
-  s.executables << 'gluon_setup'
+  s.executables << 'gluon_setup' << 'gluon_update'
   s.files = Dir['{lib,run,test}/**/*.{rb,rhtml,cgi}'] + Dir['run/server/[a-z]*']
   s.files << 'ChangeLog' << 'Rakefile'
   s.test_files = [ 'test/run.rb' ]
