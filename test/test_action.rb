@@ -250,7 +250,7 @@ module Gluon::Test
     end
   end
 
-  class ActionParameterScanner < Test::Unit::TestCase
+  class ActionParameterScannerTest < Test::Unit::TestCase
     class Foo
       attr_accessor :foo
       attr_accessor :bar
