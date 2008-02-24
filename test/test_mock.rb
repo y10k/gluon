@@ -14,6 +14,13 @@ module Gluon::Test
       @req_uri = 'http://foo:8080/bar.cgi'
     end
 
+    def test_session_uninitialized
+      assert((@mock.respond_to? :session_get))
+      assert_raise(NoMethodError) {
+	@mock.session_get
+      }
+    end
+
     class SessionCountPage
       attr_accessor :c
 
@@ -22,13 +29,6 @@ module Gluon::Test
 	session[:count] = 0 unless (session.key? :count)
 	session[:count] += 1
       end
-    end
-
-    def test_session_uninitialized
-      assert((@mock.respond_to? :session_get))
-      assert_raise(NoMethodError) {
-	@mock.session_get
-      }
     end
 
     def test_mock_request_response
