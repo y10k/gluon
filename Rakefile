@@ -38,6 +38,10 @@ task :example_update do
   ruby '-I', LIB_DIR, GLUON_UPDATE, 'welcom'
 end
 
+task :example_run => [ :example ] do
+  ruby '-I', LIB_DIR, 'welcom/server/webrick'
+end
+
 require 'rake/gempackagetask'
 require 'lib/gluon/version'
 spec = Gem::Specification.new{|s|
