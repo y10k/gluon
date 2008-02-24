@@ -1,3 +1,7 @@
+2008-02-24  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/mock.rb: mock builder.
+
 2008-02-23  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/po.rb, lib/gluon/renderer.rb: default view.

@@ -13,19 +13,17 @@ module Gluon::Test
     def setup
       @lib_dir = 'lib'
       FileUtils.rm_rf(@lib_dir) # for debug
+
       @view_dir = 'view'
       FileUtils.rm_rf(@view_dir) # for debug
-      FileUtils.mkdir_p(@view_dir)
       @renderer = Gluon::ViewRenderer.new(@view_dir)
 
       @env = Rack::MockRequest.env_for('http://foo:8080/bar.cgi')
       @env['SCRIPT_NAME'] = '/bar.cgi'
       @env['PATH_INFO'] = ''
-      @req = Rack::Request.new(@env)
-      @res = Rack::Response.new
-      @session = Object.new     # dummy
-      @dispatcher = Gluon::Dispatcher.new([])
-      @c = Gluon::RequestResponseContext.new(@req, @res, @session, @dispatcher)
+      @mock = Gluon::Mock.new
+      @c = @mock.new_request(@env)
+
       @plugin = {}
     end
 

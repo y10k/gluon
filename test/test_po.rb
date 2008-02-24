@@ -21,11 +21,9 @@ module Gluon::Test
       @env = Rack::MockRequest.env_for('http://foo:8080/bar.cgi')
       @env['SCRIPT_NAME'] = '/bar.cgi'
       @env['PATH_INFO'] = ''
-      @req = Rack::Request.new(@env)
-      @res = Rack::Response.new
-      @session = Object.new     # dummy
-      @dispatcher = Gluon::Dispatcher.new([ [ '/another_page', AnotherPage ] ])
-      @c = Gluon::RequestResponseContext.new(@req, @res, @session, @dispatcher)
+      @mock = Gluon::Mock.new([ [ '/another_page', AnotherPage ] ])
+      @c = @mock.new_request(@env)
+
       @plugin = {}
     end
 
