@@ -42,6 +42,7 @@ module Gluon::Test
 
       assert_equal({ :count => 1 }, @mock.session_get)
       env = @mock.close_response(Rack::MockRequest.env_for(@req_uri))
+      assert_match(/session_id=\S*/, env['HTTP_COOKIE'])
       assert_match(/session_id=\S*/, c.res['Set-Cookie'])
       c = @mock.new_request(env)
 
@@ -50,7 +51,8 @@ module Gluon::Test
       count.page_start
 
       assert_equal({ :count => 1 }, @mock.session_get)
-      @mock.close_response
+      env = @mock.close_response
+      assert_match(/session_id=\S*/, env['HTTP_COOKIE'])
       assert_match(/session_id=\S*/, c.res['Set-Cookie'])
     end
   end
