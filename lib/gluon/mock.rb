@@ -27,11 +27,11 @@ module Gluon
     end
 
     def_delegator :@session, :get_for_mock, :session_get
-    def_delegator :@session, :session_next
 
-    def close_response
+    def close_response(next_env={})
+      @session.next_session(next_env)
       @session.save_all
-      @session = nil
+      next_env
     end
   end
 
@@ -57,7 +57,7 @@ module Gluon
       get(false, options)
     end
 
-    def next(env)
+    def next_session(env)
       env['HTTP_COOKIE'] = @sessions.map{|key, (id, *others)| "#{key}=#{id}" }.join('; ')
       env
     end
