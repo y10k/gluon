@@ -35,25 +35,30 @@ module Gluon::Test
       env = Rack::MockRequest.env_for(@req_uri)
       c = @mock.new_request(env)
       assert_equal(nil, @mock.session_get)
-
       count = SessionCountPage.new
       count.c = c
       count.page_start
-
       assert_equal({ :count => 1 }, @mock.session_get)
       env = @mock.close_response(Rack::MockRequest.env_for(@req_uri))
-      assert_match(/session_id=\S*/, env['HTTP_COOKIE'])
-      assert_match(/session_id=\S*/, c.res['Set-Cookie'])
-      c = @mock.new_request(env)
 
+      /session_id=\S*/ =~ c.res['Set-Cookie'] or flunk('not found a previous response cookie')
+      prev_session_id = $&.split(/=/)[1]
+      /session_id=\S*/ =~ env['HTTP_COOKIE'] or flunk('not found a next request cookie')
+      next_session_id = $&.split(/=/)[1]
+      assert(prev_session_id == next_session_id)
+
+      c = @mock.new_request(env)
       count = SessionCountPage.new
       count.c = c
       count.page_start
-
-      assert_equal({ :count => 1 }, @mock.session_get)
+      assert_equal({ :count => 2 }, @mock.session_get)
       env = @mock.close_response
-      assert_match(/session_id=\S*/, env['HTTP_COOKIE'])
-      assert_match(/session_id=\S*/, c.res['Set-Cookie'])
+
+      /session_id=\S*/ =~ env['HTTP_COOKIE'] or flunk('not found a next request cookie')
+      next_session_id = $&.split(/=/)[1]
+      /session_id=\S*/ =~ c.res['Set-Cookie'] or flunk('not found a previous response cookie')
+      prev_session_id = $&.split(/=/)[1]
+      assert(prev_session_id == next_session_id)
     end
   end
 end

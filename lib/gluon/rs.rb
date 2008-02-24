@@ -174,11 +174,11 @@ module Gluon
     def get(create=true, options={})
       options = @default_options.dup.update(options)
       key = options.delete(:key) || @man.default_key
-      if (@req.cookies.key? key) then
-        id, *others = @req.cookies[key]
-      elsif (@sessions.key? key) then
+      if (@sessions.key? key) then
         id, session, options = @sessions[key]
         return session
+      elsif (@req.cookies.key? key) then
+        id, *others = @req.cookies[key]
       elsif (create) then
         id = @man.create({})
       else
