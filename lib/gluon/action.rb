@@ -11,7 +11,8 @@ module Gluon
       'page_hook' => true,
       'page_start' => true,
       'page_end' => true,
-      '__view__' => true
+      '__view__' => true,
+      '__default_view__' => true
     }
 
     def initialize(page, rs_context, plugin, prefix='')
