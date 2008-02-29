@@ -30,16 +30,16 @@ task :rdoc do
   }
 end
 
-task :example do
+task :example => [ :example_install ] do
+  ruby '-I', LIB_DIR, 'welcom/server/webrick'
+end
+
+task :example_install do
   ruby '-I', LIB_DIR, GLUON_SETUP, 'welcom'
 end
 
 task :example_update do
   ruby '-I', LIB_DIR, GLUON_UPDATE, 'welcom'
-end
-
-task :example_run => [ :example ] do
-  ruby '-I', LIB_DIR, 'welcom/server/webrick'
 end
 
 require 'rake/gempackagetask'
