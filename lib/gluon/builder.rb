@@ -3,6 +3,7 @@
 require 'forwardable'
 require 'gluon/action'
 require 'gluon/dispatcher'
+require 'gluon/plugin'
 require 'gluon/po'
 require 'gluon/renderer'
 require 'gluon/rs'
@@ -32,7 +33,7 @@ module Gluon
       @access_log = File.join(@base_dir, 'access.log')
       @port = 9202
       @url_map = []
-      @plugin = {}
+      @plugin_maker = PluginMaker.new
       @finalizer = proc{}
     end
 
@@ -55,23 +56,24 @@ module Gluon
 
     def plugin_get(name)
       name = name.to_sym
+      plugin = @plugin_maker.new_plugin
       if (block_given?) then
-        yield(@plugin[name])
+        yield(plugin[name])
       else
-        @plugin[name]
+        plugin[name]
       end
     end
 
     def plugin_set(args)
       if (block_given?) then
         name = args.to_sym
-        @plugin[name] = yield
+        @plugin_maker.add(name, yield)
       else
         case (args)
         when Hash
           for name, value in args
             name = name.to_sym
-            @plugin[name] = value
+            @plugin_maker.add(name, value)
           end
         else
           raise "unknown arguments: #{args.inspect}"
@@ -194,6 +196,7 @@ module Gluon
       @dispatcher = Dispatcher.new(@url_map)
       @renderer = ViewRenderer.new(@view_dir)
       @session_man = SessionManager.new(@session_conf.options)
+      @plugin_maker.setup
 
       @app = proc{|env|
         req = Rack::Request.new(env)
@@ -204,10 +207,11 @@ module Gluon
             req.env['gluon.version'] = VERSION
             req.env['gluon.curr_page'] = page_type
             req.env['gluon.path_info'] = gluon_path_info
-            rs_context = RequestResponseContext.new(req, res, session, @dispatcher)
+            plugin = @plugin_maker.new_plugin
+            rs_context = RequestResponseContext.new(req, res, session, @dispatcher, plugin)
             begin
               page = page_type.new
-              action = Action.new(page, rs_context, @plugin)
+              action = Action.new(page, rs_context, plugin)
               po = PresentationObject.new(page, rs_context, @renderer, action)
               erb_context = ERBContext.new(po, rs_context)
               page_type = RequestResponseContext.switch_from{

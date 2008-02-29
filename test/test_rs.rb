@@ -263,7 +263,10 @@ module Gluon::Test
       @res = Rack::Response.new
       @session = Object.new     # dummy
       @dispatcher = Gluon::Dispatcher.new([ [ '/foo', Foo ] ])
-      @c = Gluon::RequestResponseContext.new(@req, @res, @session, @dispatcher)
+      @plugin_maker = Gluon::PluginMaker.new
+      @plugin_maker.setup
+      @plugin = @plugin_maker.new_plugin
+      @c = Gluon::RequestResponseContext.new(@req, @res, @session, @dispatcher, @plugin)
     end
 
     def test_req_res

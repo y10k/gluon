@@ -16,6 +16,13 @@ module Gluon
       @dispatcher = Dispatcher.new(url_map)
       @session_man = MockSessionManager.new
       @session = nil
+
+      plugin = options[:plugin] || {}
+      @plugin_maker = PluginMaker.new
+      for name, value in plugin
+	@plugin_maker.add(name, value)
+      end
+      @plugin_maker.setup
     end
 
     attr_reader :dispatcher
@@ -24,7 +31,8 @@ module Gluon
       req = Rack::Request.new(env)
       res = Rack::Response.new
       @session = @session_man.new_mock_session(req, res)
-      Gluon::RequestResponseContext.new(req, res, @session, @dispatcher)
+      plugin = @plugin_maker.new_plugin
+      Gluon::RequestResponseContext.new(req, res, @session, @dispatcher, plugin)
     end
 
     def_delegator :@session, :get_for_mock, :session_get

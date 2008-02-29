@@ -227,15 +227,17 @@ module Gluon
 
     extend Forwardable
 
-    def initialize(req, res, session, dispatcher)
+    def initialize(req, res, session, dispatcher, plugin)
       @req = req
       @res = res
       @session = session
       @dispatcher = dispatcher
+      @plugin = plugin
     end
 
     attr_reader :req
     attr_reader :res
+    attr_reader :plugin
 
     def_delegator :@session, :get, :session_get
     def_delegator :@session, :id, :session_id

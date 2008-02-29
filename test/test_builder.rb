@@ -1,6 +1,7 @@
 #!/usr/local/bin/ruby
 
 require 'digest'
+require 'fileutils'
 require 'gluon'
 require 'test/unit'
 
@@ -16,6 +17,10 @@ module Gluon::Test
       @builder = Gluon::Builder.new(:base_dir => @base_dir,
                                     :view_dir => @view_dir,
                                     :conf_path => @conf_path)
+    end
+
+    def teardown
+      FileUtils.rm_f('access.log')
     end
 
     def test_attributes
@@ -58,6 +63,7 @@ module Gluon::Test
           end
         end
       }
+      @builder.build
       assert_equal('foo plugin', @builder.plugin_get(:_foo))
       assert_equal('bar plugin', @builder.plugin_get(:_bar))
       @builder.plugin_get(:_foo) {|value|

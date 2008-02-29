@@ -20,7 +20,7 @@ module Gluon
       @c = rs_context
       @plugin = plugin
       @reserved_words = RESERVED_WORDS.dup
-      plugin.each_key do |name|
+      @plugin.each_pair do |name, value|
         @reserved_words[name.to_s] = true
         @reserved_words["#{name}="] = true
       end

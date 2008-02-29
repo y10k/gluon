@@ -15,12 +15,14 @@ module Gluon::Test
       @env['PATH_INFO'] = ''
       @mock = Gluon::Mock.new
       @c = @mock.new_request(@env)
-      @plugin = {}
+      @plugin_maker = Gluon::PluginMaker.new
     end
 
     def build_page(page_type)
       @page = page_type.new
-      @action = Gluon::Action.new(@page, @c, @plugin)
+      @plugin_maker.setup
+      plugin = @plugin_maker.new_plugin
+      @action = Gluon::Action.new(@page, @c, plugin)
     end
     private :build_page
 
@@ -221,7 +223,7 @@ module Gluon::Test
     end
 
     def test_apply_with_plugin
-      @plugin[:foo] = 'test of plugin'
+      @plugin_maker.add(:foo, 'test of plugin')
       build_page(PageWithPlugin)
 
       count = 0
@@ -233,7 +235,7 @@ module Gluon::Test
     end
 
     def test_plugin_override_params
-      @plugin[:foo] = 'test of plugin'
+      @plugin_maker.add(:foo, 'test of plugin')
       params = { 'foo' => 'test of parameter'}
       @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
       build_page(PageWithPlugin)
