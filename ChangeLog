@@ -1,3 +1,7 @@
+2008-03-01  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/plugin.rb: plugin.
+
 2008-02-24  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/mock.rb: mock builder.

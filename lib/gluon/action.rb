@@ -56,7 +56,7 @@ module Gluon
     private :funcall_hook
 
     def set_plugin
-      for name, value in @plugin
+      @plugin.each_pair do |name, value|
         funcall("#{name}=", value)
       end
     end
