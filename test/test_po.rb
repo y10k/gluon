@@ -21,7 +21,7 @@ module Gluon::Test
       @env = Rack::MockRequest.env_for('http://foo:8080/bar.cgi')
       @env['SCRIPT_NAME'] = '/bar.cgi'
       @env['PATH_INFO'] = ''
-      @mock = Gluon::Mock.new([ [ '/another_page', AnotherPage ] ])
+      @mock = Gluon::Mock.new(:url_map => [ [ '/another_page', AnotherPage ] ])
       @c = @mock.new_request(@env)
 
       @plugin = {}

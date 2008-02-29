@@ -11,7 +11,8 @@ module Gluon
 
     extend Forwardable
 
-    def initialize(url_map=[])
+    def initialize(options={})
+      url_map = options[:url_map] || []
       @dispatcher = Dispatcher.new(url_map)
       @session_man = MockSessionManager.new
       @session = nil
