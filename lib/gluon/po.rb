@@ -171,15 +171,16 @@ module Gluon
     private :mkelem_start
 
     def mkpath(path, options={})
+      path = path.dup
+      path << options[:path_info] if (options.key? :path_info)
       path = '/' if path.empty?
-      path += '?' + PresentationObject.query(options[:query]) if (options.key? :query)
-      path += '#' + ERB::Util.html_escape(options[:fragment]) if (options.key? :fragment)
+      path << '?' << PresentationObject.query(options[:query]) if (options.key? :query)
+      path << '#' << ERB::Util.html_escape(options[:fragment]) if (options.key? :fragment)
       path
     end
     private :mkpath
 
     def mklink(href, options={})
-      href += options[:path_info] if (options.key? :path_info)
       elem = mkelem_start('a', options)
       elem << ' href="' << ERB::Util.html_escape(mkpath(href, options)) << '"'
       elem << ' target="' << ERB::Util.html_escape(options[:target]) << '"' if (options.key? :target)
