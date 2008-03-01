@@ -1,7 +1,6 @@
 <h2>1. checkbox</h2>
 
 <form>
-<div><%= hidden :example, :direct => true %></div> <!-- hack to dispatch example -->
 <p><%= checkbox :foo, :id => 'foo' %> <label for="foo">foo</label>,
    <%= checkbox :bar, :id => 'bar' %> <label for="bar">bar</label>,
    <%= checkbox :baz, :id => 'baz' %> <label for="baz">baz</label></p>
@@ -13,3 +12,10 @@
 <% foreach :result_list do %>
   <p><%= value %></p>
 <% end %>
+
+<%#
+  Local Variables:
+  mode: HTML
+  indent-tabs-mode: nil
+  End:
+%>

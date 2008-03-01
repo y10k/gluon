@@ -1,9 +1,8 @@
 <h2>1. submit</h2>
 
 <form>
-<div><%= hidden :example, :direct => true %></div> <!-- hack to dispatch example -->
-<p><%= submit :foo, :value => 'foo' %></p> <!-- action to call foo_action method -->
-<p><%= submit :bar, :value => 'bar' %></p> <!-- action to call bar_action method -->
+<p><%= submit :foo, :value => 'foo' %></p> <!-- call foo method -->
+<p><%= submit :bar, :value => 'bar' %></p> <!-- call bar method -->
 </form>
 
 <h2>2. results</h2>
@@ -14,3 +13,10 @@
 <% cond neg(:no_action?) do %>
   <p><%= value :results %></p>
 <% end %>
+
+<%#
+  Local Variables:
+  mode: HTML
+  indent-tabs-mode: nil
+  End:
+%>

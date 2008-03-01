@@ -1,8 +1,6 @@
 <h2>1. radio</h2>
 
 <form>
-<div><%= hidden :example, :direct => true %></div> <!-- hack to dispatch example -->
-
 <h3>radio buttons of foo</h3>
 <p><%= radio :foo, 'apple', :id => 'apple' %> <label for="apple">apple</label>,
    <%= radio :foo, 'banana', :id => 'banana' %> <label for="banana">banana</label>,
@@ -21,3 +19,10 @@
 <h2>2. results</h2>
 <p>foo: <%= value :foo %></p>
 <p>bar: <%= value :bar %></p>
+
+<%#
+  Local Variables:
+  mode: HTML
+  indent-tabs-mode: nil
+  End:
+%>

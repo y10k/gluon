@@ -5,12 +5,19 @@
 <body>
 <h2>examples</h2>
 
-<p><%= link '/', :target => '_top', :text => 'return top.' %></p>
+<p><%= link Welcom, :target => '_top', :text => 'return to top.' %></p>
 <ul>
   <% foreach :examples do %>
-    <li><%= link :example, :target => 'main', :text => :name %></li>
+    <li><%= link :example, :target => 'main' %></li>
   <% end %>
 </ul>
 
 </body>
 </html>
+
+<%#
+  Local Variables:
+  mode: HTML
+  indent-tabs-mode: nil
+  End:
+%>

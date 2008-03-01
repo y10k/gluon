@@ -1,12 +1,6 @@
 class Example
   class Textarea
     attr_accessor :c
-
-    def page_start
-      @example = @c.req['example'] # hack to dispatch example
-    end
-
-    attr_reader :example	# hack to dispatch example
     attr_accessor :foo
 
     def ok

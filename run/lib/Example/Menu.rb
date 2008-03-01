@@ -7,11 +7,7 @@ class Example
 
         class << key
           def example
-            return Example::ExamplePanel, :query => { 'example' => self }
-          end
-
-          def name
-            self
+            return Example::ExamplePanel, :path_info => "/#{self}", :text => self
           end
         end
 

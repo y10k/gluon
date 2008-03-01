@@ -1,8 +1,7 @@
 <h2>1. actions</h2>
 
-<!-- query is hack to dispatch example -->
-<p><%= action :foo, :query => { 'example' => req['example'] } %></p> <!-- action to call foo_action method -->
-<p><%= action :bar, :query => { 'example' => req['example'] } %></p> <!-- action to call bar_action method -->
+<p><%= action :foo %></p> <!-- call foo method -->
+<p><%= action :bar %></p> <!-- call bar method -->
 
 <h2>2. results</h2>
 
@@ -12,3 +11,10 @@
 <% cond neg(:no_action?) do %>
   <p><%= value :results %></p>
 <% end %>
+
+<%#
+  Local Variables:
+  mode: HTML
+  indent-tabs-mode: nil
+  End:
+%>

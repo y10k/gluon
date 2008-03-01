@@ -3,13 +3,11 @@ class Example
     attr_accessor :c
 
     def page_start
-      @example = @c.req['example'] # hack to dispatch example
       @foo = false
       @bar = false
       @baz = true
     end
 
-    attr_reader :example	# hack to dispatch example
     attr_accessor :foo
     attr_accessor :bar
     attr_accessor :baz

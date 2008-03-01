@@ -31,8 +31,8 @@ class Example
     attr_accessor :c
 
     def page_start
-      @key = @c.req['example'] or raise "not found a query parameter: example"
-      ex = EXAMPLES[@key] or raise "not found a example: #{@key}"
+      @key = @c.path_info.sub(%r"^/", '')
+      ex = EXAMPLES[@key] or raise "not found a example: #{key.inspect}"
       @class = ex[:class]
       @code = ex[:code]
       @view = ex[:view]

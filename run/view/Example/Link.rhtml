@@ -14,7 +14,8 @@
 <h2>4. link with query</h2>
 
 <p><%= link Example::ExamplePanel,
-       :query => { 'example.foo()' => nil, 'example' => 'action' },
+       :query => { 'example.foo()' => nil },
+       :path_info => '/action',
        :text => 'foo action at action example page.' %></p>
 
 <h2>5. link URI</h2>
@@ -25,3 +26,10 @@
 
 <!-- call ruby_home method -->
 <p><%= link_uri :ruby_home, :target => '_blank' %></p>
+
+<%#
+  Local Variables:
+  mode: HTML
+  indent-tabs-mode: nil
+  End:
+%>
