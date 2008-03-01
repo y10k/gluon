@@ -15,7 +15,8 @@ class Example
       %w[ checkbox Checkbox ],
       %w[ radio Radio ],
       %w[ select Select ],
-      %w[ textarea Textarea ]
+      %w[ textarea Textarea ],
+      %w[ session Session ]
     ]
 
     EXAMPLE_KEYS = example_alist.map{|k, n| k }

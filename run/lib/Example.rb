@@ -15,6 +15,7 @@ class Example
   autoload :Password, 'Example/Password'
   autoload :Radio, 'Example/Radio'
   autoload :Select, 'Example/Select'
+  autoload :Session, 'Example/Session'
   autoload :Submit, 'Example/Submit'
   autoload :Subpage, 'Example/Subpage'
   autoload :Text, 'Example/Text'

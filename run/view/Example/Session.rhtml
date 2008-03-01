@@ -1,0 +1,33 @@
+<h2>1. operations</h2>
+
+<form>
+<p>
+  <%= submit :new_session, :value => 'new'
+  %>&nbsp;&nbsp<%= submit :clear_session, :value => 'clear'
+  %>&nbsp;&nbsp<%= link :reload, :text => 'reload.' %>
+</p>
+</form>
+
+<h2>2. session data</h2>
+
+<% cond :has_session? do %>
+  <dl>
+    <dt>session id</dt>
+    <dd><%= value :session_id %></dd>
+    <dt>created time</dt>
+    <dd><%= value :created_time %></dd>
+    <dt>count</dt>
+    <dd><%= value :count %></dd>
+  </dl>
+<% end %>
+
+<% cond neg(:has_session?) do %>
+  <p><em>no session.</em></p>
+<% end %>
+
+<%#
+  Local Variables:
+  mode: HTML
+  indent-tabs-mode: nil
+  End:
+%>
