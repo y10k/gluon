@@ -174,28 +174,41 @@ module Gluon
     def get(create=true, options={})
       options = @default_options.dup.update(options)
       key = options.delete(:key) || @man.default_key
+
       if (@sessions.key? key) then
         id, session, options = @sessions[key]
         return session
-      elsif (@req.cookies.key? key) then
+      end
+
+      if (@req.cookies.key? key) then
         id, *others = @req.cookies[key]
+        unless (session = @man.load(id)) then
+          return unless create
+          id = @man.create({})
+          session = @man.load(id) or raise "internal error: failed to create a new session."
+        end
       elsif (create) then
         id = @man.create({})
+        session = @man.load(id) or raise "internal error: failed to create a new session."
       else
         return
       end
-      session = @man.load(id) or raise "expired session: #{key}(#{id})}"
+
       @sessions[key] = [ id, session, options ]
       session
     end
 
     def id(key=@man.default_key)
-      if (@req.cookies.key? key) then
-        id, *others = @req.cookies[key]
-        return id
-      elsif (@sessions.key? key) then
+      if (@sessions.key? key) then
         id, session, options = @sessions[key]
         return id
+      end
+
+      if (@req.cookies.key? key) then
+        id, *others = @req.cookies[key]
+        if (@man.load(id)) then
+          return id
+        end
       end
 
       nil

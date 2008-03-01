@@ -113,8 +113,8 @@ module Gluon::Test
       res2 = Rack::Response.new
 
       @man.transaction(req2, res2) {|handler|
-        session = handler.get
         assert_equal(id, handler.id)
+        session = handler.get
         assert_equal({ 'foo' => "Hello world.\n" }, session)
       }
     end
@@ -143,6 +143,46 @@ module Gluon::Test
         # nothing to do.
       end
       assert_equal({}, Marshal.load(@store.load(id)))
+    end
+
+    def test_session_expired
+      id = nil
+      @man.transaction(@req, @res) {|handler|
+        session = handler.get
+        id = handler.id
+        session['foo'] = "Hello world.\n"
+      }
+
+      /session_id=#{Regexp.quote(id)}/ =~ @res['Set-Cookie'] or flunk('not found a session id')
+      req2 = Rack::Request.new({ 'HTTP_COOKIE' => "session_id=#{id}" })
+      res2 = Rack::Response.new
+      @store.delete(id)         # expire session
+
+      @man.transaction(req2, res2) {|handler|
+        assert_nil(handler.id)
+        assert_nil(handler.get(false))
+      }
+    end
+
+    def test_session_expired_and_create
+      id = nil
+      @man.transaction(@req, @res) {|handler|
+        session = handler.get
+        id = handler.id
+        session['foo'] = "Hello world.\n"
+      }
+
+      /session_id=#{Regexp.quote(id)}/ =~ @res['Set-Cookie'] or flunk('not found a session id')
+      req2 = Rack::Request.new({ 'HTTP_COOKIE' => "session_id=#{id}" })
+      res2 = Rack::Response.new
+      @store.delete(id)         # expire session
+
+      id2 = nil
+      @man.transaction(req2, res2) {|handler|
+        assert_nil(handler.id)
+        assert_equal({}, handler.get)
+        assert_not_equal(id, handler.id)
+      }
     end
 
     def test_session_not_found
