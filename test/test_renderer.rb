@@ -23,8 +23,6 @@ module Gluon::Test
       @env['PATH_INFO'] = ''
       @mock = Gluon::Mock.new
       @c = @mock.new_request(@env)
-
-      @plugin = {}
     end
 
     def teardown
@@ -34,7 +32,7 @@ module Gluon::Test
 
     def build_page(page_type)
       @page = page_type.new
-      @action = Gluon::Action.new(@page, @c, @plugin)
+      @action = Gluon::Action.new(@page, @c)
       @po = Gluon::PresentationObject.new(@page, @c, @renderer, @action)
       @erb_context = Gluon::ERBContext.new(@po, @c)
     end

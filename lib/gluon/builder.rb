@@ -211,7 +211,7 @@ module Gluon
             rs_context = RequestResponseContext.new(req, res, session, @dispatcher, plugin)
             begin
               page = page_type.new
-              action = Action.new(page, rs_context, plugin)
+              action = Action.new(page, rs_context)
               po = PresentationObject.new(page, rs_context, @renderer, action)
               erb_context = ERBContext.new(po, rs_context)
               page_type = RequestResponseContext.switch_from{

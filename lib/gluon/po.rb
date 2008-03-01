@@ -300,7 +300,7 @@ module Gluon
       end
       prefix = prefix() + curr_prefix + '.'
 
-      action = @action.new(page, @c, prefix)
+      action = Action.new(page, @c, prefix)
       po = PresentationObject.new(page, @c, @renderer, action, prefix)
       erb_context = ERBContext.new(po, @c)
 

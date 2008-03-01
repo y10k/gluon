@@ -15,21 +15,11 @@ module Gluon
       '__default_view__' => true
     }
 
-    def initialize(page, rs_context, plugin, prefix='')
+    def initialize(page, rs_context, prefix='')
       @page = page
       @c = rs_context
-      @plugin = plugin
-      @reserved_words = RESERVED_WORDS.dup
-      @plugin.each_pair do |name, value|
-        @reserved_words[name.to_s] = true
-        @reserved_words["#{name}="] = true
-      end
       @prefix = prefix
       @object = Object.new
-    end
-
-    def new(page, rs_context, parent_name=nil)
-      Action.new(page, rs_context, @plugin, parent_name)
     end
 
     def funcall2(obj, name, *args)
@@ -54,13 +44,6 @@ module Gluon
       end
     end
     private :funcall_hook
-
-    def set_plugin
-      @plugin.each_pair do |name, value|
-        funcall("#{name}=", value)
-      end
-    end
-    private :set_plugin
 
     class ParameterScanner
       include Enumerable
@@ -113,7 +96,7 @@ module Gluon
     end
 
     def each_param(param_alist, abort_on_reserved=false)
-      param_scan = ParameterScanner.new(@prefix, @page, param_alist, @reserved_words, @object, abort_on_reserved)
+      param_scan = ParameterScanner.new(@prefix, @page, param_alist, RESERVED_WORDS, @object, abort_on_reserved)
       for curr_obj, long_name, short_name, value in param_scan
         yield(curr_obj, long_name, short_name, value)
       end
@@ -193,7 +176,6 @@ module Gluon
 
     def apply
       funcall(:c=, @c)
-      set_plugin
       funcall_hook(:page_hook) {
         funcall(:page_start)
         begin
