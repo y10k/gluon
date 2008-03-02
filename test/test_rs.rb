@@ -11,7 +11,7 @@ module Gluon::Test
     CVS_ID = '$Id$'
 
     def setup
-      @store = Gluon::MemoryStore.new
+      @store = Gluon::MemoryStore.new(:expire_interval => 0)
     end
 
     def test_save_and_load
@@ -62,7 +62,7 @@ module Gluon::Test
     CVS_ID = '$Id$'
 
     def setup
-      @store = Gluon::MemoryStore.new
+      @store = Gluon::MemoryStore.new(:expire_interval => 0)
       @man = Gluon::SessionManager.new(:store => @store)
       @req = Rack::Request.new({})
       @res = Rack::Response.new

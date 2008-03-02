@@ -9,9 +9,11 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    def initialize
+    def initialize(options={})
       @lock = Mutex.new
       @store = {}
+      @expire_interval = options[:expire_interval] || 60 * 5
+      @last_expired_time = Time.now
     end
 
     def create(session)
@@ -57,9 +59,13 @@ module Gluon
 
     def expire(alive_time)
       @lock.synchronize{
-        @store.delete_if{|id, entry|
-          entry[:last_modified] < alive_time
-        }
+        now = Time.now
+        if (now - @last_expired_time >= @expire_interval) then
+          @store.delete_if{|id, entry|
+            entry[:last_modified] < alive_time
+          }
+          @last_expired_time = now
+        end
       }
       nil
     end
