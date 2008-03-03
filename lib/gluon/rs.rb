@@ -134,6 +134,7 @@ module Gluon
 
     def delete(id)
       @store.delete(id)
+      nil
     end
 
     def expire(now=Time.now)
@@ -222,7 +223,15 @@ module Gluon
 
     def delete(key=@man.default_key)
       id, session, options = @sessions.delete(key)
-      @man.delete(id) if id
+      unless (id) then
+        if (@req.cookies.key? key) then
+          id, *others = @req.cookies[key]
+          session = @man.load(id)
+        end
+      end
+      if (id) then
+        @man.delete(id)
+      end
       session
     end
 

@@ -234,6 +234,27 @@ module Gluon::Test
       assert_nil(@store.load(id))
     end
 
+    def test_delete3
+      id = nil
+      @man.transaction(@req, @res) {|handler|
+        session = handler.get
+        id = handler.id
+        session['foo'] = "Hello world.\n"
+      }
+      assert_match(/session_id=#{Regexp.quote(id)}/, @res['Set-Cookie'])
+      assert_equal({ 'foo' => "Hello world.\n" }, Marshal.load(@store.load(id)))
+
+      req2 = Rack::Request.new({ 'HTTP_COOKIE' => "session_id=#{id}" })
+      res2 = Rack::Response.new
+
+      @man.transaction(req2, res2) {|handler|
+        assert_equal({ 'foo' => "Hello world.\n" }, handler.delete)
+        assert_nil(handler.get(false))
+      }
+      assert_nil(res2['Set-Cookie'])
+      assert_nil(@store.load(id))
+    end
+
     def test_auto_expire
       time_to_live = 0.01
       @man = Gluon::SessionManager.new(:store => @store, :time_to_live => time_to_live)
