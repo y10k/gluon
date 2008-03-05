@@ -1,3 +1,7 @@
+2008-03-06  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/renderer.rb: compile view.
+
 2008-03-01  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/plugin.rb: plugin.

@@ -38,7 +38,8 @@ module Gluon::Test
     private :build_page
 
     def render_page(eruby_script)
-      Gluon::ViewRenderer.render(@erb_context, eruby_script, '(erb)')
+      erb_proc = Gluon::ViewRenderer.compile_view(eruby_script)
+      @erb_context.instance_eval(&erb_proc)
     end
     private :render_page
 
