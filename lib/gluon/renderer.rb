@@ -9,14 +9,14 @@ module Gluon
     CVS_ID = '$Id$'
 
     class << self
-      def compile_view(script, filename='(erb)')
-        erb = ERB.new(script)
+      def compile(eruby_script, filename='(erb)')
+        erb = ERB.new(eruby_script)
         eval('proc{ ' + erb.src + '}', TOPLEVEL_BINDING, filename)
       end
 
-      def load_view(filename)
+      def load(filename)
         script = IO.read(filename)
-        compile_view(script, filename)
+        compile(script, filename)
       end
     end
 
@@ -26,7 +26,7 @@ module Gluon
       @compile_cache = {}
     end
 
-    def load_view(filename)
+    def load(filename)
       mtime = File.stat(filename).mtime
       @compile_lock.synchronize{
         if (entry = @compile_cache[filename]) then
@@ -37,24 +37,24 @@ module Gluon
 
         @compile_cache[filename] = {
           :mtime => mtime,
-          :proc => ViewRenderer.load_view(filename)
+          :proc => ViewRenderer.load(filename)
         }
         @compile_cache[filename][:proc]
       }
     end
-    private :load_view
+    private :load
 
     def render(erb_context)
       po = erb_context.po
       view_path = File.join(@view_dir, po.__view__)
       if (po.view_explicit?) then
-        erb_proc = load_view(view_path)
+        erb_proc = load(view_path)
         return erb_context.instance_eval(&erb_proc)
       elsif (File.exist? view_path) then
-        erb_proc = load_view(view_path)
+        erb_proc = load(view_path)
         return erb_context.instance_eval(&erb_proc)
       elsif (default_view_path = po.__default_view__) then
-        erb_proc = load_view(default_view_path)
+        erb_proc = load(default_view_path)
         return erb_context.instance_eval(&erb_proc)
       end
 
