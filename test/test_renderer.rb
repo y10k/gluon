@@ -55,6 +55,11 @@ module Gluon::Test
       }
       build_page(PageForImplicitView)
       assert_equal("Hello world.\n", @renderer.render(@erb_context))
+
+      10.times do |i|
+        build_page(PageForImplicitView)
+        assert_equal("Hello world.\n", @renderer.render(@erb_context), "nth: #{i}")
+      end
     end
 
     def test_view_implicit_not_exist
@@ -76,6 +81,11 @@ module Gluon::Test
       }
       build_page(PageForExplicitView)
       assert_equal("Hello world.\n", @renderer.render(@erb_context))
+
+      10.times do |i|
+        build_page(PageForExplicitView)
+        assert_equal("Hello world.\n", @renderer.render(@erb_context), "nth: #{i}")
+      end
     end
 
     def test_view_explicit_not_exist
@@ -112,14 +122,18 @@ module Gluon::Test
           end
         EOF
       }
-
       make_file(default_view_path) {|out|
         out << "Hello world.\n"
       }
-
       load(page_path)
+
       build_page(PageForDefaultView)
       assert_equal("Hello world.\n", @renderer.render(@erb_context))
+
+      10.times do |i|
+        build_page(PageForDefaultView)
+        assert_equal("Hello world.\n", @renderer.render(@erb_context), "nth: #{i}")
+      end
     end
 
     def test_default_view_not_exist
@@ -143,8 +157,8 @@ module Gluon::Test
           end
         EOF
       }
-
       load(page_path)
+
       build_page(PageForDefaultViewNotExist)
       begin
         @renderer.render(@erb_context)
@@ -179,18 +193,21 @@ module Gluon::Test
           end
         EOF
       }
-
       make_file(default_view_path) {|out|
         out << 'foo'
       }
-
       make_file(view_path) {|out|
         out << 'bar'
       }
-
       load(page_path)
+
       build_page(PageForViewImplicitOverrideDefault)
       assert_equal('bar', @renderer.render(@erb_context))
+
+      10.times do |i|
+        build_page(PageForViewImplicitOverrideDefault)
+        assert_equal('bar', @renderer.render(@erb_context), "nth: #{i}")
+      end
     end
 
     def test_view_explicit_override_default
@@ -219,18 +236,21 @@ module Gluon::Test
           end
         EOF
       }
-
       make_file(default_view_path) {|out|
         out << 'foo'
       }
-
       make_file(view_path) {|out|
         out << 'bar'
       }
-
       load(page_path)
+
       build_page(PageForViewExplicitOverrideDefault)
       assert_equal('bar', @renderer.render(@erb_context))
+
+      10.times do |i|
+        build_page(PageForViewExplicitOverrideDefault)
+        assert_equal('bar', @renderer.render(@erb_context), "nth: #{i}")
+      end
     end
 
     def test_view_explicit_not_exist_override_default
@@ -259,12 +279,11 @@ module Gluon::Test
           end
         EOF
       }
-
       make_file(default_view_path) {|out|
         out << 'foo'
       }
-
       load(page_path)
+
       build_page(PageForViewExplicitNotExistOverrideDefault)
       begin
         @renderer.render(@erb_context)
@@ -289,6 +308,13 @@ module Gluon::Test
       assert_raise(NoMethodError) {
         @renderer.render(@erb_context)
       }
+
+      10.times do |i|
+        build_page(PageForExplicitView)
+        assert_raise(NoMethodError, "nth: #{i}") {
+          @renderer.render(@erb_context)
+        }
+      end
     end
   end
 end
