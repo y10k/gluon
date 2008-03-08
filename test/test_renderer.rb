@@ -276,6 +276,20 @@ module Gluon::Test
       end
       flunk('not to reach')
     end
+
+    class NoMethodPage
+    end
+
+    def test_view_explicit
+      make_file("#{@view_dir}/Foo.rhtml") {|out|
+        out << "<%= value :foo %>"
+      }
+
+      build_page(PageForExplicitView)
+      assert_raise(NoMethodError) {
+        @renderer.render(@erb_context)
+      }
+    end
   end
 end
 
