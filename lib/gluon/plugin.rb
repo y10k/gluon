@@ -19,6 +19,7 @@ module Gluon
     def setup
       @plugin_set.freeze
       if (@plugin_set.empty?) then
+        @values = []
         @struct = NO_PLUGIN
       else
         @names = @plugin_set.keys

@@ -175,18 +175,19 @@ module Gluon
     private :call_actions
 
     def apply
+      r = nil
       funcall(:c=, @c)
       funcall_hook(:page_hook) {
         funcall(:page_start)
         begin
           set_params
           call_actions
-          yield
+          r = yield
         ensure
           funcall(:page_end)
         end
       }
-      self
+      r
     end
   end
 end
