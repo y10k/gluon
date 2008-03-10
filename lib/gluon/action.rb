@@ -12,7 +12,8 @@ module Gluon
       'page_start' => true,
       'page_end' => true,
       '__view__' => true,
-      '__default_view__' => true
+      '__default_view__' => true,
+      '__if_modified__' => true
     }
 
     def initialize(page, rs_context, prefix='')
@@ -174,9 +175,21 @@ module Gluon
     end
     private :call_actions
 
+    def setup
+      funcall(:c=, @c)
+      self
+    end
+
+    def modified?(cache_tag)
+      if (@page.respond_to? :__if_modified__) then
+        @page.__if_modified__(cache_tag)
+      else
+        true
+      end
+    end
+
     def apply
       r = nil
-      funcall(:c=, @c)
       funcall_hook(:page_hook) {
         funcall(:page_start)
         begin

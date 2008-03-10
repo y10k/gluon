@@ -9,6 +9,7 @@ require 'gluon/renderer'
 require 'gluon/rs'
 require 'gluon/version'
 require 'rack'
+require 'thread'
 
 module Gluon
   class Builder
@@ -198,6 +199,9 @@ module Gluon
       @session_man = SessionManager.new(@session_conf.options)
       @plugin_maker.setup
 
+      cache = {}
+      c_lock = Mutex.new
+
       @app = proc{|env|
         req = Rack::Request.new(env)
         res = Rack::Response.new
@@ -211,11 +215,44 @@ module Gluon
             rs_context = RequestResponseContext.new(req, res, session, @dispatcher, plugin)
             begin
               page = page_type.new
-              action = Action.new(page, rs_context)
+              action = Action.new(page, rs_context).setup
               po = PresentationObject.new(page, rs_context, @renderer, action)
               erb_context = ERBContext.new(po, rs_context)
               page_type = RequestResponseContext.switch_from{
-                res.write action.apply{ @renderer.render(erb_context) }
+                c_key = [ page_type, req.path_info ]
+                if (c_entry = c_lock.synchronize{ cache[c_key] }) then
+                  cache_result = nil
+                  if (c_entry[:lock].synchronize{
+                        cache_result = c_entry[:result] # save in lock
+                        action.modified? c_entry[:cache_tag]
+                      })
+                  then
+                    # update cache
+                    result = action.apply{ @renderer.render(erb_context) }
+                    res.write(result)
+                    c_entry[:lock].synchronize{
+                      c_entry[:cache_tag] = rs_context.cache_tag
+                      c_entry[:result] = result
+                    }
+                  else
+                    # use cache
+                    res.write(cache_result)
+                  end
+                else
+                  result = action.apply{ @renderer.render(erb_context) }
+                  res.write(result)
+                  if (rs_context.cache_tag) then
+                    # create cache
+                    c_lock.synchronize{
+                      c_entry = cache[c_key] || { :lock => Mutex.new }
+                      c_entry[:lock].synchronize{
+                        c_entry[:cache_tag] = rs_context.cache_tag
+                        c_entry[:result] = result
+                      }
+                      cache[c_key] = c_entry
+                    }
+                  end
+                end
               }
             end while (page_type)
           }

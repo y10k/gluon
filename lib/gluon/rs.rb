@@ -261,11 +261,13 @@ module Gluon
       @session = session
       @dispatcher = dispatcher
       @plugin = plugin
+      @cache_tag = nil
     end
 
     attr_reader :req
     attr_reader :res
     attr_reader :plugin
+    attr_accessor :cache_tag
 
     def_delegator :@session, :get, :session_get
     def_delegator :@session, :id, :session_id

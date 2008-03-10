@@ -30,7 +30,7 @@ module Gluon::Test
       build_page(SimplePage)
 
       count = 0
-      @action.apply{
+      @action.setup.apply{
 	count += 1
       }
 
@@ -45,7 +45,7 @@ module Gluon::Test
       build_page(PageWithReqRes)
 
       count = 0
-      @action.apply{
+      @action.setup.apply{
 	count += 1
       }
 
