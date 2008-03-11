@@ -217,6 +217,7 @@ module Gluon
             plugin = @plugin_maker.new_plugin
             rs_context = RequestResponseContext.new(req, res, session, @dispatcher, plugin)
             begin
+              rs_context.cache_tag = nil
               page = page_type.new
               action = Action.new(page, rs_context).setup
               po = PresentationObject.new(page, rs_context, @renderer, action)
