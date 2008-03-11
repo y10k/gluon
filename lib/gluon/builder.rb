@@ -33,6 +33,7 @@ module Gluon
       @session_conf = SessionConfig.new
       @access_log = File.join(@base_dir, 'access.log')
       @port = 9202
+      @page_cache = false
       @url_map = []
       @plugin_maker = PluginMaker.new
       @finalizer = proc{}
@@ -45,6 +46,7 @@ module Gluon
 
     attr_accessor :access_log
     attr_accessor :port
+    attr_accessor :page_cache
 
     def mount(page_type, path)
       @url_map << [ path, page_type ]
@@ -152,6 +154,7 @@ module Gluon
     class TopLevelContext < Context
       def_delegator :@builder, :access_log=, :access_log
       def_delegator :@builder, :port=, :port
+      def_delegator :@builder, :page_cache=, :page_cache
       def_delegator :@builder, :mount
       def_delegator :@builder, :initial
       def_delegator :@builder, :final
@@ -229,19 +232,18 @@ module Gluon
                   then
                     # update cache
                     result = action.apply{ @renderer.render(erb_context) }
-                    res.write(result)
                     c_entry[:lock].synchronize{
                       c_entry[:cache_tag] = rs_context.cache_tag
                       c_entry[:result] = result
                     }
+                    res.write(result)
                   else
                     # use cache
                     res.write(cache_result)
                   end
                 else
                   result = action.apply{ @renderer.render(erb_context) }
-                  res.write(result)
-                  if (rs_context.cache_tag) then
+                  if (@page_cache && rs_context.cache_tag) then
                     # create cache
                     c_lock.synchronize{
                       c_entry = cache[c_key] || { :lock => Mutex.new }
@@ -252,6 +254,7 @@ module Gluon
                       cache[c_key] = c_entry
                     }
                   end
+                  res.write(result)
                 end
               }
             end while (page_type)

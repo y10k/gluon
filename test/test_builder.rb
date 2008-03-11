@@ -44,6 +44,13 @@ module Gluon::Test
       assert_equal(80, @builder.port)
     end
 
+    def test_config_page_cache
+      @builder.eval_conf %q{
+        page_cache true
+      }
+      assert_equal(true, @builder.page_cache)
+    end
+
     class Foo
     end
 
