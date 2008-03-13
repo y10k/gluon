@@ -225,18 +225,21 @@ module Gluon
               page_type = RequestResponseContext.switch_from{
                 c_key = [ page_type, req.path_info ]
                 if (c_entry = c_lock.synchronize{ cache[c_key] }) then
+                  modified = nil
                   cache_result = nil
-                  if (c_entry[:lock].synchronize{
-                        cache_result = c_entry[:result] # save in lock
-                        action.modified? c_entry[:cache_tag]
-                      })
-                  then
-                    # update cache
+                  c_entry[:lock].synchronize{
+                    modified = (action.modified? c_entry[:cache_tag])
+                    cache_result = c_entry[:result]
+                  }
+                  if (modified) then
                     result = action.apply{ @renderer.render(erb_context) }
-                    c_entry[:lock].synchronize{
-                      c_entry[:cache_tag] = rs_context.cache_tag
-                      c_entry[:result] = result
-                    }
+                    if (modified != :no_cache) then
+                      # update cache
+                      c_entry[:lock].synchronize{
+                        c_entry[:cache_tag] = rs_context.cache_tag
+                        c_entry[:result] = result
+                      }
+                    end
                     res.write(result)
                   else
                     # use cache
