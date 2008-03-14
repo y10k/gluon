@@ -205,6 +205,14 @@ module Gluon
       cache = {}
       c_lock = Mutex.new
 
+      default_cache_key = Object.new
+      class << default_cache_key
+        def inspect
+          super + '(default_cache_key)'
+        end
+      end
+      default_cache_key.freeze
+
       @app = proc{|env|
         req = Rack::Request.new(env)
         res = Rack::Response.new
@@ -223,7 +231,8 @@ module Gluon
               po = PresentationObject.new(page, rs_context, @renderer, action)
               erb_context = ERBContext.new(po, rs_context)
               page_type = RequestResponseContext.switch_from{
-                c_key = [ page_type, req.path_info ]
+                cache_key = action.cache_key || default_cache_key
+                c_key = [ req.path_info, page_type, cache_key ]
                 if (c_entry = c_lock.synchronize{ cache[c_key] }) then
                   modified = nil
                   cache_result = nil

@@ -13,6 +13,7 @@ module Gluon
       'page_end' => true,
       '__view__' => true,
       '__default_view__' => true,
+      '__cache_key__' => true,
       '__if_modified__' => true
     }
 
@@ -178,6 +179,10 @@ module Gluon
     def setup
       funcall(:c=, @c)
       self
+    end
+
+    def cache_key
+      funcall(:__cache_key__)
     end
 
     def modified?(cache_tag)

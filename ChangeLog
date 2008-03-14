@@ -1,3 +1,7 @@
+2008-03-14  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/action.rb, lib/gluon/builder.rb: cache key. 
+
 2008-03-11  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/action.rb, lib/gluon/builder.rb, lib/gluon/po.rb,
