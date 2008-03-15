@@ -213,11 +213,6 @@ module Gluon::Test
       }
       assert_equal(1, count)
     end
-
-    class PageWithPlugin
-      attr_accessor :foo
-      attr_accessor :bar
-    end
   end
 
   class ActionParameterScannerTest < Test::Unit::TestCase
