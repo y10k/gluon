@@ -79,7 +79,7 @@ module Gluon::Test
       build_page(PageWithHooks)
 
       count = 0
-      @action.apply{
+      @action.setup.apply{
 	count += 1
 	assert_equal([ :page_hook_in, :page_start ], @page.calls)
       }
@@ -114,7 +114,7 @@ module Gluon::Test
       build_page(PageWithActions)
 
       count = 0
-      @action.apply{
+      @action.setup.apply{
 	count += 1
 	assert_equal([ :foo_action ], @page.calls)
       }
@@ -141,7 +141,7 @@ module Gluon::Test
       build_page(PageWithScalarParams)
 
       count = 0
-      @action.apply{
+      @action.setup.apply{
 	count += 1
 	assert_equal('Apple', @page.foo)
 	assert_equal(nil,     @page.bar)
@@ -173,7 +173,7 @@ module Gluon::Test
       build_page(PageWithListParams)
 
       count = 0
-      @action.apply{
+      @action.setup.apply{
         count += 1
         assert_equal([], @page.foo)
         assert_equal(%w[ apple ], @page.bar)
@@ -205,7 +205,7 @@ module Gluon::Test
       build_page(PageWithBooleanParams)
 
       count = 0
-      @action.apply{
+      @action.setup.apply{
 	count += 1
 	assert_equal(false, @page.foo)
 	assert_equal(true,  @page.bar)
