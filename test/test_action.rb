@@ -213,6 +213,46 @@ module Gluon::Test
       }
       assert_equal(1, count)
     end
+
+    class PageWithCacheKey
+      def __cache_key__
+	:dummy_cache_key
+      end
+    end
+
+    def test_cache_key
+      build_page(PageWithCacheKey)
+      assert_equal(:dummy_cache_key, @action.cache_key)
+    end
+
+    def test_cache_key_default
+      build_page(SimplePage)
+      assert_nil(@action.cache_key)
+    end
+
+    class PageWithIfModified
+      def __if_modified__(cache_tag)
+	case (cache_tag)
+	when :foo
+	  true
+	when :bar
+	  false
+	else
+	  raise "unexpected tag: #{cache_tag}"
+	end
+      end
+    end
+
+    def test_modified
+      build_page(PageWithIfModified)
+      assert_equal(true, (@action.modified? :foo))
+      assert_equal(false, (@action.modified? :bar))
+    end
+
+    def test_modified_default
+      build_page(SimplePage)
+      assert_equal(true, (@action.modified? :dummy_cache_tag))
+    end
   end
 
   class ActionParameterScannerTest < Test::Unit::TestCase
