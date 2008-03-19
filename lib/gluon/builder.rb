@@ -222,6 +222,7 @@ module Gluon
             req.env['gluon.version'] = VERSION
             req.env['gluon.curr_page'] = page_type
             req.env['gluon.path_info'] = gluon_path_info
+            req.env['gluon.page_cache'] = @page_cache
             plugin = @plugin_maker.new_plugin
             rs_context = RequestResponseContext.new(req, res, session, @dispatcher, plugin)
             begin
