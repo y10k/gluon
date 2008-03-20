@@ -12,7 +12,7 @@ mount Example::Menu, '/example/menu'
 mount Example::ExamplePanel, '/example/ex_panel'
 mount Example::CodePanel, '/example/code_panel'
 mount Example::ViewPanel, '/example/view_panel'
-mount Example::PageCache, '/example/ex_panel/pagecache'
+mount Example::PageCache, '/example/ex_panel/pagecache' # ignored `Example::Panel'
 
 # Local Variables:
 # mode: Ruby
