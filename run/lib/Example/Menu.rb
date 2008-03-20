@@ -7,7 +7,9 @@ class Example
 
         class << key
           def example
-            return Example::ExamplePanel, :path_info => "/#{self}", :text => self
+            return Example::ExamplePanel,
+              :path_info => "/#{self}",
+              :text => Example::Dispatch::EXAMPLES[self][:title]
           end
         end
 

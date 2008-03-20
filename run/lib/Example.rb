@@ -12,6 +12,7 @@ class Example
   autoload :Import, 'Example/Import'
   autoload :Link, 'Example/Link'
   autoload :Menu, 'Example/Menu'
+  autoload :PageCache, 'Example/PageCache'
   autoload :Password, 'Example/Password'
   autoload :Radio, 'Example/Radio'
   autoload :Select, 'Example/Select'
