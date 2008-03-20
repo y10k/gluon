@@ -32,15 +32,16 @@ end
 
 task :example => [ :example_install ] do
   sv_type = ENV['SERVER'] || 'webrick'
-  ruby '-I', LIB_DIR, "welcom/server/#{sv_type}"
+  ruby '-I', LIB_DIR, "#{EXAMPLE_DIR}/server/#{sv_type}"
 end
 
 task :example_install do
-  ruby '-I', LIB_DIR, GLUON_SETUP, 'welcom'
+  rm_f "#{EXAMPLE_DIR}/config.rb"
+  ruby '-I', LIB_DIR, GLUON_SETUP, EXAMPLE_DIR
 end
 
 task :example_update do
-  ruby '-I', LIB_DIR, GLUON_UPDATE, 'welcom'
+  ruby '-I', LIB_DIR, GLUON_UPDATE, EXAMPLE_DIR
 end
 
 require 'rake/gempackagetask'
