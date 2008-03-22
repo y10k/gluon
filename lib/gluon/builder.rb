@@ -13,6 +13,9 @@ require 'thread'
 
 module Gluon
   class AutoReloader
+    # for ident(1)
+    CVS_ID = '$Id$'
+
     def initialize(app)
       @app = app
       @lock = Mutex.new
