@@ -12,6 +12,46 @@ require 'rack'
 require 'thread'
 
 module Gluon
+  class AutoReloader
+    def initialize(app)
+      @app = app
+      @lock = Mutex.new
+      @loaded = {}
+    end
+
+    def search_library(name)
+      for lib_dir in $:
+        lib_path = File.join(lib_dir, name)
+        next unless (File.file? lib_path)
+        return lib_path
+      end
+    end
+    private :search_library
+
+    def reload
+      for lib_name in $"
+        next unless (lib_name =~ /\.rb$/)
+        lib_path = search_library(lib_name) or raise "not found a loaded library: #{lib_name}"
+        mtime = File.stat(lib_path).mtime
+        if (@loaded.key? lib_path) then
+          if (@loaded[lib_path] != mtime) then
+            load(lib_name)
+          end
+        end
+        @loaded[lib_path] = mtime
+      end
+      nil
+    end
+    private :reload
+
+    def call(env)
+      @lock.synchronize{
+        reload
+        @app.call(env)
+      }
+    end
+  end
+
   class Builder
     # for ident(1)
     CVS_ID = '$Id$'
@@ -34,6 +74,7 @@ module Gluon
       @access_log = File.join(@base_dir, 'access.log')
       @port = 9202
       @page_cache = false
+      @auto_reload = false
       @url_map = []
       @plugin_maker = PluginMaker.new
       @finalizer = proc{}
@@ -47,6 +88,7 @@ module Gluon
     attr_accessor :access_log
     attr_accessor :port
     attr_accessor :page_cache
+    attr_accessor :auto_reload
 
     def mount(page_type, path)
       @url_map << [ path, page_type ]
@@ -155,6 +197,7 @@ module Gluon
       def_delegator :@builder, :access_log=, :access_log
       def_delegator :@builder, :port=, :port
       def_delegator :@builder, :page_cache=, :page_cache
+      def_delegator :@builder, :auto_reload=, :auto_reload
       def_delegator :@builder, :mount
       def_delegator :@builder, :initial
       def_delegator :@builder, :final
@@ -279,6 +322,9 @@ module Gluon
         end
       }
 
+      if (@auto_reload) then
+        @app = AutoReloader.new(@app)
+      end
       @app = Rack::ShowExceptions.new(@app)
       if (@access_log) then
         @logger = File.open(@access_log, 'a')

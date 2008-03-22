@@ -1,3 +1,7 @@
+2008-03-22  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/builder.rb: auto reload.
+
 2008-03-14  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/action.rb, lib/gluon/builder.rb: cache key. 
