@@ -6,6 +6,18 @@ access_log "#{base_dir}/access.log"
 require 'Welcom'
 require 'Example'
 
+# for debug
+page_cache false
+auto_reload true
+
+# for debug
+#page_cache false
+#auto_reload true
+
+# for product
+#page_cache true
+#auto_reload false
+
 mount Welcom, '/'
 mount Example, '/example'
 mount Example::Menu, '/example/menu'
