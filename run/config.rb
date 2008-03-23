@@ -7,10 +7,6 @@ require 'Welcom'
 require 'Example'
 
 # for debug
-page_cache false
-auto_reload true
-
-# for debug
 #page_cache false
 #auto_reload true
 
