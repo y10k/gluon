@@ -458,8 +458,8 @@ module Gluon
     alias NOT neg
 
     attr_reader :po
-    def_delegator :@c, :req
-    def_delegator :@c, :res
+    attr_reader :c
+
     def_delegator :@po, :value
     def_delegator :@po, :cond
     def_delegator :@po, :foreach
