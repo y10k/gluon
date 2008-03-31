@@ -299,18 +299,18 @@ module Gluon::Test
     class NoMethodPage
     end
 
-    def test_view_explicit
-      make_file("#{@view_dir}/Foo.rhtml") {|out|
+    def test_view_no_method_error
+      make_file("#{@view_dir}/Gluon/Test/ViewRendererTest/NoMethodPage.rhtml") {|out|
         out << "<%= value :foo %>"
       }
 
-      build_page(PageForExplicitView)
+      build_page(NoMethodPage)
       assert_raise(NoMethodError) {
         @renderer.render(@erb_context)
       }
 
       10.times do |i|
-        build_page(PageForExplicitView)
+        build_page(NoMethodPage)
         assert_raise(NoMethodError, "nth: #{i}") {
           @renderer.render(@erb_context)
         }
