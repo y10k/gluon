@@ -242,24 +242,27 @@ module Gluon
       nil
     end
 
-    def build
-      @dispatcher = Dispatcher.new(@url_map)
-      @renderer = ViewRenderer.new(@view_dir)
-      @session_man = SessionManager.new(@session_conf.options)
-      @plugin_maker.setup
+    class Application
+      def initialize
+        @cache = {}
+        @c_lock = Mutex.new
 
-      cache = {}
-      c_lock = Mutex.new
-
-      default_cache_key = Object.new
-      class << default_cache_key
-        def inspect
-          super + '(default_cache_key)'
+        @default_cache_key = Object.new
+        class << @default_cache_key
+          def inspect
+            super + '(default_cache_key)'
+          end
         end
+        @default_cache_key.freeze
       end
-      default_cache_key.freeze
 
-      @app = proc{|env|
+      attr_writer :dispatcher
+      attr_writer :renderer
+      attr_writer :session_man
+      attr_writer :plugin_maker
+      attr_writer :page_cache
+
+      def call(env)
         req = Rack::Request.new(env)
         res = Rack::Response.new
         page_type, gluon_path_info = @dispatcher.look_up(req.path_info)
@@ -278,9 +281,9 @@ module Gluon
               po = PresentationObject.new(page, rs_context, @renderer, action)
               erb_context = ERBContext.new(po, rs_context)
               page_type = RequestResponseContext.switch_from{
-                cache_key = action.cache_key || default_cache_key
+                cache_key = action.cache_key || @default_cache_key
                 c_key = [ req.path_info, page_type, cache_key ]
-                if (c_entry = c_lock.synchronize{ cache[c_key] }) then
+                if (c_entry = @c_lock.synchronize{ @cache[c_key] }) then
                   modified = nil
                   cache_result = nil
                   c_entry[:lock].synchronize{
@@ -302,16 +305,18 @@ module Gluon
                     res.write(cache_result)
                   end
                 else
-                  result = action.apply{ @renderer.render(erb_context) }
+                  result = action.apply{
+                    @renderer.render(erb_context)
+                  }
                   if (@page_cache && rs_context.cache_tag) then
                     # create cache
-                    c_lock.synchronize{
-                      c_entry = cache[c_key] || { :lock => Mutex.new }
+                    @c_lock.synchronize{
+                      c_entry = @cache[c_key] || { :lock => Mutex.new }
                       c_entry[:lock].synchronize{
                         c_entry[:cache_tag] = rs_context.cache_tag
                         c_entry[:result] = result
                       }
-                      cache[c_key] = c_entry
+                      @cache[c_key] = c_entry
                     }
                   end
                   res.write(result)
@@ -323,7 +328,21 @@ module Gluon
         else
           [ 404, { "Content-Type" => "text/plain" }, [ "404 Not Found: #{req.env['REQUEST_URI']}" ] ]
         end
-      }
+      end
+    end
+
+    def build
+      @dispatcher = Dispatcher.new(@url_map)
+      @renderer = ViewRenderer.new(@view_dir)
+      @session_man = SessionManager.new(@session_conf.options)
+      @plugin_maker.setup
+
+      @app = Application.new
+      @app.dispatcher = @dispatcher
+      @app.renderer = @renderer
+      @app.session_man = @session_man
+      @app.plugin_maker = @plugin_maker
+      @app.page_cache = @page_cache
 
       if (@auto_reload) then
         @app = AutoReloader.new(@app)
@@ -340,6 +359,8 @@ module Gluon
 
       { :port => @port }
     end
+
+    attr_reader :app
 
     def run(handler, *opts)
       begin
