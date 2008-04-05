@@ -298,14 +298,14 @@ module Gluon
       self
     end
 
-    def redirect_to(page)
-      location(@req.script_name + @dispatcher.class2path(page))
+    def redirect_to(page_type)
+      location(@req.script_name + @dispatcher.class2path(page_type))
     end
 
     SWITCH_LABEL = :gluon_switch
 
-    def switch_to(page)
-      throw(SWITCH_LABEL, page)
+    def switch_to(page_type)
+      throw(SWITCH_LABEL, page_type)
     end
 
     def self.switch_from
