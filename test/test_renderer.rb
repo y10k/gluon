@@ -51,18 +51,18 @@ module Gluon::Test
         out << "Hello world.\n"
       }
       build_page(PageForImplicitView)
-      assert_equal("Hello world.\n", @renderer.render(@c, @page))
+      assert_equal("Hello world.\n", @renderer.render(@page, @c))
 
       10.times do |i|
         build_page(PageForImplicitView)
-        assert_equal("Hello world.\n", @renderer.render(@c, @page), "nth: #{i}")
+        assert_equal("Hello world.\n", @renderer.render(@page, @c), "nth: #{i}")
       end
     end
 
     def test_view_implicit_not_exist
       build_page(PageForImplicitView)
       assert_raise(RuntimeError) {
-        @renderer.render(@c, @page)
+        @renderer.render(@page, @c)
       }
     end
 
@@ -77,18 +77,18 @@ module Gluon::Test
         out << "Hello world.\n"
       }
       build_page(PageForExplicitView)
-      assert_equal("Hello world.\n", @renderer.render(@c, @page))
+      assert_equal("Hello world.\n", @renderer.render(@page, @c))
 
       10.times do |i|
         build_page(PageForExplicitView)
-        assert_equal("Hello world.\n", @renderer.render(@c, @page), "nth: #{i}")
+        assert_equal("Hello world.\n", @renderer.render(@page, @c), "nth: #{i}")
       end
     end
 
     def test_view_explicit_not_exist
       build_page(PageForExplicitView)
       begin
-        @renderer.render(@c, @page)
+        @renderer.render(@page, @c)
         flunk('not to reach')
       rescue
         assert_instance_of(Errno::ENOENT, $!)
@@ -125,11 +125,11 @@ module Gluon::Test
       load(page_path)
 
       build_page(PageForDefaultView)
-      assert_equal("Hello world.\n", @renderer.render(@c, @page))
+      assert_equal("Hello world.\n", @renderer.render(@page, @c))
 
       10.times do |i|
         build_page(PageForDefaultView)
-        assert_equal("Hello world.\n", @renderer.render(@c, @page), "nth: #{i}")
+        assert_equal("Hello world.\n", @renderer.render(@page, @c), "nth: #{i}")
       end
     end
 
@@ -158,7 +158,7 @@ module Gluon::Test
 
       build_page(PageForDefaultViewNotExist)
       begin
-        @renderer.render(@c, @page)
+        @renderer.render(@page, @c)
         flunk('not to reach')
       rescue
         assert_instance_of(Errno::ENOENT, $!)
@@ -199,11 +199,11 @@ module Gluon::Test
       load(page_path)
 
       build_page(PageForViewImplicitOverrideDefault)
-      assert_equal('bar', @renderer.render(@c, @page))
+      assert_equal('bar', @renderer.render(@page, @c))
 
       10.times do |i|
         build_page(PageForViewImplicitOverrideDefault)
-        assert_equal('bar', @renderer.render(@c, @page), "nth: #{i}")
+        assert_equal('bar', @renderer.render(@page, @c), "nth: #{i}")
       end
     end
 
@@ -242,11 +242,11 @@ module Gluon::Test
       load(page_path)
 
       build_page(PageForViewExplicitOverrideDefault)
-      assert_equal('bar', @renderer.render(@c, @page))
+      assert_equal('bar', @renderer.render(@page, @c))
 
       10.times do |i|
         build_page(PageForViewExplicitOverrideDefault)
-        assert_equal('bar', @renderer.render(@c, @page), "nth: #{i}")
+        assert_equal('bar', @renderer.render(@page, @c), "nth: #{i}")
       end
     end
 
@@ -283,7 +283,7 @@ module Gluon::Test
 
       build_page(PageForViewExplicitNotExistOverrideDefault)
       begin
-        @renderer.render(@c, @page)
+        @renderer.render(@page, @c)
         flunk('not to reach')
       rescue
         assert_instance_of(Errno::ENOENT, $!)
@@ -303,13 +303,13 @@ module Gluon::Test
 
       build_page(NoMethodPage)
       assert_raise(NoMethodError) {
-        @renderer.render(@c, @page)
+        @renderer.render(@page, @c)
       }
 
       10.times do |i|
         build_page(NoMethodPage)
         assert_raise(NoMethodError, "nth: #{i}") {
-          @renderer.render(@c, @page)
+          @renderer.render(@page, @c)
         }
       end
     end

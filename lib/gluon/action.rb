@@ -200,7 +200,7 @@ module Gluon
         begin
           set_params
           call_actions
-          r = renderer.call(@c, @page, @prefix)
+          r = renderer.call(@page, @c, @prefix)
         ensure
           funcall(:page_end)
         end
