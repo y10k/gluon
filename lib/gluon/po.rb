@@ -243,9 +243,9 @@ module Gluon
         unless (path.kind_of? String) then
           raise "unknown action page type: #{path.class}"
         end
-        path = @c.req.env['SCRIPT_NAME'] + path
+        path = @c.req.script_name + path
       else
-        path = @c.req.env['SCRIPT_NAME'] + @c.req.env['PATH_INFO']
+        path = @c.req.script_name + @c.req.env['PATH_INFO']
       end
       mklink(path, options, &block)
     end
@@ -301,7 +301,7 @@ module Gluon
       prefix = prefix() + curr_prefix + '.'
 
       action = Action.new(page, @c, prefix)
-      action.setup.apply{ @renderer.render(page, @c) }
+      action.setup.apply(@renderer)
     end
 
     def form_value(name)

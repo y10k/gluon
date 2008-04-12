@@ -62,6 +62,8 @@ module Gluon
 
       raise "no view for #{po.page_type}"
     end
+
+    alias call render
   end
 end
 

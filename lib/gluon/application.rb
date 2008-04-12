@@ -39,7 +39,7 @@ module Gluon
             req.env['gluon.curr_page'] = page_type
             req.env['gluon.path_info'] = gluon_path_info
             req.env['gluon.page_cache'] = @page_cache
-            plugin = @plugin_maker.new_plugin
+            plugin = @plugin_maker.call
             rs_context = RequestResponseContext.new(req, res, session, @dispatcher, plugin)
             rs_context.cache_tag = nil
             page = page_type.new
@@ -55,7 +55,7 @@ module Gluon
                   cache_result = c_entry[:result]
                 }
                 if (modified) then
-                  result = action.apply{ @renderer.render(page, rs_context) }
+                  result = action.apply(@renderer)
                   if (modified != :no_cache) then
                     # update cache
                     c_entry[:lock].synchronize{
@@ -69,9 +69,7 @@ module Gluon
                   res.write(cache_result)
                 end
               else
-                result = action.apply{
-                  @renderer.render(page, rs_context)
-                }
+                result = action.apply(@renderer)
                 if (@page_cache && rs_context.cache_tag) then
                   # create cache
                   @c_lock.synchronize{

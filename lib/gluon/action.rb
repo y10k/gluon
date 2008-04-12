@@ -193,14 +193,14 @@ module Gluon
       end
     end
 
-    def apply
+    def apply(renderer)
       r = nil
       funcall_hook(:page_hook) {
         funcall(:page_start)
         begin
           set_params
           call_actions
-          r = yield
+          r = renderer.call(@page, @c)
         ensure
           funcall(:page_end)
         end

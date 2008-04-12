@@ -32,6 +32,8 @@ module Gluon
     def new_plugin
       @struct.new(*@values)
     end
+
+    alias call new_plugin
   end
 end
 

@@ -30,9 +30,8 @@ module Gluon::Test
       build_page(SimplePage)
 
       count = 0
-      @action.setup.apply{
-	count += 1
-      }
+      work = proc{ count += 1 }
+      @action.setup.apply(work)
 
       assert_equal(1, count)
     end
@@ -45,9 +44,10 @@ module Gluon::Test
       build_page(PageWithReqRes)
 
       count = 0
-      @action.setup.apply{
+      work = proc{
 	count += 1
       }
+      @action.setup.apply(work)
 
       assert_equal(1, count)
       assert_equal(@c, @page.c)
@@ -79,10 +79,11 @@ module Gluon::Test
       build_page(PageWithHooks)
 
       count = 0
-      @action.setup.apply{
+      work = proc{
 	count += 1
 	assert_equal([ :page_hook_in, :page_start ], @page.calls)
       }
+      @action.setup.apply(work)
 
       assert_equal(1, count)
       assert_equal([ :page_hook_in, :page_start, :page_end, :page_hook_out ], @page.calls)
@@ -114,10 +115,12 @@ module Gluon::Test
       build_page(PageWithActions)
 
       count = 0
-      @action.setup.apply{
+      work = proc{
 	count += 1
 	assert_equal([ :foo_action ], @page.calls)
       }
+      @action.setup.apply(work)
+
       assert_equal(1, count)
     end
 
@@ -141,11 +144,13 @@ module Gluon::Test
       build_page(PageWithScalarParams)
 
       count = 0
-      @action.setup.apply{
+      work = proc{
 	count += 1
 	assert_equal('Apple', @page.foo)
 	assert_equal(nil,     @page.bar)
       }
+      @action.setup.apply(work)
+
       assert_equal(1, count)
     end
 
@@ -173,12 +178,14 @@ module Gluon::Test
       build_page(PageWithListParams)
 
       count = 0
-      @action.setup.apply{
+      work = proc{
         count += 1
         assert_equal([], @page.foo)
         assert_equal(%w[ apple ], @page.bar)
         assert_equal(%w[ banana orange ], @page.baz)
       }
+      @action.setup.apply(work)
+
       assert_equal(1, count)
     end
 
@@ -205,12 +212,14 @@ module Gluon::Test
       build_page(PageWithBooleanParams)
 
       count = 0
-      @action.setup.apply{
+      work = proc{
 	count += 1
 	assert_equal(false, @page.foo)
 	assert_equal(true,  @page.bar)
 	assert_equal(false, @page.baz)
       }
+      @action.setup.apply(work)
+
       assert_equal(1, count)
     end
 
