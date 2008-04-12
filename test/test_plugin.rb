@@ -34,9 +34,18 @@ module Gluon::Test
       }
     end
 
+    FROZEN_ERROR = case (RUBY_VERSION)
+                   when /^1\.8\./
+                     TypeError
+                   when /^1\.9\./
+                     RuntimeError
+                   else
+                     raise "unkonwn ruby version: #{RUBY_VERSION}"
+                   end
+
     def test_freeze
       @plugin_maker.setup
-      assert_raise(TypeError) {
+      assert_raise(FROZEN_ERROR) {
         @plugin_maker.add(:foo, 'apple')
       }
     end
