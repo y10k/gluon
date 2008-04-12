@@ -1,11 +1,9 @@
 # application builder
 
 require 'forwardable'
-require 'gluon/action'
 require 'gluon/application'
 require 'gluon/dispatcher'
 require 'gluon/plugin'
-require 'gluon/po'
 require 'gluon/renderer'
 require 'gluon/rs'
 require 'gluon/version'

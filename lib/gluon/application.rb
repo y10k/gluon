@@ -1,5 +1,9 @@
 # application
 
+require 'gluon/action'
+require 'gluon/rs'
+require 'rack'
+
 module Gluon
   class Application
     # for ident(1)
@@ -42,8 +46,6 @@ module Gluon
 		rs_context.cache_tag = nil
 		page = page_type.new
 		action = Action.new(page, rs_context).setup
-		po = PresentationObject.new(page, rs_context, @renderer)
-		erb_context = ERBContext.new(po, rs_context)
 		page_type = RequestResponseContext.switch_from{
 		  begin
 		    cache_key = action.cache_key || @default_cache_key
@@ -56,7 +58,7 @@ module Gluon
 			cache_result = c_entry[:result]
 		      }
 		      if (modified) then
-			result = action.apply{ @renderer.render(erb_context) }
+			result = action.apply{ @renderer.render(page, rs_context) }
 			if (modified != :no_cache) then
 			  # update cache
 			  c_entry[:lock].synchronize{
@@ -71,7 +73,7 @@ module Gluon
 		      end
 		    else
 		      result = action.apply{
-			@renderer.render(erb_context)
+			@renderer.render(page, rs_context)
 		      }
 		      if (@page_cache && rs_context.cache_tag) then
 			# create cache
@@ -102,8 +104,6 @@ module Gluon
 	      rs_context = nil
 	      page = nil
 	      action = nil
-	      po = nil
-	      erb_context = nil
 	      page_type = nil
 	    end
 	  }

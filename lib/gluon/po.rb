@@ -301,9 +301,7 @@ module Gluon
       prefix = prefix() + curr_prefix + '.'
 
       action = Action.new(page, @c, prefix)
-      po = PresentationObject.new(page, @c, @renderer, prefix)
-      erb_context = ERBContext.new(po, @c)
-      action.setup.apply{ @renderer.render(erb_context) }
+      action.setup.apply{ @renderer.render(page, @c) }
     end
 
     def form_value(name)

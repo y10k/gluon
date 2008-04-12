@@ -1,6 +1,7 @@
 # view renderer
 
 require 'erb'
+require 'gluon/po'
 require 'thread'
 
 module Gluon
@@ -44,8 +45,9 @@ module Gluon
     end
     private :load
 
-    def render(erb_context)
-      po = erb_context.po
+    def render(page, rs_context)
+      po = PresentationObject.new(page, rs_context, self)
+      erb_context = ERBContext.new(po, rs_context)
       view_path = File.join(@view_dir, po.__view__)
       if (po.view_explicit?) then
         erb_proc = load(view_path)
