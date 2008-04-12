@@ -45,8 +45,8 @@ module Gluon
     end
     private :load
 
-    def render(page, rs_context)
-      po = PresentationObject.new(page, rs_context, self)
+    def render(rs_context, page, prefix='')
+      po = PresentationObject.new(page, rs_context, self, prefix)
       erb_context = ERBContext.new(po, rs_context)
       view_path = File.join(@view_dir, po.__view__)
       if (po.view_explicit?) then
