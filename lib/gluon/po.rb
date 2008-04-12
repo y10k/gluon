@@ -10,11 +10,10 @@ module Gluon
 
     extend Forwardable
 
-    def initialize(page, rs_context, renderer, action, prefix='')
+    def initialize(page, rs_context, renderer, prefix='')
       @page = page
       @c = rs_context
       @renderer = renderer
-      @action = action
       @prefix = prefix
       @stack = []
     end
@@ -302,7 +301,7 @@ module Gluon
       prefix = prefix() + curr_prefix + '.'
 
       action = Action.new(page, @c, prefix)
-      po = PresentationObject.new(page, @c, @renderer, action, prefix)
+      po = PresentationObject.new(page, @c, @renderer, prefix)
       erb_context = ERBContext.new(po, @c)
       action.setup.apply{ @renderer.render(erb_context) }
     end

@@ -32,7 +32,7 @@ module Gluon::Test
     def build_page(page_type)
       @page = page_type.new
       @action = Gluon::Action.new(@page, @c)
-      @po = Gluon::PresentationObject.new(@page, @c, @renderer, @action)
+      @po = Gluon::PresentationObject.new(@page, @c, @renderer)
       @erb_context = Gluon::ERBContext.new(@po, @c)
     end
     private :build_page

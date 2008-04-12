@@ -42,7 +42,7 @@ module Gluon
 		rs_context.cache_tag = nil
 		page = page_type.new
 		action = Action.new(page, rs_context).setup
-		po = PresentationObject.new(page, rs_context, @renderer, action)
+		po = PresentationObject.new(page, rs_context, @renderer)
 		erb_context = ERBContext.new(po, rs_context)
 		page_type = RequestResponseContext.switch_from{
 		  begin
