@@ -24,29 +24,6 @@ module Gluon
       @object = Object.new
     end
 
-    def funcall2(obj, name, *args)
-      if (obj.respond_to? name) then
-        obj.__send__(name, *args)
-      end
-    end
-    private :funcall2
-
-    def funcall(name, *args)
-      funcall2(@controller, name, *args)
-    end
-    private :funcall
-
-    def funcall_hook(name, *args)
-      if (@controller.respond_to? name) then
-        @controller.__send__(name, *args) {
-          yield
-        }
-      else
-        yield
-      end
-    end
-    private :funcall_hook
-
     class ParameterScanner
       include Enumerable
 
@@ -106,6 +83,13 @@ module Gluon
     end
     private :each_param
 
+    def funcall(obj, name, *args)
+      if (obj.respond_to? name) then
+        obj.__send__(name, *args)
+      end
+    end
+    private :funcall
+
     def set_params
       param_alist = @c.req.params.find_all{|name, value|
         name.length > @prefix.length && name[0, @prefix.length] == @prefix
@@ -127,16 +111,16 @@ module Gluon
         type = types.delete(long_name) || 'scalar'
         case (type)
         when 'scalar'
-          funcall2(curr_obj, "#{short_name}=", value)
+          funcall(curr_obj, "#{short_name}=", value)
         when 'list'
           case (value)
           when Array
-            funcall2(curr_obj, "#{short_name}=", value)
+            funcall(curr_obj, "#{short_name}=", value)
           else
-            funcall2(curr_obj, "#{short_name}=", [ value ])
+            funcall(curr_obj, "#{short_name}=", [ value ])
           end
         when 'bool'
-          funcall2(curr_obj, "#{short_name}=", true)
+          funcall(curr_obj, "#{short_name}=", true)
         else
           raise "unknown #{long_name}@type: #{type}"
         end
@@ -147,9 +131,9 @@ module Gluon
         when 'scalar'
           # nothing to do.
         when 'list'
-          funcall2(curr_obj, "#{short_name}=", [])
+          funcall(curr_obj, "#{short_name}=", [])
         when 'bool'
-          funcall2(curr_obj, "#{short_name}=", false)
+          funcall(curr_obj, "#{short_name}=", false)
         else
           raise "unknown #{long_name}@type: #{type}"
         end
@@ -177,12 +161,16 @@ module Gluon
     private :call_actions
 
     def setup
-      funcall(:c=, @c)
+      if (@controller.respond_to? :c=) then
+        @controller.c = @c
+      end
       self
     end
 
     def cache_key
-      funcall(:__cache_key__)
+      if (@controller.respond_to? :__cache_key__) then
+        @controller.__cache_key__
+      end
     end
 
     def modified?(cache_tag)
@@ -193,16 +181,27 @@ module Gluon
       end
     end
 
+    def page_hook
+      if (@controller.respond_to? :page_hook) then
+        @controller.page_hook{
+          yield
+        }
+      else
+        yield
+      end
+    end
+    private :page_hook
+
     def apply(renderer)
       r = nil
-      funcall_hook(:page_hook) {
-        funcall(:page_start)
+      page_hook{
+        @controller.page_start if (@controller.respond_to? :page_start)
         begin
           set_params
           call_actions
           r = renderer.call(@controller, @c, @prefix)
         ensure
-          funcall(:page_end)
+          @controller.page_end if (@controller.respond_to? :page_end)
         end
       }
       r
