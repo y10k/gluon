@@ -42,8 +42,8 @@ module Gluon
             plugin = @plugin_maker.call
             rs_context = RequestResponseContext.new(req, res, session, @dispatcher, plugin)
             rs_context.cache_tag = nil
-            page = page_type.new
-            action = Action.new(page, rs_context).setup
+            controller = page_type.new
+            action = Action.new(controller, rs_context).setup
             page_type = RequestResponseContext.switch_from{
               cache_key = action.cache_key || @default_cache_key
               c_key = [ req.path_info, page_type, cache_key ]

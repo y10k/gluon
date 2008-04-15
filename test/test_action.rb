@@ -18,8 +18,8 @@ module Gluon::Test
     end
 
     def build_page(page_type)
-      @page = page_type.new
-      @action = Gluon::Action.new(@page, @c)
+      @controller = page_type.new
+      @action = Gluon::Action.new(@controller, @c)
     end
     private :build_page
 
@@ -50,7 +50,7 @@ module Gluon::Test
       @action.setup.apply(work)
 
       assert_equal(1, count)
-      assert_equal(@c, @page.c)
+      assert_equal(@c, @controller.c)
     end
 
     class PageWithHooks
@@ -81,12 +81,12 @@ module Gluon::Test
       count = 0
       work = proc{
 	count += 1
-	assert_equal([ :page_hook_in, :page_start ], @page.calls)
+	assert_equal([ :page_hook_in, :page_start ], @controller.calls)
       }
       @action.setup.apply(work)
 
       assert_equal(1, count)
-      assert_equal([ :page_hook_in, :page_start, :page_end, :page_hook_out ], @page.calls)
+      assert_equal([ :page_hook_in, :page_start, :page_end, :page_hook_out ], @controller.calls)
     end
 
     class PageWithActions
@@ -117,7 +117,7 @@ module Gluon::Test
       count = 0
       work = proc{
 	count += 1
-	assert_equal([ :foo_action ], @page.calls)
+	assert_equal([ :foo_action ], @controller.calls)
       }
       @action.setup.apply(work)
 
@@ -146,8 +146,8 @@ module Gluon::Test
       count = 0
       work = proc{
 	count += 1
-	assert_equal('Apple', @page.foo)
-	assert_equal(nil,     @page.bar)
+	assert_equal('Apple', @controller.foo)
+	assert_equal(nil,     @controller.bar)
       }
       @action.setup.apply(work)
 
@@ -180,9 +180,9 @@ module Gluon::Test
       count = 0
       work = proc{
         count += 1
-        assert_equal([], @page.foo)
-        assert_equal(%w[ apple ], @page.bar)
-        assert_equal(%w[ banana orange ], @page.baz)
+        assert_equal([], @controller.foo)
+        assert_equal(%w[ apple ], @controller.bar)
+        assert_equal(%w[ banana orange ], @controller.baz)
       }
       @action.setup.apply(work)
 
@@ -214,9 +214,9 @@ module Gluon::Test
       count = 0
       work = proc{
 	count += 1
-	assert_equal(false, @page.foo)
-	assert_equal(true,  @page.bar)
-	assert_equal(false, @page.baz)
+	assert_equal(false, @controller.foo)
+	assert_equal(true,  @controller.bar)
+	assert_equal(false, @controller.baz)
       }
       @action.setup.apply(work)
 

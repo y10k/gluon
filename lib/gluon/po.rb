@@ -10,31 +10,31 @@ module Gluon
 
     extend Forwardable
 
-    def initialize(page, rs_context, renderer, prefix='')
-      @page = page
+    def initialize(controller, rs_context, renderer, prefix='')
+      @controller = controller
       @c = rs_context
       @renderer = renderer
       @prefix = prefix
       @stack = []
     end
 
-    def_delegator :@page, :class, :page_type
+    def_delegator :@controller, :class, :page_type
 
     def view_explicit?
-      @page.respond_to? :__view__
+      @controller.respond_to? :__view__
     end
 
     def __view__
       if (view_explicit?) then
-        @page.__view__
+        @controller.__view__
       else
-        @page.class.name.gsub(/::/, '/') + '.rhtml'
+        @controller.class.name.gsub(/::/, '/') + '.rhtml'
       end
     end
 
     def __default_view__
-      if (@page.respond_to? :__default_view__) then
-        @page.__default_view__
+      if (@controller.respond_to? :__default_view__) then
+        @controller.__default_view__
       else
         nil
       end
@@ -104,7 +104,7 @@ module Gluon
           return child.__send__(name, *args)
         end
       end
-      @page.__send__(name, *args)
+      @controller.__send__(name, *args)
     end
     private :funcall
 
@@ -287,26 +287,26 @@ module Gluon
 
       case (value)
       when Class
-        page = value.new
+        controller = value.new
       else
-        page = value
+        controller = value
       end
 
       case (name)
       when Symbol
         curr_prefix = name.to_s
       else
-        curr_prefix = page.class.to_s
+        curr_prefix = controller.class.to_s
       end
       prefix = prefix() + curr_prefix + '.'
 
-      action = Action.new(page, @c, prefix)
+      action = Action.new(controller, @c, prefix)
       action.setup.apply(@renderer)
     end
 
     def form_value(name)
       if (@stack.empty?) then
-        @page.__send__(name)
+        @controller.__send__(name)
       else
         prefix, child = @stack[01]
         child.__send__(name)

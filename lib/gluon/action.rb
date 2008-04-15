@@ -17,8 +17,8 @@ module Gluon
       '__if_modified__' => true
     }
 
-    def initialize(page, rs_context, prefix='')
-      @page = page
+    def initialize(controller, rs_context, prefix='')
+      @controller = controller
       @c = rs_context
       @prefix = prefix
       @object = Object.new
@@ -32,13 +32,13 @@ module Gluon
     private :funcall2
 
     def funcall(name, *args)
-      funcall2(@page, name, *args)
+      funcall2(@controller, name, *args)
     end
     private :funcall
 
     def funcall_hook(name, *args)
-      if (@page.respond_to? name) then
-        @page.__send__(name, *args) {
+      if (@controller.respond_to? name) then
+        @controller.__send__(name, *args) {
           yield
         }
       else
@@ -50,9 +50,9 @@ module Gluon
     class ParameterScanner
       include Enumerable
 
-      def initialize(prefix, page, params, reserved_words={}, base_obj=Object.new, abort_on_reserved=false)
+      def initialize(prefix, controller, params, reserved_words={}, base_obj=Object.new, abort_on_reserved=false)
         @prefix = prefix
-        @page = page
+        @controller = controller
         @params = params
         @reserved_words = reserved_words
         @base_obj = base_obj
@@ -61,7 +61,7 @@ module Gluon
 
       def each
         for long_name, value in @params
-          curr_obj = @page
+          curr_obj = @controller
           short_name_list = long_name[@prefix.length..-1].split(/\./)
           while (short_name = short_name_list.shift)
             if ((@reserved_words.key? short_name) ||
@@ -98,7 +98,7 @@ module Gluon
     end
 
     def each_param(param_alist, abort_on_reserved=false)
-      param_scan = ParameterScanner.new(@prefix, @page, param_alist, RESERVED_WORDS, @object, abort_on_reserved)
+      param_scan = ParameterScanner.new(@prefix, @controller, param_alist, RESERVED_WORDS, @object, abort_on_reserved)
       for curr_obj, long_name, short_name, value in param_scan
         yield(curr_obj, long_name, short_name, value)
       end
@@ -186,8 +186,8 @@ module Gluon
     end
 
     def modified?(cache_tag)
-      if (@page.respond_to? :__if_modified__) then
-        @page.__if_modified__(cache_tag)
+      if (@controller.respond_to? :__if_modified__) then
+        @controller.__if_modified__(cache_tag)
       else
         true
       end
@@ -200,7 +200,7 @@ module Gluon
         begin
           set_params
           call_actions
-          r = renderer.call(@page, @c, @prefix)
+          r = renderer.call(@controller, @c, @prefix)
         ensure
           funcall(:page_end)
         end

@@ -30,9 +30,9 @@ module Gluon::Test
     end
 
     def build_page(page_type)
-      @page = page_type.new
-      @action = Gluon::Action.new(@page, @c)
-      @po = Gluon::PresentationObject.new(@page, @c, @renderer)
+      @controller = page_type.new
+      @action = Gluon::Action.new(@controller, @c)
+      @po = Gluon::PresentationObject.new(@controller, @c, @renderer)
       @erb_context = Gluon::ERBContext.new(@po, @c)
     end
     private :build_page
@@ -481,7 +481,7 @@ module Gluon::Test
 
       assert_equal('<input type="text" name="foo" value="" />', render_page('<%= text :foo %>'))
 
-      @page.foo = 'Hello world.'
+      @controller.foo = 'Hello world.'
       assert_equal('<input type="text" name="foo" value="Hello world." />', render_page('<%= text :foo %>'))
     end
 
@@ -494,7 +494,7 @@ module Gluon::Test
 
       assert_equal('<input type="password" name="foo" value="" />', render_page('<%= password :foo %>'))
 
-      @page.foo = 'Hello world.'
+      @controller.foo = 'Hello world.'
       assert_equal('<input type="password" name="foo" value="Hello world." />', render_page('<%= password :foo %>'))
     end
 
@@ -520,7 +520,7 @@ module Gluon::Test
 
       assert_equal('<input type="hidden" name="foo" value="" />', render_page('<%= hidden :foo %>'))
 
-      @page.foo = 'Hello world.'
+      @controller.foo = 'Hello world.'
       assert_equal('<input type="hidden" name="foo" value="Hello world." />', render_page('<%= hidden :foo %>'))
     end
   end
