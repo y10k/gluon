@@ -264,7 +264,146 @@ module Gluon::Test
     end
   end
 
+  class ActionParserTest < Test::Unit::TestCase
+    # for ident(1)
+    CVS_ID = '$Id$'
+
+    def test_parse_params_simple_value
+      req_params = {
+	'foo' => 'apple',
+	'bar' => %w[ banana orange pineapple ]
+      }
+
+      assert_equal({ :params => {
+		       'foo' => 'apple',
+		       'bar' => 'banana'
+		     },
+		     :branches => {}
+		   },
+		   Gluon::Action.parse_params(req_params))
+    end
+
+    def test_parse_params_scalar_value
+      req_params = {
+	'foo' => 'apple',
+	'foo@type' => 'scalar',
+	'bar' => %w[ banana orange pineapple ],
+	'bar@type' => 'scalar'
+      }
+
+      assert_equal({ :params => {
+		       'foo' => 'apple',
+		       'bar' => 'banana'
+		     },
+		     :branches => {}
+		   },
+		   Gluon::Action.parse_params(req_params))
+    end
+
+    def test_parse_params_list_value
+      req_params = {
+	'foo' => 'apple',
+	'foo@type' => 'list',
+	'bar' => %w[ banana orange pineapple ],
+	'bar@type' => 'list'
+      }
+
+      assert_equal({ :params => {
+		       'foo' => %w[ apple ],
+		       'bar' => %w[ banana orange pineapple ]
+		     },
+		     :branches => {}
+		   },
+		   Gluon::Action.parse_params(req_params))
+    end
+
+    def test_parse_params_bool_value
+      req_params = {
+	'foo' => 'true',
+	'foo@type' => 'bool',
+	'bar@type' => 'bool'
+      }
+
+      assert_equal({ :params => {
+		       'foo' => true,
+		       'bar' => false,
+		     },
+		     :branches => {}
+		   },
+		   Gluon::Action.parse_params(req_params))
+    end
+
+    def test_parse_params_nested
+      req_params = {
+	'foo' => 'apple',
+	'bar.baz' => 'banana',
+	'bar.quux' => 'orange',
+	'aaa.bbb.ccc' => 'pineapple'
+      }
+
+      assert_equal({ :params => { 'foo' => 'apple' },
+		     :branches => {
+		       'bar' => {
+			 :params => { 'baz' => 'banana', 'quux' => 'orange' },
+			 :branches => {}
+		       },
+		       'aaa' => {
+			 :params => {},
+			 :branches => {
+			   'bbb' => {
+			     :params => { 'ccc' => 'pineapple' },
+			     :branches => {}
+			   }
+			 }
+		       }
+		     }
+		   },
+		   Gluon::Action.parse_params(req_params))
+    end
+
+    def test_parse_params_array
+      req_params = {
+	'foo[0].bar' => 'apple',
+	'foo[1].bar' => 'banana',
+	'foo[2].bar' => 'orange',
+	'foo[3]' => 'pineapple'	# ignored
+      }
+
+      assert_equal({ :params => {},
+		     :branches => {
+		       'foo[0]' => {
+			 :params => { 'bar' => 'apple' },
+			 :branches => {}
+		       },
+		       'foo[1]' => {
+			 :params => { 'bar' => 'banana' },
+			 :branches => {}
+		       },
+		       'foo[2]' => {
+			 :params => { 'bar' => 'orange' },
+			 :branches => {}
+		       }
+		     }
+		   },
+		   Gluon::Action.parse_params(req_params))
+    end
+
+    def test_parse_params_ignored_function
+      req_params = {
+	'foo()' => nil
+      }
+
+      assert_equal({ :params => {},
+		     :branches => {}
+		   },
+		   Gluon::Action.parse_params(req_params))
+    end
+  end
+
   class ActionParameterScannerTest < Test::Unit::TestCase
+    # for ident(1)
+    CVS_ID = '$Id$'
+
     class Foo
       attr_accessor :foo
       attr_accessor :bar

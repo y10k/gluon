@@ -17,6 +17,63 @@ module Gluon
       '__if_modified__' => true
     }
 
+    class << self
+      def parse_params(req_params)
+        parsed_params = { :params => {}, :branches => {} }
+        for key, value in req_params
+          if (key =~ /@/) then
+            name = $`
+            type = req_params[key]
+            if (type == 'bool' && ! (req_params.key? name)) then
+              parse_parameter(name.split(/\./), false, parsed_params, name, req_params)
+            end
+          else
+            names = key.split(/\./)
+            parse_parameter(names, value, parsed_params, key, req_params)
+          end
+        end
+        parsed_params
+      end
+
+      def parse_parameter(names, value, parsed_params, key, req_params)
+        case (names.length)
+        when 0
+          # nothing to do.
+        when 1
+          name = names[0]
+          return if (name =~ /[\]\)]$/)
+          type = req_params["#{key}@type"] || 'scalar'
+          case (type)
+          when 'scalar'
+            parsed_params[:params][name], = value
+          when 'list'
+            case (value)
+            when Array
+              parsed_params[:params][name] = value
+            else
+              parsed_params[:params][name] = [ value ]
+            end
+          when 'bool'
+            case (value)
+            when true, false
+              parsed_params[:params][name] = value
+            else
+              parsed_params[:params][name] = true
+            end
+          else
+            raise "unknown type of #{key}: #{type}"
+          end
+        else # > 0
+          name = names.shift
+          unless (parsed_params[:branches].key? name) then
+            parsed_params[:branches][name] = { :params => {}, :branches => {} } 
+          end
+          parse_parameter(names, value, parsed_params[:branches][name], key, req_params)
+        end
+      end
+      private :parse_parameter
+    end
+
     def initialize(controller, rs_context, prefix='')
       @controller = controller
       @c = rs_context

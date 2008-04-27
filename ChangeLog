@@ -1,3 +1,7 @@
+2008-04-28  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/action.rb: parser for request parameters.
+
 2008-03-22  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/builder.rb: auto reload.
