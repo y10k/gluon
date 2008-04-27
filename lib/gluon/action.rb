@@ -72,6 +72,23 @@ module Gluon
         end
       end
       private :parse_parameter
+
+      def parse_funcs(req_params)
+        parsed_funcs = {}
+        for key, value in req_params
+          key =~ /\(\)$/ or next
+          names = $`.split(/\./)
+          name = names.pop
+          path = names.join('.')
+          parsed_funcs[path] = {} unless (parsed_funcs.key? path)
+          parsed_funcs[path][name] = true
+        end
+        parsed_funcs
+      end
+
+      def parse(req_params)
+        return parse_params(req_params), parse_funcs(req_params)
+      end
     end
 
     def initialize(controller, rs_context, prefix='')

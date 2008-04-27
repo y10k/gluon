@@ -1,6 +1,7 @@
 2008-04-28  TOKI Yoshinori  <toki@freedom.ne.jp>
 
-	* lib/gluon/action.rb: parser for request parameters.
+	* lib/gluon/action.rb: parser for request parameters. parser for
+	request functions.
 
 2008-03-22  TOKI Yoshinori  <toki@freedom.ne.jp>
 

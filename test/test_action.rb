@@ -398,6 +398,42 @@ module Gluon::Test
 		   },
 		   Gluon::Action.parse_params(req_params))
     end
+
+    def test_parse_funcs_simple_function
+      req_params = {
+	'foo()' => nil,
+	'bar()' => 'HALO'
+      }
+
+      assert_equal({ '' => { 'foo' => true, 'bar' => true } },
+		   Gluon::Action.parse_funcs(req_params))
+    end
+
+    def test_parse_funcs_nested
+      req_params = {
+	'foo()' => nil,
+	'bar.baz()' => nil,
+	'bar.quux()' => nil,
+	'aaa.bbb.ccc()' => nil
+      }
+
+      assert_equal({ '' => { 'foo' => true },
+		     'bar' => { 'baz' => true, 'quux' => true },
+		     'aaa.bbb' => { 'ccc' => true }
+		   },
+		   Gluon::Action.parse_funcs(req_params))
+    end
+
+    def test_parse_funcs_ignored_params
+      req_params = {
+	'foo' => 'apple',
+	'bar' => 'banana',
+	'bar@type' => 'list',
+	'baz@type' => 'bool'
+      }
+
+      assert_equal({}, Gluon::Action.parse_funcs(req_params))
+    end
   end
 
   class ActionParameterScannerTest < Test::Unit::TestCase
