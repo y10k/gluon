@@ -54,7 +54,7 @@ spec = Gem::Specification.new{|s|
   s.email = 'toki@freedom.ne.jp'
   s.executables << 'gluon_setup' << 'gluon_update'
   s.files = Dir['{lib,run,test}/**/*.{rb,rhtml,cgi}'] +
-    %w[ webrick mongrel ].map{|i| "run/server/#{i}" }
+    %w[ gluon.ru webrick mongrel ].map{|i| "run/server/#{i}" }
   s.files << 'ChangeLog' << 'Rakefile'
   s.test_files = [ 'test/run.rb' ]
   s.has_rdoc = false
