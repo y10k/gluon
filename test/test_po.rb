@@ -21,9 +21,6 @@ module Gluon::Test
       @env = Rack::MockRequest.env_for('http://foo:8080/bar.cgi')
       @env['SCRIPT_NAME'] = '/bar.cgi'
       @env['PATH_INFO'] = ''
-      @mock = Gluon::Mock.new(:url_map => [ [ '/another_page', AnotherPage ] ])
-      @c = @mock.new_request(@env)
-      @params, @funcs = Gluon::Action.parse(@c.req.params)
     end
 
     def teardown
@@ -31,6 +28,9 @@ module Gluon::Test
     end
 
     def build_page(page_type)
+      @mock = Gluon::Mock.new(:url_map => [ [ '/another_page', AnotherPage ] ])
+      @c = @mock.new_request(@env)
+      @params, @funcs = Gluon::Action.parse(@c.req.params)
       @controller = page_type.new
       @action = Gluon::Action.new(@controller, @c, @params, @funcs)
       @po = Gluon::PresentationObject.new(@controller, @c, @renderer, @params, @funcs)
@@ -473,12 +473,12 @@ module Gluon::Test
       assert_equal('[foo]', render_page("[<%= import #{Subpage}.new('foo') %>]"))
     end
 
-    class PageWithText
+    class PageForText
       attr_accessor :foo
     end
 
     def test_text
-      build_page(PageWithText)
+      build_page(PageForText)
 
       assert_equal('<input type="text" name="foo" value="" />', render_page('<%= text :foo %>'))
 
@@ -486,12 +486,12 @@ module Gluon::Test
       assert_equal('<input type="text" name="foo" value="Hello world." />', render_page('<%= text :foo %>'))
     end
 
-    class PageWithPassword
+    class PageForPassword
       attr_accessor :foo
     end
 
     def test_password
-      build_page(PageWithPassword)
+      build_page(PageForPassword)
 
       assert_equal('<input type="password" name="foo" value="" />', render_page('<%= password :foo %>'))
 
@@ -499,30 +499,91 @@ module Gluon::Test
       assert_equal('<input type="password" name="foo" value="Hello world." />', render_page('<%= password :foo %>'))
     end
 
-    class PageWithSubmit
+    class PageForSubmit
       def foo_action
       end
     end
 
     def test_submit
-      build_page(PageWithSubmit)
+      build_page(PageForSubmit)
 
       assert_equal('<input type="submit" name="foo()" />', render_page('<%= submit :foo %>'))
       assert_equal('<input type="submit" name="foo()" value="Push!" />',
                    render_page('<%= submit :foo, :value => "Push!" %>'))
     end
 
-    class PageWithHidden
+    class PageForHidden
       attr_accessor :foo
     end
 
     def test_hidden
-      build_page(PageWithHidden)
+      build_page(PageForHidden)
 
       assert_equal('<input type="hidden" name="foo" value="" />', render_page('<%= hidden :foo %>'))
 
       @controller.foo = 'Hello world.'
       assert_equal('<input type="hidden" name="foo" value="Hello world." />', render_page('<%= hidden :foo %>'))
+    end
+
+    class PageForForeachAction
+      class Item
+        def initialize
+          @calls = 0
+        end
+
+        attr_reader :calls
+
+        def foo
+          @calls += 1
+        end
+      end
+
+      def initialize
+        @list = [ Item.new, Item.new, Item.new ]
+      end
+
+      attr_reader :list
+    end
+
+    def test_foreach_action
+      @env['QUERY_STRING'] = Gluon::PresentationObject.query('list[1].foo()')
+      build_page(PageForForeachAction)
+
+      assert_equal('010', render_page('<% foreach :list do %><%= value :calls %><% end %>'))
+    end
+
+    class PageForImportAction
+      def initialize
+        @subpage = SubpageAction.new
+      end
+
+      attr_reader :subpage
+    end
+
+    class SubpageAction
+      def initialize
+        @calls = 0
+      end
+
+      attr_reader :calls
+
+      def foo
+        @calls += 1
+      end
+
+      def __view__
+        'SubpageAction.rhtml'
+      end
+    end
+
+    def test_import_action
+      @env['QUERY_STRING'] = Gluon::PresentationObject.query('subpage.foo()')
+      File.open(File.join(@view_dir, 'SubpageAction.rhtml'), 'w') {|out|
+        out << '<%= value :calls %>'
+      }
+      build_page(PageForImportAction)
+
+      assert_equal('[1]', render_page('[<%= import :subpage %>]'))
     end
   end
 
