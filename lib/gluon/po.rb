@@ -2,6 +2,7 @@
 
 require 'erb'
 require 'forwardable'
+require 'gluon/action'
 
 module Gluon
   class PresentationObject
@@ -10,10 +11,12 @@ module Gluon
 
     extend Forwardable
 
-    def initialize(controller, rs_context, renderer, prefix='')
+    def initialize(controller, rs_context, renderer, params, funcs, prefix='')
       @controller = controller
       @c = rs_context
       @renderer = renderer
+      @params = params
+      @funcs = funcs
       @prefix = prefix
       @stack = []
     end
@@ -145,6 +148,12 @@ module Gluon
       funcall(name).each_with_index do |child, i|
         @stack.push [ "#{name}[#{i}]", child ]
         begin
+          case (child)
+          when Array, Numeric, String, Struct, Symbol, Time
+            # skip action for ruby primitive
+          else
+            Action.new(child, @c, Action::EMPTY_PARAMS, @funcs, prefix).call_actions
+          end
           yield(i)
         ensure
           @stack.pop
@@ -300,7 +309,9 @@ module Gluon
       end
       prefix = prefix() + curr_prefix + '.'
 
-      action = Action.new(controller, @c, prefix)
+      next_params = @params[:branches][curr_prefix] || Action::EMPTY_PARAMS
+      
+      action = Action.new(controller, @c, next_params, @funcs, prefix)
       action.setup.apply(@renderer)
     end
 

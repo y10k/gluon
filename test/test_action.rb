@@ -19,7 +19,8 @@ module Gluon::Test
 
     def build_page(page_type)
       @controller = page_type.new
-      @action = Gluon::Action.new(@controller, @c)
+      params, funcs = Gluon::Action.parse(@c.req.params)
+      @action = Gluon::Action.new(@controller, @c, params, funcs)
     end
     private :build_page
 
@@ -223,6 +224,61 @@ module Gluon::Test
       assert_equal(1, count)
     end
 
+    class OtherPage
+      attr_accessor :foo
+
+      def self.foo=(value)
+	raise 'not to reach.'
+      end
+    end
+
+    class PageWithImportByClass
+      def other
+	OtherPage
+      end
+    end
+
+    def test_apply_with_import_by_class
+      params = {
+	'other.foo' => 'Apple'
+      }
+      @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
+      build_page(PageWithImportByClass)
+
+      count = 0
+      work = proc{
+	count += 1
+      }
+      @action.setup.apply(work)
+
+      assert_equal(1, count)
+    end
+
+    class PageWithImportByObject
+      def page_start
+	@other = OtherPage.new
+      end
+
+      attr_reader :other
+    end
+
+    def test_apply_with_import_by_class
+      params = {
+	'other.foo' => 'Apple'
+      }
+      @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
+      build_page(PageWithImportByObject)
+
+      count = 0
+      work = proc{
+	count += 1
+	assert_equal('Apple', @controller.other.foo)
+      }
+      @action.setup.apply(work)
+
+      assert_equal(1, count)
+    end
+
     class PageWithCacheKey
       def __cache_key__
 	:dummy_cache_key
@@ -305,12 +361,14 @@ module Gluon::Test
 	'foo' => 'apple',
 	'foo@type' => 'list',
 	'bar' => %w[ banana orange pineapple ],
-	'bar@type' => 'list'
+	'bar@type' => 'list',
+	'baz@type' => 'list'
       }
 
       assert_equal({ :params => {
 		       'foo' => %w[ apple ],
-		       'bar' => %w[ banana orange pineapple ]
+		       'bar' => %w[ banana orange pineapple ],
+		       'baz' => []
 		     },
 		     :branches => {}
 		   },
@@ -418,8 +476,8 @@ module Gluon::Test
       }
 
       assert_equal({ '' => { 'foo' => true },
-		     'bar' => { 'baz' => true, 'quux' => true },
-		     'aaa.bbb' => { 'ccc' => true }
+		     'bar.' => { 'baz' => true, 'quux' => true },
+		     'aaa.bbb.' => { 'ccc' => true }
 		   },
 		   Gluon::Action.parse_funcs(req_params))
     end
@@ -433,54 +491,6 @@ module Gluon::Test
       }
 
       assert_equal({}, Gluon::Action.parse_funcs(req_params))
-    end
-  end
-
-  class ActionParameterScannerTest < Test::Unit::TestCase
-    # for ident(1)
-    CVS_ID = '$Id$'
-
-    class Foo
-      attr_accessor :foo
-      attr_accessor :bar
-    end
-
-    class Bar
-      attr_accessor :baz
-    end
-
-    def test_each
-      foo = Foo.new
-      bar = Bar.new
-      foo.bar = bar
-
-      params = [
-	[ 'foo', 'apple' ],
-	[ 'bar.baz', 'banana' ]
-      ]
-
-      param_scan = Gluon::Action::ParameterScanner.new('', foo, params)
-      assert_equal([ [ foo, 'foo', 'foo', 'apple', ],
-		     [ bar, 'bar.baz', 'baz', 'banana' ]
-		   ], param_scan.to_a)
-    end
-
-    def test_each_with_array
-      foo = Foo.new
-      bar = [ Bar.new, Bar.new, Bar.new ]
-      foo.bar = bar
-
-      params = [
-	[ 'bar[0].baz', 'apple' ],
-	[ 'bar[1].baz', 'banana' ],
-	[ 'bar[2].baz', 'orange' ]
-      ]
-
-      param_scan = Gluon::Action::ParameterScanner.new('', foo, params)
-      assert_equal([ [ bar[0], 'bar[0].baz', 'baz', 'apple', ],
-		     [ bar[1], 'bar[1].baz', 'baz', 'banana', ],
-		     [ bar[2], 'bar[2].baz', 'baz', 'orange', ]
-		   ], param_scan.to_a)
     end
   end
 end

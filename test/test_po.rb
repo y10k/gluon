@@ -23,6 +23,7 @@ module Gluon::Test
       @env['PATH_INFO'] = ''
       @mock = Gluon::Mock.new(:url_map => [ [ '/another_page', AnotherPage ] ])
       @c = @mock.new_request(@env)
+      @params, @funcs = Gluon::Action.parse(@c.req.params)
     end
 
     def teardown
@@ -31,8 +32,8 @@ module Gluon::Test
 
     def build_page(page_type)
       @controller = page_type.new
-      @action = Gluon::Action.new(@controller, @c)
-      @po = Gluon::PresentationObject.new(@controller, @c, @renderer)
+      @action = Gluon::Action.new(@controller, @c, @params, @funcs)
+      @po = Gluon::PresentationObject.new(@controller, @c, @renderer, @params, @funcs)
       @erb_context = Gluon::ERBContext.new(@po, @c)
     end
     private :build_page

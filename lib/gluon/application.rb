@@ -31,6 +31,7 @@ module Gluon
     def call(env)
       req = Rack::Request.new(env)
       res = Rack::Response.new
+      params, funcs = Gluon::Action.parse(req.params)
       page_type, gluon_path_info = @dispatcher.look_up(req.path_info)
       if (page_type) then
         @session_man.transaction(req, res) {|session|
@@ -43,7 +44,7 @@ module Gluon
             rs_context = RequestResponseContext.new(req, res, session, @dispatcher, plugin)
             rs_context.cache_tag = nil
             controller = page_type.new
-            action = Action.new(controller, rs_context).setup
+            action = Action.new(controller, rs_context, params, funcs).setup
             page_type = RequestResponseContext.switch_from{
               cache_key = action.cache_key || @default_cache_key
               c_key = [ req.path_info, page_type, cache_key ]
