@@ -35,13 +35,14 @@ module Gluon
     private :make_top_dirs
 
     def install_runtime
-      [ [ SERVER_DIR, %w[ webrick mongrel ] ],
-        [ CGI_DIR, %w[ run.cgi ] ]
-      ].each do |top_dir, targets|
+      [ [ SERVER_DIR, %w[ webrick mongrel ], EXEC_MODE ],
+        [ SERVER_DIR, %w[ gluon.ru ], FILE_MODE ],
+        [ CGI_DIR, %w[ run.cgi ], EXEC_MODE ]
+      ].each do |top_dir, targets, mode|
         from_dir = File.join(RUN_DIR, top_dir)
         to_dir = File.join(@install_dir, top_dir)
         for target in targets
-          FileUtils.install(File.join(from_dir, target), to_dir, :mode => EXEC_MODE, :verbose => true)
+          FileUtils.install(File.join(from_dir, target), to_dir, :mode => mode, :verbose => true)
         end
       end
       nil
