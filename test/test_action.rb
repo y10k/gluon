@@ -318,6 +318,123 @@ module Gluon::Test
       build_page(SimplePage)
       assert_equal(true, (@action.modified? :dummy_cache_tag))
     end
+
+    class PageWithImplicitExport
+      attr_accessor :c
+
+      def page_hook
+	yield
+      end
+
+      def page_start
+      end
+
+      def page_end
+      end
+
+      def __view__
+	'no_view.rhtml'
+      end
+
+      def __default_view__
+	'no_view.rhtml'
+      end
+
+      def __cache_key__
+	:dummy_cache_tag
+      end
+
+      def __if_modified__(cache_tag)
+	true
+      end
+
+      def foo
+      end
+
+      def bar
+      end
+
+      def baz
+      end
+    end
+
+    def test_export_implicit
+      build_page(PageWithImplicitExport)
+      assert_equal(true, (@action.export? 'foo'))
+      assert_equal(true, (@action.export? 'bar'))
+      assert_equal(true, (@action.export? 'baz'))
+      for name in Object.instance_methods
+	assert_equal(false, (@action.export? name.to_s))
+      end
+      Gluon::Action::RESERVED_WORDS.each_key do |name|
+	assert_equal(false, (@action.export? name.to_s))
+      end
+    end
+
+    class PageWithExplicitExport
+      attr_accessor :c
+
+      def page_hook
+	yield
+      end
+
+      def page_start
+      end
+
+      def page_end
+      end
+
+      def __view__
+	'no_view.rhtml'
+      end
+
+      def __default_view__
+	'no_view.rhtml'
+      end
+
+      def __cache_key__
+	:dummy_cache_tag
+      end
+
+      def __if_modified__(cache_tag)
+	true
+      end
+
+      def __export__(name)
+	case (name)
+	when 'foo'
+	  true
+	when 'bar'
+	  false
+	when 'baz'
+	  true
+	else
+	  false
+	end
+      end
+
+      def foo
+      end
+
+      def bar
+      end
+
+      def baz
+      end
+    end
+
+    def test_export_implicit
+      build_page(PageWithExplicitExport)
+      assert_equal(true, (@action.export? 'foo'))
+      assert_equal(false, (@action.export? 'bar'))
+      assert_equal(true, (@action.export? 'baz'))
+      for name in Object.instance_methods
+	assert_equal(false, (@action.export? name.to_s))
+      end
+      Gluon::Action::RESERVED_WORDS.each_key do |name|
+	assert_equal(false, (@action.export? name.to_s))
+      end
+    end
   end
 
   class ActionParserTest < Test::Unit::TestCase

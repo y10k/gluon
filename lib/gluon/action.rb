@@ -14,7 +14,8 @@ module Gluon
       '__view__' => true,
       '__default_view__' => true,
       '__cache_key__' => true,
-      '__if_modified__' => true
+      '__if_modified__' => true,
+      '__export__' => true
     }
 
     EMPTY_PARAMS = {
@@ -115,7 +116,11 @@ module Gluon
     end
 
     def export?(name, this=@controller)
-      if (@object.respond_to? name) then
+      if (RESERVED_WORDS.key? name) then
+        false
+      elsif (this.respond_to? :__export__) then
+        this.__export__(name)
+      elsif (@object.respond_to? name) then
         false
       else
         if (this.respond_to? name, false) then
