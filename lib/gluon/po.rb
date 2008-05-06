@@ -309,8 +309,15 @@ module Gluon
       end
       prefix = prefix() + curr_prefix + '.'
 
-      next_params = @params[:branches][curr_prefix] || Action::EMPTY_PARAMS
-      
+      next_params = @params
+      for next_name in @stack.map{|prefix, child| prefix } + [ curr_prefix ]
+        unless (next_params[:branches].key? next_name) then
+          next_params = Action::EMPTY_PARAMS
+          break
+        end
+        next_params = next_params[:branches][next_name]
+      end
+
       action = Action.new(controller, @c, next_params, @funcs, prefix)
       action.setup.apply(@renderer)
     end
