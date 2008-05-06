@@ -182,9 +182,21 @@ module Gluon
         end
       end
       for name, nested_params in params[:branches]
-        if (export? name, this) then
-          if (this.respond_to? name) then
-            set_parameters(this.__send__(name), nested_params)
+        case (name)
+        when /\[\d+\]$/
+          i = $&[1..-2].to_i
+          name = $`
+          if (name == 'to_a' || (export? name, this)) then
+            if (this.respond_to? name) then
+              ary = this.__send__(name)
+              set_parameters(ary[i], nested_params)
+            end
+          end
+        else
+          if (export? name, this) then
+            if (this.respond_to? name) then
+              set_parameters(this.__send__(name), nested_params)
+            end
           end
         end
       end
