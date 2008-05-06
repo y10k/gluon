@@ -2,6 +2,7 @@
 
 require 'gluon/action'
 require 'gluon/rs'
+require 'pp'
 require 'rack'
 
 module Gluon
@@ -33,6 +34,10 @@ module Gluon
       req = Rack::Request.new(env)
       res = Rack::Response.new
       params, funcs = Gluon::Action.parse(req.params)
+      if (@logger.debug?) then
+        @logger.debug("request parameters: #{params.pretty_inspect}")
+        @logger.debug("request functions: #{funcs.pretty_inspect}")
+      end
       page_type, gluon_path_info = @dispatcher.look_up(req.path_info)
       if (page_type) then
         @session_man.transaction(req, res) {|session|
