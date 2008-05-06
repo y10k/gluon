@@ -46,7 +46,7 @@ module Gluon::Test
 
       count = 0
       work = proc{
-	count += 1
+        count += 1
       }
       @action.setup.apply(work)
 
@@ -56,23 +56,23 @@ module Gluon::Test
 
     class PageWithHooks
       def initialize
-	@calls = []
+        @calls = []
       end
 
       attr_reader :calls
 
       def page_hook
-	@calls << :page_hook_in
-	yield
-	@calls << :page_hook_out
+        @calls << :page_hook_in
+        yield
+        @calls << :page_hook_out
       end
 
       def page_start
-	@calls << :page_start
+        @calls << :page_start
       end
 
       def page_end
-	@calls << :page_end
+        @calls << :page_end
       end
     end
 
@@ -81,8 +81,8 @@ module Gluon::Test
 
       count = 0
       work = proc{
-	count += 1
-	assert_equal([ :page_hook_in, :page_start ], @controller.calls)
+        count += 1
+        assert_equal([ :page_hook_in, :page_start ], @controller.calls)
       }
       @action.setup.apply(work)
 
@@ -92,33 +92,33 @@ module Gluon::Test
 
     class PageWithActions
       def page_start
-	@calls = []
+        @calls = []
       end
 
       attr_reader :calls
 
       def foo
-	@calls << :foo_action
+        @calls << :foo_action
       end
 
       def bar
-	@calls << :bar_action
+        @calls << :bar_action
       end
     end
 
     def test_apply_with_actions
       params = {
-	'foo()' => nil,
-	'bar' => nil,
-	#'foo.bar()' => nil
+        'foo()' => nil,
+        'bar' => nil,
+        #'foo.bar()' => nil
       }
       @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
       build_page(PageWithActions)
 
       count = 0
       work = proc{
-	count += 1
-	assert_equal([ :foo_action ], @controller.calls)
+        count += 1
+        assert_equal([ :foo_action ], @controller.calls)
       }
       @action.setup.apply(work)
 
@@ -127,8 +127,8 @@ module Gluon::Test
 
     class PageWithScalarParams
       def page_start
-	@foo = nil
-	@bar = nil
+        @foo = nil
+        @bar = nil
       end
 
       attr_accessor :foo
@@ -137,18 +137,18 @@ module Gluon::Test
 
     def test_apply_with_scalar_params
       params = {
-	'foo' => 'Apple',
-	#'bar()' => 'Banana',
-	'foo.bar' => 'Orange'
+        'foo' => 'Apple',
+        #'bar()' => 'Banana',
+        'foo.bar' => 'Orange'
       }
       @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
       build_page(PageWithScalarParams)
 
       count = 0
       work = proc{
-	count += 1
-	assert_equal('Apple', @controller.foo)
-	assert_equal(nil,     @controller.bar)
+        count += 1
+        assert_equal('Apple', @controller.foo)
+        assert_equal(nil,     @controller.bar)
       }
       @action.setup.apply(work)
 
@@ -192,9 +192,9 @@ module Gluon::Test
 
     class PageWithBooleanParams
       def page_start
-	@foo = true
-	@bar = false
-	@baz = false
+        @foo = true
+        @bar = false
+        @baz = false
       end
 
       attr_accessor :foo
@@ -204,20 +204,20 @@ module Gluon::Test
 
     def test_apply_with_boolean_params
       params = {
-	'foo@type' => 'bool',
-	'bar@type' => 'bool',
-	'baz@type' => 'bool',
-	'bar' => ''
+        'foo@type' => 'bool',
+        'bar@type' => 'bool',
+        'baz@type' => 'bool',
+        'bar' => ''
       }
       @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
       build_page(PageWithBooleanParams)
 
       count = 0
       work = proc{
-	count += 1
-	assert_equal(false, @controller.foo)
-	assert_equal(true,  @controller.bar)
-	assert_equal(false, @controller.baz)
+        count += 1
+        assert_equal(false, @controller.foo)
+        assert_equal(true,  @controller.bar)
+        assert_equal(false, @controller.baz)
       }
       @action.setup.apply(work)
 
@@ -228,26 +228,26 @@ module Gluon::Test
       attr_accessor :foo
 
       def self.foo=(value)
-	raise 'not to reach.'
+        raise 'not to reach.'
       end
     end
 
     class PageWithImportByClass
       def other
-	OtherPage
+        OtherPage
       end
     end
 
     def test_apply_with_import_by_class
       params = {
-	'other.foo' => 'Apple'
+        'other.foo' => 'Apple'
       }
       @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
       build_page(PageWithImportByClass)
 
       count = 0
       work = proc{
-	count += 1
+        count += 1
       }
       @action.setup.apply(work)
 
@@ -256,7 +256,7 @@ module Gluon::Test
 
     class PageWithImportByObject
       def page_start
-	@other = OtherPage.new
+        @other = OtherPage.new
       end
 
       attr_reader :other
@@ -264,15 +264,15 @@ module Gluon::Test
 
     def test_apply_with_import_by_class
       params = {
-	'other.foo' => 'Apple'
+        'other.foo' => 'Apple'
       }
       @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
       build_page(PageWithImportByObject)
 
       count = 0
       work = proc{
-	count += 1
-	assert_equal('Apple', @controller.other.foo)
+        count += 1
+        assert_equal('Apple', @controller.other.foo)
       }
       @action.setup.apply(work)
 
@@ -281,7 +281,7 @@ module Gluon::Test
 
     class PageWithCacheKey
       def __cache_key__
-	:dummy_cache_key
+        :dummy_cache_key
       end
     end
 
@@ -297,14 +297,14 @@ module Gluon::Test
 
     class PageWithIfModified
       def __if_modified__(cache_tag)
-	case (cache_tag)
-	when :foo
-	  true
-	when :bar
-	  false
-	else
-	  raise "unexpected tag: #{cache_tag}"
-	end
+        case (cache_tag)
+        when :foo
+          true
+        when :bar
+          false
+        else
+          raise "unexpected tag: #{cache_tag}"
+        end
       end
     end
 
@@ -323,7 +323,7 @@ module Gluon::Test
       attr_accessor :c
 
       def page_hook
-	yield
+        yield
       end
 
       def page_start
@@ -333,19 +333,19 @@ module Gluon::Test
       end
 
       def __view__
-	'no_view.rhtml'
+        'no_view.rhtml'
       end
 
       def __default_view__
-	'no_view.rhtml'
+        'no_view.rhtml'
       end
 
       def __cache_key__
-	:dummy_cache_tag
+        :dummy_cache_tag
       end
 
       def __if_modified__(cache_tag)
-	true
+        true
       end
 
       def foo
@@ -364,10 +364,10 @@ module Gluon::Test
       assert_equal(true, (@action.export? 'bar'))
       assert_equal(true, (@action.export? 'baz'))
       for name in Object.instance_methods
-	assert_equal(false, (@action.export? name.to_s))
+        assert_equal(false, (@action.export? name.to_s))
       end
       Gluon::Action::RESERVED_WORDS.each_key do |name|
-	assert_equal(false, (@action.export? name.to_s))
+        assert_equal(false, (@action.export? name.to_s))
       end
     end
 
@@ -375,7 +375,7 @@ module Gluon::Test
       attr_accessor :c
 
       def page_hook
-	yield
+        yield
       end
 
       def page_start
@@ -385,32 +385,32 @@ module Gluon::Test
       end
 
       def __view__
-	'no_view.rhtml'
+        'no_view.rhtml'
       end
 
       def __default_view__
-	'no_view.rhtml'
+        'no_view.rhtml'
       end
 
       def __cache_key__
-	:dummy_cache_tag
+        :dummy_cache_tag
       end
 
       def __if_modified__(cache_tag)
-	true
+        true
       end
 
       def __export__(name)
-	case (name)
-	when 'foo'
-	  true
-	when 'bar'
-	  false
-	when 'baz'
-	  true
-	else
-	  false
-	end
+        case (name)
+        when 'foo'
+          true
+        when 'bar'
+          false
+        when 'baz'
+          true
+        else
+          false
+        end
       end
 
       def foo
@@ -429,10 +429,10 @@ module Gluon::Test
       assert_equal(false, (@action.export? 'bar'))
       assert_equal(true, (@action.export? 'baz'))
       for name in Object.instance_methods
-	assert_equal(false, (@action.export? name.to_s))
+        assert_equal(false, (@action.export? name.to_s))
       end
       Gluon::Action::RESERVED_WORDS.each_key do |name|
-	assert_equal(false, (@action.export? name.to_s))
+        assert_equal(false, (@action.export? name.to_s))
       end
     end
   end
@@ -443,171 +443,176 @@ module Gluon::Test
 
     def test_parse_params_simple_value
       req_params = {
-	'foo' => 'apple',
-	'bar' => %w[ banana orange pineapple ]
+        'foo' => 'apple',
+        'bar' => %w[ banana orange pineapple ]
       }
 
       assert_equal({ :params => {
-		       'foo' => 'apple',
-		       'bar' => 'banana'
-		     },
-		     :branches => {}
-		   },
-		   Gluon::Action.parse_params(req_params))
+                       'foo' => 'apple',
+                       'bar' => 'banana'
+                     },
+                     :branches => {}
+                   },
+                   Gluon::Action.parse_params(req_params))
     end
 
     def test_parse_params_scalar_value
       req_params = {
-	'foo' => 'apple',
-	'foo@type' => 'scalar',
-	'bar' => %w[ banana orange pineapple ],
-	'bar@type' => 'scalar'
+        'foo' => 'apple',
+        'foo@type' => 'scalar',
+        'bar' => %w[ banana orange pineapple ],
+        'bar@type' => 'scalar'
       }
 
       assert_equal({ :params => {
-		       'foo' => 'apple',
-		       'bar' => 'banana'
-		     },
-		     :branches => {}
-		   },
-		   Gluon::Action.parse_params(req_params))
+                       'foo' => 'apple',
+                       'bar' => 'banana'
+                     },
+                     :branches => {}
+                   },
+                   Gluon::Action.parse_params(req_params))
     end
 
     def test_parse_params_list_value
       req_params = {
-	'foo' => 'apple',
-	'foo@type' => 'list',
-	'bar' => %w[ banana orange pineapple ],
-	'bar@type' => 'list',
-	'baz@type' => 'list'
+        'foo' => 'apple',
+        'foo@type' => 'list',
+        'bar' => %w[ banana orange pineapple ],
+        'bar@type' => 'list',
+        'baz@type' => 'list'
       }
 
       assert_equal({ :params => {
-		       'foo' => %w[ apple ],
-		       'bar' => %w[ banana orange pineapple ],
-		       'baz' => []
-		     },
-		     :branches => {}
-		   },
-		   Gluon::Action.parse_params(req_params))
+                       'foo' => %w[ apple ],
+                       'bar' => %w[ banana orange pineapple ],
+                       'baz' => []
+                     },
+                     :branches => {}
+                   },
+                   Gluon::Action.parse_params(req_params))
     end
 
     def test_parse_params_bool_value
       req_params = {
-	'foo' => 'true',
-	'foo@type' => 'bool',
-	'bar@type' => 'bool'
+        'foo' => 'true',
+        'foo@type' => 'bool',
+        'bar@type' => 'bool'
       }
 
       assert_equal({ :params => {
-		       'foo' => true,
-		       'bar' => false,
-		     },
-		     :branches => {}
-		   },
-		   Gluon::Action.parse_params(req_params))
+                       'foo' => true,
+                       'bar' => false,
+                     },
+                     :branches => {}
+                   },
+                   Gluon::Action.parse_params(req_params))
     end
 
     def test_parse_params_nested
       req_params = {
-	'foo' => 'apple',
-	'bar.baz' => 'banana',
-	'bar.quux' => 'orange',
-	'aaa.bbb.ccc' => 'pineapple'
+        'foo' => 'apple',
+        'bar.baz' => 'banana',
+        'bar.quux' => 'orange',
+        'aaa.bbb.ccc' => 'pineapple'
       }
 
       assert_equal({ :params => { 'foo' => 'apple' },
-		     :branches => {
-		       'bar' => {
-			 :params => { 'baz' => 'banana', 'quux' => 'orange' },
-			 :branches => {}
-		       },
-		       'aaa' => {
-			 :params => {},
-			 :branches => {
-			   'bbb' => {
-			     :params => { 'ccc' => 'pineapple' },
-			     :branches => {}
-			   }
-			 }
-		       }
-		     }
-		   },
-		   Gluon::Action.parse_params(req_params))
+                     :branches => {
+                       'bar' => {
+                         :params => { 'baz' => 'banana', 'quux' => 'orange' },
+                         :branches => {}
+                       },
+                       'aaa' => {
+                         :params => {},
+                         :branches => {
+                           'bbb' => {
+                             :params => { 'ccc' => 'pineapple' },
+                             :branches => {}
+                           }
+                         }
+                       }
+                     }
+                   },
+                   Gluon::Action.parse_params(req_params))
     end
 
     def test_parse_params_array
       req_params = {
-	'foo[0].bar' => 'apple',
-	'foo[1].bar' => 'banana',
-	'foo[2].bar' => 'orange',
-	'foo[3]' => 'pineapple'	# ignored
+        'foo[0].bar' => 'apple',
+        'foo[1].bar' => 'banana',
+        'foo[2].bar' => 'orange',
+        'foo[3]' => 'pineapple' # ignored
       }
 
       assert_equal({ :params => {},
-		     :branches => {
-		       'foo[0]' => {
-			 :params => { 'bar' => 'apple' },
-			 :branches => {}
-		       },
-		       'foo[1]' => {
-			 :params => { 'bar' => 'banana' },
-			 :branches => {}
-		       },
-		       'foo[2]' => {
-			 :params => { 'bar' => 'orange' },
-			 :branches => {}
-		       }
-		     }
-		   },
-		   Gluon::Action.parse_params(req_params))
+                     :branches => {
+                       'foo[0]' => {
+                         :params => { 'bar' => 'apple' },
+                         :branches => {}
+                       },
+                       'foo[1]' => {
+                         :params => { 'bar' => 'banana' },
+                         :branches => {}
+                       },
+                       'foo[2]' => {
+                         :params => { 'bar' => 'orange' },
+                         :branches => {}
+                       }
+                     }
+                   },
+                   Gluon::Action.parse_params(req_params))
     end
 
     def test_parse_params_ignored_function
       req_params = {
-	'foo()' => nil
+        'foo()' => nil
       }
 
       assert_equal({ :params => {},
-		     :branches => {}
-		   },
-		   Gluon::Action.parse_params(req_params))
+                     :branches => {}
+                   },
+                   Gluon::Action.parse_params(req_params))
     end
 
     def test_parse_funcs_simple_function
       req_params = {
-	'foo()' => nil,
-	'bar()' => 'HALO'
+        'foo()' => nil,
+        'bar()' => 'HALO'
       }
 
       assert_equal({ '' => { 'foo' => true, 'bar' => true } },
-		   Gluon::Action.parse_funcs(req_params))
+                   Gluon::Action.parse_funcs(req_params))
     end
 
     def test_parse_funcs_nested
       req_params = {
-	'foo()' => nil,
-	'bar.baz()' => nil,
-	'bar.quux()' => nil,
-	'aaa.bbb.ccc()' => nil
+        'foo()' => nil,
+        'bar.baz()' => nil,
+        'bar.quux()' => nil,
+        'aaa.bbb.ccc()' => nil
       }
 
       assert_equal({ '' => { 'foo' => true },
-		     'bar.' => { 'baz' => true, 'quux' => true },
-		     'aaa.bbb.' => { 'ccc' => true }
-		   },
-		   Gluon::Action.parse_funcs(req_params))
+                     'bar.' => { 'baz' => true, 'quux' => true },
+                     'aaa.bbb.' => { 'ccc' => true }
+                   },
+                   Gluon::Action.parse_funcs(req_params))
     end
 
     def test_parse_funcs_ignored_params
       req_params = {
-	'foo' => 'apple',
-	'bar' => 'banana',
-	'bar@type' => 'list',
-	'baz@type' => 'bool'
+        'foo' => 'apple',
+        'bar' => 'banana',
+        'bar@type' => 'list',
+        'baz@type' => 'bool'
       }
 
       assert_equal({}, Gluon::Action.parse_funcs(req_params))
     end
   end
 end
+
+# Local Variables:
+# mode: Ruby
+# indent-tabs-mode: nil
+# End:

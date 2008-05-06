@@ -17,7 +17,7 @@ module Gluon::Test
     def test_session_uninitialized
       assert((@mock.respond_to? :session_get))
       assert_raise(NoMethodError) {
-	@mock.session_get
+        @mock.session_get
       }
     end
 
@@ -25,9 +25,9 @@ module Gluon::Test
       attr_accessor :c
 
       def page_start
-	session = @c.session_get
-	session[:count] = 0 unless (session.key? :count)
-	session[:count] += 1
+        session = @c.session_get
+        session[:count] = 0 unless (session.key? :count)
+        session[:count] += 1
       end
     end
 
@@ -62,3 +62,8 @@ module Gluon::Test
     end
   end
 end
+
+# Local Variables:
+# mode: Ruby
+# indent-tabs-mode: nil
+# End:

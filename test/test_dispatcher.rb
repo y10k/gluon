@@ -23,10 +23,10 @@ module Gluon::Test
 
     def test_look_up
       url_map = [
-	[ '/', Root ],
-	[ '/foo', Foo ],
-	[ '/foo/bar', Bar ],
-	[ '/baz', Baz ]
+        [ '/', Root ],
+        [ '/foo', Foo ],
+        [ '/foo/bar', Bar ],
+        [ '/baz', Baz ]
       ]
       dispatcher = Gluon::Dispatcher.new(url_map)
 
@@ -49,7 +49,7 @@ module Gluon::Test
 
     def test_look_up_not_found
       url_map = [
-	[ '/foo', Foo ]
+        [ '/foo', Foo ]
       ]
       dispatcher = Gluon::Dispatcher.new(url_map)
 
@@ -68,10 +68,10 @@ module Gluon::Test
 
     def test_class2path
       url_map = [
-	[ '/', Root ],
-	[ '/foo', Foo ],
-	[ '/foo/bar', Bar ],
-	[ '/baz', Baz ]
+        [ '/', Root ],
+        [ '/foo', Foo ],
+        [ '/foo/bar', Bar ],
+        [ '/baz', Baz ]
       ]
       dispatcher = Gluon::Dispatcher.new(url_map)
 
@@ -83,7 +83,7 @@ module Gluon::Test
 
     def test_class2path_not_found
       url_map = [
-	[ '/foo', Foo ]
+        [ '/foo', Foo ]
       ]
       dispatcher = Gluon::Dispatcher.new(url_map)
 
@@ -94,3 +94,7 @@ module Gluon::Test
   end
 end
 
+# Local Variables:
+# mode: Ruby
+# indent-tabs-mode: nil
+# End:
