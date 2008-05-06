@@ -1,3 +1,7 @@
+2008-05-06  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/action.rb: logging.
+
 2008-05-01  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* run/server/gluon.ru: rackup configuration.

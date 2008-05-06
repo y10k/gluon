@@ -1,5 +1,7 @@
 # action
 
+require 'singleton'
+
 module Gluon
   class Action
     # for ident(1)
@@ -106,6 +108,32 @@ module Gluon
       end
     end
 
+    class NoLogger
+      include Singleton
+
+      def debug?
+        false
+      end
+
+      def debug(messg)
+      end
+
+      def info(messg)
+      end
+
+      def warn(messg)
+      end
+
+      def error(messg)
+      end
+
+      def fatal(messg)
+      end
+
+      def close
+      end
+    end
+
     def initialize(controller, rs_context, params, funcs, prefix='')
       @controller = controller
       @c = rs_context
@@ -113,7 +141,11 @@ module Gluon
       @funcs = funcs
       @prefix = prefix
       @object = Object.new
+      @logger = NoLogger.instance
     end
+
+    attr_reader :prefix
+    attr_writer :logger
 
     def export?(name, this=@controller)
       if (RESERVED_WORDS.key? name) then
@@ -144,6 +176,7 @@ module Gluon
         writer = "#{name}="
         if (export? writer, this) then
           if (this.respond_to? writer) then
+            @logger.debug("#{this}.#{name} = #{value}") if @logger.debug?
             this.__send__(writer, value)
           end
         end
@@ -162,6 +195,7 @@ module Gluon
       if (funcs = @funcs[@prefix]) then
         funcs.each_key do |name|
           if (export? name) then
+            @logger.debug("#{@controller}.#{name}()") if @logger.debug?
             @controller.__send__(name)
           else
             raise NoMethodError, "undefined method `#{name}' for `#{@controller.class}'"
@@ -173,6 +207,7 @@ module Gluon
 
     def setup
       if (@controller.respond_to? :c=) then
+        @logger.debug("#{@controller}.c = #{@c}") if @logger.debug?
         @controller.c = @c
       end
       self
@@ -193,29 +228,55 @@ module Gluon
     end
 
     def page_hook
+      r = nil
       if (@controller.respond_to? :page_hook) then
+        @logger.debug("#{@controller}.page_hook() start") if @logger.debug?
         @controller.page_hook{
-          yield
+          r = yield
         }
+        @logger.debug("#{@controller}.page_hook() end") if @logger.debug?
       else
-        yield
+        r = yield
       end
+      r
     end
     private :page_hook
 
     def apply(renderer)
       r = nil
       page_hook{
-        @controller.page_start if (@controller.respond_to? :page_start)
+        if (@controller.respond_to? :page_start) then
+          @logger.debug("#{@controller}.page_start()") if @logger.debug?
+          @controller.page_start
+        end
         begin
           set_params
           call_actions
-          r = renderer.call(@controller, @c, @params, @funcs, @prefix)
+          r = renderer.call(@controller, @c, self)
         ensure
-          @controller.page_end if (@controller.respond_to? :page_end)
+          if (@controller.respond_to? :page_end) then
+            @logger.debug("#{@controller}.page_end()") if @logger.debug?
+            @controller.page_end
+          end
         end
       }
       r
+    end
+
+    def new_action(controller, rs_context, next_prefix_list, prefix)
+      next_params = @params
+      for next_name in next_prefix_list
+        unless (next_params[:branches].key? next_name) then
+          next_params = EMPTY_PARAMS
+          break
+        end
+        next_params = next_params[:branches][next_name]
+      end
+
+      action = Action.new(controller, rs_context, next_params, @funcs, prefix)
+      action.logger = @logger
+
+      action
     end
   end
 end

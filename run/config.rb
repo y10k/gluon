@@ -1,6 +1,8 @@
 # gluon configuration
 
 port 9202
+log_file "#{base_dir}/gluon.log"
+log_level Logger::DEBUG
 access_log "#{base_dir}/access.log"
 
 require 'Welcom'

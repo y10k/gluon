@@ -11,13 +11,11 @@ module Gluon
 
     extend Forwardable
 
-    def initialize(controller, rs_context, renderer, params, funcs, prefix='')
+    def initialize(controller, rs_context, renderer, action)
       @controller = controller
       @c = rs_context
       @renderer = renderer
-      @params = params
-      @funcs = funcs
-      @prefix = prefix
+      @action = action
       @stack = []
     end
 
@@ -61,7 +59,7 @@ module Gluon
     end
 
     def prefix
-      s = @prefix.dup
+      s = @action.prefix.dup
       for prefix, child in @stack
         s << prefix << '.'
       end
@@ -152,7 +150,8 @@ module Gluon
           when Array, Numeric, String, Struct, Symbol, Time
             # skip action for ruby primitive
           else
-            Action.new(child, @c, Action::EMPTY_PARAMS, @funcs, prefix).call_actions
+            next_prefix_list = @stack.map{|prefix, child| prefix }
+            @action.new_action(child, @c, next_prefix_list, prefix).call_actions
           end
           yield(i)
         ensure
@@ -308,17 +307,9 @@ module Gluon
         curr_prefix = controller.class.to_s
       end
       prefix = prefix() + curr_prefix + '.'
+      next_prefix_list = @stack.map{|prefix, child| prefix } + [ curr_prefix ]
 
-      next_params = @params
-      for next_name in @stack.map{|prefix, child| prefix } + [ curr_prefix ]
-        unless (next_params[:branches].key? next_name) then
-          next_params = Action::EMPTY_PARAMS
-          break
-        end
-        next_params = next_params[:branches][next_name]
-      end
-
-      action = Action.new(controller, @c, next_params, @funcs, prefix)
+      action = @action.new_action(controller, @c, next_prefix_list, prefix)
       action.setup.apply(@renderer)
     end
 

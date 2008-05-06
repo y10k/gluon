@@ -1,12 +1,14 @@
 # application builder
 
 require 'forwardable'
+require 'gluon/action'
 require 'gluon/application'
 require 'gluon/dispatcher'
 require 'gluon/plugin'
 require 'gluon/renderer'
 require 'gluon/rs'
 require 'gluon/version'
+require 'logger'
 require 'rack'
 require 'thread'
 
@@ -73,6 +75,8 @@ module Gluon
       @view_dir = options[:view_dir]
       @conf_path = options[:conf_path]
       @session_conf = SessionConfig.new
+      @log_file = File.join(@base_dir, 'gluon.log')
+      @log_level = Logger::INFO
       @access_log = File.join(@base_dir, 'access.log')
       @port = 9202
       @page_cache = false
@@ -86,6 +90,9 @@ module Gluon
     attr_reader :view_dir
     attr_reader :conf_path
     attr_reader :session_conf
+
+    attr_accessor :log_file
+    attr_accessor :log_level
 
     attr_accessor :access_log
     attr_accessor :port
@@ -196,6 +203,8 @@ module Gluon
     end
 
     class TopLevelContext < Context
+      def_delegator :@builder, :log_file=, :log_file
+      def_delegator :@builder, :log_level=, :log_level
       def_delegator :@builder, :access_log=, :access_log
       def_delegator :@builder, :port=, :port
       def_delegator :@builder, :page_cache=, :page_cache
@@ -247,7 +256,15 @@ module Gluon
       @session_man = SessionManager.new(@session_conf.options)
       @plugin_maker.setup
 
+      if (@log_file) then
+        @logger = Logger.new(@log_file, 1)
+        @logger.level = @log_level
+      else
+        @logger = Action::NoLogger.instance
+      end
+
       @app = Application.new
+      @app.logger = @logger
       @app.dispatcher = @dispatcher
       @app.renderer = @renderer
       @app.session_man = @session_man
@@ -259,10 +276,10 @@ module Gluon
       end
       @app = Rack::ShowExceptions.new(@app)
       if (@access_log) then
-        @logger = File.open(@access_log, 'a')
-        @logger.binmode
-        @logger.sync = true
-        @app = Rack::CommonLogger.new(@app, @logger)
+        @access_logger = File.open(@access_log, 'a')
+        @access_logger.binmode
+        @access_logger.sync = true
+        @app = Rack::CommonLogger.new(@app, @access_logger)
       else
         @app = Rack::CommonLogger.new(@app)
       end
@@ -276,7 +293,8 @@ module Gluon
       begin
         handler.run(@app, *opts)
       ensure
-        @logger.close if @logger
+        @logger.close
+        @access_logger.close if @access_logger
         @session_man.shutdown
         FinalContext.new(self).instance_eval(&@finalizer)
       end

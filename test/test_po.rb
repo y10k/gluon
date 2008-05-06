@@ -33,7 +33,7 @@ module Gluon::Test
       @params, @funcs = Gluon::Action.parse(@c.req.params)
       @controller = page_type.new
       @action = Gluon::Action.new(@controller, @c, @params, @funcs)
-      @po = Gluon::PresentationObject.new(@controller, @c, @renderer, @params, @funcs)
+      @po = Gluon::PresentationObject.new(@controller, @c, @renderer, @action)
       @erb_context = Gluon::ERBContext.new(@po, @c)
     end
     private :build_page

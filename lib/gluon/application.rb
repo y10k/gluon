@@ -22,6 +22,7 @@ module Gluon
       @default_cache_key.freeze
     end
 
+    attr_writer :logger
     attr_writer :dispatcher
     attr_writer :renderer
     attr_writer :session_man
@@ -45,6 +46,7 @@ module Gluon
             rs_context.cache_tag = nil
             controller = page_type.new
             action = Action.new(controller, rs_context, params, funcs).setup
+            action.logger = @logger
             page_type = RequestResponseContext.switch_from{
               cache_key = action.cache_key || @default_cache_key
               c_key = [ req.path_info, page_type, cache_key ]
