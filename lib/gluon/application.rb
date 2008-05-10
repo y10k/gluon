@@ -30,9 +30,10 @@ module Gluon
     attr_writer :page_cache
 
     def call(env)
+      @logger.debug("#{self}.call() - start") if @logger.debug?
       req = Rack::Request.new(env)
       res = Rack::Response.new
-      params, funcs = Gluon::Action.parse(req.params)
+      params, funcs = Action.parse(req.params)
       if (@logger.debug?) then
         @logger.debug("request path: #{req.path_info}")
         @logger.debug("request parameters: #{params.inspect}")
@@ -64,23 +65,26 @@ module Gluon
                   cache_result = c_entry[:result]
                 }
                 if (modified) then
+                  @logger.debug("modified page -> #{c_key.inspect}") if @logger.debug?
                   result = action.apply(@renderer)
                   if (modified != :no_cache) then
-                    # update cache
+                    @logger.debug("update page cache -> #{c_key.inspect}") if @logger.debug?
                     c_entry[:lock].synchronize{
                       c_entry[:cache_tag] = rs_context.cache_tag
                       c_entry[:result] = result
                     }
+                  else
+                    @logger.debug("no cache of #{c_key.inspect}") if @logger.debug?
                   end
                   res.write(result)
                 else
-                  # use cache
+                  @logger.debug("use page cache -> #{c_key.inspect}") if @logger.debug?
                   res.write(cache_result)
                 end
               else
                 result = action.apply(@renderer)
                 if (@page_cache && rs_context.cache_tag) then
-                  # create cache
+                  @logger.debug("create page cache -> #{c_key.inspect}") if @logger.debug?
                   @c_lock.synchronize{
                     c_entry = @cache[c_key] || { :lock => Mutex.new }
                     c_entry[:lock].synchronize{
@@ -95,6 +99,7 @@ module Gluon
             }
           end while (page_type)
         }
+        @logger.debug("#{self}.call() - end") if @logger.debug?
         return res.finish
       else
         return [ 404, { "Content-Type" => "text/plain" }, [ "404 Not Found: #{req.env['REQUEST_URI']}" ] ]

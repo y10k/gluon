@@ -19,12 +19,14 @@ module Gluon
       '__cache_key__' => true,
       '__if_modified__' => true,
       '__export__' => true
-    }
+    }.freeze
 
     EMPTY_PARAMS = {
-      :params => {},
-      :branches => {}
-    }
+      :params => {}.freeze,
+      :branches => {}.freeze
+    }.freeze
+
+    EMPTY_FUNCS = {}.freeze
 
     class << self
       def parse_params(req_params)
@@ -246,6 +248,7 @@ module Gluon
     private :page_check
 
     def apply(renderer, no_set_params=false)
+      @logger.debug("#{self}.apply() - start")
       r = nil
       page_hook{
         if (@controller.respond_to? :page_start) then
@@ -265,6 +268,7 @@ module Gluon
           end
         end
       }
+      @logger.debug("#{self}.apply() - end")
       r
     end
 
