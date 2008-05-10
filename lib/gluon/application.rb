@@ -35,6 +35,7 @@ module Gluon
       res = Rack::Response.new
       params, funcs = Gluon::Action.parse(req.params)
       if (@logger.debug?) then
+        @logger.debug("request path: #{req.path_info}")
         @logger.debug("request parameters: #{params.pretty_inspect}")
         @logger.debug("request functions: #{funcs.pretty_inspect}")
       end
