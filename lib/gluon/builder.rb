@@ -56,6 +56,23 @@ module Gluon
     end
   end
 
+  class ErrorLogger
+    def initialize(app, logger)
+      @app = app
+      @logger = logger
+    end
+
+    def call(env)
+      begin
+        @app.call(env)
+      rescue
+        @logger.error('internal application error')
+        @logger.error($!)
+        raise
+      end
+    end
+  end
+
   class Builder
     # for ident(1)
     CVS_ID = '$Id$'
@@ -297,7 +314,6 @@ module Gluon
       if (@auto_reload) then
         @app = AutoReloader.new(@app)
       end
-      @app = Rack::ShowExceptions.new(@app)
       if (@access_log) then
         @logger.debug("open access log -> #{@access_log}") if @logger.debug?
         @access_logger = File.open(@access_log, 'a')
@@ -307,6 +323,8 @@ module Gluon
       else
         @app = Rack::CommonLogger.new(@app)
       end
+      @app = ErrorLogger.new(@app, @logger)
+      @app = Rack::ShowExceptions.new(@app)
 
       @logger.info("#{self}.build() - end")
 
