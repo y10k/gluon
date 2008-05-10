@@ -9,8 +9,8 @@ require 'Welcom'
 require 'Example'
 
 # for debug
-#page_cache false
-#auto_reload true
+page_cache false
+auto_reload true
 
 # for product
 #page_cache true

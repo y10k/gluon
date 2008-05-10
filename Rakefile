@@ -30,7 +30,12 @@ task :rdoc do
   }
 end
 
-task :example => [ :example_install ] do
+task :example do
+  sv_type = ENV['SERVER'] || 'webrick'
+  ruby '-I', LIB_DIR, "run/server/#{sv_type}"
+end
+
+task :example_test => [ :example_install ] do
   sv_type = ENV['SERVER'] || 'webrick'
   ruby '-I', LIB_DIR, "#{EXAMPLE_DIR}/server/#{sv_type}"
 end
