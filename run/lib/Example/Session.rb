@@ -4,8 +4,8 @@ class Example
   class Session
     extend Forwardable
 
-    attr_accessor :c
-    def_delegator :c, :session_id
+    attr_writer :c
+    def_delegator :@c, :session_id
 
     def page_start
       if (@session = @c.session_get(false)) then

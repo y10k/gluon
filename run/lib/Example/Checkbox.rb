@@ -1,6 +1,6 @@
 class Example
   class Checkbox
-    attr_accessor :c
+    attr_writer :c
 
     def page_start
       @foo = false

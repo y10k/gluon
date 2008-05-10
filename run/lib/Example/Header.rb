@@ -2,7 +2,7 @@ class Example
   class Header
     include Dispatch
 
-    attr_accessor :c
+    attr_writer :c
 
     def example?
       @c.curr_page == ExamplePanel

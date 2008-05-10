@@ -1,6 +1,6 @@
 class Example
   class Text
-    attr_accessor :c
+    attr_writer :c
     attr_accessor :foo
 
     def ok

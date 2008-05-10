@@ -1,6 +1,6 @@
 class Example
   class Submit
-    attr_accessor :c
+    attr_writer :c
 
     def page_start
       @results = ''

@@ -1,6 +1,6 @@
 class Example
   class Select
-    attr_accessor :c
+    attr_writer :c
 
     def page_start
       @fruit_list = %w[ apple banana orange ]

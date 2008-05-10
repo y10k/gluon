@@ -23,7 +23,7 @@ class Example
 
     COUNT = Counter.new
 
-    attr_accessor :c
+    attr_writer :c
 
     def __if_modified__(cache_tag)
       if (@c.req.post?) then
