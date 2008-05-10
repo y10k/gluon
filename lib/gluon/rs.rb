@@ -269,7 +269,7 @@ module Gluon
     attr_reader :req
     attr_reader :res
     attr_reader :plugin
-    attr_reader :logger
+    attr_accessor :logger
     attr_accessor :cache_tag
 
     def_delegator :@session, :get, :session_get
