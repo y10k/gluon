@@ -248,7 +248,7 @@ module Gluon
     private :page_check
 
     def apply(renderer, no_set_params=false)
-      @logger.debug("#{self}.apply() - start")
+      @logger.debug("#{Action}.apply() for #{@controller} - start")
       r = nil
       page_hook{
         if (@controller.respond_to? :page_start) then
@@ -268,7 +268,7 @@ module Gluon
           end
         end
       }
-      @logger.debug("#{self}.apply() - end")
+      @logger.debug("#{Action}.apply() for #{@controller} - end")
       r
     end
 
