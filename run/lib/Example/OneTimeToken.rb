@@ -25,10 +25,12 @@ class Example
     COUNT = Count.new
 
     def page_start
-      one_time_token_setup
+      one_time_token_setup      # for Gluon::Web::OneTimeToken
       @count = COUNT.value
       @now = Time.now
     end
+
+    # default page_check is defined by Gluon::Web::OneTimeToken
 
     attr_reader :count
 
