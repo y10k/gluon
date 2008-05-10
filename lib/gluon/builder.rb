@@ -1,9 +1,9 @@
 # application builder
 
 require 'forwardable'
-require 'gluon/action'
 require 'gluon/application'
 require 'gluon/dispatcher'
+require 'gluon/nolog'
 require 'gluon/plugin'
 require 'gluon/renderer'
 require 'gluon/rs'
@@ -260,7 +260,7 @@ module Gluon
         @logger = Logger.new(@log_file, 1)
         @logger.level = @log_level
       else
-        @logger = Action::NoLogger.instance
+        @logger = NoLogger.instance
       end
 
       @app = Application.new
