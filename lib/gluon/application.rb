@@ -2,7 +2,6 @@
 
 require 'gluon/action'
 require 'gluon/rs'
-require 'pp'
 require 'rack'
 
 module Gluon
@@ -36,8 +35,8 @@ module Gluon
       params, funcs = Gluon::Action.parse(req.params)
       if (@logger.debug?) then
         @logger.debug("request path: #{req.path_info}")
-        @logger.debug("request parameters: #{params.pretty_inspect}")
-        @logger.debug("request functions: #{funcs.pretty_inspect}")
+        @logger.debug("request parameters: #{params.inspect}")
+        @logger.debug("request functions: #{funcs.inspect}")
       end
       page_type, gluon_path_info = @dispatcher.look_up(req.path_info)
       if (page_type) then
@@ -108,5 +107,3 @@ end
 # mode: Ruby
 # indent-tabs-mode: nil
 # End:
-
-
