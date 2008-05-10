@@ -21,6 +21,7 @@ module Gluon::Test
 
     def teardown
       FileUtils.rm_f('access.log')
+      FileUtils.rm_f('gluon.log')
     end
 
     def test_attributes

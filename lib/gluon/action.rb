@@ -1,6 +1,6 @@
 # action
 
-require 'singleton'
+require 'gluon/nolog'
 
 module Gluon
   class Action
@@ -105,32 +105,6 @@ module Gluon
 
       def parse(req_params)
         return parse_params(req_params), parse_funcs(req_params)
-      end
-    end
-
-    class NoLogger
-      include Singleton
-
-      def debug?
-        false
-      end
-
-      def debug(messg)
-      end
-
-      def info(messg)
-      end
-
-      def warn(messg)
-      end
-
-      def error(messg)
-      end
-
-      def fatal(messg)
-      end
-
-      def close
       end
     end
 

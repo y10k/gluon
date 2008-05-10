@@ -12,6 +12,7 @@ module Gluon
   autoload :ERBContext, 'gluon/po'
   autoload :MemoryStore, 'gluon/rs'
   autoload :Mock, 'gluon/mock'
+  autoload :NoLogger, 'gluon/nolog'
   autoload :PluginMaker, 'gluon/plugin'
   autoload :PresentationObject, 'gluon/po'
   autoload :RequestResponseContext, 'gluon/rs'
