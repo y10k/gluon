@@ -17,8 +17,8 @@ module Gluon::Test
       @c = @mock.new_request(@env)
     end
 
-    def build_page(page_type)
-      @controller = page_type.new
+    def build_page(page_type, *args)
+      @controller = page_type.new(*args)
       params, funcs = Gluon::Action.parse(@c.req.params)
       @action = Gluon::Action.new(@controller, @c, params, funcs)
     end
@@ -148,9 +148,29 @@ module Gluon::Test
       work = proc{
         count += 1
         assert_equal('Apple', @controller.foo)
-        assert_equal(nil,     @controller.bar)
+        assert_equal(nil, @controller.bar)
       }
       @action.setup.apply(work)
+
+      assert_equal(1, count)
+    end
+
+    def test_apply_with_no_set_params
+      params = {
+        'foo' => 'Apple',
+        #'bar()' => 'Banana',
+        'foo.bar' => 'Orange'
+      }
+      @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
+      build_page(PageWithScalarParams)
+
+      count = 0
+      work = proc{
+        count += 1
+        assert_equal(nil, @controller.foo)
+        assert_equal(nil, @controller.bar)
+      }
+      @action.setup.apply(work, true)
 
       assert_equal(1, count)
     end
@@ -434,6 +454,57 @@ module Gluon::Test
       Gluon::Action::RESERVED_WORDS.each_key do |name|
         assert_equal(false, (@action.export? name.to_s))
       end
+    end
+
+    class PageWithPageCheck
+      def initialize(check_stat)
+        @check_stat = check_stat
+        @calls = []
+      end
+
+      attr_reader :calls
+
+      def page_check
+        @check_stat
+      end
+
+      def foo
+        @calls << :foo_action
+      end
+    end
+
+    def test_page_with_page_check_ok
+      params = { 'foo()' => nil }
+      @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
+      build_page(PageWithPageCheck, true)
+      assert_equal(true, @controller.page_check)
+      assert_equal([], @controller.calls)
+      
+      count = 0
+      work = proc{
+        assert_equal([ :foo_action ], @controller.calls)
+        count += 1
+      }
+      @action.setup.apply(work)
+
+      assert_equal(1, count)
+    end
+
+    def test_page_with_page_check_ng
+      params = { 'foo()' => nil }
+      @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
+      build_page(PageWithPageCheck, false)
+      assert_equal(false, @controller.page_check)
+      assert_equal([], @controller.calls)
+      
+      count = 0
+      work = proc{
+        assert_equal([], @controller.calls)
+        count += 1
+      }
+      @action.setup.apply(work)
+
+      assert_equal(1, count)
     end
   end
 

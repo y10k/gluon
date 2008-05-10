@@ -295,8 +295,10 @@ module Gluon
 
       case (value)
       when Class
+        no_set_params = false
         controller = value.new
       else
+        no_set_params = true    # set_params by top level action
         controller = value
       end
 
@@ -310,7 +312,7 @@ module Gluon
       next_prefix_list = @stack.map{|prefix, child| prefix } + [ curr_prefix ]
 
       action = @action.new_action(controller, @c, next_prefix_list, prefix)
-      action.setup.apply(@renderer)
+      action.setup.apply(@renderer, no_set_params)
     end
 
     def form_value(name)

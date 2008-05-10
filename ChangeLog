@@ -1,5 +1,7 @@
 2008-05-10  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/action.rb: page check.
+
 	* lib/gluon/nolog.rb: dummy logger.
 
 2008-05-06  TOKI Yoshinori  <toki@freedom.ne.jp>

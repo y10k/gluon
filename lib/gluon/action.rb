@@ -11,6 +11,7 @@ module Gluon
       'c' => true,
       'c=' => true,
       'page_hook' => true,
+      'page_check' => true,
       'page_start' => true,
       'page_end' => true,
       '__view__' => true,
@@ -228,7 +229,23 @@ module Gluon
     end
     private :page_hook
 
-    def apply(renderer)
+    def page_check
+      if (@controller.respond_to? :page_check) then
+        @logger.debug("#{@controller}.page_check()") if @logger.debug?
+        if (@controller.page_check) then
+          @logger.debug("#{@controller}.page_check() -> OK") if @logger.debug?
+          return true
+        else
+          @logger.debug("#{@controller}.page_check() -> NG") if @logger.debug?
+          return false
+        end
+      end
+
+      true
+    end
+    private :page_check
+
+    def apply(renderer, no_set_params=false)
       r = nil
       page_hook{
         if (@controller.respond_to? :page_start) then
@@ -236,8 +253,10 @@ module Gluon
           @controller.page_start
         end
         begin
-          set_params
-          call_actions
+          set_params unless no_set_params
+          if (@funcs.key? @prefix) then
+            call_actions if page_check
+          end
           r = renderer.call(@controller, @c, self)
         ensure
           if (@controller.respond_to? :page_end) then
