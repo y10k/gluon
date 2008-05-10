@@ -17,7 +17,8 @@ class Example
       %w[ select Select ],
       %w[ textarea Textarea ],
       %w[ session Session ],
-      [ 'pagecache', 'PageCache', 'page cache' ]
+      [ 'pagecache', 'PageCache', 'page cache' ],
+      [ 'onetimetoken', 'OneTimeToken', 'one time token' ]
     ]
 
     EXAMPLE_KEYS = example_alist.map{|k, n| k }
@@ -31,7 +32,7 @@ class Example
       }
     end
 
-    attr_accessor :c
+    attr_writer :c
 
     def page_start
       @key = @c.path_info.sub(%r"^/", '') unless @key

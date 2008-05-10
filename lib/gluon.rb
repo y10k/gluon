@@ -20,6 +20,7 @@ module Gluon
   autoload :SessionManager, 'gluon/rs'
   autoload :Setup, 'gluon/setup'
   autoload :ViewRenderer, 'gluon/renderer'
+  autoload :Web, 'gluon/web'
 end
 
 # Local Variables:

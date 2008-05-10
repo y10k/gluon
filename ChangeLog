@@ -1,5 +1,9 @@
 2008-05-10  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/web/token.rb: one time token for web form.
+
+	* lib/gluon/web.rb: web application components.
+
 	* lib/gluon/action.rb: page check.
 
 	* lib/gluon/nolog.rb: dummy logger.
