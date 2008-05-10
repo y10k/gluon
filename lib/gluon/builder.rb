@@ -251,31 +251,55 @@ module Gluon
     end
 
     def build
-      @dispatcher = Dispatcher.new(@url_map)
-      @renderer = ViewRenderer.new(@view_dir)
-      @session_man = SessionManager.new(@session_conf.options)
-      @plugin_maker.setup
-
       if (@log_file) then
         @logger = Logger.new(@log_file, 1)
         @logger.level = @log_level
       else
         @logger = NoLogger.instance
       end
+      @logger.info("new logger: loggin level -> #{@logger.level}")
 
+      @logger.info("#{self}.build() - start")
+
+      @logger.info("new #{Dispatcher}")
+      if (@logger.debug?) then
+        for path, page_type in @url_map
+          @logger.debug("#{Dispatcher} URL mapping: #{path} -> #{page_type}")
+        end
+      end
+      @dispatcher = Dispatcher.new(@url_map)
+
+      @logger.info("new #{ViewRenderer} -> #{@view_dir}")
+      @renderer = ViewRenderer.new(@view_dir)
+
+      @logger.info("new #{SessionManager}")
+      if (@logger.debug?) then
+        for key, value in @session_conf.options
+          @logger.debug("#{SessionManager} option: #{key} -> #{value}")
+        end
+      end
+      @session_man = SessionManager.new(@session_conf.options)
+
+      @logger.info("#{@plugin_maker}.setup()")
+      @plugin_maker.setup
+
+      @logger.info("new #{Application}")
       @app = Application.new
       @app.logger = @logger
       @app.dispatcher = @dispatcher
       @app.renderer = @renderer
       @app.session_man = @session_man
       @app.plugin_maker = @plugin_maker
+      @logger.debug("#{@app}.page_cache = #{@page_cache}") if @logger.debug?
       @app.page_cache = @page_cache
 
+      @logger.debug("auto_reload -> #{@auto_reload}") if @logger.debug?
       if (@auto_reload) then
         @app = AutoReloader.new(@app)
       end
       @app = Rack::ShowExceptions.new(@app)
       if (@access_log) then
+        @logger.debug("open access log -> #{@access_log}") if @logger.debug?
         @access_logger = File.open(@access_log, 'a')
         @access_logger.binmode
         @access_logger.sync = true
@@ -284,19 +308,43 @@ module Gluon
         @app = Rack::CommonLogger.new(@app)
       end
 
+      @logger.info("#{self}.build() - end")
+
       { :port => @port }
     end
 
     attr_reader :app
 
-    def run(handler, *opts)
+    def run(handler, options)
       begin
-        handler.run(@app, *opts)
+        @logger.info("#{self}.run() - start")
+        if (@logger.debug?) then
+          @logger.debug("#{self}.run(): handler -> #{handler}")
+          for key, value in options
+            @logger.debug("#{self}.run() option: #{key} -> #{value}")
+          end
+        end
+        handler.run(@app, options)
+      rescue
+        @logger.error("error at #{handler}.run()")
+        @logger.error($!)
+        raise
       ensure
-        @logger.close
+        @logger.debug("close access log") if @logger.debug?
         @access_logger.close if @access_logger
+        @logger.debug("#{@session_man}.shutdown()") if @logger.debug?
         @session_man.shutdown
-        FinalContext.new(self).instance_eval(&@finalizer)
+        @logger.debug("evaluate final context") if @logger.debug?
+        begin
+          FinalContext.new(self).instance_eval(&@finalizer)
+        rescue
+          @logger.error('error at final context')
+          @logger.error($!)
+          raise
+        end
+        @logger.info("#{self}.run() - end")
+        @logger.info("close logger")
+        @logger.close
       end
       nil
     end
