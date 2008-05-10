@@ -1,0 +1,6 @@
+<form>
+  <%= import :one_time_token %>
+  <p><%= value :now %></p>
+  <p>Counter: <%= value :count %></p>
+  <p><%= submit :count_up, :value => 'Count Up' %></p>
+</form>
