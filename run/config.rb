@@ -2,7 +2,6 @@
 
 port 9202
 log_file "#{base_dir}/gluon.log"
-log_level Logger::DEBUG
 access_log "#{base_dir}/access.log"
 
 require 'Welcom'
@@ -11,10 +10,12 @@ require 'Example'
 # for debug
 page_cache false
 auto_reload true
+log_level Logger::DEBUG
 
 # for product
 #page_cache true
 #auto_reload false
+#log_level Logger::INFO
 
 mount Welcom, '/'
 mount Example, '/example'
