@@ -1,8 +1,9 @@
 # request response
 
-require 'thread'
+require 'gluon/nolog'
 require 'digest'
 require 'forwardable'
+require 'thread'
 
 module Gluon
   class MemoryStore
@@ -261,12 +262,14 @@ module Gluon
       @session = session
       @dispatcher = dispatcher
       @plugin = plugin
+      @logger = NoLogger.instance
       @cache_tag = nil
     end
 
     attr_reader :req
     attr_reader :res
     attr_reader :plugin
+    attr_reader :logger
     attr_accessor :cache_tag
 
     def_delegator :@session, :get, :session_get

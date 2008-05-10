@@ -48,6 +48,7 @@ module Gluon
             req.env['gluon.page_cache'] = @page_cache
             plugin = @plugin_maker.call
             rs_context = RequestResponseContext.new(req, res, session, @dispatcher, plugin)
+            rs_context.logger = @logger
             rs_context.cache_tag = nil
             controller = page_type.new
             action = Action.new(controller, rs_context, params, funcs).setup
