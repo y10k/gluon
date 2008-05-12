@@ -546,7 +546,7 @@ module Gluon::Test
     end
 
     def test_foreach_action
-      @env['QUERY_STRING'] = Gluon::PresentationObject.query('list[1].foo()')
+      @env['QUERY_STRING'] = Gluon::PresentationObject.query('list[1].foo()' => nil)
       build_page(PageForForeachAction)
 
       assert_equal('010', render_page('<% foreach :list do %><%= value :calls %><% end %>'))
@@ -577,7 +577,7 @@ module Gluon::Test
     end
 
     def test_import_action
-      @env['QUERY_STRING'] = Gluon::PresentationObject.query('subpage.foo()')
+      @env['QUERY_STRING'] = Gluon::PresentationObject.query('subpage.foo()' => nil)
       File.open(File.join(@view_dir, 'SubpageAction.rhtml'), 'w') {|out|
         out << '<%= value :calls %>'
       }
