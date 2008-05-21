@@ -6,6 +6,7 @@ class Example
   autoload :CodePanel, 'Example/CodePanel'
   autoload :Cond, 'Example/Cond'
   autoload :Dispatch, 'Example/Dispatch'
+  autoload :ErrorMessages, 'Example/ErrorMessages'
   autoload :ExamplePanel, 'Example/ExamplePanel'
   autoload :Foreach, 'Example/Foreach'
   autoload :Header, 'Example/Header'

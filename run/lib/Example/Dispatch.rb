@@ -18,7 +18,8 @@ class Example
       %w[ textarea Textarea ],
       %w[ session Session ],
       [ 'pagecache', 'PageCache', 'page cache' ],
-      [ 'onetimetoken', 'OneTimeToken', 'one time token' ]
+      [ 'onetimetoken', 'OneTimeToken', 'one time token' ],
+      [ 'errmsgs', 'ErrorMessages', 'error messages' ]
     ]
 
     EXAMPLE_KEYS = example_alist.map{|k, n| k }
