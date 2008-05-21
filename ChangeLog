@@ -1,5 +1,7 @@
 2008-05-21  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/renderer.rb: erb proc -> view class.
+
 	* lib/gluon/web/error.rb: error messages.
 
 2008-05-10  TOKI Yoshinori  <toki@freedom.ne.jp>

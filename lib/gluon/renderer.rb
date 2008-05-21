@@ -11,8 +11,10 @@ module Gluon
 
     class << self
       def compile(eruby_script, filename='(erb)')
+        view_class = Class.new(ERBContext)
         erb = ERB.new(eruby_script)
-        eval('proc{ ' + erb.src + '}', TOPLEVEL_BINDING, filename)
+        erb.def_method(view_class, '__renderer__', filename)
+        view_class
       end
 
       def load(filename)
@@ -50,14 +52,14 @@ module Gluon
       erb_context = ERBContext.new(po, rs_context)
       view_path = File.join(@view_dir, po.__view__)
       if (po.view_explicit?) then
-        erb_proc = load(view_path)
-        return erb_context.instance_eval(&erb_proc)
+        view_class = load(view_path)
+        return view_class.new(po, rs_context).__renderer__
       elsif (File.exist? view_path) then
-        erb_proc = load(view_path)
-        return erb_context.instance_eval(&erb_proc)
+        view_class = load(view_path)
+        return view_class.new(po, rs_context).__renderer__
       elsif (default_view_path = po.__default_view__) then
-        erb_proc = load(default_view_path)
-        return erb_context.instance_eval(&erb_proc)
+        view_class = load(default_view_path)
+        return view_class.new(po, rs_context).__renderer__
       end
 
       raise "no view for #{po.page_type}"
