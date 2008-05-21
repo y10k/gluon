@@ -1,10 +1,14 @@
 # error messages
 
+require 'forwardable'
+
 module Gluon
   module Web
     class ErrorMessages
       # for ident(1)
       CVS_ID = '$Id$'
+
+      extend Forwardable
 
       def initialize(options={})
         @title = (options.key? :title) ? options[:title] : 'ERROR(s)'
@@ -24,6 +28,7 @@ module Gluon
       attr_reader :head_level
       attr_reader :css_class
       attr_reader :messages
+      def_delegator :@messages, :empty?
 
       def has_messages?
         ! @messages.empty?
