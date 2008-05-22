@@ -1,7 +1,5 @@
 # error messages
 
-require 'forwardable'
-
 module Gluon
   module Web
     class ErrorMessages
@@ -28,7 +26,6 @@ module Gluon
       attr_reader :head_level
       attr_reader :css_class
       attr_reader :messages
-      def_delegator :@messages, :empty?
 
       def has_messages?
         ! @messages.empty?
