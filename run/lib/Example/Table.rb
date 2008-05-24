@@ -23,12 +23,12 @@ class Example
     class Check
       def initialize(text, options={})
         @text = text
-        @id = options[:id]
+        @check_id = options[:id]
         @checked = false
       end
 
       attr_reader :text
-      attr_reader :id
+      attr_reader :check_id
       attr_accessor :checked
     end
 

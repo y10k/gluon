@@ -1,12 +1,12 @@
 <h2>1. automatic string table</h2>
 
-<%= import Gluon::Web::Table.new(:id => 'auto-string-table',
-                                 :columns => 7,
+<%= import Gluon::Web::Table.new(:columns => 7,
                                  :items => 'a'..'z',
                                  :summary => 'auto string table',
                                  :caption => 'automatic (string)',
                                  :frame => 'box',
-                                 :rules => 'all')
+                                 :rules => 'all',
+                                 :id => 'auto-string-table')
 %>
 
 <h2>2. automatic import table</h2>
@@ -45,7 +45,7 @@
     <tr>
       <% foreach do |j| %>
         <td>
-          <%= checkbox :checked, :id => "manual-check-#{i}.#{j}" %>
+          <%= checkbox :checked, :id => "manual-check-#{i}-#{j}" %>
           <label for="<%= h "manual-check-#{i}.#{j}" %>"><%= value :text %></label>
         </td>
       <% end %>
