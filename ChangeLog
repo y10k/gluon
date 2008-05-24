@@ -1,5 +1,7 @@
 2008-05-24  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/po.rb: funcall for options of `id' and `attrs'.
+
 	* lib/gluon/web/table.rb: table.
 
 2008-05-21  TOKI Yoshinori  <toki@freedom.ne.jp>

@@ -167,12 +167,15 @@ module Gluon
       elem = "<#{name}"
       for name in [ :id, :class ]
         if (options.key? name) then
-          elem << ' ' << name.to_s << '="' << ERB::Util.html_escape(options[name]) << '"'
+          value = options[name]
+          value = funcall(value) if (value.kind_of? Symbol)
+          elem << ' ' << name.to_s << '="' << ERB::Util.html_escape(value) << '"'
         end
       end
       if (options.key? :attrs) then
         for name, value in options[:attrs]
-          elem << ' ' << name.to_s << '="' << ERB::Util.html_escape(options[:attrs][name]) << '"'
+          value = funcall(value) if (value.kind_of? Symbol)
+          elem << ' ' << name.to_s << '="' << ERB::Util.html_escape(value) << '"'
         end
       end
       elem
