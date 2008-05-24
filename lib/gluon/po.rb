@@ -143,7 +143,8 @@ module Gluon
     end
 
     def foreach(name=:to_a, options={})
-      funcall(name).each_with_index do |child, i|
+      i = 0
+      funcall(name).each do |child|
         @stack.push [ "#{name}[#{i}]", child ]
         begin
           case (child)
@@ -151,11 +152,12 @@ module Gluon
             # skip action for ruby primitive
           else
             next_prefix_list = @stack.map{|prefix, child| prefix }
-            @action.new_action(child, @c, next_prefix_list, prefix).call_actions
+            @action.new_action(child, @c, next_prefix_list, prefix()).call_actions
           end
           yield(i)
         ensure
           @stack.pop
+          i += 1
         end
       end
       nil
@@ -165,7 +167,7 @@ module Gluon
       elem = "<#{name}"
       for name in [ :id, :class ]
         if (options.key? name) then
-          elem << ' ' << name.to_s << '="' << ERB::Util.html_escape(options[:id]) << '"'
+          elem << ' ' << name.to_s << '="' << ERB::Util.html_escape(options[name]) << '"'
         end
       end
       if (options.key? :attrs) then
@@ -311,7 +313,7 @@ module Gluon
         curr_prefix = controller.class.to_s
       end
       prefix = prefix() + curr_prefix + '.'
-      next_prefix_list = @stack.map{|prefix, child| prefix } + [ curr_prefix ]
+      next_prefix_list = @stack.map{|_prefix, child| _prefix } + [ curr_prefix ]
 
       action = @action.new_action(controller, @c, next_prefix_list, prefix)
       action.setup.apply(@renderer,
