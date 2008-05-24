@@ -7,6 +7,7 @@ module Gluon
 
     autoload :ErrorMessages, 'gluon/web/error'
     autoload :OneTimeToken, 'gluon/web/token'
+    autoload :Table, 'gluon/web/table'
   end
 end
 

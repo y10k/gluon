@@ -1,0 +1,66 @@
+<h2>1. automatic string table</h2>
+
+<%= import Gluon::Web::Table.new(:id => 'auto-string-table',
+                                 :columns => 7,
+                                 :items => 'a'..'z',
+                                 :summary => 'auto string table',
+                                 :caption => 'automatic (string)',
+                                 :frame => 'box',
+                                 :rules => 'all')
+%>
+
+<h2>2. automatic import table</h2>
+
+<%= import :auto_table %>
+
+<h2>3. manual table</h2>
+
+<table id="manual-table" summary="manual table" border="1">
+  <caption>manual</caption>
+  <% foreach :manual_table do |i| %>
+    <tr>
+      <% foreach do |j| %>
+        <td>[<%= h "#{i+1}-#{j+1}" %>] <%= value %></td>
+      <% end %>
+      <% foreach :last_empty_cells do %>
+        <td align="center">-</td>
+      <% end %>
+    </tr>
+  <% end %>
+</table>
+
+<h2>3. automatic table on form</h2>
+
+<form>
+<%= import :auto_form_table %>
+<p><input type="submit" /></p>
+</form>
+
+<h2>4. manual table on form</h2>
+
+<form>
+<table id="manual-form-table" summary="manual form table" border="1">
+  <caption>manual (form)</caption>
+  <% foreach :manual_form_table do |i| %>
+    <tr>
+      <% foreach do |j| %>
+        <td>
+          <%= checkbox :checked, :id => "manual-check-#{i}.#{j}" %>
+          <label for="<%= h "manual-check-#{i}.#{j}" %>"><%= value :text %></label>
+        </td>
+      <% end %>
+      <% foreach :last_empty_cells do %>
+        <td align="center">-</td>
+      <% end %>
+    </tr>
+  <% end %>
+</table>
+<p><input type="submit" /></p>
+</form>
+
+<%#
+  Local Variables:
+  mode: HTML
+  indent-tabs-mode: nil
+  End:
+%>

@@ -1,3 +1,7 @@
+2008-05-24  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/web/table.rb: table.
+
 2008-05-21  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/renderer.rb: erb proc -> view class.

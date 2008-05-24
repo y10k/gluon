@@ -1,0 +1,41 @@
+<table
+  <% cond :id do %>id="<%= value :id %>"<% end %>
+  <% cond :summary do %>summary="<%= value :summary %>"<% end %>
+  <% cond :width do %>width="<%= value :width %>"<% end %>
+  <% cond :border do %>border="<%= value :border %>"<% end %>
+  <% cond :frame do %>frame="<%= value :frame %>"<% end %>
+  <% cond :rules do %>rules="<%= value :rules %>"<% end %>
+  <% cond :css_class do %>class="<%= value :css_class %>"<% end %>
+>
+  <% cond :caption do %>
+    <% cond :string_caption? do %>
+      <caption><%= value :caption %></caption>
+    <% end %>
+    <% cond neg(:string_caption?) do %>
+      <caption><%= import :caption %></caption>
+    <% end %>
+  <% end %>
+  <% foreach do %>
+    <tr>
+      <% foreach :cells do %>
+        <td>
+          <% cond :string? do %>
+            <%= value :item %>
+          <% end %>
+          <% cond neg(:string?) do %>
+            <%= import :item %>
+          <% end %>
+        </td>
+      <% end %>
+      <% foreach :last_empty_cells do %>
+        <td>&nbsp;</td>
+      <% end %>
+    </tr>
+  <% end %>
+</table>
+<%#
+  Local Variables:
+  mode: HTML
+  indent-tabs-mode: nil
+  End:
+%>

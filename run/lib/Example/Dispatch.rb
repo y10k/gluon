@@ -19,7 +19,8 @@ class Example
       %w[ session Session ],
       [ 'pagecache', 'PageCache', 'page cache' ],
       [ 'onetimetoken', 'OneTimeToken', 'one time token' ],
-      [ 'errmsgs', 'ErrorMessages', 'error messages' ]
+      [ 'errmsgs', 'ErrorMessages', 'error messages' ],
+      %w[ table Table ]
     ]
 
     EXAMPLE_KEYS = example_alist.map{|k, n| k }
