@@ -28,6 +28,8 @@ module Gluon
 
     EMPTY_FUNCS = {}.freeze
 
+    RUBY_PRIMITIVES = [ Array, Numeric, String, Struct, Symbol, Time ]
+
     class << self
       def parse_params(req_params)
         parsed_params = { :params => {}, :branches => {} }
@@ -149,12 +151,17 @@ module Gluon
 
     def set_parameters(this, params)
       return if (this.kind_of? Module)
-      for name, value in params[:params]
-        writer = "#{name}="
-        if (export? writer, this) then
-          if (this.respond_to? writer) then
-            @logger.debug("#{this}.#{name} = #{value}") if @logger.debug?
-            this.__send__(writer, value)
+      case (this)
+      when *RUBY_PRIMITIVES
+        # skip
+      else
+        for name, value in params[:params]
+          writer = "#{name}="
+          if (export? writer, this) then
+            if (this.respond_to? writer) then
+              @logger.debug("#{this}.#{name} = #{value}") if @logger.debug?
+              this.__send__(writer, value)
+            end
           end
         end
       end
