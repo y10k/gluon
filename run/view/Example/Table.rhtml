@@ -46,7 +46,7 @@
       <% foreach do |j| %>
         <td>
           <%= checkbox :checked, :id => "manual-check-#{i}-#{j}" %>
-          <label for="<%= h "manual-check-#{i}.#{j}" %>"><%= value :text %></label>
+          <label for="<%= h "manual-check-#{i}-#{j}" %>"><%= value :text %></label>
         </td>
       <% end %>
       <% foreach :last_empty_cells do %>
