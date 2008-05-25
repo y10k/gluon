@@ -168,13 +168,11 @@ module Gluon
       for name in [ :id, :class ]
         if (options.key? name) then
           value = options[name]
-          value = funcall(value) if (value.kind_of? Symbol)
           elem << ' ' << name.to_s << '="' << ERB::Util.html_escape(value) << '"'
         end
       end
       if (options.key? :attrs) then
         for name, value in options[:attrs]
-          value = funcall(value) if (value.kind_of? Symbol)
           elem << ' ' << name.to_s << '="' << ERB::Util.html_escape(value) << '"'
         end
       end
