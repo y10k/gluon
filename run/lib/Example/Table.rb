@@ -35,6 +35,8 @@ class Example
     def page_start
       @auto_table = Gluon::Web::Table.new(:columns => 5,
                                           :items => ('a'..'z').map{|c| Character.new(c) },
+                                          :header_rows => 1,
+                                          :header_columns => 1,
                                           :summary => 'auto import table',
                                           :caption => Emphasis.new('automatic (import)'),
                                           :border => false,

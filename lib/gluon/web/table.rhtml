@@ -18,14 +18,16 @@
   <% foreach do %>
     <tr>
       <% foreach :cells do %>
-        <td>
+        <% cond :header? do %><th><% end %>
+        <% cond neg(:header?) do %><td><% end %>
           <% cond :string? do %>
             <%= value :item %>
           <% end %>
           <% cond neg(:string?) do %>
             <%= import :item %>
           <% end %>
-        </td>
+        <% cond :header? do %></th><% end %>
+        <% cond neg(:header?) do %></td><% end %>
       <% end %>
       <% foreach :last_empty_cells do %>
         <td>&nbsp;</td>

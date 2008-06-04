@@ -7,14 +7,25 @@ module Gluon
       CVS_ID = '$Id$'
 
       class Cell
-        def initialize(item)
+        def initialize(item, parent, nth, header_columns)
           @item = item
+          @parent = parent
+          @nth = nth
+          @header_columns = header_columns
         end
 
         attr_reader :item
 
         def string?
           @item.kind_of? String
+        end
+
+        def header_column?
+          @nth < @header_columns
+        end
+
+        def header?
+          header_column? || @parent.header_row?
         end
 
         def __export__(name)
@@ -28,8 +39,11 @@ module Gluon
       end
 
       class Row
-        def initialize(columns)
+        def initialize(columns, nth, header_rows, header_columns)
           @columns = columns
+          @nth = nth
+          @header_rows = header_rows
+          @header_columns = header_columns
           @row = []
           @cells = nil
         end
@@ -54,8 +68,19 @@ module Gluon
           self
         end
 
+        def header_row?
+          @nth < @header_rows
+        end
+
         def cells
-          @cells = @row.map{|i| Cell.new(i) } unless @cells
+          unless (@cells) then
+            count = 0
+            @cells = []
+            for i in @row
+              @cells << Cell.new(i, self, count, @header_columns)
+              count += 1
+            end
+          end
           @cells
         end
 
@@ -77,11 +102,13 @@ module Gluon
         @columns = options[:columns] or raise 'need for columns'
         items = options[:items] or raise 'need for items'
         @rows = []
+        @header_rows = options[:header_rows] || 0
+        @header_columns = options[:header_columns] || 0
 
         count = 0
         for i in items
           if (count % @columns == 0) then
-            row = Row.new(@columns)
+            row = Row.new(@columns, count, @header_rows, @header_columns)
             @rows << row
           end
           row << i
