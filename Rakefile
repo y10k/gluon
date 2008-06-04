@@ -5,7 +5,7 @@ BIN_DIR = 'bin'
 LIB_DIR = 'lib'
 TEST_DIR = 'test'
 RDOC_DIR = 'api'
-RDOC_MAIN = 'gluon.rb'
+RDOC_MAIN = 'Gluon'
 EXAMPLE_DIR = 'welcom'
 GLUON_SETUP = File.join(BIN_DIR, 'gluon_setup')
 GLUON_UPDATE = File.join(BIN_DIR, 'gluon_update')
@@ -26,7 +26,7 @@ end
 
 task :rdoc do
   cd_v(LIB_DIR) {
-    sh 'rdoc', '-a', '-i', '..', '-o', "../#{RDOC_DIR}", '-m', RDOC_MAIN
+    sh 'rdoc', '-SNa', '-o', "../#{RDOC_DIR}", '-m', RDOC_MAIN
   }
 end
 
