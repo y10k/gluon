@@ -296,14 +296,14 @@ module Gluon
 
     def location(path)
       path = '/' if path.empty?
-      @logger.debug("response location: #{path}") if @logger.debug?
+      @logger.debug("#{self}.location() -> #{path}") if @logger.debug?
       @res['Location'] = path
       @res.status = 302
       self
     end
 
     def redirect_to(page_type)
-      @logger.debug("redirect to `#{page_type}'") if @logger.debug?
+      @logger.debug("#{self}.redirect_to() -> #{page_type}") if @logger.debug?
       location(@req.script_name + @dispatcher.class2path(page_type))
     end
 
@@ -312,7 +312,7 @@ module Gluon
     # :startdoc:
 
     def switch_to(page_type)
-      @logger.debug("switch to `#{page_type}'") if @logger.debug?
+      @logger.debug("#{self}.switch_to() -> #{page_type}") if @logger.debug?
       throw(SWITCH_LABEL, page_type)
     end
 
