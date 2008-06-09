@@ -43,6 +43,15 @@ module Gluon
       if (page_type) then
         @session_man.transaction(req, res) {|session|
           begin
+            case (page_type)
+            when Class
+              controller = page_type.new
+            when Module
+              raise "#{page_type} module is not a page-type."
+            else
+              controller = page_type
+              page_type = controller.class
+            end
             req.env['gluon.version'] = VERSION
             req.env['gluon.curr_page'] = page_type
             req.env['gluon.path_info'] = gluon_path_info
@@ -51,7 +60,6 @@ module Gluon
             rs_context = RequestResponseContext.new(req, res, session, @dispatcher, plugin)
             rs_context.logger = @logger
             rs_context.cache_tag = nil
-            controller = page_type.new
             action = Action.new(controller, rs_context, params, funcs).setup
             action.logger = @logger
             page_type = RequestResponseContext.switch_from{

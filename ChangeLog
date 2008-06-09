@@ -1,3 +1,7 @@
+2008-06-09  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/application.rb: switch to a controller object.
+
 2008-05-24  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/web/table.rb: table.
