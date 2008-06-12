@@ -1,10 +1,15 @@
-# application
+# = gluon - simple web application framework
+#
+# == license
+# see <tt>gluon.rb</tt> or <tt>LICENSE</tt> file.
+#
 
 require 'gluon/action'
 require 'gluon/rs'
 require 'rack'
 
 module Gluon
+  # = application for Rack
   class Application
     # for ident(1)
     CVS_ID = '$Id$'

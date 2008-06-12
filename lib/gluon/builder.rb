@@ -1,4 +1,8 @@
-# application builder
+# = gluon - simple web application framework
+#
+# == license
+# see <tt>gluon.rb</tt> or <tt>LICENSE</tt> file.
+#
 
 require 'forwardable'
 require 'gluon/application'
@@ -13,6 +17,7 @@ require 'rack'
 require 'thread'
 
 module Gluon
+  # = auto-reload decorator for Rack application
   class AutoReloader
     # for ident(1)
     CVS_ID = '$Id$'
@@ -56,6 +61,7 @@ module Gluon
     end
   end
 
+  # = error logging decorator for Rack application
   class ErrorLogger
     def initialize(app, logger)
       @app = app

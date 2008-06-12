@@ -1,10 +1,15 @@
-# mock
+# = gluon - simple web application framework
+#
+# == license
+# see <tt>gluon.rb</tt> or <tt>LICENSE</tt> file.
+#
 
 require 'forwardable'
 require 'gluon/rs'
 require 'rack'
 
 module Gluon
+  # = mock request-response
   class Mock
     # for ident(1)
     CVS_ID = '$Id$'

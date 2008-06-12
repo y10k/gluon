@@ -1,6 +1,11 @@
-# URL dispatcher
+# = gluon - simple web application framework
+#
+# == license
+# see <tt>gluon.rb</tt> or <tt>LICENSE</tt> file.
+#
 
 module Gluon
+  # = URL dispatcher
   class Dispatcher
     # for ident(1)
     CVS_ID = '$Id$'

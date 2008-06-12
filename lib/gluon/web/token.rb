@@ -1,4 +1,8 @@
-# one time token
+# = gluon - simple web application framework
+#
+# == license
+# see <tt>gluon.rb</tt> or <tt>LICENSE</tt> file.
+#
 
 require 'thread'
 
@@ -98,7 +102,8 @@ module Gluon
       private :one_time_token_check
 
       def page_check
-        one_time_token_check
+        super if (defined? super)
+        one_time_token_check or raise 'not to reload' # easy check
       end
     end
   end

@@ -5,7 +5,7 @@ BIN_DIR = 'bin'
 LIB_DIR = 'lib'
 TEST_DIR = 'test'
 RDOC_DIR = 'api'
-RDOC_MAIN = 'Gluon'
+RDOC_OPTS = %w[ -SNa -m Gluon ]
 EXAMPLE_DIR = 'welcom'
 GLUON_SETUP = File.join(BIN_DIR, 'gluon_setup')
 GLUON_UPDATE = File.join(BIN_DIR, 'gluon_update')
@@ -26,7 +26,7 @@ end
 
 task :rdoc do
   cd_v(LIB_DIR) {
-    sh 'rdoc', '-SNa', '-o', "../#{RDOC_DIR}", '-m', RDOC_MAIN
+    sh 'rdoc', '-o', "../#{RDOC_DIR}", *RDOC_OPTS
   }
 end
 
@@ -62,7 +62,8 @@ spec = Gem::Specification.new{|s|
     %w[ gluon.ru webrick mongrel ].map{|i| "run/server/#{i}" } +
     %w[ ChangeLog Rakefile ]
   s.test_files = [ 'test/run.rb' ]
-  s.has_rdoc = false
+  s.has_rdoc = true
+  s.rdoc_options = RDOC_OPTS
 }
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.need_zip = true

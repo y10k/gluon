@@ -1,7 +1,12 @@
-# error messages
+# = gluon - simple web application framework
+#
+# == license
+# see <tt>gluon.rb</tt> or <tt>LICENSE</tt> file.
+#
 
 module Gluon
   module Web
+    # = error messages utility
     class ErrorMessages
       # for ident(1)
       CVS_ID = '$Id$'

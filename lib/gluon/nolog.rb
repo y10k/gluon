@@ -1,8 +1,13 @@
-# no logger
+# = gluon - simple web application framework
+#
+# == license
+# see <tt>gluon.rb</tt> or <tt>LICENSE</tt> file.
+#
 
 require 'singleton'
 
 module Gluon
+  # = fake logger
   class NoLogger
     # for ident(1)
     CVS_ID = '$Id$'
