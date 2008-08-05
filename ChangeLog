@@ -1,3 +1,7 @@
+2008-08-05  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon.rb: URL map is new dispather.
+
 2008-06-09  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/application.rb: switch to a controller object.
