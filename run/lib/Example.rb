@@ -20,7 +20,6 @@ class Example
   autoload :Select, 'Example/Select'
   autoload :Session, 'Example/Session'
   autoload :Submit, 'Example/Submit'
-  autoload :Subpage, 'Example/Subpage'
   autoload :Table, 'Example/Table'
   autoload :Text, 'Example/Text'
   autoload :Textarea, 'Example/Textarea'

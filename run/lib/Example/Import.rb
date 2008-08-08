@@ -1,4 +1,12 @@
 class Example
+  class Subpage
+    def initialize(message='Hello world.')
+      @message = message
+    end
+
+    attr_reader :message
+  end
+
   class Import
     def subpage_by_class
       Subpage
