@@ -28,7 +28,7 @@ module Gluon::Test
     end
 
     def build_page(page_type)
-      @mock = Gluon::Mock.new(:url_map => [ [ '/another_page', AnotherPage ] ])
+      @mock = Gluon::Mock.new(:url_map => [ [ AnotherPage, '/another_page' ] ])
       @c = @mock.new_request(@env)
       @params, @funcs = Gluon::Action.parse(@c.req.params)
       @controller = page_type.new

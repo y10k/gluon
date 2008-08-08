@@ -2,6 +2,8 @@ class Example
   class ExamplePanel
     include Dispatch
 
+    gluon_path_filter EXAMPLE_FILTER
+
     def example
       @class
     end

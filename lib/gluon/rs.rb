@@ -260,11 +260,11 @@ module Gluon
 
     extend Forwardable
 
-    def initialize(req, res, session, dispatcher, plugin)
+    def initialize(req, res, session, url_map, plugin)
       @req = req
       @res = res
       @session = session
-      @dispatcher = dispatcher
+      @url_map = url_map
       @plugin = plugin
       @logger = NoLogger.instance
       @cache_tag = nil
@@ -283,8 +283,8 @@ module Gluon
     def_delegator :@session, :default_domain, :session_default_domain
     def_delegator :@session, :default_path, :session_default_path
 
-    def_delegator :@dispatcher, :look_up
-    def_delegator :@dispatcher, :class2path
+    def_delegator :@url_map, :lookup
+    def_delegator :@url_map, :class2path
 
     def version
       @req.env['gluon.version']
@@ -298,6 +298,10 @@ module Gluon
       @req.env['gluon.path_info']
     end
 
+    def path_args
+      @req.env['gluon.path_args']
+    end
+
     def location(path)
       path = '/' if path.empty?
       @logger.debug("#{self}.location() -> #{path}") if @logger.debug?
@@ -308,7 +312,7 @@ module Gluon
 
     def redirect_to(page_type)
       @logger.debug("#{self}.redirect_to() -> #{page_type}") if @logger.debug?
-      location(@req.script_name + @dispatcher.class2path(page_type))
+      location(@req.script_name + @url_map.class2path(page_type))
     end
 
     # :stopdoc:

@@ -6,11 +6,11 @@
 
 require 'forwardable'
 require 'gluon/application'
-require 'gluon/dispatcher'
 require 'gluon/nolog'
 require 'gluon/plugin'
 require 'gluon/renderer'
 require 'gluon/rs'
+require 'gluon/urlmap'
 require 'gluon/version'
 require 'logger'
 require 'rack'
@@ -104,7 +104,7 @@ module Gluon
       @port = 9202
       @page_cache = false
       @auto_reload = false
-      @url_map = []
+      @url_map = URLMap.new
       @plugin_maker = PluginMaker.new
       @finalizer = proc{}
     end
@@ -122,13 +122,13 @@ module Gluon
     attr_accessor :page_cache
     attr_accessor :auto_reload
 
-    def mount(page_type, path)
-      @url_map << [ path, page_type ]
+    def mount(page_type, location, *args)
+      @url_map.mount(page_type, location, *args)
       nil
     end
 
     def find(path)
-      (entry = @url_map.assoc(path)) && entry[1]
+      (entry = @url_map.lookup(path)) && entry[0]
     end
 
     def plugin_get(name)
@@ -284,13 +284,13 @@ module Gluon
 
       @logger.info("#{self}.build() - start")
 
-      @logger.info("new #{Dispatcher}")
+      @logger.info("#{@url_map}.setup()")
+      @url_map.setup
       if (@logger.debug?) then
-        for path, page_type in @url_map
-          @logger.debug("#{Dispatcher} URL mapping: #{path} -> #{page_type}")
+        for location, path_filter, page_type in @url_map
+          @logger.debug("URL mapping: #{location} [#{path_filter}] -> #{page_type}")
         end
       end
-      @dispatcher = Dispatcher.new(@url_map)
 
       @logger.info("new #{ViewRenderer} -> #{@view_dir}")
       @renderer = ViewRenderer.new(@view_dir)
@@ -309,7 +309,7 @@ module Gluon
       @logger.info("new #{Application}")
       @app = Application.new
       @app.logger = @logger
-      @app.dispatcher = @dispatcher
+      @app.url_map = @url_map
       @app.renderer = @renderer
       @app.session_man = @session_man
       @app.plugin_maker = @plugin_maker

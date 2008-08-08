@@ -43,7 +43,6 @@ module Gluon
 
   autoload :Action, 'gluon/action'
   autoload :Builder, 'gluon/builder'
-  autoload :Dispatcher, 'gluon/dispatcher'
   autoload :ERBContext, 'gluon/po'
   autoload :MemoryStore, 'gluon/rs'
   autoload :Mock, 'gluon/mock'

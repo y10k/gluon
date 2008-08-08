@@ -17,8 +17,12 @@ module Gluon
     extend Forwardable
 
     def initialize(options={})
-      url_map = options[:url_map] || []
-      @dispatcher = Dispatcher.new(url_map)
+      @url_map = URLMap.new
+      (options[:url_map] || []).each do |page_type, location, path_filter|
+	@url_map.mount(page_type, location, path_filter)
+      end
+      @url_map.setup
+
       @session_man = MockSessionManager.new
       @session = nil
 
@@ -30,14 +34,14 @@ module Gluon
       @plugin_maker.setup
     end
 
-    attr_reader :dispatcher
+    attr_reader :url_map
 
     def new_request(env)
       req = Rack::Request.new(env)
       res = Rack::Response.new
       @session = @session_man.new_mock_session(req, res)
       plugin = @plugin_maker.new_plugin
-      Gluon::RequestResponseContext.new(req, res, @session, @dispatcher, plugin)
+      Gluon::RequestResponseContext.new(req, res, @session, @url_map, plugin)
     end
 
     def_delegator :@session, :get_for_mock, :session_get

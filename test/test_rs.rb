@@ -323,11 +323,13 @@ module Gluon::Test
       @req = Rack::Request.new(@env)
       @res = Rack::Response.new
       @session = Object.new     # dummy
-      @dispatcher = Gluon::Dispatcher.new([ [ '/foo', Foo ] ])
+      @url_map = Gluon::URLMap.new
+      @url_map.mount(Foo, '/foo')
+      @url_map.setup
       @plugin_maker = Gluon::PluginMaker.new
       @plugin_maker.setup
       @plugin = @plugin_maker.new_plugin
-      @c = Gluon::RequestResponseContext.new(@req, @res, @session, @dispatcher, @plugin)
+      @c = Gluon::RequestResponseContext.new(@req, @res, @session, @url_map, @plugin)
     end
 
     def test_req_res
@@ -335,11 +337,11 @@ module Gluon::Test
       assert_equal(@res, @c.res)
     end
 
-    def test_look_up
-      assert_equal(nil,             @c.look_up('/'))
-      assert_equal([ Foo, '' ],     @c.look_up('/foo'))
-      assert_equal([ Foo, '/' ],    @c.look_up('/foo/'))
-      assert_equal([ Foo, '/bar' ], @c.look_up('/foo/bar'))
+    def test_lookup
+      assert_equal(nil, @c.lookup('/'))
+      assert_equal([ Foo, nil, [] ], @c.lookup('/foo'))
+      assert_equal(nil, @c.lookup('/foo/'))
+      assert_equal(nil, @c.lookup('/foo/bar'))
     end
 
     def test_class2path

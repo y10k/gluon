@@ -43,7 +43,7 @@ module Gluon
     end
 
     def setup
-      @mapping.sort_by{|location, path_filter, page_type|
+      @mapping = @mapping.sort_by{|location, path_filter, page_type|
         -(location.length)
       }
       self
@@ -77,6 +77,13 @@ module Gluon
 
     def class2path(page_type)
       @class2path[page_type]
+    end
+
+    def each
+      for location, path_filter, page_type in @mapping
+        yield(location, path_filter, page_type)
+      end
+      nil
     end
   end
 end

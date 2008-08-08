@@ -24,6 +24,10 @@ class Example
     ]
 
     EXAMPLE_KEYS = example_alist.map{|k, n| k }
+    EXAMPLE_FILTER =
+      Regexp.compile('^/(' +
+                     EXAMPLE_KEYS.map{|k| Regexp.quote(k) }.join('|') +
+                     ')$')
     EXAMPLES = {}
     for key, name, title in example_alist
       EXAMPLES[key] = {

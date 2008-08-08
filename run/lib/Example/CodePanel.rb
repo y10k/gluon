@@ -2,6 +2,8 @@ class Example
   class CodePanel
     include Dispatch
 
+    gluon_path_filter EXAMPLE_FILTER
+
     attr_reader :key
 
     def code

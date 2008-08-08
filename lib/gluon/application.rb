@@ -28,7 +28,7 @@ module Gluon
     end
 
     attr_writer :logger
-    attr_writer :dispatcher
+    attr_writer :url_map
     attr_writer :renderer
     attr_writer :session_man
     attr_writer :plugin_maker
@@ -44,7 +44,7 @@ module Gluon
         @logger.debug("request parameters: #{params.inspect}")
         @logger.debug("request functions: #{funcs.inspect}")
       end
-      page_type, gluon_path_info = @dispatcher.look_up(req.path_info)
+      page_type, gluon_path_info, gluon_path_args = @url_map.lookup(req.path_info)
       if (page_type) then
         @session_man.transaction(req, res) {|session|
           begin
@@ -60,9 +60,10 @@ module Gluon
             req.env['gluon.version'] = VERSION
             req.env['gluon.curr_page'] = page_type
             req.env['gluon.path_info'] = gluon_path_info
+            req.env['gluon.path_args'] = gluon_path_args
             req.env['gluon.page_cache'] = @page_cache
             plugin = @plugin_maker.call
-            rs_context = RequestResponseContext.new(req, res, session, @dispatcher, plugin)
+            rs_context = RequestResponseContext.new(req, res, session, @url_map, plugin)
             rs_context.logger = @logger
             rs_context.cache_tag = nil
             action = Action.new(controller, rs_context, params, funcs).setup
