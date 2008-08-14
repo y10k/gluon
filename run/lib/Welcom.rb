@@ -1,9 +1,6 @@
 # Welcom application
 
 class Welcom
-  def page_get
-  end
-
   def title
     'Welcom to Gluon'
   end

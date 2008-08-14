@@ -25,8 +25,6 @@ module Gluon::Test
     private :build_page
 
     class SimplePage
-      def page_get
-      end
     end
 
     def test_apply
@@ -64,9 +62,6 @@ module Gluon::Test
 
     class PageWithReqRes
       attr_accessor :c
-
-      def page_get
-      end
     end
 
     def test_apply_with_req_res
@@ -172,7 +167,7 @@ module Gluon::Test
     end
 
     class PageWithScalarParams
-      def page_get
+      def page_start
         @foo = nil
         @bar = nil
       end
@@ -222,7 +217,7 @@ module Gluon::Test
     end
 
     class PageWithListParams
-      def page_get
+      def page_start
         @foo = nil
         @bar = nil
         @baz = nil
@@ -257,7 +252,7 @@ module Gluon::Test
     end
 
     class PageWithBooleanParams
-      def page_get
+      def page_start
         @foo = true
         @bar = false
         @baz = false
@@ -299,9 +294,6 @@ module Gluon::Test
     end
 
     class PageWithImportByClass
-      def page_get
-      end
-
       def other
         OtherPage
       end
@@ -324,7 +316,7 @@ module Gluon::Test
     end
 
     class PageWithImportByObject
-      def page_get
+      def page_start
         @other = OtherPage.new
       end
 
@@ -512,9 +504,6 @@ module Gluon::Test
       end
 
       attr_reader :calls
-
-      def page_get
-      end
 
       def page_check
         @check_stat

@@ -238,17 +238,44 @@ module Gluon
     end
     private :page_hook
 
+    def page_get(path_args)
+      if (@controller.respond_to? :page_get) then
+        @logger.debug("#{@controller}.page_get(#{path_args.join('')})") if @logger.debug?
+        @controller.page_get(*path_args)
+      else
+        unless (path_args.empty?) then
+          raise ArgumentError, "wrong number of arguments (#{path_args.length} for 0) for page_get"
+        end
+      end
+    end
+    private :page_get
+
+    def page_head(path_args)
+      if (@controller.respond_to? :page_head) then
+        @logger.debug("#{@controller}.page_head(#{path_args.join('')})") if @logger.debug?
+        @controller.page_head(*path_args)
+      else
+        page_get(path_args)
+      end
+    end
+    private :page_head
+
     def page_method(path_args)
       if (@c.req.request_method !~ /^[A-Z]+$/) then
         raise "unknown request-method: #{@c.req.request_method}"
       end
-      case (@c.req.request_method.upcase)
-      when 'HOOK', 'START', 'END', 'CHECK'
-        raise "invalid request-method: #{@c.req.request_method}"
-      end
       name = "page_#{@c.req.request_method.downcase}"
-      @logger.debug("#{@controller}.#{name}(#{path_args.join('')})") if @logger.debug?
-      @controller.__send__(name, *path_args)
+      case (name)
+      when 'page_get'
+        page_get(path_args)
+      when 'page_head'
+        page_head(path_args)
+      when 'page_hook', 'page_start', 'page_end', 'page_check'
+        raise "invalid request-method: #{@c.req.request_method}"
+      else
+        @logger.debug("#{@controller}.#{name}(#{path_args.join('')})") if @logger.debug?
+        @controller.__send__(name, *path_args)
+      end
       nil
     end
     private :page_method
