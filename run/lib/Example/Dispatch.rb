@@ -40,8 +40,8 @@ class Example
 
     attr_writer :c
 
-    def page_start
-      @key = @c.path_info.sub(%r"^/", '') unless @key
+    def page_get(key)
+      @key = key
       ex = EXAMPLES[@key] or raise "not found a example: #{key.inspect}"
       @class = ex[:class]
       @code = ex[:code]

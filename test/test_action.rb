@@ -25,6 +25,8 @@ module Gluon::Test
     private :build_page
 
     class SimplePage
+      def page_get
+      end
     end
 
     def test_apply
@@ -37,8 +39,34 @@ module Gluon::Test
       assert_equal(1, count)
     end
 
+    class PageWithPathArgs
+      def initialize
+        @calls = []
+      end
+
+      attr_reader :calls
+
+      def page_get(*args)
+        @calls << [ :page_get, args ]
+      end
+    end
+
+    def test_apply_with_path_args
+      build_page(PageWithPathArgs)
+
+      count = 0
+      work = proc{ count += 1 }
+      @action.setup.apply(work, %w[ foo bar ])
+
+      assert_equal(1, count)
+      assert_equal([ [ :page_get, %w[ foo bar ] ] ], @controller.calls)
+    end
+
     class PageWithReqRes
       attr_accessor :c
+
+      def page_get
+      end
     end
 
     def test_apply_with_req_res
@@ -71,6 +99,10 @@ module Gluon::Test
         @calls << :page_start
       end
 
+      def page_get
+        @calls << :page_get
+      end
+
       def page_end
         @calls << :page_end
       end
@@ -82,12 +114,20 @@ module Gluon::Test
       count = 0
       work = proc{
         count += 1
-        assert_equal([ :page_hook_in, :page_start ], @controller.calls)
+        assert_equal([ :page_hook_in,
+                       :page_start,
+                       :page_get
+                     ], @controller.calls)
       }
       @action.setup.apply(work)
 
       assert_equal(1, count)
-      assert_equal([ :page_hook_in, :page_start, :page_end, :page_hook_out ], @controller.calls)
+      assert_equal([ :page_hook_in,
+                     :page_start,
+                     :page_get,
+                     :page_end,
+                     :page_hook_out
+                   ], @controller.calls)
     end
 
     class PageWithActions
@@ -96,6 +136,10 @@ module Gluon::Test
       end
 
       attr_reader :calls
+
+      def page_get
+        @calls << :page_get
+      end
 
       def foo
         @calls << :foo_action
@@ -118,7 +162,9 @@ module Gluon::Test
       count = 0
       work = proc{
         count += 1
-        assert_equal([ :foo_action ], @controller.calls)
+        assert_equal([ :page_get,
+                       :foo_action
+                     ], @controller.calls)
       }
       @action.setup.apply(work)
 
@@ -126,7 +172,7 @@ module Gluon::Test
     end
 
     class PageWithScalarParams
-      def page_start
+      def page_get
         @foo = nil
         @bar = nil
       end
@@ -170,13 +216,13 @@ module Gluon::Test
         assert_equal(nil, @controller.foo)
         assert_equal(nil, @controller.bar)
       }
-      @action.setup.apply(work, true)
+      @action.setup.apply(work, [], true)
 
       assert_equal(1, count)
     end
 
     class PageWithListParams
-      def page_start
+      def page_get
         @foo = nil
         @bar = nil
         @baz = nil
@@ -211,7 +257,7 @@ module Gluon::Test
     end
 
     class PageWithBooleanParams
-      def page_start
+      def page_get
         @foo = true
         @bar = false
         @baz = false
@@ -253,6 +299,9 @@ module Gluon::Test
     end
 
     class PageWithImportByClass
+      def page_get
+      end
+
       def other
         OtherPage
       end
@@ -275,14 +324,14 @@ module Gluon::Test
     end
 
     class PageWithImportByObject
-      def page_start
+      def page_get
         @other = OtherPage.new
       end
 
       attr_reader :other
     end
 
-    def test_apply_with_import_by_class
+    def test_apply_with_import_by_object
       params = {
         'other.foo' => 'Apple'
       }
@@ -463,6 +512,9 @@ module Gluon::Test
       end
 
       attr_reader :calls
+
+      def page_get
+      end
 
       def page_check
         @check_stat

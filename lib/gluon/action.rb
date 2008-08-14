@@ -14,10 +14,6 @@ module Gluon
     RESERVED_WORDS = {
       'c' => true,
       'c=' => true,
-      'page_hook' => true,
-      'page_check' => true,
-      'page_start' => true,
-      'page_end' => true,
       '__view__' => true,
       '__default_view__' => true,
       '__cache_key__' => true,
@@ -133,18 +129,18 @@ module Gluon
     def export?(name, this=@controller)
       if (RESERVED_WORDS.key? name) then
         false
+      elsif (name =~ /^page_/) then
+        false
       elsif (this.respond_to? :__export__) then
         this.__export__(name)
       elsif (@object.respond_to? name) then
         false
+      elsif (this.respond_to? name, false) then
+        true
+      elsif (this.respond_to? name, true) then # deny for private method
+        false
       else
-        if (this.respond_to? name, false) then
-          true
-        elsif (this.respond_to? name, true) then # deny for private method
-          false
-        else
-          true
-        end
+        true
       end
     end
 
@@ -242,6 +238,21 @@ module Gluon
     end
     private :page_hook
 
+    def page_method(path_args)
+      if (@c.req.request_method !~ /^[A-Z]+$/) then
+        raise "unknown request-method: #{@c.req.request_method}"
+      end
+      case (@c.req.request_method.upcase)
+      when 'HOOK', 'START', 'END', 'CHECK'
+        raise "invalid request-method: #{@c.req.request_method}"
+      end
+      name = "page_#{@c.req.request_method.downcase}"
+      @logger.debug("#{@controller}.#{name}(#{path_args.join('')})") if @logger.debug?
+      @controller.__send__(name, *path_args)
+      nil
+    end
+    private :page_method
+
     def page_check
       if (@controller.respond_to? :page_check) then
         @logger.debug("#{@controller}.page_check()") if @logger.debug?
@@ -258,7 +269,7 @@ module Gluon
     end
     private :page_check
 
-    def apply(renderer, no_set_params=false)
+    def apply(renderer, path_args=[], no_set_params=false)
       @logger.debug("#{Action}#apply() for #{@controller} - start")
       r = nil
       page_hook{
@@ -266,6 +277,7 @@ module Gluon
           @logger.debug("#{@controller}.page_start()") if @logger.debug?
           @controller.page_start
         end
+        page_method(path_args) if path_args
         begin
           set_params unless no_set_params
           if (@funcs.key? @prefix) then

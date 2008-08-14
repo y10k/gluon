@@ -17,6 +17,9 @@ class Example
       end
     end
 
+    def page_get
+    end
+
     attr_reader :examples
   end
 end

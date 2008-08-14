@@ -1,3 +1,7 @@
+2008-08-15  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/action.rb: page method.
+
 2008-08-08  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/dispatcher.rb: obsolete.

@@ -80,7 +80,7 @@ module Gluon
                 }
                 if (modified) then
                   @logger.debug("modified page -> #{c_key.inspect}") if @logger.debug?
-                  result = action.apply(@renderer)
+                  result = action.apply(@renderer, gluon_path_args)
                   if (modified != :no_cache) then
                     @logger.debug("update page cache -> #{c_key.inspect}") if @logger.debug?
                     c_entry[:lock].synchronize{
@@ -96,7 +96,7 @@ module Gluon
                   res.write(cache_result)
                 end
               else
-                result = action.apply(@renderer)
+                result = action.apply(@renderer, gluon_path_args)
                 if (@page_cache && rs_context.cache_tag) then
                   @logger.debug("create page cache -> #{c_key.inspect}") if @logger.debug?
                   @c_lock.synchronize{

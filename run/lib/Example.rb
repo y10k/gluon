@@ -26,6 +26,9 @@ class Example
   autoload :Value, 'Example/Value'
   autoload :ViewPanel, 'Example/ViewPanel'
 
+  def page_get
+  end
+
   def menu
     Example::Menu
   end

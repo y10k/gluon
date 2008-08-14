@@ -33,7 +33,7 @@ class Example
       end
     end
 
-    def page_start
+    def page_get
       @c.cache_tag = COUNT.value
       @created_time = Time.now
     end
