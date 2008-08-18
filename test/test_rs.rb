@@ -345,8 +345,8 @@ module Gluon::Test
     end
 
     def test_class2path
-      assert_equal('/foo', @c.class2path(Foo))
-      assert_equal(nil,    @c.class2path(Bar))
+      assert_equal('/bar.cgi/foo', @c.class2path(Foo))
+      assert_equal(nil, @c.class2path(Bar))
     end
 
     def test_version

@@ -284,7 +284,12 @@ module Gluon
     def_delegator :@session, :default_path, :session_default_path
 
     def_delegator :@url_map, :lookup
-    def_delegator :@url_map, :class2path
+
+    def class2path(page_type)
+      if (location = @url_map.class2path(page_type)) then
+        @req.script_name + location
+      end
+    end
 
     def version
       @req.env['gluon.version']

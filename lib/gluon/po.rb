@@ -224,6 +224,8 @@ module Gluon
       case (name)
       when Class
         @c.class2path(name) or raise "not mounted: #{name}"
+      when String
+        @c.req.script_name + name
       else
         name
       end
@@ -237,7 +239,7 @@ module Gluon
       unless (path.kind_of? String) then
         raise "unknon link name type: #{name.class}"
       end
-      mklink(@c.req.script_name + path, options, &block)
+      mklink(path, options, &block)
     end
 
     def link_uri(path, options={}, &block)
@@ -258,7 +260,6 @@ module Gluon
         unless (path.kind_of? String) then
           raise "unknown action page type: #{path.class}"
         end
-        path = @c.req.script_name + path
       else
         path = @c.req.script_name + @c.req.env['PATH_INFO']
       end
@@ -280,7 +281,7 @@ module Gluon
       unless (src.kind_of? String) then
         raise "unknown frame src type: #{name.class}"
       end
-      mkframe(@c.req.script_name + src, options)
+      mkframe(src, options)
     end
 
     def frame_uri(src, options={})
