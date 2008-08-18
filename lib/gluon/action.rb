@@ -304,7 +304,11 @@ module Gluon
           @logger.debug("#{@controller}.page_start()") if @logger.debug?
           @controller.page_start
         end
-        page_method(path_args) if path_args
+        if (path_args == :import) then
+          page_get([])
+        else
+          page_method(path_args)
+        end
         begin
           set_params unless no_set_params
           if (@funcs.key? @prefix) then

@@ -1,7 +1,5 @@
 class Example
   class Header
-    include Dispatch
-
     attr_writer :c
 
     def example?

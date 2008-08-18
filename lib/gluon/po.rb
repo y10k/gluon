@@ -321,7 +321,7 @@ module Gluon
       next_prefix_list = @stack.map{|_prefix, child| _prefix } + [ curr_prefix ]
 
       action = @action.new_action(controller, @c, next_prefix_list, prefix)
-      action.setup.apply(@renderer, nil,
+      action.setup.apply(@renderer, :import,
                          is_attr && is_instance) # reason for second argument: set_params by top level action
     end
 
