@@ -288,7 +288,7 @@ module Gluon
       @url_map.setup
       if (@logger.debug?) then
         for location, path_filter, page_type in @url_map
-          @logger.debug("URL mapping: #{location} [#{path_filter}] -> #{page_type}")
+          @logger.debug("URL mapping: #{location};#{path_filter} -> #{page_type}")
         end
       end
 
