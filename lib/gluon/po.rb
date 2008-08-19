@@ -156,8 +156,8 @@ module Gluon
         @stack.push [ "#{name}[#{i}]", child ]
         begin
           case (child)
-          when *Action::RUBY_PRIMITIVES
-            # skip action
+          when Array, Numeric, String, Struct, Symbol, Time
+            # skip action for ruby-primitives
           else
             next_prefix_list = @stack.map{|prefix, child| prefix }
             @action.new_action(child, @c, next_prefix_list, prefix()).call_actions

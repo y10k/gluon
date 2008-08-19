@@ -32,8 +32,6 @@ module Gluon
 
     EMPTY_FUNCS = {}.freeze
 
-    RUBY_PRIMITIVES = [ Array, Numeric, String, Struct, Symbol, Time ]
-
     class << self
       def parse_params(req_params)
         parsed_params = { :params => {}, :branches => {} }
@@ -147,21 +145,16 @@ module Gluon
 
     def set_parameters(this, params)
       return if (this.kind_of? Module)
-      case (this)
-      when *RUBY_PRIMITIVES
-        # skip
-      else
-        for name, value in params[:params]
-          writer = "#{name}="
-          if (advices = export? writer, this) then
-            unless (advices[:accessor]) then
-              raise "not an accessor: #{this}.#{writer}"
-            end
-            @logger.debug("#{this}.#{name} = #{value}") if @logger.debug?
-            this.__send__(writer, value)
-          else
-            raise NoMethodError, "undefined method `#{writer}' for `#{this.class}'"
+      for name, value in params[:params]
+        writer = "#{name}="
+        if (advices = export? writer, this) then
+          unless (advices[:accessor]) then
+            raise "not an accessor: #{this}.#{writer}"
           end
+          @logger.debug("#{this}.#{name} = #{value}") if @logger.debug?
+          this.__send__(writer, value)
+        else
+          raise NoMethodError, "undefined method `#{writer}' for `#{this.class}'"
         end
       end
       for name, nested_params in params[:branches]
