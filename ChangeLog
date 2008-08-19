@@ -1,5 +1,7 @@
 2008-08-19  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/version.rb: version 0.0.2.
+
 	* lib/gluon/controller.rb: gluon controller syntax.
 
 2008-08-18  TOKI Yoshinori  <toki@freedom.ne.jp>
