@@ -9,10 +9,12 @@ class Example
     def foo
       @results << 'foo is called.'
     end
+    gluon_export :foo
 
     def bar
       @results << 'bar is called.'
     end
+    gluon_export :bar
 
     def no_action?
       @results.empty?

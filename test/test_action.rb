@@ -139,17 +139,17 @@ module Gluon::Test
       def foo
         @calls << :foo_action
       end
+      gluon_export :foo
 
       def bar
         @calls << :bar_action
       end
+      gluon_export :bar
     end
 
     def test_apply_with_actions
       params = {
-        'foo()' => nil,
-        'bar' => nil,
-        #'foo.bar()' => nil
+        'foo()' => nil
       }
       @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
       build_page(PageWithActions)
@@ -172,15 +172,13 @@ module Gluon::Test
         @bar = nil
       end
 
-      attr_accessor :foo
-      attr_accessor :bar
+      gluon_accessor :foo
+      gluon_accessor :bar
     end
 
     def test_apply_with_scalar_params
       params = {
-        'foo' => 'Apple',
-        #'bar()' => 'Banana',
-        'foo.bar' => 'Orange'
+        'foo' => 'Apple'
       }
       @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
       build_page(PageWithScalarParams)
@@ -198,9 +196,7 @@ module Gluon::Test
 
     def test_apply_with_no_set_params
       params = {
-        'foo' => 'Apple',
-        #'bar()' => 'Banana',
-        'foo.bar' => 'Orange'
+        'foo' => 'Apple'
       }
       @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
       build_page(PageWithScalarParams)
@@ -223,9 +219,9 @@ module Gluon::Test
         @baz = nil
       end
 
-      attr_accessor :foo
-      attr_accessor :bar
-      attr_accessor :baz
+      gluon_accessor :foo
+      gluon_accessor :bar
+      gluon_accessor :baz
     end
 
     def test_apply_with_list_params
@@ -258,9 +254,9 @@ module Gluon::Test
         @baz = false
       end
 
-      attr_accessor :foo
-      attr_accessor :bar
-      attr_accessor :baz
+      gluon_accessor :foo
+      gluon_accessor :bar
+      gluon_accessor :baz
     end
 
     def test_apply_with_boolean_params
@@ -286,7 +282,7 @@ module Gluon::Test
     end
 
     class OtherPage
-      attr_accessor :foo
+      gluon_accessor :foo
 
       def self.foo=(value)
         raise 'not to reach.'
@@ -297,6 +293,7 @@ module Gluon::Test
       def other
         OtherPage
       end
+      gluon_export :other, :accessor => true
     end
 
     def test_apply_with_import_by_class
@@ -320,7 +317,7 @@ module Gluon::Test
         @other = OtherPage.new
       end
 
-      attr_reader :other
+      gluon_reader :other
     end
 
     def test_apply_with_import_by_object
@@ -380,58 +377,6 @@ module Gluon::Test
       assert_equal(true, (@action.modified? :dummy_cache_tag))
     end
 
-    class PageWithImplicitExport
-      attr_accessor :c
-
-      def page_hook
-        yield
-      end
-
-      def page_start
-      end
-
-      def page_end
-      end
-
-      def __view__
-        'no_view.rhtml'
-      end
-
-      def __default_view__
-        'no_view.rhtml'
-      end
-
-      def __cache_key__
-        :dummy_cache_tag
-      end
-
-      def __if_modified__(cache_tag)
-        true
-      end
-
-      def foo
-      end
-
-      def bar
-      end
-
-      def baz
-      end
-    end
-
-    def test_export_implicit
-      build_page(PageWithImplicitExport)
-      assert_equal(true, (@action.export? 'foo'))
-      assert_equal(true, (@action.export? 'bar'))
-      assert_equal(true, (@action.export? 'baz'))
-      for name in Object.instance_methods
-        assert_equal(false, (@action.export? name.to_s))
-      end
-      Gluon::Action::RESERVED_WORDS.each_key do |name|
-        assert_equal(false, (@action.export? name.to_s))
-      end
-    end
-
     class PageWithExplicitExport
       attr_accessor :c
 
@@ -461,36 +406,24 @@ module Gluon::Test
         true
       end
 
-      def __export__(name)
-        case (name)
-        when 'foo'
-          true
-        when 'bar'
-          false
-        when 'baz'
-          true
-        else
-          false
-        end
-      end
-
       def foo
       end
+      gluon_export :foo
 
       def bar
       end
 
-      def baz
-      end
+      gluon_accessor :baz
     end
 
     def test_export_implicit
       build_page(PageWithExplicitExport)
-      assert_equal(true, (@action.export? 'foo'))
-      assert_equal(false, (@action.export? 'bar'))
-      assert_equal(true, (@action.export? 'baz'))
+      assert_equal({}, (@action.export? 'foo'))
+      assert_equal(nil, (@action.export? 'bar'))
+      assert_equal({ :accessor => true }, (@action.export? 'baz'))
+      assert_equal({ :accessor => true }, (@action.export? 'baz='))
       for name in Object.instance_methods
-        assert_equal(false, (@action.export? name.to_s))
+        assert_equal(nil, (@action.export? name.to_s))
       end
       Gluon::Action::RESERVED_WORDS.each_key do |name|
         assert_equal(false, (@action.export? name.to_s))
@@ -512,6 +445,7 @@ module Gluon::Test
       def foo
         @calls << :foo_action
       end
+      gluon_export :foo
     end
 
     def test_page_with_page_check_ok

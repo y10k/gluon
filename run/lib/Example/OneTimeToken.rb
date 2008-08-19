@@ -39,6 +39,7 @@ class Example
       COUNT.succ!
       @count = COUNT.value
     end
+    gluon_export :count_up
 
     def now
       @now.to_s

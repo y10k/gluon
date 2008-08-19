@@ -320,6 +320,7 @@ module Gluon::Test
     class PageForAction
       def foo
       end
+      gluon_export :foo
     end
 
     def test_action
@@ -474,7 +475,7 @@ module Gluon::Test
     end
 
     class PageForText
-      attr_accessor :foo
+      gluon_accessor :foo
     end
 
     def test_text
@@ -487,7 +488,7 @@ module Gluon::Test
     end
 
     class PageForPassword
-      attr_accessor :foo
+      gluon_accessor :foo
     end
 
     def test_password
@@ -502,6 +503,7 @@ module Gluon::Test
     class PageForSubmit
       def foo_action
       end
+      gluon_export :foo_action
     end
 
     def test_submit
@@ -513,7 +515,7 @@ module Gluon::Test
     end
 
     class PageForHidden
-      attr_accessor :foo
+      gluon_accessor :foo
     end
 
     def test_hidden
@@ -536,13 +538,14 @@ module Gluon::Test
         def foo
           @calls += 1
         end
+        gluon_export :foo
       end
 
       def initialize
         @list = [ Item.new, Item.new, Item.new ]
       end
 
-      attr_reader :list
+      gluon_reader :list
     end
 
     def test_foreach_action
@@ -557,7 +560,7 @@ module Gluon::Test
         @subpage = SubpageAction.new
       end
 
-      attr_reader :subpage
+      gluon_reader :subpage
     end
 
     class SubpageAction
@@ -570,6 +573,7 @@ module Gluon::Test
       def foo
         @calls += 1
       end
+      gluon_export :foo
 
       def __view__
         'SubpageAction.rhtml'

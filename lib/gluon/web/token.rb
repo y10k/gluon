@@ -17,7 +17,7 @@ module Gluon
           count.update_to(self)
         end
 
-        attr_accessor :value
+        gluon_accessor :value
 
         def __default_view__
           File.join(File.dirname(__FILE__), 'token.rhtml')
@@ -59,7 +59,7 @@ module Gluon
       # :startdoc:
 
       attr_writer :c
-      attr_reader :one_time_token
+      gluon_reader :one_time_token
 
       # template method for storage of counter. a block parameter of
       # <em>count</em> is an instance of TokenCounter class.

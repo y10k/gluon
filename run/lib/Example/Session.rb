@@ -20,12 +20,14 @@ class Example
       @session[:count] = 0
       nil
     end
+    gluon_export :new_session
 
     def clear_session
       @c.session_delete
       @session = nil
       nil
     end
+    gluon_export :clear_session
 
     def reload
       return ExamplePanel, :path_info => @c.path_info

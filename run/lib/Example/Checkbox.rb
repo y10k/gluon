@@ -8,13 +8,14 @@ class Example
       @baz = true
     end
 
-    attr_accessor :foo
-    attr_accessor :bar
-    attr_accessor :baz
+    gluon_accessor :foo
+    gluon_accessor :bar
+    gluon_accessor :baz
 
     def ok
       # nothing to do.
     end
+    gluon_export :ok
 
     def result_list
       results = []

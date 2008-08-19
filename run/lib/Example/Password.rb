@@ -1,11 +1,13 @@
 class Example
   class Password
     attr_writer :c
-    attr_accessor :foo
+
+    gluon_accessor :foo
 
     def ok
       # nothing to do.
     end
+    gluon_export :ok
   end
 end
 

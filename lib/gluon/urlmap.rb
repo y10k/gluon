@@ -1,22 +1,14 @@
 # URL-class mapping
 
+require 'gluon/controller'
+
 module Gluon
   class URLMap
     # for ident(1)
     CVS_ID = '$Id$'
 
-    # :stopdoc:
-    DEFAULT_PATH_FILTER = {}
-    # :startdoc:
-
-    def self.find_path_filter(page_type)
-      begin
-        if (path_filter = DEFAULT_PATH_FILTER[page_type]) then
-          return path_filter
-        end
-      end while (page_type = page_type.superclass)
-
-      nil
+    def self.find_path_filter(*args)
+      Controller.find_path_filter(*args)
     end
 
     def initialize
@@ -85,13 +77,6 @@ module Gluon
       end
       nil
     end
-  end
-end
-
-class Class
-  def gluon_path_filter(path_filter)
-    Gluon::URLMap::DEFAULT_PATH_FILTER[self] = path_filter
-    nil
   end
 end
 

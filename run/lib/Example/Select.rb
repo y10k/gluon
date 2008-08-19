@@ -11,8 +11,8 @@ class Example
 
     attr_reader :fruit_list
     attr_reader :planet_list
-    attr_accessor :foo
-    attr_accessor :bar
+    gluon_accessor :foo
+    gluon_accessor :bar
 
     def bar_join
       @bar.join(', ')
@@ -21,6 +21,7 @@ class Example
     def ok
       # nothing to do.
     end
+    gluon_export :ok
   end
 end
 

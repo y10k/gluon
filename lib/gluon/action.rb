@@ -4,6 +4,7 @@
 # see <tt>gluon.rb</tt> or <tt>LICENSE</tt> file.
 #
 
+require 'gluon/controller'
 require 'gluon/nolog'
 
 module Gluon
@@ -17,8 +18,7 @@ module Gluon
       '__view__' => true,
       '__default_view__' => true,
       '__cache_key__' => true,
-      '__if_modified__' => true,
-      '__export__' => true
+      '__if_modified__' => true
     }.freeze
 
     EMPTY_PARAMS = {
@@ -131,16 +131,8 @@ module Gluon
         false
       elsif (name =~ /^page_/) then
         false
-      elsif (this.respond_to? :__export__) then
-        this.__export__(name)
-      elsif (@object.respond_to? name) then
-        false
-      elsif (this.respond_to? name, false) then
-        true
-      elsif (this.respond_to? name, true) then # deny for private method
-        false
       else
-        true
+        Controller.find_exported_method(this.class, name)
       end
     end
 
@@ -157,11 +149,14 @@ module Gluon
       else
         for name, value in params[:params]
           writer = "#{name}="
-          if (export? writer, this) then
-            if (this.respond_to? writer) then
-              @logger.debug("#{this}.#{name} = #{value}") if @logger.debug?
-              this.__send__(writer, value)
+          if (advices = export? writer, this) then
+            unless (advices[:accessor]) then
+              raise "not an accessor: #{this}.#{writer}"
             end
+            @logger.debug("#{this}.#{name} = #{value}") if @logger.debug?
+            this.__send__(writer, value)
+          else
+            raise NoMethodError, "undefined method `#{writer}' for `#{this.class}'"
           end
         end
       end
@@ -170,17 +165,23 @@ module Gluon
         when /\[\d+\]$/
           i = $&[1..-2].to_i
           name = $`
-          if (name == 'to_a' || (export? name, this)) then
-            if (this.respond_to? name) then
-              ary = this.__send__(name)
-              set_parameters(ary[i], nested_params)
+          if (name == 'to_a' || (advices = export? name, this)) then
+            if (advices && ! advices[:accessor]) then
+              raise "not an accessor: #{this}.#{name}"
             end
+            ary = this.__send__(name)
+            set_parameters(ary[i], nested_params)
+          else
+            raise NoMethodError, "undefined method `#{name}' for `#{this.class}'"
           end
         else
-          if (export? name, this) then
-            if (this.respond_to? name) then
-              set_parameters(this.__send__(name), nested_params)
+          if (advices = export? name, this) then
+            unless (advices[:accessor]) then
+              raise "not an accessor: #{this}.#{name}"
             end
+            set_parameters(this.__send__(name), nested_params)
+          else
+            raise NoMethodError, "undefined method `#{name}' for `#{this.class}'"
           end
         end
       end
@@ -190,7 +191,10 @@ module Gluon
     def call_actions
       if (funcs = @funcs[@prefix]) then
         funcs.each_key do |name|
-          if (export? name) then
+          if (advices = export? name) then
+            if (advices[:accessor]) then
+              raise "accessor is not action: #{@controller}.#{name}"
+            end
             @logger.debug("#{@controller}.#{name}()") if @logger.debug?
             @controller.__send__(name)
           else

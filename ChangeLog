@@ -1,3 +1,7 @@
+2008-08-19  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/controller.rb: gluon controller syntax.
+
 2008-08-18  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/rs.rb: class2path with script_name.

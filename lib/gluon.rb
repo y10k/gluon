@@ -30,7 +30,7 @@
 #
 
 require 'gluon/version'
-require 'gluon/urlmap'          # to define Class.gluon_path_filter
+require 'gluon/controller'      # to define gluon controller syntax
 
 # = gluon - simple web application framework
 #
@@ -43,6 +43,7 @@ module Gluon
 
   autoload :Action, 'gluon/action'
   autoload :Builder, 'gluon/builder'
+  #autoload :Controller, 'gluon/controller'
   autoload :ERBContext, 'gluon/po'
   autoload :MemoryStore, 'gluon/rs'
   autoload :Mock, 'gluon/mock'
@@ -53,7 +54,7 @@ module Gluon
   autoload :SessionHandler, 'gluon/rs'
   autoload :SessionManager, 'gluon/rs'
   autoload :Setup, 'gluon/setup'
-  #autoload :URLMap, 'gluon/urlmap'
+  autoload :URLMap, 'gluon/urlmap'
   autoload :ViewRenderer, 'gluon/renderer'
   autoload :Web, 'gluon/web'
 end

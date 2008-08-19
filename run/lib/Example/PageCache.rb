@@ -38,6 +38,9 @@ class Example
       @created_time = Time.now
     end
 
+    def page_post               # for post-form
+    end
+
     attr_accessor :created_time
 
     def page_cache?
@@ -47,6 +50,7 @@ class Example
     def expire
       COUNT.up
     end
+    gluon_export :expire
   end
 end
 

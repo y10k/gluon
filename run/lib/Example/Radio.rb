@@ -7,12 +7,13 @@ class Example
       @bar = 'Bob'
     end
 
-    attr_accessor :foo
-    attr_accessor :bar
+    gluon_accessor :foo
+    gluon_accessor :bar
 
     def ok
       # nothing to do.
     end
+    gluon_export :ok
   end
 end
 

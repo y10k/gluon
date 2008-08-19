@@ -7,6 +7,7 @@ class Example
     def example
       @class
     end
+    gluon_export :example, :accessor => true
   end
 end
 
