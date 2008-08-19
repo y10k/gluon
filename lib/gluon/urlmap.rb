@@ -1,8 +1,17 @@
-# URL-class mapping
+# = gluon - simple web application framework
+#
+# Author:: $Author$
+# Date:: $Date$
+# Revision:: $Revision$
+#
+# == license
+#   :include:../LICENSE
+#
 
 require 'gluon/controller'
 
 module Gluon
+  # = URL-class mapping
   class URLMap
     # for ident(1)
     CVS_ID = '$Id$'

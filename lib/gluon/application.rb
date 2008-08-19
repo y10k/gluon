@@ -1,7 +1,11 @@
 # = gluon - simple web application framework
 #
+# Author:: $Author$
+# Date:: $Date$
+# Revision:: $Revision$
+#
 # == license
-# see <tt>gluon.rb</tt> or <tt>LICENSE</tt> file.
+#   :include:../LICENSE
 #
 
 require 'gluon/action'

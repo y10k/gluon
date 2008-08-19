@@ -1,6 +1,15 @@
-# controller syntax
+# = gluon - simple web application framework
+#
+# Author:: $Author$
+# Date:: $Date$
+# Revision:: $Revision$
+#
+# == license
+#   :include:../LICENSE
+#
 
 module Gluon
+  # = controller meta-date
   module Controller
     # for ident(1)
     CVS_ID = '$Id$'
@@ -10,6 +19,7 @@ module Gluon
     EXPORT = {}
     # :startdoc:
 
+    # = controller syntax
     module Syntax
       def gluon_path_filter(path_filter)
         PATH_FILTER[self] = path_filter
