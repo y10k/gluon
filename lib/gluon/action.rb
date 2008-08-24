@@ -188,8 +188,10 @@ module Gluon
               raise "not an accessor: #{this}.#{name}"
             end
             next_this = this.__send__(name)
-            unless (next_this.nil?) then
+            if (! next_this.nil?) then
               set_parameters(this.__send__(name), nested_params)
+            else
+              # skip not-initialized attributes
             end
           else
             raise NoMethodError, "undefined method `#{name}' for `#{this.class}'"
