@@ -9,7 +9,7 @@
 #
 
 module Gluon
-  # = controller meta-date
+  # = controller meta-data
   module Controller
     # for ident(1)
     CVS_ID = '$Id$'
