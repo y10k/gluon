@@ -29,10 +29,10 @@ class Example
 
       attr_reader :text
       attr_reader :check_id
-      attr_accessor :checked
+      gluon_accessor :checked
     end
 
-    def page_start
+    def initialize
       @auto_table = Gluon::Web::Table.new(:columns => 5,
                                           :items => ('a'..'z').map{|c| Character.new(c) },
                                           :header_rows => 1,
@@ -58,8 +58,8 @@ class Example
 
     attr_reader :auto_table
     attr_reader :manual_table
-    attr_reader :auto_form_table
-    attr_reader :manual_form_table
+    gluon_reader :auto_form_table
+    gluon_reader :manual_form_table
   end
 end
 

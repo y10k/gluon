@@ -1,3 +1,8 @@
+2008-08-24  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/action.rb: validation check flag. timing to set
+	request-parameters is changed.
+
 2008-08-19  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/version.rb: version 0.0.2.

@@ -1,8 +1,6 @@
 class Example
   class Checkbox
-    attr_writer :c
-
-    def page_start
+    def initialize
       @foo = false
       @bar = false
       @baz = true

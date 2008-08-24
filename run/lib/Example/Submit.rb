@@ -1,8 +1,6 @@
 class Example
   class Submit
-    attr_writer :c
-
-    def page_start
+    def initialize
       @results = ''
     end
 

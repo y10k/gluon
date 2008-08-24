@@ -27,6 +27,7 @@ module Gluon
 
     EMPTY_PARAMS = {
       :params => {}.freeze,
+      :used => {}.freeze,
       :branches => {}.freeze
     }.freeze
 
@@ -34,7 +35,11 @@ module Gluon
 
     class << self
       def parse_params(req_params)
-        parsed_params = { :params => {}, :branches => {} }
+        parsed_params = {
+          :params => {},
+          :used => {},
+          :branches => {}
+        }
         for key, value in req_params
           if (key =~ /@/) then
             name = $`
@@ -86,7 +91,11 @@ module Gluon
         else # > 0
           name = names.shift
           unless (parsed_params[:branches].key? name) then
-            parsed_params[:branches][name] = { :params => {}, :branches => {} } 
+            parsed_params[:branches][name] = {
+              :params => {},
+              :used => {},
+              :branches => {}
+            }
           end
           parse_parameter(names, value, parsed_params[:branches][name], key, req_params)
         end
@@ -146,6 +155,7 @@ module Gluon
     def set_parameters(this, params)
       return if (this.kind_of? Module)
       for name, value in params[:params]
+        next if params[:used][name]
         writer = "#{name}="
         if (advices = export? writer, this) then
           unless (advices[:accessor]) then
@@ -156,6 +166,7 @@ module Gluon
         else
           raise NoMethodError, "undefined method `#{writer}' for `#{this.class}'"
         end
+        params[:used][name] = true
       end
       for name, nested_params in params[:branches]
         case (name)
@@ -176,7 +187,10 @@ module Gluon
             unless (advices[:accessor]) then
               raise "not an accessor: #{this}.#{name}"
             end
-            set_parameters(this.__send__(name), nested_params)
+            next_this = this.__send__(name)
+            unless (next_this.nil?) then
+              set_parameters(this.__send__(name), nested_params)
+            end
           else
             raise NoMethodError, "undefined method `#{name}' for `#{this.class}'"
           end
@@ -271,7 +285,7 @@ module Gluon
         page_get(path_args)
       when 'page_head'
         page_head(path_args)
-      when 'page_hook', 'page_start', 'page_end', 'page_check'
+      when 'page_hook', 'page_start', 'page_end'
         raise "invalid request-method: #{@c.req.request_method}"
       else
         @logger.debug("#{@controller}.#{name}(#{path_args.join('')})") if @logger.debug?
@@ -281,39 +295,23 @@ module Gluon
     end
     private :page_method
 
-    def page_check
-      if (@controller.respond_to? :page_check) then
-        @logger.debug("#{@controller}.page_check()") if @logger.debug?
-        if (@controller.page_check) then
-          @logger.debug("#{@controller}.page_check() -> OK") if @logger.debug?
-          return true
-        else
-          @logger.debug("#{@controller}.page_check() -> NG") if @logger.debug?
-          return false
-        end
-      end
-
-      true
-    end
-    private :page_check
-
-    def apply(renderer, path_args=[], no_set_params=false)
+    def apply(renderer, path_args=[])
       @logger.debug("#{Action}#apply() for #{@controller} - start")
       r = nil
+      set_params
       page_hook{
         if (@controller.respond_to? :page_start) then
           @logger.debug("#{@controller}.page_start()") if @logger.debug?
           @controller.page_start
         end
-        if (path_args == :import) then
-          page_get([])
-        else
-          page_method(path_args)
-        end
         begin
-          set_params unless no_set_params
+          if (path_args == :import) then
+            page_get([])
+          else
+            page_method(path_args)
+          end
           if (@funcs.key? @prefix) then
-            call_actions if page_check
+            call_actions if @c.validation
           end
           r = renderer.call(@controller, @c, self)
         ensure

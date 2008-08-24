@@ -1,6 +1,6 @@
 class Example
   class ErrorMessages
-    def page_start
+    def initialize
       @default = Gluon::Web::ErrorMessages.new
       @default << 'foo'
       @default << 'bar'

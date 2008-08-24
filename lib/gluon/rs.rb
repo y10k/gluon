@@ -272,6 +272,7 @@ module Gluon
       @plugin = plugin
       @logger = NoLogger.instance
       @cache_tag = nil
+      @validation = true
     end
 
     attr_reader :req
@@ -279,6 +280,7 @@ module Gluon
     attr_reader :plugin
     attr_accessor :logger
     attr_accessor :cache_tag
+    attr_accessor :validation
 
     def_delegator :@session, :get, :session_get
     def_delegator :@session, :id, :session_id

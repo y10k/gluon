@@ -1,8 +1,6 @@
 class Example
   class Radio
-    attr_writer :c
-
-    def page_start
+    def initialize
       @foo = 'apple'
       @bar = 'Bob'
     end

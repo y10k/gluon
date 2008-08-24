@@ -23,7 +23,7 @@ module Gluon
           @header_columns = header_columns
         end
 
-        attr_reader :item
+        gluon_reader :item
 
         def string?
           @item.kind_of? String
@@ -35,15 +35,6 @@ module Gluon
 
         def header?
           header_column? || @parent.header_row?
-        end
-
-        def __export__(name)
-          case (name)
-          when 'item'
-            true
-          else
-            false
-          end
         end
       end
 
@@ -92,18 +83,10 @@ module Gluon
           end
           @cells
         end
+        gluon_export :cells, :accessor => true
 
         def last_empty_cells
           (0...(@columns - @row.length)).to_a
-        end
-
-        def __export__(name)
-          case (name)
-          when 'cells'
-            true
-          else
-            false
-          end
         end
       end
 
@@ -160,15 +143,6 @@ module Gluon
 
       def string_caption?
         @caption.kind_of? String
-      end
-
-      def __export__(name)
-        case (name)
-        when 'caption'
-          true
-        else
-          false
-        end
       end
 
       def __default_view__

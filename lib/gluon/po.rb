@@ -300,19 +300,15 @@ module Gluon
     def import(name, options={})
       case (name)
       when Symbol
-        is_attr = true
         value = funcall(name)
       else
-        is_attr = false
         value = name
       end
 
       case (value)
       when Class
-        is_instance = false
         controller = value.new
       else
-        is_instance = true
         controller = value
       end
 
@@ -322,12 +318,12 @@ module Gluon
       else
         curr_prefix = controller.class.to_s
       end
+
       prefix = prefix() + curr_prefix + '.'
       next_prefix_list = @stack.map{|_prefix, child| _prefix } + [ curr_prefix ]
 
       action = @action.new_action(controller, @c, next_prefix_list, prefix)
-      action.setup.apply(@renderer, :import,
-                         is_attr && is_instance) # reason for second argument: set_params by top level action
+      action.setup.apply(@renderer, :import)
     end
 
     def form_value(name)

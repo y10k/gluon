@@ -117,6 +117,7 @@ module Gluon
             }
           end while (page_type)
         }
+        @logger.debug("used request parameters: #{params.inspect}")
         @logger.debug("#{self}.call() - end") if @logger.debug?
         return res.finish
       else

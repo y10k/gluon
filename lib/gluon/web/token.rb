@@ -8,7 +8,7 @@
 #   :include:../LICENSE
 #
 
-require 'thread'
+require 'digest'
 
 module Gluon
   module Web
@@ -17,97 +17,60 @@ module Gluon
       CVS_ID = '$Id$'
 
       class TokenField
-        def initialize(count)
-          count.update_to(self)
+        def new_token
+          now = Time.now
+          id = Digest::MD5.new
+          id.update(now.to_s)
+          id.update(now.usec.to_s)
+          id.update(rand(0).to_s)
+          id.update($$.to_s)
+          id.update(CVS_ID)
+          id.hexdigest
+        end
+        private :new_token
+
+        def initialize
+          @c = nil
+          @token = nil
         end
 
-        gluon_accessor :value
+        attr_writer :c
+
+        def page_start
+          @token = new_token
+          @c.session_get[:one_time_token] = @token
+        end
+
+        gluon_accessor :token
 
         def __default_view__
           File.join(File.dirname(__FILE__), 'token.rhtml')
         end
-      end
 
-      class TokenCounter
-        def initialize
-          @lock = Mutex.new
-          @value = 0
-        end
-
-        def value
-          @lock.synchronize{ @value }
-        end
-
-        def update_to(field)
-          @lock.synchronize{ field.value = @value.to_s }
-          self
-        end
-
-        def succ!(field)
-          @lock.synchronize{
-            if (field.value.to_i == @value) then
-              @value += 1
-              field.value = @value.to_s
-              self
+        def valid?(c)
+          require 'yaml'
+          c.logger.debug([ @token, c.session_get ].to_yaml)
+          if (@token) then
+            if (curr_token = c.session_get[:one_time_token]) then
+              @token == curr_token
             else
-              nil
+              false
             end
-          }
+          else
+            true
+          end
         end
       end
 
-      # :stopdoc:
-      COUNT = Hash.new{|hash, key|
-        hash[key] = TokenCounter.new
-      }
-      # :startdoc:
+      def initialize(*args)
+        super
+        @one_time_token = TokenField.new
+      end
 
-      attr_writer :c
       gluon_reader :one_time_token
 
-      # template method for storage of counter. a block parameter of
-      # <em>count</em> is an instance of TokenCounter class.
-      def one_time_token_transaction # :yields: count
-        yield(COUNT[self.class])
-      end
-      private :one_time_token_transaction
-
-      def one_time_token_setup
-        one_time_token_transaction{|count|
-          @one_time_token = TokenField.new(count)
-          @c.logger.debug("#{self}.one_time_token_setup(): (count,field) -> (#{count.value},#{@one_time_token.value})") if @c.logger.debug?
-        }
-        nil
-      end
-      private :one_time_token_setup
-
-      def one_time_token_check
-        unless (@one_time_token) then
-          raise "need for call: #{OneTimeToken}\#one_time_token_setup"
-        end
-
-        ret_val = nil
-        one_time_token_transaction{|count|
-          @c.logger.debug("#{self}.one_time_token_check(): (count,field) -> (#{count.value},#{@one_time_token.value})") if @c.logger.debug?
-          if (count.succ!(@one_time_token)) then
-            if (@c.logger.debug?) then
-              @c.logger.debug("#{self}.one_time_token_check() -> OK")
-              @c.logger.debug("#{self}.one_time_token_check(): (count,field) -> (#{count.value},#{@one_time_token.value})")
-            end
-            ret_val = true
-          else
-            @c.logger.debug("#{self}.one_time_token_check() -> NG") if @c.logger.debug?
-            ret_val = false
-          end
-        }
-
-        ret_val
-      end
-      private :one_time_token_check
-
-      def page_check
-        super if (defined? super)
-        one_time_token_check or raise 'not to reload' # easy check
+      def one_time_token_valid?
+        @one_time_token.valid? @c
       end
     end
   end

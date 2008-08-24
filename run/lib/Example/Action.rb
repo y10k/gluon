@@ -1,6 +1,6 @@
 class Example
   class Action
-    def page_start
+    def initialize
       @results = ''
     end
 

@@ -48,10 +48,6 @@ module Gluon
         @css_class ? true : false
       end
 
-      def __export__(name)
-        false
-      end
-
       def __default_view__
         File.join(File.dirname(__FILE__), 'error.rhtml')
       end

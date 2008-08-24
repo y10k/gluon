@@ -4,8 +4,6 @@ class Example
   class OneTimeToken
     include Gluon::Web::OneTimeToken
 
-    attr_writer :c
-
     class Count
       def initialize
 	@lock = Mutex.new
@@ -24,26 +22,34 @@ class Example
 
     COUNT = Count.new
 
-    def page_start
-      one_time_token_setup      # for Gluon::Web::OneTimeToken
+    def initialize
+      super                     # for Gluon::Web::OneTimeToken
+      @c = nil
+      @errors = Gluon::Web::ErrorMessages.new
       @count = COUNT.value
       @now = Time.now
     end
 
-    # default page_check is defined by Gluon::Web::OneTimeToken
-
+    attr_writer :c
+    attr_reader :errors
     attr_reader :count
-
-    def count_up
-      sleep(5)
-      COUNT.succ!
-      @count = COUNT.value
-    end
-    gluon_export :count_up
 
     def now
       @now.to_s
     end
+
+    def page_start
+      unless (one_time_token_valid?) then
+        @errors << 'No reload!'
+        @c.validation = false
+      end
+    end
+
+    def count_up
+      COUNT.succ!
+      @count = COUNT.value
+    end
+    gluon_export :count_up
   end
 end
 

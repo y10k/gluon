@@ -126,7 +126,7 @@ module Gluon::Test
     end
 
     class PageWithActions
-      def page_start
+      def initialize
         @calls = []
       end
 
@@ -167,7 +167,7 @@ module Gluon::Test
     end
 
     class PageWithScalarParams
-      def page_start
+      def initialize
         @foo = nil
         @bar = nil
       end
@@ -194,26 +194,42 @@ module Gluon::Test
       assert_equal(1, count)
     end
 
-    def test_apply_with_no_set_params
+    class PageWithScalarParamCount
+      def initialize
+        @calls = []
+        @foo = nil
+      end
+
+      attr_reader :calls
+      gluon_reader :foo
+
+      def foo=(value)
+        @calls << :foo
+        @foo = value
+      end
+      gluon_export :foo=, :accessor => true
+    end
+
+    def test_apply_with_scalar_param_set_once
       params = {
         'foo' => 'Apple'
       }
       @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
-      build_page(PageWithScalarParams)
+      build_page(PageWithScalarParamCount)
 
       count = 0
       work = proc{
         count += 1
-        assert_equal(nil, @controller.foo)
-        assert_equal(nil, @controller.bar)
+        assert_equal([ :foo ], @controller.calls, 'set once')
+        assert_equal('Apple', @controller.foo)
       }
-      @action.setup.apply(work, [], true)
-
-      assert_equal(1, count)
+      @action.setup.apply(work, [])
+      @action.setup.apply(work, [])
+      assert_equal(2, count)
     end
 
     class PageWithListParams
-      def page_start
+      def initialize
         @foo = nil
         @bar = nil
         @baz = nil
@@ -248,7 +264,7 @@ module Gluon::Test
     end
 
     class PageWithBooleanParams
-      def page_start
+      def initialize
         @foo = true
         @bar = false
         @baz = false
@@ -313,7 +329,7 @@ module Gluon::Test
     end
 
     class PageWithImportByObject
-      def page_start
+      def initialize
         @other = OtherPage.new
       end
 
@@ -430,16 +446,17 @@ module Gluon::Test
       end
     end
 
-    class PageWithPageCheck
-      def initialize(check_stat)
-        @check_stat = check_stat
+    class PageWithValidation
+      def initialize(validation)
+        @validation = validation
         @calls = []
       end
 
+      attr_writer :c
       attr_reader :calls
 
-      def page_check
-        @check_stat
+      def page_start
+        @c.validation = @validation ? true : false
       end
 
       def foo
@@ -448,11 +465,10 @@ module Gluon::Test
       gluon_export :foo
     end
 
-    def test_page_with_page_check_ok
+    def test_page_with_page_validation_ok
       params = { 'foo()' => nil }
       @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
-      build_page(PageWithPageCheck, true)
-      assert_equal(true, @controller.page_check)
+      build_page(PageWithValidation, true)
       assert_equal([], @controller.calls)
       
       count = 0
@@ -465,11 +481,10 @@ module Gluon::Test
       assert_equal(1, count)
     end
 
-    def test_page_with_page_check_ng
+    def test_page_with_page_validation_ng
       params = { 'foo()' => nil }
       @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
-      build_page(PageWithPageCheck, false)
-      assert_equal(false, @controller.page_check)
+      build_page(PageWithValidation, false)
       assert_equal([], @controller.calls)
       
       count = 0
@@ -497,6 +512,7 @@ module Gluon::Test
                        'foo' => 'apple',
                        'bar' => 'banana'
                      },
+                     :used => {},
                      :branches => {}
                    },
                    Gluon::Action.parse_params(req_params))
@@ -514,6 +530,7 @@ module Gluon::Test
                        'foo' => 'apple',
                        'bar' => 'banana'
                      },
+                     :used => {},
                      :branches => {}
                    },
                    Gluon::Action.parse_params(req_params))
@@ -533,6 +550,7 @@ module Gluon::Test
                        'bar' => %w[ banana orange pineapple ],
                        'baz' => []
                      },
+                     :used => {},
                      :branches => {}
                    },
                    Gluon::Action.parse_params(req_params))
@@ -549,6 +567,7 @@ module Gluon::Test
                        'foo' => true,
                        'bar' => false,
                      },
+                     :used => {},
                      :branches => {}
                    },
                    Gluon::Action.parse_params(req_params))
@@ -563,16 +582,20 @@ module Gluon::Test
       }
 
       assert_equal({ :params => { 'foo' => 'apple' },
+                     :used => {},
                      :branches => {
                        'bar' => {
                          :params => { 'baz' => 'banana', 'quux' => 'orange' },
+                         :used => {},
                          :branches => {}
                        },
                        'aaa' => {
                          :params => {},
+                         :used => {},
                          :branches => {
                            'bbb' => {
                              :params => { 'ccc' => 'pineapple' },
+                             :used => {},
                              :branches => {}
                            }
                          }
@@ -591,17 +614,21 @@ module Gluon::Test
       }
 
       assert_equal({ :params => {},
+                     :used => {},
                      :branches => {
                        'foo[0]' => {
                          :params => { 'bar' => 'apple' },
+                         :used => {},
                          :branches => {}
                        },
                        'foo[1]' => {
                          :params => { 'bar' => 'banana' },
+                         :used => {},
                          :branches => {}
                        },
                        'foo[2]' => {
                          :params => { 'bar' => 'orange' },
+                         :used => {},
                          :branches => {}
                        }
                      }
@@ -615,6 +642,7 @@ module Gluon::Test
       }
 
       assert_equal({ :params => {},
+                     :used => {},
                      :branches => {}
                    },
                    Gluon::Action.parse_params(req_params))

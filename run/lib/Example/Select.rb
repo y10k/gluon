@@ -1,8 +1,6 @@
 class Example
   class Select
-    attr_writer :c
-
-    def page_start
+    def initialize
       @fruit_list = %w[ apple banana orange ]
       @planet_list = %w[ Mercury Venus Earth Mars Jupiter Saturn Uranus Neptune ]
       @foo = 'apple'
