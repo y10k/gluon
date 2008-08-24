@@ -40,7 +40,7 @@ class Example
 
     def page_start
       unless (one_time_token_valid?) then
-        @errors << 'No reload!'
+        @errors << 'Not reload!'
         @c.validation = false
       end
     end
