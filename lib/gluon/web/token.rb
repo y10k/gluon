@@ -48,8 +48,6 @@ module Gluon
         end
 
         def valid?(c)
-          require 'yaml'
-          c.logger.debug([ @token, c.session_get ].to_yaml)
           if (@token) then
             if (curr_token = c.session_get[:one_time_token]) then
               @token == curr_token
