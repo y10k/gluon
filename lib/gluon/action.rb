@@ -298,7 +298,8 @@ module Gluon
     private :page_method
 
     def apply(renderer, path_args=[])
-      @logger.debug("#{Action}#apply() for #{@controller} - start")
+      @logger.debug("#{Action}#apply() for #{@controller} - start") if @logger.debug?
+      @c.validation = true
       r = nil
       set_params
       page_hook{
@@ -312,6 +313,7 @@ module Gluon
           else
             page_method(path_args)
           end
+          @logger.debug("validation for #{@controller} => #{@c.validation}") if @logger.debug?
           if (@funcs.key? @prefix) then
             call_actions if @c.validation
           end
@@ -323,7 +325,7 @@ module Gluon
           end
         end
       }
-      @logger.debug("#{Action}#apply() for #{@controller} - end")
+      @logger.debug("#{Action}#apply() for #{@controller} - end") if @logger.debug?
       r
     end
 
