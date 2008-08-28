@@ -272,7 +272,7 @@ module Gluon
       @plugin = plugin
       @logger = NoLogger.instance
       @cache_tag = nil
-      @validation = true
+      @validation = nil
     end
 
     attr_reader :req
