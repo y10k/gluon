@@ -10,7 +10,7 @@ class Example
       attr_reader :age
     end
 
-    def initialize
+    def page_start
       @fruits = %w[ apple banana orange ]
       @users = [
         User.new('Taro', 21),
@@ -18,6 +18,10 @@ class Example
         User.new('Tanaka', 18)
       ]
       @country = 'Japanese'
+    end
+
+    #def page_get
+    def page_import
     end
 
     attr_reader :fruits

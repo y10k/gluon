@@ -1,12 +1,20 @@
 class Example
   class Radio
-    def initialize
+    attr_writer :c
+
+    def page_start
       @foo = 'apple'
       @bar = 'Bob'
     end
 
     gluon_accessor :foo
     gluon_accessor :bar
+
+    #def page_get
+    #def page_post
+    def page_import
+      @c.validation = true
+    end
 
     def ok
       # nothing to do.

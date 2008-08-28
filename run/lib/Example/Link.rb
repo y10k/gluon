@@ -1,5 +1,9 @@
 class Example
   class Link
+    #def page_get
+    def page_import
+    end
+
     def welcom
       Welcom
     end

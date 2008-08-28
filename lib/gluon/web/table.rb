@@ -117,6 +117,9 @@ module Gluon
         @caption = options[:caption]
       end
 
+      def page_import
+      end
+
       def [](index)
         @rows[index]
       end

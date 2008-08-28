@@ -1,5 +1,9 @@
 class Example
   class Cond
+    #def page_get
+    def page_import
+    end
+
     def true_test
       true
     end

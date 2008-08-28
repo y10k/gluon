@@ -5,6 +5,9 @@ class Example
         @char = char
       end
 
+      def page_import
+      end
+
       attr_reader :char
 
       def code
@@ -17,6 +20,9 @@ class Example
         @text = text
       end
 
+      def page_import
+      end
+
       attr_reader :text
     end
 
@@ -27,12 +33,15 @@ class Example
         @checked = false
       end
 
+      def page_import
+      end
+
       attr_reader :text
       attr_reader :check_id
       gluon_accessor :checked
     end
 
-    def initialize
+    def page_start
       @auto_table = Gluon::Web::Table.new(:columns => 5,
                                           :items => ('a'..'z').map{|c| Character.new(c) },
                                           :header_rows => 1,
@@ -54,6 +63,11 @@ class Example
 
       @manual_form_table = Gluon::Web::Table.new(:columns => 5,
                                                  :items => ('a'..'z').map{|c| Check.new(c) })
+    end
+
+    #def page_start
+    #def page_post
+    def page_import
     end
 
     attr_reader :auto_table

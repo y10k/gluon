@@ -13,6 +13,12 @@ class Example
       end
     end
 
+    #def page_get
+    #def page_post
+    def page_import
+      @c.validation = true
+    end
+
     def new_session
       @c.session_delete
       @session = @c.session_get(true)

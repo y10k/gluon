@@ -38,10 +38,14 @@ class Example
       @created_time = Time.now
     end
 
-    def page_post               # for post-form
+    def page_get
     end
 
-    attr_accessor :created_time
+    def page_post
+      @c.validation = true
+    end
+
+    attr_reader :created_time
 
     def page_cache?
       @c.req.env['gluon.page_cache']

@@ -1,6 +1,6 @@
 class Example
   class ErrorMessages
-    def initialize
+    def page_start
       @default = Gluon::Web::ErrorMessages.new
       @default << 'foo'
       @default << 'bar'
@@ -22,6 +22,9 @@ class Example
       @css_class << 'bar'
 
       @no_messages = Gluon::Web::ErrorMessages.new
+    end
+
+    def page_import
     end
 
     attr_reader :default

@@ -1,6 +1,17 @@
 # example top page
 
 class Example
+  def page_get
+  end
+
+  def menu
+    Example::Menu
+  end
+
+  def panel
+    return Example::ExamplePanel, :path_info => '/value'
+  end
+
   autoload :Action, 'Example/Action'
   autoload :Checkbox, 'Example/Checkbox'
   autoload :CodePanel, 'Example/CodePanel'
@@ -25,14 +36,6 @@ class Example
   autoload :Textarea, 'Example/Textarea'
   autoload :Value, 'Example/Value'
   autoload :ViewPanel, 'Example/ViewPanel'
-
-  def menu
-    Example::Menu
-  end
-
-  def panel
-    return Example::ExamplePanel, :path_info => '/value'
-  end
 end
 
 # Local Variables:

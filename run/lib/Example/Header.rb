@@ -2,6 +2,9 @@ class Example
   class Header
     attr_writer :c
 
+    def page_import
+    end
+
     def example?
       @c.curr_page == ExamplePanel
     end

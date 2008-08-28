@@ -22,7 +22,7 @@ module Gluon::Test
     end
 
     class SessionCountPage
-      attr_accessor :c
+      attr_writer :c
 
       def page_start
         session = @c.session_get

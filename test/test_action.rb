@@ -25,6 +25,8 @@ module Gluon::Test
     private :build_page
 
     class SimplePage
+      def page_get
+      end
     end
 
     def test_apply
@@ -62,6 +64,9 @@ module Gluon::Test
 
     class PageWithReqRes
       attr_accessor :c
+
+      def page_get
+      end
     end
 
     def test_apply_with_req_res
@@ -80,23 +85,39 @@ module Gluon::Test
     class PageWithHooks
       def initialize
         @calls = []
+        @c = nil
       end
 
       attr_reader :calls
+      attr_writer :c
 
-      def page_hook
-        @calls << :page_hook_in
+      def page_around_hook
+        @calls << :page_around_hook_in
         yield
-        @calls << :page_hook_out
+        @calls << :page_around_hook_out
       end
 
       def page_start
         @calls << :page_start
       end
 
+      # form value
+      def foo=(value)
+        @calls << :foo
+        @foo = value
+      end
+      gluon_export :foo=, :accessor => true
+
       def page_get
         @calls << :page_get
+        @c.validation = true
       end
+
+      # form action
+      def bar
+        @calls << :bar
+      end
+      gluon_export :bar
 
       def page_end
         @calls << :page_end
@@ -104,36 +125,48 @@ module Gluon::Test
     end
 
     def test_apply_with_hooks
+      params = {
+        'foo' => 'apple',
+        'bar()' => nil
+      }
+      @env['QUERY_STRING'] = Gluon::PresentationObject.query(params)
       build_page(PageWithHooks)
 
       count = 0
       work = proc{
         count += 1
-        assert_equal([ :page_hook_in,
+        assert_equal([ :page_around_hook_in,
                        :page_start,
-                       :page_get
+                       :foo,
+                       :page_get,
+                       :bar
                      ], @controller.calls)
       }
       @action.setup.apply(work)
 
       assert_equal(1, count)
-      assert_equal([ :page_hook_in,
+      assert_equal([ :page_around_hook_in,
                      :page_start,
+                     :foo,
                      :page_get,
+                     :bar,
                      :page_end,
-                     :page_hook_out
+                     :page_around_hook_out
                    ], @controller.calls)
     end
 
     class PageWithActions
       def initialize
         @calls = []
+        @c = nil
       end
 
       attr_reader :calls
+      attr_writer :c
 
       def page_get
         @calls << :page_get
+        @c.validation = true
       end
 
       def foo
@@ -167,13 +200,16 @@ module Gluon::Test
     end
 
     class PageWithScalarParams
-      def initialize
+      def page_start
         @foo = nil
         @bar = nil
       end
 
       gluon_accessor :foo
       gluon_accessor :bar
+
+      def page_get
+      end
     end
 
     def test_apply_with_scalar_params
@@ -208,6 +244,9 @@ module Gluon::Test
         @foo = value
       end
       gluon_export :foo=, :accessor => true
+
+      def page_get
+      end
     end
 
     def test_apply_with_scalar_param_set_once
@@ -223,13 +262,13 @@ module Gluon::Test
         assert_equal([ :foo ], @controller.calls, 'set once')
         assert_equal('Apple', @controller.foo)
       }
-      @action.setup.apply(work, [])
-      @action.setup.apply(work, [])
+      @action.setup.apply(work)
+      @action.setup.apply(work)
       assert_equal(2, count)
     end
 
     class PageWithListParams
-      def initialize
+      def page_start
         @foo = nil
         @bar = nil
         @baz = nil
@@ -238,6 +277,9 @@ module Gluon::Test
       gluon_accessor :foo
       gluon_accessor :bar
       gluon_accessor :baz
+
+      def page_get
+      end
     end
 
     def test_apply_with_list_params
@@ -264,7 +306,7 @@ module Gluon::Test
     end
 
     class PageWithBooleanParams
-      def initialize
+      def page_start
         @foo = true
         @bar = false
         @baz = false
@@ -273,6 +315,9 @@ module Gluon::Test
       gluon_accessor :foo
       gluon_accessor :bar
       gluon_accessor :baz
+
+      def page_get
+      end
     end
 
     def test_apply_with_boolean_params
@@ -310,6 +355,9 @@ module Gluon::Test
         OtherPage
       end
       gluon_export :other, :accessor => true
+
+      def page_get
+      end
     end
 
     def test_apply_with_import_by_class
@@ -329,11 +377,14 @@ module Gluon::Test
     end
 
     class PageWithImportByObject
-      def initialize
+      def page_start
         @other = OtherPage.new
       end
 
       gluon_reader :other
+
+      def page_get
+      end
     end
 
     def test_apply_with_import_by_object
@@ -394,17 +445,7 @@ module Gluon::Test
     end
 
     class PageWithExplicitExport
-      attr_accessor :c
-
-      def page_hook
-        yield
-      end
-
-      def page_start
-      end
-
-      def page_end
-      end
+      attr_writer :c
 
       def __view__
         'no_view.rhtml'
@@ -455,7 +496,7 @@ module Gluon::Test
       attr_writer :c
       attr_reader :calls
 
-      def page_start
+      def page_get
         @c.validation = @validation ? true : false
       end
 

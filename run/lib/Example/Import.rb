@@ -4,10 +4,18 @@ class Example
       @message = message
     end
 
+    #def page_get
+    def page_import
+    end
+
     attr_reader :message
   end
 
   class Import
+    #def page_get
+    def page_import
+    end
+
     def subpage_by_class
       Subpage
     end

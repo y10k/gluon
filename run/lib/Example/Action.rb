@@ -1,7 +1,14 @@
 class Example
   class Action
-    def initialize
+    attr_writer :c
+
+    def page_start
       @results = ''
+    end
+
+    #def page_get
+    def page_import
+      @c.validation = true
     end
 
     def foo

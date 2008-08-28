@@ -29,19 +29,18 @@ module Gluon
         end
         private :new_token
 
-        def initialize
-          @c = nil
-          @token = nil
-        end
-
         attr_writer :c
 
         def page_start
-          @token = new_token
-          @c.session_get[:one_time_token] = @token
+          @token = nil
         end
 
         gluon_accessor :token
+
+        def page_import
+          @token = new_token
+          @c.session_get[:one_time_token] = @token
+        end
 
         def __default_view__
           File.join(File.dirname(__FILE__), 'token.rhtml')

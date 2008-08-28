@@ -240,81 +240,69 @@ module Gluon
       end
     end
 
-    def page_hook
+    def page_around_hook
       r = nil
-      if (@controller.respond_to? :page_hook) then
-        @logger.debug("#{@controller}.page_hook() start") if @logger.debug?
-        @controller.page_hook{
+      if (@controller.respond_to? :page_around_hook) then
+        @logger.debug("#{@controller}.page_around_hook() start") if @logger.debug?
+        @controller.page_around_hook{
           r = yield
         }
-        @logger.debug("#{@controller}.page_hook() end") if @logger.debug?
+        @logger.debug("#{@controller}.page_around_hook() end") if @logger.debug?
       else
         r = yield
       end
       r
     end
-    private :page_hook
+    private :page_around_hook
 
-    def page_get(path_args)
-      if (@controller.respond_to? :page_get) then
-        @logger.debug("#{@controller}.page_get(#{path_args.join('')})") if @logger.debug?
-        @controller.page_get(*path_args)
-      else
-        unless (path_args.empty?) then
-          raise ArgumentError, "wrong number of arguments (#{path_args.length} for 0) for page_get"
-        end
-      end
+    def page_method(name, path_args)
+      @logger.debug("#{@controller}.#{name}(#{path_args.join(',')})") if @logger.debug?
+      @controller.__send__(name, *path_args)
     end
-    private :page_get
+    private :page_method
 
-    def page_head(path_args)
-      if (@controller.respond_to? :page_head) then
-        @logger.debug("#{@controller}.page_head(#{path_args.join('')})") if @logger.debug?
-        @controller.page_head(*path_args)
-      else
-        page_get(path_args)
-      end
-    end
-    private :page_head
-
-    def page_method(path_args)
+    def page_http_request(path_args)
       if (@c.req.request_method !~ /^[A-Z]+$/) then
         raise "unknown request-method: #{@c.req.request_method}"
       end
       name = "page_#{@c.req.request_method.downcase}"
       case (name)
-      when 'page_get'
-        page_get(path_args)
       when 'page_head'
-        page_head(path_args)
-      when 'page_hook', 'page_start', 'page_end'
+        if (@controller.respond_to? :page_head) then
+          page_method(:page_head, path_args)
+        else
+          page_method(:page_get, path_args)
+        end
+      when 'page_around_hook', 'page_start', 'page_end'
         raise "invalid request-method: #{@c.req.request_method}"
       else
-        @logger.debug("#{@controller}.#{name}(#{path_args.join('')})") if @logger.debug?
-        @controller.__send__(name, *path_args)
+        page_method(name, path_args)
       end
       nil
     end
-    private :page_method
+    private :page_http_request
 
     def apply(renderer, path_args=[])
       @logger.debug("#{Action}#apply() for #{@controller} - start") if @logger.debug?
-      @c.validation = true
+      @c.validation = nil
       r = nil
-      set_params
-      page_hook{
+      page_around_hook{
         if (@controller.respond_to? :page_start) then
           @logger.debug("#{@controller}.page_start()") if @logger.debug?
           @controller.page_start
         end
+        set_params
         begin
           if (path_args == :import) then
-            page_get([])
+            page_method(:page_import, [])
           else
-            page_method(path_args)
+            page_http_request(path_args)
           end
-          @logger.debug("validation for #{@controller} => #{@c.validation}") if @logger.debug?
+          @logger.debug("validation for #{@controller} => #{@c.validation.inspect}") if @logger.debug?
           if (@funcs.key? @prefix) then
+            if (@c.validation.nil?) then
+              raise "unchecked validation at #{@controller}."
+            end
             call_actions if @c.validation
           end
           r = renderer.call(@controller, @c, self)

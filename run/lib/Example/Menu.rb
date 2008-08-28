@@ -1,6 +1,6 @@
 class Example
   class Menu
-    def initialize
+    def page_start
       @examples = []
       for key in Dispatch::EXAMPLE_KEYS
         key = key.dup
@@ -18,6 +18,9 @@ class Example
     end
 
     attr_reader :examples
+
+    def page_get
+    end
   end
 end
 

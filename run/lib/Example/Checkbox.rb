@@ -1,6 +1,8 @@
 class Example
   class Checkbox
-    def initialize
+    attr_writer :c
+
+    def page_start
       @foo = false
       @bar = false
       @baz = true
@@ -9,6 +11,12 @@ class Example
     gluon_accessor :foo
     gluon_accessor :bar
     gluon_accessor :baz
+
+    #def page_get
+    #def page_post
+    def page_import
+      @c.validation = true
+    end
 
     def ok
       # nothing to do.

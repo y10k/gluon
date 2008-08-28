@@ -455,6 +455,9 @@ module Gluon::Test
 
       attr_reader :message
 
+      def page_import           # checked by Gluon::Action
+      end
+
       def __view__
         'Subpage.rhtml'
       end
@@ -566,9 +569,15 @@ module Gluon::Test
     class SubpageAction
       def initialize
         @calls = 0
+        @c = nil
       end
 
       attr_reader :calls
+      attr_writer :c
+
+      def page_import           # checked by Gluon::Action
+        @c.validation = true
+      end
 
       def foo
         @calls += 1
@@ -588,6 +597,15 @@ module Gluon::Test
       build_page(PageForImportAction)
 
       assert_equal('[1]', render_page('[<%= import :subpage %>]'))
+    end
+
+    def test_import_action_no_call
+      File.open(File.join(@view_dir, 'SubpageAction.rhtml'), 'w') {|out|
+        out << '<%= value :calls %>'
+      }
+      build_page(PageForImportAction)
+
+      assert_equal('[0]', render_page('[<%= import :subpage %>]'))
     end
   end
 

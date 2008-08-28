@@ -1,3 +1,14 @@
+2008-08-28  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/action.rb: page_import is new hook for imported
+	controller. timing to set request-parameters is
+	changed. validation flag status is unchecked at default.
+
+2008-08-26  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/action.rb: page_hook -> page_around_hook.
+	page_method should be explicitly defined.
+
 2008-08-24  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/action.rb: validation check flag. timing to set

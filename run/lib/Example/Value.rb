@@ -1,5 +1,9 @@
 class Example
   class Value
+    #def page_get
+    def page_import
+    end
+
     def hello
       'Hello world.'
     end

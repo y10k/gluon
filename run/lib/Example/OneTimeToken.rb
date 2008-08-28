@@ -22,27 +22,30 @@ class Example
 
     COUNT = Count.new
 
-    def initialize
-      super                     # for Gluon::Web::OneTimeToken
-      @c = nil
+    attr_writer :c
+
+    def page_start
       @errors = Gluon::Web::ErrorMessages.new
       @count = COUNT.value
       @now = Time.now
     end
 
-    attr_writer :c
+    #def page_get
+    #def page_post
+    def page_import
+      if (one_time_token_valid?) then
+        @c.validation = true
+      else
+        @c.validation = false
+        @errors << 'Not reload!'
+      end
+    end
+
     attr_reader :errors
     attr_reader :count
 
     def now
       @now.to_s
-    end
-
-    def page_start
-      unless (one_time_token_valid?) then
-        @errors << 'Not reload!'
-        @c.validation = false
-      end
     end
 
     def count_up

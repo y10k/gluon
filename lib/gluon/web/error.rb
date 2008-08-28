@@ -31,6 +31,9 @@ module Gluon
 
       alias << add
 
+      def page_import
+      end
+
       attr_reader :title
       attr_reader :head_level
       attr_reader :css_class
