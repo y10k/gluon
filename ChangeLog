@@ -1,3 +1,8 @@
+2008-08-30  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/validation.rb: declarative validation for HTML form
+	values.
+
 2008-08-28  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/action.rb: page_import is new hook for imported

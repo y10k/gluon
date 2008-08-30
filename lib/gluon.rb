@@ -36,6 +36,8 @@ module Gluon
   autoload :SessionManager, 'gluon/rs'
   autoload :Setup, 'gluon/setup'
   autoload :URLMap, 'gluon/urlmap'
+  autoload :Validation, 'gluon/validation'
+  autoload :Validator, 'gluon/validation'
   autoload :ViewRenderer, 'gluon/renderer'
   autoload :Web, 'gluon/web'
 end
