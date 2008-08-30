@@ -42,15 +42,15 @@ module Gluon
       @compile_lock.synchronize{
         if (entry = @compile_cache[filename]) then
           if (entry[:mtime] == mtime) then
-            return entry[:proc]
+            return entry[:view_class]
           end
         end
 
         @compile_cache[filename] = {
           :mtime => mtime,
-          :proc => ViewRenderer.load(filename)
+          :view_class => ViewRenderer.load(filename)
         }
-        @compile_cache[filename][:proc]
+        @compile_cache[filename][:view_class]
       }
     end
     private :load
