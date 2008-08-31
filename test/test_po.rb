@@ -607,6 +607,22 @@ module Gluon::Test
 
       assert_equal('[0]', render_page('[<%= import :subpage %>]'))
     end
+
+    TEST_ONLY_ONCE = { :count => 0 }
+
+    class PageForOnlyOnce
+    end
+
+    def test_only_once
+      build_page(PageForOnlyOnce)
+
+      10.times do
+        assert_equal('', render_page('<% only_once do ' +
+                                     "#{PresentationObjectTest}::TEST_ONLY_ONCE[:count] += 1" +
+                                     '   end %>'))
+        assert_equal(1, TEST_ONLY_ONCE[:count])
+      end
+    end
   end
 
   class PresentationObjectQueryTest < Test::Unit::TestCase

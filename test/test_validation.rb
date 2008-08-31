@@ -23,14 +23,92 @@ module Gluon::Test
       @controller.foo = 'HALO'
       result = \
       @validator.validation do
-        scalar :foo do
-          # nothing to do.
+        scalar :foo
+      end
+      assert_equal(true, result)
+      assert_equal(0, @errors.length)
+    end
+
+    def test_validation_scalar_required_block_ok
+      @controller.foo = 'HALO'
+      result = \
+      @validator.validation do
+        required do
+          scalar :foo
         end
       end
       assert_equal(true, result)
       assert_equal(0, @errors.length)
     end
 
+    def test_validation_scalar_required_block_ng
+      result = \
+      @validator.validation do
+        required do
+          scalar :foo
+        end
+      end
+      assert_equal(false, result)
+      assert_equal(1, @errors.length)
+    end
+
+    def test_validation_scalar_required_scope_ok
+      @controller.foo = 'HALO'
+      result = \
+      @validator.validation do
+        required
+        scalar :foo
+      end
+      assert_equal(true, result)
+      assert_equal(0, @errors.length)
+    end
+
+    def test_validation_scalar_required_scope_ng
+      result = \
+      @validator.validation do
+        required
+        scalar :foo
+      end
+      assert_equal(false, result)
+      assert_equal(1, @errors.length)
+    end
+
+    def test_validation_scalar_optional_block_no_value_ok
+      result = \
+      @validator.validation do
+        optional do
+          scalar :foo
+        end
+      end
+      assert_equal(true, result)
+      assert_equal(0, @errors.length)
+    end
+
+    def test_validation_scalar_optional_block_a_value_ok
+      @controller.foo = 'HALO'
+      result = \
+      @validator.validation do
+        optional do
+          scalar :foo
+        end
+      end
+      assert_equal(true, result)
+      assert_equal(0, @errors.length)
+    end
+
+    def test_validation_scalar_optional_block_a_value_ng
+      @controller.foo = 'HALO'
+      result = \
+      @validator.validation do
+        optional do
+          scalar :foo do
+            match /Z/
+          end
+        end
+      end
+      assert_equal(false, result)
+      assert_equal(1, @errors.length)
+    end
 
     def test_validation_scalar_ng
       @controller.foo = nil

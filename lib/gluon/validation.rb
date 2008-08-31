@@ -21,13 +21,6 @@ module Gluon
         @name = name
         @value = value
         @errors = errors
-
-        unless (@value.is_a? String) then
-          @results << false
-          if (@errors) then
-            @errors << "`#{@value}' is not scalar at `#{@name}'."
-          end
-        end
       end
 
       def print_error(error_message)
@@ -109,14 +102,65 @@ module Gluon
     def initialize(controller, errors=nil)
       @controller = controller
       @errors = errors
+      @optional = false
       @results = []
     end
 
-    def scalar(name, &block)
+    def optional
+      if (block_given?) then
+        save_optional = @optional
+        begin
+          @optional = true
+          r = yield
+        ensure
+          @optional = save_optional
+        end
+        r
+      else
+        @optional = true
+        nil
+      end
+    end
+
+    def required
+      if (block_given?) then
+        save_optional = @optional
+        begin
+          @optional = false
+          r = yield
+        ensure
+          @optional = save_optional
+        end
+        r
+      else
+        @optional = false
+        nil
+      end
+    end
+
+    def scalar(name, error_message=nil, &block)
       value = @controller.__send__(name)
-      scalar_validator = ScalarAttribute.new(@results, name, value, @errors)
-      scalar_context = scalar_validator.new_context
-      scalar_context.instance_eval(&block)
+      case (value)
+      when NilClass
+        unless (@optional) then
+          @results << false
+          if (@errors) then
+            @errors << (error_message ||
+                        "`#{@value}' is not scalar at `#{@name}'.")
+          end
+        end
+      when String
+        scalar_validator = ScalarAttribute.new(@results, name, value, @errors)
+        scalar_context = scalar_validator.new_context
+        scalar_context.instance_eval(&block) if block_given?
+      else
+        @results << false
+        if (@errors) then
+          @errors << (error_message ||
+                      "`#{@value}' is not scalar at `#{@name}'.")
+        end
+      end
+
       nil
     end
 
@@ -161,6 +205,8 @@ module Gluon
         @validator = validator
       end
 
+      def_delegator :@validator, :optional
+      def_delegator :@validator, :required
       def_delegator :@validator, :scalar
       def_delegator :@validator, :list
       def_delegator :@validator, :bool
