@@ -53,6 +53,13 @@ module Gluon
     class Checker
       include PrintError
 
+      def initialize(results, name, value, errors=nil)
+        @results = results
+        @name = name
+        @value = value
+        @errors = errors
+      end
+
       def new_context
         Context.new(self)
       end
@@ -67,13 +74,6 @@ module Gluon
         def check_type?(value)
           value.is_a? String
         end
-      end
-
-      def initialize(results, name, value, errors=nil)
-        @results = results
-        @name = name
-        @value = value
-        @errors = errors
       end
 
       def match(regexp, error_message=nil)
