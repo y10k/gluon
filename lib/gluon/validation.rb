@@ -15,24 +15,66 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    class ScalarAttribute
+    module PrintError
+      def print_error(message)
+        if (@errors) then
+          if (message) then
+            @errors << message
+          else
+            @errors << yield
+          end
+        end
+
+        nil
+      end
+      private :print_error
+    end
+    include PrintError
+
+    class Context
+      def initialize(validator)
+        @validator = validator
+      end
+
+      def method_missing(name, *args, &block)
+        case (name)
+        when :new_context, :validation
+          super
+        else
+          if (@validator.respond_to? name) then
+            @validator.__send__(name, *args, &block)
+          else
+            super
+          end
+        end
+      end
+    end
+
+    class Checker
+      include PrintError
+
+      def new_context
+        Context.new(self)
+      end
+    end
+
+    class Scalar < Checker
+      class << self
+        def type_name
+          'scalar'
+        end
+
+        def check_type?(value)
+          value.is_a? String
+        end
+      end
+
       def initialize(results, name, value, errors=nil)
         @results = results
         @name = name
         @value = value
         @errors = errors
       end
-
-      def print_error(error_message)
-        if (@errors) then
-          if (error_message) then
-            @errors << error_message
-          else
-            @errors << yield
-          end
-        end
-      end
-      private :print_error
 
       def match(regexp, error_message=nil)
         if (regexp === @value) then
@@ -78,25 +120,35 @@ module Gluon
 
         nil
       end
+    end
 
-      class Context
-        extend Forwardable
-
-        def initialize(scalar_validator)
-          @scalar_validator = scalar_validator
+    class List < Checker
+      class << self
+        def type_name
+          'list'
         end
 
-        def_delegator :@scalar_validator, :match
-        def_delegator :@scalar_validator, :range
-        def_delegator :@scalar_validator, :validate
-      end
-
-      def new_context
-        Context.new(self)
+        def check_type?(value)
+          value.is_a? Array
+        end
       end
     end
 
-    class ListAttribute
+    class Bool < Checker
+      class << self
+        def type_name
+          'bool'
+        end
+
+        def check_type?(value)
+          case (value)
+          when TrueClass, FalseClass
+            true
+          else
+            false
+          end
+        end
+      end
     end
 
     def initialize(controller, errors=nil)
@@ -106,87 +158,71 @@ module Gluon
       @results = []
     end
 
-    def optional
+    def optional_with(new_optional)
       if (block_given?) then
         save_optional = @optional
         begin
-          @optional = true
+          @optional = new_optional
           r = yield
         ensure
           @optional = save_optional
         end
         r
       else
-        @optional = true
+        @optional = new_optional
         nil
       end
     end
+    private :optional_with
 
-    def required
-      if (block_given?) then
-        save_optional = @optional
-        begin
-          @optional = false
-          r = yield
-        ensure
-          @optional = save_optional
+    def validate_with(name, checker, error_message=nil, &block)
+      value = @controller.__send__(name)
+      if (value.nil?) then
+        if (@optional) then
+          @results << true
+        else
+          @results << false
+          print_error(error_message) {
+            "`#{@value}' is not defined at `#{@name}'."
+          }
         end
-        r
+      elsif (checker.check_type? value) then
+        @results << true
+        if (block_given?) then
+          checker.new(@results, name, value, @errors).new_context.instance_eval(&block)
+        end
       else
-        @optional = false
-        nil
+        @results << false
+        print_error(error_message) {
+          "`#{@value}' is not scalar at `#{@name}'."
+        }
       end
+
+      nil
+    end
+    private :validate_with
+
+    def optional(&block)
+      optional_with(true, &block)
+    end
+
+    def required(&block)
+      optional_with(false, &block)
     end
 
     def scalar(name, error_message=nil, &block)
-      value = @controller.__send__(name)
-      case (value)
-      when NilClass
-        unless (@optional) then
-          @results << false
-          if (@errors) then
-            @errors << (error_message ||
-                        "`#{@value}' is not scalar at `#{@name}'.")
-          end
-        end
-      when String
-        scalar_validator = ScalarAttribute.new(@results, name, value, @errors)
-        scalar_context = scalar_validator.new_context
-        scalar_context.instance_eval(&block) if block_given?
-      else
-        @results << false
-        if (@errors) then
-          @errors << (error_message ||
-                      "`#{@value}' is not scalar at `#{@name}'.")
-        end
-      end
-
-      nil
+      validate_with(name, Scalar, error_message, &block)
     end
 
-    def list(name, &block)
-      values = @controller.__send__(name)
-      list_validator = ListAttribute.new(@results, name, values, @errors)
-      list_context = list_validator.new_context
-      list_context.instance_eval(&block)
-      nil
+    def list(name, error_message=nil, &block)
+      validate_with(name, List, error_message, &block)
     end
 
-    def bool(name, error_message=nil)
-      value = @controller.__send__(name)
-      case (value)
-      when true, false
-        @results << true
-      else
-        @results << false
-        if (@errors) then
-          @errors << (error_message || "value at `#{name}' is not boolean.")
-        end
-      end
-      nil
+    def bool(name, error_message=nil, &block)
+      validate_with(name, Bool, error_message, &block)
     end
 
-    def validate_ont_time_token(error_message=nil)
+    def validate_one_time_token(error_message=nil)
       if (@controller.one_time_token_valid?) then
         @results << true
       else
@@ -196,21 +232,6 @@ module Gluon
         end
       end
       nil
-    end
-
-    class Context
-      extend Forwardable
-
-      def initialize(validator)
-        @validator = validator
-      end
-
-      def_delegator :@validator, :optional
-      def_delegator :@validator, :required
-      def_delegator :@validator, :scalar
-      def_delegator :@validator, :list
-      def_delegator :@validator, :bool
-      def_delegator :@validator, :validate_ont_time_token
     end
 
     def validation(&block)
