@@ -1,228 +1,246 @@
 #!/usr/local/bin/ruby
 
 require 'gluon'
+require 'rack'
 require 'test/unit'
 
 module Gluon::Test
-  class ValidatorTest < Test::Unit::TestCase
+  class ValidationTest < Test::Unit::TestCase
     # for ident(1)
     CVS_ID = '$Id$'
 
-    class DummyController
-      attr_writer :c
-      gluon_accessor :foo
-    end
+    include Gluon::Validation
+
+    attr_reader :foo
 
     def setup
-      @controller = DummyController.new
+      @env = Rack::MockRequest.env_for('http://foo:8080/bar.cgi')
+      @mock = Gluon::Mock.new
+      @c = @mock.new_request(@env)
+      @foo = nil
       @errors = []
-      @validator = Gluon::Validator.new(@controller, @errors)
+    end
+
+    def test_out_of_validation_scope
+      validation(@errors) do    # extend Validation::Syntax
+      end
+
+      # for validation scope
+      assert_raise(NoMethodError) { optional }
+      assert_raise(NoMethodError) { required }
+      assert_raise(NoMethodError) { validate_one_time_token }
+      assert_raise(NoMethodError) { scalar }
+      assert_raise(NoMethodError) { list }
+      assert_raise(NoMethodError) { bool }
+
+      # for checker scope
+      assert_raise(NoMethodError) { match }
+      assert_raise(NoMethodError) { range }
+      assert_raise(NoMethodError) { validate }
+    end
+
+    def test_out_of_checker_scope
+      validation(@errors) do
+        assert_raise(NoMethodError) { match }
+        assert_raise(NoMethodError) { range }
+        assert_raise(NoMethodError) { validate }
+      end
+    end
+
+    def test_validation_empty_ok
+      validation(@errors) do
+      end
+      assert_equal(true, @c.validation)
+      assert_equal(0, @errors.length)
     end
 
     def test_validation_scalar_ok
-      @controller.foo = 'HALO'
-      result = \
-      @validator.validation do
+      @foo = 'HALO'
+      validation(@errors) do
         scalar :foo
       end
-      assert_equal(true, result)
+      assert_equal(true, @c.validation)
       assert_equal(0, @errors.length)
     end
 
     def test_validation_scalar_required_block_ok
-      @controller.foo = 'HALO'
-      result = \
-      @validator.validation do
+      @foo = 'HALO'
+      validation(@errors) do
         required do
           scalar :foo
         end
       end
-      assert_equal(true, result)
+      assert_equal(true, @c.validation)
       assert_equal(0, @errors.length)
     end
 
     def test_validation_scalar_required_block_ng
-      result = \
-      @validator.validation do
+      validation(@errors) do
         required do
           scalar :foo
         end
       end
-      assert_equal(false, result)
+      assert_equal(false, @c.validation)
       assert_equal(1, @errors.length)
     end
 
     def test_validation_scalar_required_scope_ok
-      @controller.foo = 'HALO'
-      result = \
-      @validator.validation do
+      @foo = 'HALO'
+      validation(@errors) do
         required
         scalar :foo
       end
-      assert_equal(true, result)
+      assert_equal(true, @c.validation)
       assert_equal(0, @errors.length)
     end
 
     def test_validation_scalar_required_scope_ng
-      result = \
-      @validator.validation do
+      validation(@errors) do
         required
         scalar :foo
       end
-      assert_equal(false, result)
+      assert_equal(false, @c.validation)
       assert_equal(1, @errors.length)
     end
 
     def test_validation_scalar_optional_block_no_value_ok
-      result = \
-      @validator.validation do
+      validation(@errors) do
         optional do
           scalar :foo
         end
       end
-      assert_equal(true, result)
+      assert_equal(true, @c.validation)
       assert_equal(0, @errors.length)
     end
 
     def test_validation_scalar_optional_block_a_value_ok
-      @controller.foo = 'HALO'
-      result = \
-      @validator.validation do
+      @foo = 'HALO'
+      validation(@errors) do
         optional do
           scalar :foo
         end
       end
-      assert_equal(true, result)
+      assert_equal(true, @c.validation)
       assert_equal(0, @errors.length)
     end
 
     def test_validation_scalar_optional_block_a_value_ng
-      @controller.foo = 'HALO'
-      result = \
-      @validator.validation do
+      @foo = 'HALO'
+      validation(@errors) do
         optional do
           scalar :foo do
             match /Z/
           end
         end
       end
-      assert_equal(false, result)
+      assert_equal(false, @c.validation)
       assert_equal(1, @errors.length)
     end
 
     def test_validation_scalar_ng
-      @controller.foo = nil
-      result = \
-      @validator.validation do
+      @foo = nil
+      validation(@errors) do
         scalar :foo do
           # nothing to do.
         end
       end
-      assert_equal(false, result)
+      assert_equal(false, @c.validation)
       assert_equal(1, @errors.length)
     end
 
     def test_validation_scalar_match_ok
-      @controller.foo = 'HALO'
-      result = \
-      @validator.validation do
+      @foo = 'HALO'
+      validation(@errors) do
         scalar :foo do
           match /H/
         end
       end
-      assert_equal(true, result)
+      assert_equal(true, @c.validation)
       assert_equal(0, @errors.length)
     end
 
     def test_validation_scalar_match_ng
-      @controller.foo = 'HALO'
-      result = \
-      @validator.validation do
+      @foo = 'HALO'
+      validation(@errors) do
         scalar :foo do
           match /Z/
         end
       end
-      assert_equal(false, result)
+      assert_equal(false, @c.validation)
       assert_equal(1, @errors.length)
     end
 
     def test_validation_scalar_range_string_ok
-      @controller.foo = 'bb'
-      result = \
-      @validator.validation do
+      @foo = 'bb'
+      validation(@errors) do
         scalar :foo do
           range 'a'..'z'
         end
       end
-      assert_equal(true, result)
+      assert_equal(true, @c.validation)
       assert_equal(0, @errors.length)
     end
 
     def test_validation_scalar_range_string_ng
-      @controller.foo = 'bb'
-      result = \
-      @validator.validation do
+      @foo = 'bb'
+      validation(@errors) do
         scalar :foo do
           range 'c'..'z'
         end
       end
-      assert_equal(false, result)
+      assert_equal(false, @c.validation)
       assert_equal(1, @errors.length)
     end
 
     def test_validation_scalar_range_integer_ok
-      @controller.foo = '5'
-      result = \
-      @validator.validation do
+      @foo = '5'
+      validation(@errors) do
         scalar :foo do
           range 1..10 do |v|
             v.to_i
           end
         end
       end
-      assert_equal(true, result)
+      assert_equal(true, @c.validation)
       assert_equal(0, @errors.length)
     end
 
     def test_validation_scalar_range_integer_ng
-      @controller.foo = '5'
-      result = \
-      @validator.validation do
+      @foo = '5'
+      validation(@errors) do
         scalar :foo do
           range 1...5 do |v|
             v.to_i
           end
         end
       end
-      assert_equal(false, result)
+      assert_equal(false, @c.validation)
       assert_equal(1, @errors.length)
     end
 
     def test_validation_scalar_validate_ok
-      @controller.foo = 'apple'
-      result = \
-      @validator.validation do
+      @foo = 'apple'
+      validation(@errors) do
         scalar :foo do
           validate do |v|
             %w[ apple banana orange ].include? v
           end
         end
       end
-      assert_equal(true, result)
+      assert_equal(true, @c.validation)
       assert_equal(0, @errors.length)
     end
 
     def test_validation_scalar_validate_ng
-      @controller.foo = 'pineapple'
-      result = \
-      @validator.validation do
+      @foo = 'pineapple'
+      validation(@errors) do
         scalar :foo do
           validate do |v|
             %w[ apple banana orange ].include? v
           end
         end
       end
-      assert_equal(false, result)
+      assert_equal(false, @c.validation)
       assert_equal(1, @errors.length)
     end
   end

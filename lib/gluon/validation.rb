@@ -31,25 +31,6 @@ module Gluon
     end
     include PrintError
 
-    class Context
-      def initialize(validator)
-        @validator = validator
-      end
-
-      def method_missing(name, *args, &block)
-        case (name)
-        when :new_context, :validation
-          super
-        else
-          if (@validator.respond_to? name) then
-            @validator.__send__(name, *args, &block)
-          else
-            super
-          end
-        end
-      end
-    end
-
     class Checker
       include PrintError
 
@@ -58,10 +39,6 @@ module Gluon
         @name = name
         @value = value
         @errors = errors
-      end
-
-      def new_context
-        Context.new(self)
       end
     end
 
@@ -175,7 +152,7 @@ module Gluon
     end
     private :optional_with
 
-    def validate_with(name, checker, error_message=nil, &block)
+    def validate_with(name, checker, error_message=nil)
       value = @controller.__send__(name)
       if (value.nil?) then
         if (@optional) then
@@ -189,7 +166,7 @@ module Gluon
       elsif (checker.check_type? value) then
         @results << true
         if (block_given?) then
-          checker.new(@results, name, value, @errors).new_context.instance_eval(&block)
+          yield(checker.new(@results, name, value, @errors))
         end
       else
         @results << false
@@ -234,9 +211,9 @@ module Gluon
       nil
     end
 
-    def validation(&block)
-      context = Context.new(self)
-      context.instance_eval(&block)
+    def validation
+      @results.clear
+      yield(self)
       @results.all?
     end
   end
@@ -245,9 +222,71 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    def validation(errors=nil, &block)
-      validator = Validator.new(self, @c, errors)
-      @c.validation = validator.validate(&block)
+    module Syntax
+      %w[ optional required validate_one_time_token ].each do |name|
+        module_eval(<<-EOF, "#{__FILE__}: #{Syntax}\##{name}", __LINE__ + 1)
+          def #{name}(*args, &block)
+            if (@__gluon_validator__) then
+              @__gluon_validator__.#{name}(*args, &block)
+            else
+              super
+            end
+          end
+        EOF
+      end
+
+      %w[ scalar list bool ].each do |name|
+        module_eval(<<-EOF, "#{__FILE__}: #{Syntax}\##{name}", __LINE__ + 1)
+          def #{name}(*args)
+            if (@__gluon_validator__) then
+              if (block_given?) then
+                @__gluon_validator__.#{name}(*args) {|checker|
+                  @__gluon_checker__ = checker
+                  begin
+                    r = yield
+                  ensure
+                    @__gluon_checker__ = nil
+                  end
+                  r
+                }
+              else
+                @__gluon_validator__.#{name}(*args)
+              end
+            else
+              super
+            end
+          end
+        EOF
+      end
+
+      %w[ match range validate ].each do |name|
+        module_eval(<<-EOF, "#{__FILE__}: #{Syntax}\##{name}", __LINE__ + 1)
+          def #{name}(*args, &block)
+            if (@__gluon_checker__) then
+              @__gluon_checker__.#{name}(*args, &block)
+            else
+              super
+            end
+          end
+        EOF
+      end
+    end
+
+    def validation(errors=nil)
+      @c.validation = Validator.new(self, errors).validation{|validator|
+        @__gluon_validator__ = validator
+        begin
+          class << self
+            unless (include? Syntax) then
+              include Syntax
+            end
+          end
+          r = yield
+        ensure
+          @__gluon_validator__ = nil
+        end
+        r
+      }
       nil
     end
     private :validation
