@@ -244,6 +244,70 @@ module Gluon::Test
       assert_equal(1, @errors.length)
     end
   end
+
+  class ValidationTest_method_override < ValidationTest
+    def optional
+      raise 'optional'
+    end
+
+    def required
+      raise 'required'
+    end
+
+    def validate_one_time_token
+      raise 'validate_one_time_token'
+    end
+
+    def scalar
+      raise 'scalar'
+    end
+
+    def list
+      raise 'list'
+    end
+
+    def bool
+      raise 'bool'
+    end
+
+    def match
+      raise 'match'
+    end
+
+    def range
+      raise 'range'
+    end
+
+    def validate
+      raise 'validate'
+    end
+
+    def test_out_of_validation_scope
+      validation(@errors) do    # extend Validation::Syntax
+      end
+
+      # for validation scope
+      assert_raise(RuntimeError) { optional }
+      assert_raise(RuntimeError) { required }
+      assert_raise(RuntimeError) { validate_one_time_token }
+      assert_raise(RuntimeError) { scalar }
+      assert_raise(RuntimeError) { list }
+      assert_raise(RuntimeError) { bool }
+
+      # for checker scope
+      assert_raise(RuntimeError) { match }
+      assert_raise(RuntimeError) { range }
+      assert_raise(RuntimeError) { validate }
+    end
+
+    def test_out_of_checker_scope
+      validation(@errors) do
+        assert_raise(RuntimeError) { match }
+        assert_raise(RuntimeError) { range }
+        assert_raise(RuntimeError) { validate }
+      end
+    end
+  end
 end
 
 # Local Variables:
