@@ -18,13 +18,8 @@ module Gluon
     module PrintError
       def print_error(message)
         if (@errors) then
-          if (message) then
-            @errors << message
-          else
-            @errors << yield
-          end
+          @errors << message
         end
-
         nil
       end
       private :print_error
@@ -58,9 +53,8 @@ module Gluon
           @results << true
         else
           @results << false
-          print_error(error_message) {
-            "value at `#{@name}' should be match to `#{regexp}'."
-          }
+          print_error(error_message ||
+                      "value at `#{@name}' should be match to `#{regexp}'.")
         end
 
         nil
@@ -77,9 +71,8 @@ module Gluon
           @results << true
         else
           @results << false
-          print_error(error_message) {
-            "value at `#{@name}' is out of range `#{range}'."
-          }
+          print_error(error_message ||
+                      "value at `#{@name}' is out of range `#{range}'.")
         end
 
         nil
@@ -90,9 +83,8 @@ module Gluon
           @results << true
         else
           @results << false
-          print_error(error_message) {
-            "value at `#{@name}' is invalid."
-          }
+          print_error(error_message ||
+                      "value at `#{@name}' is invalid.")
         end
 
         nil
@@ -159,9 +151,8 @@ module Gluon
           @results << true
         else
           @results << false
-          print_error(error_message) {
-            "`#{@value}' is not defined at `#{@name}'."
-          }
+          print_error(error_message ||
+                      "`#{@value}' is not defined at `#{@name}'.")
         end
       elsif (checker.check_type? value) then
         @results << true
@@ -170,9 +161,8 @@ module Gluon
         end
       else
         @results << false
-        print_error(error_message) {
-          "`#{@value}' is not scalar at `#{@name}'."
-        }
+        print_error(error_message ||
+                    "`#{@value}' is not scalar at `#{@name}'.")
       end
 
       nil
