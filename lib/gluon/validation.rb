@@ -175,7 +175,7 @@ module Gluon
       else
         @results << false
         print_error(error_message ||
-                    "`#{@value}' is not scalar at `#{@name}'.")
+                    "`#{@value}' is not #{checker.type_name} at `#{@name}'.")
       end
 
       nil
