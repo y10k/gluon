@@ -48,38 +48,10 @@ module Gluon
         end
       end
 
-      def match(regexp, error_message=nil)
-        if (regexp === @value) then
-          @results << true
-        else
-          @results << false
-          print_error(error_message ||
-                      "value at `#{@name}' should be match to `#{regexp}'.")
-        end
-
-        nil
-      end
-
-      def range(range, error_message=nil)
-        if (block_given?) then
-          v = yield(@value)
-        else
-          v = @value
-        end
-
-        if (range.include? v) then
-          @results << true
-        else
-          @results << false
-          print_error(error_message ||
-                      "value at `#{@name}' is out of range `#{range}'.")
-        end
-
-        nil
-      end
-
-      def validate(error_message=nil)
-        if (yield(@value)) then
+      def validate_scalar(error_message=nil, negate=false)
+        r = yield(@value)
+        r = ! r if negate
+        if (r) then
           @results << true
         else
           @results << false
@@ -89,6 +61,47 @@ module Gluon
 
         nil
       end
+
+      alias validate validate_scalar
+
+      def match_scalar(regexp, error_message=nil, negate=false)
+        nt = (negate) ? ' not' : ''
+        validate_scalar(error_message ||
+                 "value at `#{@name}' should#{nt} be match to `#{regexp}'.",
+                 negate) {
+          regexp === @value
+        }
+      end
+
+      alias match match_scalar
+
+      def not_match_scalar(regexp, error_message=nil)
+        match_scalar(regexp, error_message, true)
+      end
+
+      alias not_match not_match_scalar
+
+      def range_scalar(range, error_message=nil, negate=false)
+        nt = (negate) ? ' not' : ''
+        validate_scalar(error_message ||
+                 "value at `#{@name}' is#{nt} out of range `#{range}'.",
+                 negate) {
+          if (block_given?) then
+            v = yield(@value)
+          else
+            v = @value
+          end
+          range.include? v
+        }
+      end
+
+      alias range range_scalar
+
+      def not_range_scalar(range, error_message=nil)
+        range_scalar(range, error_message, true)
+      end
+
+      alias not_range not_range_scalar
     end
 
     class List < Checker
@@ -249,7 +262,27 @@ module Gluon
         EOF
       end
 
-      %w[ match range validate ].each do |name|
+      %w[
+        validate
+        match not_match
+        range not_range
+
+        validate_scalar
+        match_scalar not_match_scalar
+        range_scalar not_range_scalar
+
+        validate_list
+        match_list not_match_list
+        range_list not_range_list
+
+        validate_list_all
+        match_list_all not_match_list_all
+        range_list_all not_range_list_all
+
+        validate_list_any
+        match_list_any not_match_list_any
+        range_list_any not_range_list_any
+      ].each do |name|
         module_eval(<<-EOF, "#{__FILE__}: #{Syntax}\##{name}", __LINE__ + 1)
           def #{name}(*args, &block)
             if (@__gluon_checker__) then
