@@ -78,9 +78,9 @@ module Gluon
 
       def match_scalar(regexp, error_message=nil, negate=false)
         nt = (negate) ? ' not' : ''
-        validate_scalar(error_message ||
-                 "value at `#{@name}' should#{nt} be match to `#{regexp}'.",
-                 negate) {
+        emsg = error_message ||
+          "value at `#{@name}' should#{nt} be match to `#{regexp}'."
+        validate_scalar(emsg, negate) {
           regexp === @value
         }
       end
@@ -95,9 +95,9 @@ module Gluon
 
       def range_scalar(range, error_message=nil, negate=false)
         nt = (negate) ? ' not' : ''
-        validate_scalar(error_message ||
-                 "value at `#{@name}' is#{nt} out of range `#{range}'.",
-                 negate) {
+        emsg = error_message ||
+          "value at `#{@name}' is#{nt} out of range `#{range}'.",
+        validate_scalar(emsg, negate) {
           if (block_given?) then
             v = yield(@value)
           else
@@ -125,6 +125,112 @@ module Gluon
         def check_type?(value)
           value.is_a? Array
         end
+      end
+
+      def _validate_list(list_validator, error_message=nil, negate=false)
+        if (negate) then
+          validate = proc{|v| ! yield(v) }
+        else
+          validate = proc{|v| yield(v) }
+        end
+
+        if (@value.__send__(list_validator, &validate)) then
+          @results << true
+        else
+          @results << false
+          print_error(error_message ||
+                      "list at `#{@name}' is invalid.")
+        end
+
+        nil
+      end
+      private :_validate_list
+
+      def validate_list_all(error_message=nil, negate=false)
+        _validate_list(:all?,
+                       error_message ||
+                       "all value of list at `@name' is invalid.",
+                       negate)
+      end
+
+      alias validate_list validate_list_all
+      alias validate validate_list
+
+      def match_list_all(regexp, error_message=nil, negate=false)
+        nt = (negate) ? ' not' : ''
+        emsg = error_message ||
+          "all value of list at `#{@name}' should#{nt} be match to `#{regexp}'.",
+        validate_list_all(emsg, negate) {|v|
+          regexp === v
+        }
+      end
+
+      alias match_list match_list_all
+      alias match match_list
+
+      def not_match_list_all(regexp, error_message=nil)
+        match_list_all(regexp, error_message, true)
+      end
+
+      alias not_match_list not_match_list_all
+      alias not_match not_match_list
+
+      def range_list_all(range, error_message=nil, negate=false)
+        nt (negate) ? ' not' : ''
+        emsg = error_message ||
+          "all value at `#{@name}' is#{nt} out of range `#{range}'."
+        validate_list_all(emsg, negate) {|v|
+          if (block_given?) then
+            v = yield(v)
+          end
+          range.include? v
+        }
+      end
+
+      alias range_list range_list_all
+      alias range range_list
+
+      def not_range_list_all(range, error_message=nil)
+        range_list_all(range, error_message, true)
+      end
+
+      alias not_range_list not_range_list_all
+      alias not_range not_range_list
+
+      def validate_list_any(error_message=nil, negate=false)
+        _validate_list(:any?,
+                       error_message ||
+                       "any value of list at `@name' is invalid.",
+                       negate)
+      end
+
+      def match_list_any(regexp, error_message=nil, negate=false)
+        nt = (negate) ? ' not' : ''
+        emsg = error_message ||
+          "any value of list at `#{@name}' should#{nt} be match to `#{regexp}'.",
+        validate_list_any(emsg, negate) {|v|
+          regexp === v
+        }
+      end
+
+      def not_match_list_any(regexp, error_message=nil)
+        match_list_any(regexp, error_message, true)
+      end
+
+      def range_list_any(range, error_message=nil, negate=false)
+        nt (negate) ? ' not' : ''
+        emsg = error_message ||
+          "any value at `#{@name}' is#{nt} out of range `#{range}'."
+        validate_list_any(emsg, negate) {|v|
+          if (block_given?) then
+            v = yield(v)
+          end
+          range.include? v
+        }
+      end
+
+      def not_range_list_any(range, error_message=nil)
+        range_list_any(range, error_message, true)
       end
     end
 
