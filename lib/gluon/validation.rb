@@ -421,7 +421,7 @@ module Gluon
     end
 
     def validation(errors=nil)
-      @c.validation = Validator.new(self, errors).validation{|validator|
+      r = Validator.new(self, errors).validation{|validator|
         if (@__gluon_validator__) then
           raise 'not nested validation.'
         end
@@ -438,6 +438,17 @@ module Gluon
         end
         r
       }
+
+      if (@c.validation.nil?) then
+        @c.validation = r
+      else
+        if (@c.validation) then
+          @c.validation = r
+        else
+          # violation by previous validation check.
+        end
+      end
+
       nil
     end
     private :validation
