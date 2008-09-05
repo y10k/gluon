@@ -35,6 +35,18 @@ module Gluon
         @value = value
         @errors = errors
       end
+
+      def validation_name
+        @name
+      end
+
+      def validation_value
+        @value
+      end
+
+      def validation_type
+        self.class.type_name
+      end
     end
 
     class Scalar < Checker
@@ -244,6 +256,9 @@ module Gluon
             if (@__gluon_validator__) then
               if (block_given?) then
                 @__gluon_validator__.#{name}(*args) {|checker|
+                  if (@__gluon_checker__) then
+                    raise 'not nested validation checker.'
+                  end
                   @__gluon_checker__ = checker
                   begin
                     r = yield
@@ -263,6 +278,10 @@ module Gluon
       end
 
       %w[
+        validation_name
+        validation_value
+        validation_type
+
         validate
         match not_match
         range not_range
@@ -297,6 +316,9 @@ module Gluon
 
     def validation(errors=nil)
       @c.validation = Validator.new(self, errors).validation{|validator|
+        if (@__gluon_validator__) then
+          raise 'not nested validation.'
+        end
         @__gluon_validator__ = validator
         begin
           class << self
