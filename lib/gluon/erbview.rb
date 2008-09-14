@@ -120,7 +120,6 @@ __view_type__
     end
 
     def page_render(po)
-      controller = self
       @c.view_render(ERBView, @c.default_template(self) + SUFFIX, po)
     end
   end
