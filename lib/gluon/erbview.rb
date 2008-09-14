@@ -81,9 +81,9 @@ __view_context__.__init__
 __view_context__.instance_eval do
   define_method :__render__ do
 
-# begin of %p
+# begin of `%p'
 %s
-# end of %p
+# end of `%p'
 
   end
 end
