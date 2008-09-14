@@ -19,10 +19,9 @@ module Gluon
 
     extend Forwardable
 
-    def initialize(controller, rs_context, renderer, action)
+    def initialize(controller, rs_context, action)
       @controller = controller
       @c = rs_context
-      @renderer = renderer
       @action = action
       @stack = []
     end
@@ -323,7 +322,9 @@ module Gluon
       next_prefix_list = @stack.map{|_prefix, child| _prefix } + [ curr_prefix ]
 
       action = @action.new_action(controller, @c, next_prefix_list, prefix)
-      action.setup.apply(@renderer, :import)
+      action.setup.apply(:import) {
+        action.view_render
+      }
     end
 
     def form_value(name)
@@ -455,48 +456,6 @@ module Gluon
       elem << ERB::Util.html_escape(form_value(name))
       elem << '</textarea>'
     end
-  end
-
-  # = ERB front-end for PresentationObject
-  class ERBContext
-    # for ident(1)
-    CVS_ID = '$Id$'
-
-    extend Forwardable
-    include ERB::Util
-
-    def initialize(po, rs_context)
-      @po = po
-      @c = rs_context
-    end
-
-    # for Gluon::PresentationObject#cond
-    def neg(operand)
-      PresentationObject::NegativeCondition.new(operand)
-    end
-
-    alias NOT neg
-
-    attr_reader :po
-    attr_reader :c
-
-    def_delegator :@po, :value
-    def_delegator :@po, :cond
-    def_delegator :@po, :foreach
-    def_delegator :@po, :link
-    def_delegator :@po, :link_uri
-    def_delegator :@po, :action
-    def_delegator :@po, :frame
-    def_delegator :@po, :frame_uri
-    def_delegator :@po, :import
-    def_delegator :@po, :text
-    def_delegator :@po, :password
-    def_delegator :@po, :submit
-    def_delegator :@po, :hidden
-    def_delegator :@po, :checkbox
-    def_delegator :@po, :radio
-    def_delegator :@po, :select
-    def_delegator :@po, :textarea
   end
 end
 

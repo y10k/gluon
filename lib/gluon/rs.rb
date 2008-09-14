@@ -264,12 +264,13 @@ module Gluon
 
     extend Forwardable
 
-    def initialize(req, res, session, url_map, plugin)
+    def initialize(req, res, session, url_map, plugin, renderer)
       @req = req
       @res = res
       @session = session
       @url_map = url_map
       @plugin = plugin
+      @renderer = renderer
       @logger = NoLogger.instance
       @cache_tag = nil
       @validation = nil
@@ -340,6 +341,14 @@ module Gluon
         yield
         nil
       }
+    end
+
+    def default_template(controller)
+      @renderer.default_template(controller)
+    end
+
+    def view_render(view, template, po)
+      @renderer.render(view, template, self, po)
     end
   end
 end

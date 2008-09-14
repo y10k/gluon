@@ -71,28 +71,40 @@ module Gluon
       private :gluon_writer
     end
 
-    def find_path_filter(page_type)
-      for page_type in page_type.ancestors
-        if (path_filter = PATH_FILTER[page_type]) then
-          return path_filter
-        end
-      end
-      nil
-    end
-    module_function :find_path_filter
-
-    def find_exported_method(page_type, name)
-      name = name.to_s if (name.is_a? Symbol)
-      for page_type in page_type.ancestors
-        if (exported = EXPORT[page_type]) then
-          if (advices = exported[name]) then
-            return advices
+    class << self
+      def find_path_filter(page_type)
+        for page_type in page_type.ancestors
+          if (path_filter = PATH_FILTER[page_type]) then
+            return path_filter
           end
         end
+        nil
       end
-      nil
+
+      def find_exported_method(page_type, name)
+        name = name.to_s if (name.is_a? Symbol)
+        for page_type in page_type.ancestors
+          if (exported = EXPORT[page_type]) then
+            if (advices = exported[name]) then
+              return advices
+            end
+          end
+        end
+        nil
+      end
     end
-    module_function :find_exported_method
+
+    attr_writer :c
+
+    def page_around_hook
+      yield
+    end
+
+    def page_start
+    end
+
+    def page_end
+    end
   end
 end
 

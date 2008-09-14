@@ -9,7 +9,9 @@
 #
 
 require 'gluon/controller'
+require 'gluon/erbview'
 require 'gluon/nolog'
+require 'gluon/po'
 
 module Gluon
   class Action
@@ -282,7 +284,7 @@ module Gluon
     end
     private :page_http_request
 
-    def apply(renderer, path_args=[])
+    def apply(path_args=[])
       @logger.debug("#{Action}#apply() for #{@controller} - start") if @logger.debug?
       @c.validation = nil
       r = nil
@@ -305,7 +307,7 @@ module Gluon
             end
             call_actions if @c.validation
           end
-          r = renderer.call(@controller, @c, self)
+          r = yield
         ensure
           if (@controller.respond_to? :page_end) then
             @logger.debug("#{@controller}.page_end()") if @logger.debug?
@@ -315,6 +317,13 @@ module Gluon
       }
       @logger.debug("#{Action}#apply() for #{@controller} - end") if @logger.debug?
       r
+    end
+
+    def view_render
+      po = PresentationObject.new(@controller, @c, self)
+      @controller.extend(ERBView) unless (@controller.respond_to? :page_render)
+      @logger.debug("#{@controller}.page_render(#{po})") if @logger.debug?
+      @controller.page_render(po)
     end
 
     def new_action(controller, rs_context, next_prefix_list, prefix)

@@ -11,75 +11,56 @@ module Gluon::Test
     CVS_ID = '$Id$'
 
     class AnotherPage
+      attr_writer :c
     end
 
     def setup
       @view_dir = 'view'
+      FileUtils.rm_rf(@view_dir) # for debug
       FileUtils.mkdir_p(@view_dir)
       @renderer = Gluon::ViewRenderer.new(@view_dir)
 
       @env = Rack::MockRequest.env_for('http://foo:8080/bar.cgi')
       @env['SCRIPT_NAME'] = '/bar.cgi'
       @env['PATH_INFO'] = ''
+      @mock = Gluon::Mock.new(:url_map => { AnotherPage => '/another_page' },
+                              :view_dir => @view_dir)
     end
 
     def teardown
-      FileUtils.rm_rf(@view_dir)
+      FileUtils.rm_rf(@view_dir) unless $DEBUG
     end
 
     def build_page(page_type)
-      @mock = Gluon::Mock.new(:url_map => [ [ AnotherPage, '/another_page' ] ])
       @c = @mock.new_request(@env)
       @params, @funcs = Gluon::Action.parse(@c.req.params)
       @controller = page_type.new
+      @controller.c = @c
       @action = Gluon::Action.new(@controller, @c, @params, @funcs)
-      @po = Gluon::PresentationObject.new(@controller, @c, @renderer, @action)
-      @erb_context = Gluon::ERBContext.new(@po, @c)
+      @po = Gluon::PresentationObject.new(@controller, @c, @action)
     end
     private :build_page
 
-    def render_page(eruby_script)
-      view_class = Gluon::ViewRenderer.compile(eruby_script)
-      view_class.new(@po, @c).__renderer__
+    def render_page(eruby_script, filename=nil)
+      unless (filename) then
+        filename = @c.default_template(@controller) + Gluon::ERBView::SUFFIX
+      end
+      FileUtils.mkdir_p(File.dirname(filename))
+      File.open("#{filename}.tmp", 'w') {|out|
+        out << eruby_script
+      }
+      File.rename("#{filename}.tmp", filename) # to change i-node
+
+      unless (@controller.respond_to? :page_render) then
+        @controller.extend(Gluon::ERBView)
+      end
+      @controller.page_render(@po)
     end
     private :render_page
 
-    class PageForImplicitView
-    end
-
-    def test_view_implicit
-      build_page(PageForImplicitView)
-      assert_equal(false, @po.view_explicit?)
-      assert_equal('Gluon/Test/PresentationObjectTest/PageForImplicitView.rhtml', @po.__view__)
-    end
-
-    def test_default_view_undefined
-      build_page(PageForImplicitView)
-      assert_equal(nil, @po.__default_view__)
-    end
-
-    class PageForExplicitView
-      def __view__
-        'foo.rhtml'
-      end
-
-      def __default_view__
-        'default_foo.rhtml'
-      end
-    end
-
-    def test_view_explicit
-      build_page(PageForExplicitView)
-      assert_equal(true, @po.view_explicit?)
-      assert_equal('foo.rhtml', @po.__view__)
-    end
-
-    def test_default_view_explicit
-      build_page(PageForExplicitView)
-      assert_equal('default_foo.rhtml', @po.__default_view__)
-    end
-
     class PageForValue
+      attr_writer :c
+
       def foo
         'Hello world.'
       end
@@ -109,6 +90,8 @@ module Gluon::Test
     end
 
     class PageForCond
+      attr_writer :c
+
       def foo
         true
       end
@@ -143,6 +126,8 @@ module Gluon::Test
     end
 
     class PageForForeach
+      attr_writer :c
+
       def foo
         %w[ apple banana orange ]
       end
@@ -167,6 +152,8 @@ module Gluon::Test
     end
 
     class PageForLink
+      attr_writer :c
+
       def foo_path
         '/Foo'
       end
@@ -189,6 +176,7 @@ module Gluon::Test
     end
 
     class NotMountedPage
+      attr_writer :c
     end
 
     def test_link
@@ -263,6 +251,8 @@ module Gluon::Test
     end
 
     class PageForLinkURI
+      attr_writer :c
+
       def ruby_home_uri
         'http://www.ruby-lang.org'
       end
@@ -318,6 +308,8 @@ module Gluon::Test
     end
 
     class PageForAction
+      attr_writer :c
+
       def foo
       end
       gluon_export :foo
@@ -338,6 +330,8 @@ module Gluon::Test
     end
 
     class PageForFrame
+      attr_writer :c
+
       def foo
         '/Foo'
       end
@@ -391,6 +385,8 @@ module Gluon::Test
     end
 
     class PageForFrameURI
+      attr_writer :c
+
       def ruby_home
         'http://www.ruby-lang.org'
       end
@@ -435,6 +431,8 @@ module Gluon::Test
     end
 
     class PageForImport
+      attr_writer :c
+
       def another_page_class
         Subpage
       end
@@ -449,6 +447,8 @@ module Gluon::Test
     end
 
     class Subpage
+      attr_writer :c
+
       def initialize(message='Hello world.')
         @message = message
       end
@@ -458,8 +458,8 @@ module Gluon::Test
       def page_import           # checked by Gluon::Action
       end
 
-      def __view__
-        'Subpage.rhtml'
+      def page_render(po)
+        @c.view_render(Gluon::ERBView, 'view/Subpage.rhtml', po)
       end
     end
 
@@ -478,6 +478,7 @@ module Gluon::Test
     end
 
     class PageForText
+      attr_writer :c
       gluon_accessor :foo
     end
 
@@ -491,6 +492,7 @@ module Gluon::Test
     end
 
     class PageForPassword
+      attr_writer :c
       gluon_accessor :foo
     end
 
@@ -504,6 +506,8 @@ module Gluon::Test
     end
 
     class PageForSubmit
+      attr_writer :c
+
       def foo_action
       end
       gluon_export :foo_action
@@ -518,6 +522,7 @@ module Gluon::Test
     end
 
     class PageForHidden
+      attr_writer :c
       gluon_accessor :foo
     end
 
@@ -531,11 +536,14 @@ module Gluon::Test
     end
 
     class PageForForeachAction
+      attr_writer :c
+
       class Item
         def initialize
           @calls = 0
         end
 
+        attr_writer :c
         attr_reader :calls
 
         def foo
@@ -563,6 +571,7 @@ module Gluon::Test
         @subpage = SubpageAction.new
       end
 
+      attr_writer :c
       gluon_reader :subpage
     end
 
@@ -584,8 +593,8 @@ module Gluon::Test
       end
       gluon_export :foo
 
-      def __view__
-        'SubpageAction.rhtml'
+      def page_render(po)
+        @c.view_render(Gluon::ERBView, 'view/SubpageAction.rhtml', po)
       end
     end
 
@@ -608,19 +617,35 @@ module Gluon::Test
       assert_equal('[0]', render_page('[<%= import :subpage %>]'))
     end
 
-    TEST_ONLY_ONCE = { :count => 0 }
+    TEST_ONLY_ONCE = {
+      :only_once => 0,
+      :not_only_once => 0
+    }
 
     class PageForOnlyOnce
+      include Gluon::ERBView
+      attr_writer :c
     end
 
     def test_only_once
       build_page(PageForOnlyOnce)
 
-      10.times do
-        assert_equal('', render_page('<% only_once do ' +
-                                     "#{PresentationObjectTest}::TEST_ONLY_ONCE[:count] += 1" +
-                                     '   end %>'))
-        assert_equal(1, TEST_ONLY_ONCE[:count])
+      filename = @c.default_template(@controller) + Gluon::ERBView::SUFFIX
+      FileUtils.mkdir_p(File.dirname(filename))
+      File.open(filename, 'w') {|out|
+        out << "<% only_once do "
+        out << "#{PresentationObjectTest}::TEST_ONLY_ONCE[:only_once] += 1"
+        out << " end %>"
+        out << "<% "
+        out << "#{PresentationObjectTest}::TEST_ONLY_ONCE[:not_only_once] += 1"
+        out << " %>"
+      }
+
+      10.times do |i|
+        n = i + 1
+        assert_equal('', @controller.page_render(@po))
+        assert_equal(1, TEST_ONLY_ONCE[:only_once])
+        assert_equal(n, TEST_ONLY_ONCE[:not_only_once], "#{n}th")
       end
     end
   end

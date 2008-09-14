@@ -329,7 +329,8 @@ module Gluon::Test
       @plugin_maker = Gluon::PluginMaker.new
       @plugin_maker.setup
       @plugin = @plugin_maker.new_plugin
-      @c = Gluon::RequestResponseContext.new(@req, @res, @session, @url_map, @plugin)
+      @renderer = Gluon::ViewRenderer.new(Dir.getwd)
+      @c = Gluon::RequestResponseContext.new(@req, @res, @session, @url_map, @plugin, @renderer)
     end
 
     def test_req_res

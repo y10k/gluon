@@ -9,6 +9,7 @@
 #
 
 require 'forwardable'
+require 'gluon/renderer'
 require 'gluon/rs'
 require 'rack'
 
@@ -36,6 +37,9 @@ module Gluon
 	@plugin_maker.add(name, value)
       end
       @plugin_maker.setup
+
+      @view_dir = options[:view_dir] || Dir.getwd
+      @renderer = ViewRenderer.new(@view_dir)
     end
 
     attr_reader :url_map
@@ -45,7 +49,8 @@ module Gluon
       res = Rack::Response.new
       @session = @session_man.new_mock_session(req, res)
       plugin = @plugin_maker.new_plugin
-      Gluon::RequestResponseContext.new(req, res, @session, @url_map, plugin)
+      Gluon::RequestResponseContext.new(req, res, @session,
+					@url_map, plugin, @renderer)
     end
 
     def_delegator :@session, :get_for_mock, :session_get

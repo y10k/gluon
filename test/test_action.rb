@@ -33,8 +33,9 @@ module Gluon::Test
       build_page(SimplePage)
 
       count = 0
-      work = proc{ count += 1 }
-      @action.setup.apply(work)
+      @action.setup.apply{
+        count += 1
+      }
 
       assert_equal(1, count)
     end
@@ -55,8 +56,9 @@ module Gluon::Test
       build_page(PageWithPathArgs)
 
       count = 0
-      work = proc{ count += 1 }
-      @action.setup.apply(work, %w[ foo bar ])
+      @action.setup.apply(%w[ foo bar ]) {
+        count += 1
+      }
 
       assert_equal(1, count)
       assert_equal([ [ :page_get, %w[ foo bar ] ] ], @controller.calls)
@@ -73,10 +75,9 @@ module Gluon::Test
       build_page(PageWithReqRes)
 
       count = 0
-      work = proc{
+      @action.setup.apply{
         count += 1
       }
-      @action.setup.apply(work)
 
       assert_equal(1, count)
       assert_equal(@c, @controller.c)
@@ -133,7 +134,7 @@ module Gluon::Test
       build_page(PageWithHooks)
 
       count = 0
-      work = proc{
+      @action.setup.apply{
         count += 1
         assert_equal([ :page_around_hook_in,
                        :page_start,
@@ -142,7 +143,6 @@ module Gluon::Test
                        :bar
                      ], @controller.calls)
       }
-      @action.setup.apply(work)
 
       assert_equal(1, count)
       assert_equal([ :page_around_hook_in,
@@ -188,13 +188,12 @@ module Gluon::Test
       build_page(PageWithActions)
 
       count = 0
-      work = proc{
+      @action.setup.apply{
         count += 1
         assert_equal([ :page_get,
                        :foo_action
                      ], @controller.calls)
       }
-      @action.setup.apply(work)
 
       assert_equal(1, count)
     end
@@ -220,12 +219,11 @@ module Gluon::Test
       build_page(PageWithScalarParams)
 
       count = 0
-      work = proc{
+      @action.setup.apply{
         count += 1
         assert_equal('Apple', @controller.foo)
         assert_equal(nil, @controller.bar)
       }
-      @action.setup.apply(work)
 
       assert_equal(1, count)
     end
@@ -262,8 +260,8 @@ module Gluon::Test
         assert_equal([ :foo ], @controller.calls, 'set once')
         assert_equal('Apple', @controller.foo)
       }
-      @action.setup.apply(work)
-      @action.setup.apply(work)
+      @action.setup.apply(&work)
+      @action.setup.apply(&work)
       assert_equal(2, count)
     end
 
@@ -294,13 +292,12 @@ module Gluon::Test
       build_page(PageWithListParams)
 
       count = 0
-      work = proc{
+      @action.setup.apply{
         count += 1
         assert_equal([], @controller.foo)
         assert_equal(%w[ apple ], @controller.bar)
         assert_equal(%w[ banana orange ], @controller.baz)
       }
-      @action.setup.apply(work)
 
       assert_equal(1, count)
     end
@@ -331,13 +328,12 @@ module Gluon::Test
       build_page(PageWithBooleanParams)
 
       count = 0
-      work = proc{
+      @action.setup.apply{
         count += 1
         assert_equal(false, @controller.foo)
         assert_equal(true,  @controller.bar)
         assert_equal(false, @controller.baz)
       }
-      @action.setup.apply(work)
 
       assert_equal(1, count)
     end
@@ -368,10 +364,9 @@ module Gluon::Test
       build_page(PageWithImportByClass)
 
       count = 0
-      work = proc{
+      @action.setup.apply{
         count += 1
       }
-      @action.setup.apply(work)
 
       assert_equal(1, count)
     end
@@ -395,11 +390,10 @@ module Gluon::Test
       build_page(PageWithImportByObject)
 
       count = 0
-      work = proc{
+      @action.setup.apply{
         count += 1
         assert_equal('Apple', @controller.other.foo)
       }
-      @action.setup.apply(work)
 
       assert_equal(1, count)
     end
@@ -513,11 +507,10 @@ module Gluon::Test
       assert_equal([], @controller.calls)
       
       count = 0
-      work = proc{
+      @action.setup.apply{
         assert_equal([ :foo_action ], @controller.calls)
         count += 1
       }
-      @action.setup.apply(work)
 
       assert_equal(1, count)
     end
@@ -529,11 +522,10 @@ module Gluon::Test
       assert_equal([], @controller.calls)
       
       count = 0
-      work = proc{
+      @action.setup.apply{
         assert_equal([], @controller.calls)
         count += 1
       }
-      @action.setup.apply(work)
 
       assert_equal(1, count)
     end

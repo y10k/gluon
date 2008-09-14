@@ -17,63 +17,53 @@ module Gluon
     # for idnet(1)
     CVS_ID = '$Id$'
 
-    class << self
-      def compile(eruby_script, filename='(erb)')
-        view_class = Class.new(ERBContext)
-        erb = ERB.new(eruby_script)
-        erb.def_method(view_class, '__renderer__', filename)
-        view_class
-      end
-
-      def load(filename)
-        script = IO.read(filename)
-        compile(script, filename)
-      end
-    end
-
-    def initialize(view_dir)
-      @view_dir = view_dir
+    def initialize(template_dir)
+      @template_dir = template_dir
       @compile_lock = Mutex.new
       @compile_cache = {}
     end
 
-    def load(filename)
-      mtime = File.stat(filename).mtime
+    def default_template(controller)
+      File.join(@template_dir,
+                controller.class.name.gsub(/::/, File::SEPARATOR))
+    end
+
+    def compile(view, template)
+      view_script = view.compile(template)
+      template_compiled = "#{template}c"
+      File.open(template_compiled, 'w') {|out|
+        out.write(view_script)
+      }
+      m = Module.new
+      m.module_eval(view_script, template_compiled)
+    end
+    private :compile
+
+    def load(view, template)
+      stat = File.stat(template)
       @compile_lock.synchronize{
-        if (entry = @compile_cache[filename]) then
-          if (entry[:mtime] == mtime) then
+        if (entry = @compile_cache[template]) then
+          if (entry[:stat].ino == stat.ino &&
+              entry[:stat].mtime == stat.mtime &&
+              entry[:stat].size == stat.size)
+          then
             return entry[:view_class]
           end
         end
 
-        @compile_cache[filename] = {
-          :mtime => mtime,
-          :view_class => ViewRenderer.load(filename)
+        @compile_cache[template] = {
+          :stat => stat,
+          :view_class => compile(view, template)
         }
-        @compile_cache[filename][:view_class]
+        @compile_cache[template][:view_class]
       }
     end
-    private :load
 
-    def render(controller, rs_context, action)
-      po = PresentationObject.new(controller, rs_context, self, action)
-      erb_context = ERBContext.new(po, rs_context)
-      view_path = File.join(@view_dir, po.__view__)
-      if (po.view_explicit?) then
-        view_class = load(view_path)
-        return view_class.new(po, rs_context).__renderer__
-      elsif (File.exist? view_path) then
-        view_class = load(view_path)
-        return view_class.new(po, rs_context).__renderer__
-      elsif (default_view_path = po.__default_view__) then
-        view_class = load(default_view_path)
-        return view_class.new(po, rs_context).__renderer__
-      end
-
-      raise "no view for #{po.page_type}"
+    def render(view, template, rs_context, po)
+      view_type = load(view, template)
+      view_handler = view_type.new(po, rs_context)
+      view_handler.call
     end
-
-    alias call render
   end
 end
 
