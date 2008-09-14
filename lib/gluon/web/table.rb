@@ -12,6 +12,8 @@ module Gluon
   module Web
     # = table rendering utility
     class Table
+      include Controller
+
       # for ident(1)
       CVS_ID = '$Id$'
 
@@ -120,6 +122,11 @@ module Gluon
       def page_import
       end
 
+      def page_render(po)
+        template = File.join(File.dirname(__FILE__), 'table.rhtml')
+        @c.view_render(ERBView, template, po)
+      end
+
       def [](index)
         @rows[index]
       end
@@ -146,10 +153,6 @@ module Gluon
 
       def string_caption?
         @caption.kind_of? String
-      end
-
-      def __default_view__
-        File.join(File.dirname(__FILE__), 'table.rhtml')
       end
     end
   end

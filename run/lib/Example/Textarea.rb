@@ -1,6 +1,8 @@
 class Example
   class Textarea
-    attr_writer :c
+    include Gluon::Controller
+    include Gluon::ERBView
+
     gluon_accessor :foo
 
     #def page_get

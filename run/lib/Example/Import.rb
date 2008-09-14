@@ -1,5 +1,8 @@
 class Example
   class Subpage
+    include Gluon::Controller
+    include Gluon::ERBView
+
     def initialize(message='Hello world.')
       @message = message
     end
@@ -12,6 +15,9 @@ class Example
   end
 
   class Import
+    include Gluon::Controller
+    include Gluon::ERBView
+
     #def page_get
     def page_import
     end

@@ -12,10 +12,11 @@ module Gluon
   module Web
     # = error messages utility
     class ErrorMessages
+      extend Forwardable
+      include Controller
+
       # for ident(1)
       CVS_ID = '$Id$'
-
-      extend Forwardable
 
       def initialize(options={})
         @title = (options.key? :title) ? options[:title] : 'ERROR(s)'
@@ -34,6 +35,11 @@ module Gluon
       def page_import
       end
 
+      def page_render(po)
+        template = File.join(File.dirname(__FILE__), 'error.rhtml')
+        @c.view_render(ERBView, template, po)
+      end
+
       attr_reader :title
       attr_reader :head_level
       attr_reader :css_class
@@ -49,10 +55,6 @@ module Gluon
 
       def has_class?
         @css_class ? true : false
-      end
-
-      def __default_view__
-        File.join(File.dirname(__FILE__), 'error.rhtml')
       end
     end
   end

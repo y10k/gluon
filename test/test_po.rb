@@ -11,7 +11,8 @@ module Gluon::Test
     CVS_ID = '$Id$'
 
     class AnotherPage
-      attr_writer :c
+      include Gluon::Controller
+      include Gluon::ERBView
     end
 
     def setup
@@ -50,16 +51,13 @@ module Gluon::Test
         out << eruby_script
       }
       File.rename("#{filename}.tmp", filename) # to change i-node
-
-      unless (@controller.respond_to? :page_render) then
-        @controller.extend(Gluon::ERBView)
-      end
       @controller.page_render(@po)
     end
     private :render_page
 
     class PageForValue
-      attr_writer :c
+      include Gluon::Controller
+      include Gluon::ERBView
 
       def foo
         'Hello world.'
@@ -90,7 +88,8 @@ module Gluon::Test
     end
 
     class PageForCond
-      attr_writer :c
+      include Gluon::Controller
+      include Gluon::ERBView
 
       def foo
         true
@@ -126,7 +125,8 @@ module Gluon::Test
     end
 
     class PageForForeach
-      attr_writer :c
+      include Gluon::Controller
+      include Gluon::ERBView
 
       def foo
         %w[ apple banana orange ]
@@ -152,7 +152,8 @@ module Gluon::Test
     end
 
     class PageForLink
-      attr_writer :c
+      include Gluon::Controller
+      include Gluon::ERBView
 
       def foo_path
         '/Foo'
@@ -176,7 +177,6 @@ module Gluon::Test
     end
 
     class NotMountedPage
-      attr_writer :c
     end
 
     def test_link
@@ -251,7 +251,8 @@ module Gluon::Test
     end
 
     class PageForLinkURI
-      attr_writer :c
+      include Gluon::Controller
+      include Gluon::ERBView
 
       def ruby_home_uri
         'http://www.ruby-lang.org'
@@ -308,7 +309,8 @@ module Gluon::Test
     end
 
     class PageForAction
-      attr_writer :c
+      include Gluon::Controller
+      include Gluon::ERBView
 
       def foo
       end
@@ -330,7 +332,8 @@ module Gluon::Test
     end
 
     class PageForFrame
-      attr_writer :c
+      include Gluon::Controller
+      include Gluon::ERBView
 
       def foo
         '/Foo'
@@ -385,7 +388,8 @@ module Gluon::Test
     end
 
     class PageForFrameURI
-      attr_writer :c
+      include Gluon::Controller
+      include Gluon::ERBView
 
       def ruby_home
         'http://www.ruby-lang.org'
@@ -431,7 +435,8 @@ module Gluon::Test
     end
 
     class PageForImport
-      attr_writer :c
+      include Gluon::Controller
+      include Gluon::ERBView
 
       def another_page_class
         Subpage
@@ -447,7 +452,8 @@ module Gluon::Test
     end
 
     class Subpage
-      attr_writer :c
+      include Gluon::Controller
+      include Gluon::ERBView
 
       def initialize(message='Hello world.')
         @message = message
@@ -478,7 +484,8 @@ module Gluon::Test
     end
 
     class PageForText
-      attr_writer :c
+      include Gluon::Controller
+      include Gluon::ERBView
       gluon_accessor :foo
     end
 
@@ -492,7 +499,8 @@ module Gluon::Test
     end
 
     class PageForPassword
-      attr_writer :c
+      include Gluon::Controller
+      include Gluon::ERBView
       gluon_accessor :foo
     end
 
@@ -506,7 +514,8 @@ module Gluon::Test
     end
 
     class PageForSubmit
-      attr_writer :c
+      include Gluon::Controller
+      include Gluon::ERBView
 
       def foo_action
       end
@@ -522,7 +531,8 @@ module Gluon::Test
     end
 
     class PageForHidden
-      attr_writer :c
+      include Gluon::Controller
+      include Gluon::ERBView
       gluon_accessor :foo
     end
 
@@ -536,14 +546,14 @@ module Gluon::Test
     end
 
     class PageForForeachAction
-      attr_writer :c
+      include Gluon::Controller
+      include Gluon::ERBView
 
       class Item
         def initialize
           @calls = 0
         end
 
-        attr_writer :c
         attr_reader :calls
 
         def foo
@@ -567,22 +577,26 @@ module Gluon::Test
     end
 
     class PageForImportAction
+      include Gluon::Controller
+      include Gluon::ERBView
+
       def initialize
         @subpage = SubpageAction.new
       end
 
-      attr_writer :c
       gluon_reader :subpage
     end
 
     class SubpageAction
+      include Gluon::Controller
+      include Gluon::ERBView
+
       def initialize
         @calls = 0
         @c = nil
       end
 
       attr_reader :calls
-      attr_writer :c
 
       def page_import           # checked by Gluon::Action
         @c.validation = true
@@ -623,8 +637,8 @@ module Gluon::Test
     }
 
     class PageForOnlyOnce
+      include Gluon::Controller
       include Gluon::ERBView
-      attr_writer :c
     end
 
     def test_only_once

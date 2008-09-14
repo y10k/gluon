@@ -1,5 +1,8 @@
 class Example
   class Value
+    include Gluon::Controller
+    include Gluon::ERBView
+
     #def page_get
     def page_import
     end

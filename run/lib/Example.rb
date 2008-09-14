@@ -1,6 +1,9 @@
 # example top page
 
 class Example
+  include Gluon::Controller
+  include Gluon::ERBView
+
   def page_get
   end
 

@@ -1,6 +1,12 @@
 class Example
   class Table
+    include Gluon::Controller
+    include Gluon::ERBView
+
     class Character
+      include Gluon::Controller
+      include Gluon::ERBView
+
       def initialize(char)
         @char = char
       end
@@ -16,6 +22,9 @@ class Example
     end
 
     class Emphasis
+      include Gluon::Controller
+      include Gluon::ERBView
+
       def initialize(text)
         @text = text
       end
@@ -27,6 +36,9 @@ class Example
     end
 
     class Check
+      include Gluon::Controller
+      include Gluon::ERBView
+
       def initialize(text, options={})
         @text = text
         @check_id = options[:id]

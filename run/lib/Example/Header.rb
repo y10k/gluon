@@ -1,6 +1,7 @@
 class Example
   class Header
-    attr_writer :c
+    include Gluon::Controller
+    include Gluon::ERBView
 
     def page_import
     end

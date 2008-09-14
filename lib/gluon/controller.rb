@@ -103,8 +103,20 @@ module Gluon
     def page_start
     end
 
+    ## define explicitly
+    # def page_get(*path_args)
+    # def page_head(*path_args)
+    # def page_post(*path_args)
+
     def page_end
     end
+
+    def __cache_key__
+    end
+
+    ## define explicitly
+    # def __if_modified__(cache_tag)
+    # end
   end
 end
 

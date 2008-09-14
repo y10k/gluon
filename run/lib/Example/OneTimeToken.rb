@@ -2,6 +2,8 @@ require 'thread'
 
 class Example
   class OneTimeToken
+    include Gluon::Controller
+    include Gluon::ERBView
     include Gluon::Web::OneTimeToken
 
     class Count
@@ -21,8 +23,6 @@ class Example
     end
 
     COUNT = Count.new
-
-    attr_writer :c
 
     def page_start
       @errors = Gluon::Web::ErrorMessages.new

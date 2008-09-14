@@ -1,5 +1,8 @@
 class Example
   class Menu
+    include Gluon::Controller
+    include Gluon::ERBView
+
     def page_start
       @examples = []
       for key in Dispatch::EXAMPLE_KEYS

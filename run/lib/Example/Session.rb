@@ -3,8 +3,9 @@ require 'forwardable'
 class Example
   class Session
     extend Forwardable
+    include Gluon::Controller
+    include Gluon::ERBView
 
-    attr_writer :c
     def_delegator :@c, :session_id
 
     def page_start

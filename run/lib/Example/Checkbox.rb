@@ -1,6 +1,7 @@
 class Example
   class Checkbox
-    attr_writer :c
+    include Gluon::Controller
+    include Gluon::ERBView
 
     def page_start
       @foo = false

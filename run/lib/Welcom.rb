@@ -1,6 +1,9 @@
 # Welcom application
 
 class Welcom
+  include Gluon::Controller
+  include Gluon::ERBView
+
   def page_get
   end
 

@@ -1,6 +1,7 @@
 class Example
   class Action
-    attr_writer :c
+    include Gluon::Controller
+    include Gluon::ERBView
 
     def page_start
       @results = ''

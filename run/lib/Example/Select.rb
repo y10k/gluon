@@ -1,6 +1,7 @@
 class Example
   class Select
-    attr_writer :c
+    include Gluon::Controller
+    include Gluon::ERBView
 
     def page_start
       @fruit_list = %w[ apple banana orange ]

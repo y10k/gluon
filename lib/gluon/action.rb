@@ -9,7 +9,6 @@
 #
 
 require 'gluon/controller'
-require 'gluon/erbview'
 require 'gluon/nolog'
 require 'gluon/po'
 
@@ -221,38 +220,25 @@ module Gluon
     end
 
     def setup
-      if (@controller.respond_to? :c=) then
-        @logger.debug("#{@controller}.c = #{@c}") if @logger.debug?
-        @controller.c = @c
-      end
+      @logger.debug("#{@controller}.c = #{@c}") if @logger.debug?
+      @controller.c = @c
       self
     end
 
     def cache_key
-      if (@controller.respond_to? :__cache_key__) then
-        @controller.__cache_key__
-      end
+      @controller.__cache_key__
     end
 
     def modified?(cache_tag)
-      if (@controller.respond_to? :__if_modified__) then
-        @controller.__if_modified__(cache_tag)
-      else
-        true
-      end
+      @controller.__if_modified__(cache_tag)
     end
 
     def page_around_hook
       r = nil
-      if (@controller.respond_to? :page_around_hook) then
-        @logger.debug("#{@controller}.page_around_hook() start") if @logger.debug?
-        @controller.page_around_hook{
-          r = yield
-        }
-        @logger.debug("#{@controller}.page_around_hook() end") if @logger.debug?
-      else
+      @logger.debug("#{@controller}.page_around_hook() start") if @logger.debug?
+      @controller.page_around_hook{
         r = yield
-      end
+      }
       r
     end
     private :page_around_hook
@@ -270,12 +256,12 @@ module Gluon
       name = "page_#{@c.req.request_method.downcase}"
       case (name)
       when 'page_head'
-        if (@controller.respond_to? :page_head) then
+        begin
           page_method(:page_head, path_args)
-        else
+        rescue NoMethodError
           page_method(:page_get, path_args)
         end
-      when 'page_around_hook', 'page_start', 'page_end'
+      when 'page_around_hook', 'page_start', 'page_end', 'page_render'
         raise "invalid request-method: #{@c.req.request_method}"
       else
         page_method(name, path_args)
@@ -289,10 +275,8 @@ module Gluon
       @c.validation = nil
       r = nil
       page_around_hook{
-        if (@controller.respond_to? :page_start) then
-          @logger.debug("#{@controller}.page_start()") if @logger.debug?
-          @controller.page_start
-        end
+        @logger.debug("#{@controller}.page_start()") if @logger.debug?
+        @controller.page_start
         set_params
         begin
           if (path_args == :import) then
@@ -309,10 +293,8 @@ module Gluon
           end
           r = yield
         ensure
-          if (@controller.respond_to? :page_end) then
-            @logger.debug("#{@controller}.page_end()") if @logger.debug?
-            @controller.page_end
-          end
+          @logger.debug("#{@controller}.page_end()") if @logger.debug?
+          @controller.page_end
         end
       }
       @logger.debug("#{Action}#apply() for #{@controller} - end") if @logger.debug?
@@ -321,7 +303,6 @@ module Gluon
 
     def view_render
       po = PresentationObject.new(@controller, @c, self)
-      @controller.extend(ERBView) unless (@controller.respond_to? :page_render)
       @logger.debug("#{@controller}.page_render(#{po})") if @logger.debug?
       @controller.page_render(po)
     end

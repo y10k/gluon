@@ -25,6 +25,8 @@ module Gluon::Test
     private :build_page
 
     class SimplePage
+      include Gluon::Controller
+
       def page_get
       end
     end
@@ -41,6 +43,8 @@ module Gluon::Test
     end
 
     class PageWithPathArgs
+      include Gluon::Controller
+
       def initialize
         @calls = []
       end
@@ -65,7 +69,9 @@ module Gluon::Test
     end
 
     class PageWithReqRes
-      attr_accessor :c
+      include Gluon::Controller
+
+      attr_reader :c
 
       def page_get
       end
@@ -84,13 +90,14 @@ module Gluon::Test
     end
 
     class PageWithHooks
+      include Gluon::Controller
+
       def initialize
         @calls = []
         @c = nil
       end
 
       attr_reader :calls
-      attr_writer :c
 
       def page_around_hook
         @calls << :page_around_hook_in
@@ -156,13 +163,14 @@ module Gluon::Test
     end
 
     class PageWithActions
+      include Gluon::Controller
+
       def initialize
         @calls = []
         @c = nil
       end
 
       attr_reader :calls
-      attr_writer :c
 
       def page_get
         @calls << :page_get
@@ -199,6 +207,8 @@ module Gluon::Test
     end
 
     class PageWithScalarParams
+      include Gluon::Controller
+
       def page_start
         @foo = nil
         @bar = nil
@@ -229,6 +239,8 @@ module Gluon::Test
     end
 
     class PageWithScalarParamCount
+      include Gluon::Controller
+
       def initialize
         @calls = []
         @foo = nil
@@ -266,6 +278,8 @@ module Gluon::Test
     end
 
     class PageWithListParams
+      include Gluon::Controller
+
       def page_start
         @foo = nil
         @bar = nil
@@ -303,6 +317,8 @@ module Gluon::Test
     end
 
     class PageWithBooleanParams
+      include Gluon::Controller
+
       def page_start
         @foo = true
         @bar = false
@@ -339,6 +355,8 @@ module Gluon::Test
     end
 
     class OtherPage
+      include Gluon::Controller
+
       gluon_accessor :foo
 
       def self.foo=(value)
@@ -347,6 +365,8 @@ module Gluon::Test
     end
 
     class PageWithImportByClass
+      include Gluon::Controller
+
       def other
         OtherPage
       end
@@ -372,6 +392,8 @@ module Gluon::Test
     end
 
     class PageWithImportByObject
+      include Gluon::Controller
+
       def page_start
         @other = OtherPage.new
       end
@@ -399,6 +421,8 @@ module Gluon::Test
     end
 
     class PageWithCacheKey
+      include Gluon::Controller
+
       def __cache_key__
         :dummy_cache_key
       end
@@ -415,6 +439,8 @@ module Gluon::Test
     end
 
     class PageWithIfModified
+      include Gluon::Controller
+
       def __if_modified__(cache_tag)
         case (cache_tag)
         when :foo
@@ -433,13 +459,15 @@ module Gluon::Test
       assert_equal(false, (@action.modified? :bar))
     end
 
-    def test_modified_default
+    def test_modified_not_defined
       build_page(SimplePage)
-      assert_equal(true, (@action.modified? :dummy_cache_tag))
+      assert_raise(NoMethodError) {
+        @action.modified? :dummy_cache_tag
+      }
     end
 
     class PageWithExplicitExport
-      attr_writer :c
+      include Gluon::Controller
 
       def __view__
         'no_view.rhtml'
@@ -482,12 +510,13 @@ module Gluon::Test
     end
 
     class PageWithValidation
+      include Gluon::Controller
+
       def initialize(validation)
         @validation = validation
         @calls = []
       end
 
-      attr_writer :c
       attr_reader :calls
 
       def page_get

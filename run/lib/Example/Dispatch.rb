@@ -38,8 +38,6 @@ class Example
       }
     end
 
-    attr_writer :c
-
     def page_get(key)
       @key = key
       ex = EXAMPLES[@key] or raise "not found a example: #{key.inspect}"

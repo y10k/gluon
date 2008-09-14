@@ -2,6 +2,9 @@ require 'thread'
 
 class Example
   class PageCache
+    include Gluon::Controller
+    include Gluon::ERBView
+
     class Counter
       def initialize
         @lock = Mutex.new
@@ -22,8 +25,6 @@ class Example
     end
 
     COUNT = Counter.new
-
-    attr_writer :c
 
     def __if_modified__(cache_tag)
       if (@c.req.post?) then

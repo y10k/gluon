@@ -17,6 +17,8 @@ module Gluon
       CVS_ID = '$Id$'
 
       class TokenField
+        include Controller
+
         def new_token
           now = Time.now
           id = Digest::MD5.new
@@ -29,8 +31,6 @@ module Gluon
         end
         private :new_token
 
-        attr_writer :c
-
         def page_start
           @token = nil
         end
@@ -42,8 +42,9 @@ module Gluon
           @c.session_get[:one_time_token] = @token
         end
 
-        def __default_view__
-          File.join(File.dirname(__FILE__), 'token.rhtml')
+        def page_render(po)
+          template = File.join(File.dirname(__FILE__), 'token.rhtml')
+          @c.view_render(ERBView, template, po)
         end
 
         def valid?(c)

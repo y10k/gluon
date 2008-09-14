@@ -1,5 +1,10 @@
 class Example
   class ErrorMessages
+    include Gluon::Controller
+    include Gluon::ERBView
+
+    CVS_ID = '$Id$'
+
     def page_start
       @default = Gluon::Web::ErrorMessages.new
       @default << 'foo'

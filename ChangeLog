@@ -1,5 +1,8 @@
 2008-09-14  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/action.rb, lib/gluon/controller.rb: explicit
+	controller methods.
+
 	* lib/gluon/erbview.rb, lib/gluon/renderer.rb: new framework for
 	view.
 

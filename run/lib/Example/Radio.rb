@@ -1,6 +1,7 @@
 class Example
   class Radio
-    attr_writer :c
+    include Gluon::Controller
+    include Gluon::ERBView
 
     def page_start
       @foo = 'apple'

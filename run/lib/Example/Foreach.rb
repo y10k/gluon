@@ -1,5 +1,8 @@
 class Example
   class Foreach
+    include Gluon::Controller
+    include Gluon::ERBView
+
     class User
       def initialize(name, age)
         @name = name
