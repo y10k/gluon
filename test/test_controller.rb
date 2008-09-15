@@ -191,4 +191,3 @@ end
 # mode: Ruby
 # indent-tabs-mode: nil
 # End:
-
