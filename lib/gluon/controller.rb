@@ -29,20 +29,21 @@ module Gluon
 
       def gluon_export(name, advices={})
         if (private_method_defined? name) then
-          raise "not export private method: #{name}"
+          raise NameError, "not export private method `#{name}'"
         end
         if (protected_method_defined? name) then
-          raise "not export protected method: #{name}"
+          raise NameError, "not export protected method `#{name}'"
         end
         unless (method_defined? name) then
-          raise "not export undefined method: #{name}"
+          raise NameError, "not export undefined method `#{name}'"
         end
 
         page_type = self
         EXPORT[page_type] = {} unless (EXPORT.has_key? page_type)
 
         name = name.to_s if (name.is_a? Symbol)
-        EXPORT[page_type][name] = advices
+        EXPORT[page_type][name] = {} unless (EXPORT[page_type].has_key? name)
+        EXPORT[page_type][name].update(advices)
 
         nil
       end
