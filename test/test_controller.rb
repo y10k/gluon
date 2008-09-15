@@ -223,9 +223,9 @@ module Gluon::Test
       def not_exported
       end
 
-      gluon_accessor :exported_reader_writer
-      gluon_reader :exported_reader
-      gluon_writer :exported_writer
+      gluon_export_accessor :exported_reader_writer
+      gluon_export_reader :exported_reader
+      gluon_export_writer :exported_writer
 
       attr_accessor :not_exported_reader_writer
       attr_reader :not_exported_reader
@@ -313,7 +313,7 @@ module Gluon::Test
       assert_equal(123, advices[:bar])
     end
 
-    def test_gluon_accessor
+    def test_gluon_export_accessor
       assert(advices = Gluon::Controller.find_exported_method(Export,
 							      :exported_reader_writer))
       assert_equal(true, advices[:accessor])
@@ -334,7 +334,7 @@ module Gluon::Test
       assert_equal(true, advices[:accessor])
     end
 
-    def test_gluon_accessor_subclass
+    def test_gluon_export_accessor_subclass
       assert(advices =
 	     Gluon::Controller.find_exported_method(ExportSubclass,
 						    :exported_reader_writer))
@@ -356,7 +356,7 @@ module Gluon::Test
       assert_equal(true, advices[:accessor])
     end
 
-    def test_gluon_accessor_not_exported
+    def test_gluon_export_accessor_not_exported
       assert(! Gluon::Controller.find_exported_method(Export,
 						      :not_exported_reader_writer))
       assert(! Gluon::Controller.find_exported_method(Export,
@@ -367,7 +367,7 @@ module Gluon::Test
 						      :not_exported_writer=))
     end
 
-    def test_gluon_accessor_not_exported_subclass
+    def test_gluon_export_accessor_not_exported_subclass
       assert(! Gluon::Controller.find_exported_method(ExportSubclass,
 						      :not_exported_reader_writer))
       assert(! Gluon::Controller.find_exported_method(ExportSubclass,

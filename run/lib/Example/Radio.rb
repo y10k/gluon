@@ -8,8 +8,8 @@ class Example
       @bar = 'Bob'
     end
 
-    gluon_accessor :foo
-    gluon_accessor :bar
+    gluon_export_accessor :foo
+    gluon_export_accessor :bar
 
     #def page_get
     #def page_post

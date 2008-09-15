@@ -49,6 +49,28 @@ module Gluon
       end
       private :gluon_advice
 
+      def gluon_accessor(name, advices={})
+        attr_accessor name
+        gluon_advice name, advices.dup.update(:accessor => true)
+        gluon_advice "#{name}=", :accessor => true # optional advices defined only for reader
+        nil
+      end
+      private :gluon_accessor
+
+      def gluon_reader(name, advices={})
+        attr_reader name
+        gluon_advice name, advices.dup.update(:accessor => true)
+        nil
+      end
+      private :gluon_reader
+
+      def gluon_writer(name, advices={})
+        attr_writer name
+        gluon_advice "#{name}=", advices.dup.update(:accessor => true)
+        nil
+      end
+      private :gluon_writer
+
       def gluon_export(name, advices={})
         if (private_method_defined? name) then
           raise NameError, "not export private method `#{name}'"
@@ -66,27 +88,27 @@ module Gluon
       end
       private :gluon_export
 
-      def gluon_accessor(name, advices={})
-        attr_accessor name
-        gluon_export name, advices.dup.update(:accessor => true)
-        gluon_export "#{name}=", advices.dup.update(:accessor => true)
+      def gluon_export_accessor(name, advices={})
+        gluon_accessor name, advices
+        gluon_export name
+        gluon_export "#{name}="
         nil
       end
-      private :gluon_accessor
+      private :gluon_export_accessor
 
-      def gluon_reader(name, advices={})
-        attr_reader name
-        gluon_export name, advices.dup.update(:accessor => true)
+      def gluon_export_reader(name, advices={})
+        gluon_reader name, advices
+        gluon_export name
         nil
       end
-      private :gluon_reader
+      private :gluon_export_reader
 
-      def gluon_writer(name, advices={})
-        attr_writer name
-        gluon_export "#{name}=", advices.dup.update(:accessor => true)
+      def gluon_export_writer(name, advices={})
+        gluon_writer name, advices
+        gluon_export "#{name}="
         nil
       end
-      private :gluon_writer
+      private :gluon_export_writer
     end
 
     class << self

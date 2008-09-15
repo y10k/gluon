@@ -486,7 +486,7 @@ module Gluon::Test
     class PageForText
       include Gluon::Controller
       include Gluon::ERBView
-      gluon_accessor :foo
+      gluon_export_accessor :foo
     end
 
     def test_text
@@ -501,7 +501,7 @@ module Gluon::Test
     class PageForPassword
       include Gluon::Controller
       include Gluon::ERBView
-      gluon_accessor :foo
+      gluon_export_accessor :foo
     end
 
     def test_password
@@ -533,7 +533,7 @@ module Gluon::Test
     class PageForHidden
       include Gluon::Controller
       include Gluon::ERBView
-      gluon_accessor :foo
+      gluon_export_accessor :foo
     end
 
     def test_hidden

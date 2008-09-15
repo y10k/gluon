@@ -12,8 +12,8 @@ class Example
 
     attr_reader :fruit_list
     attr_reader :planet_list
-    gluon_accessor :foo
-    gluon_accessor :bar
+    gluon_export_accessor :foo
+    gluon_export_accessor :bar
 
     #def page_get
     #def page_post

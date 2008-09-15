@@ -9,9 +9,9 @@ class Example
       @baz = true
     end
 
-    gluon_accessor :foo
-    gluon_accessor :bar
-    gluon_accessor :baz
+    gluon_export_accessor :foo
+    gluon_export_accessor :bar
+    gluon_export_accessor :baz
 
     #def page_get
     #def page_post

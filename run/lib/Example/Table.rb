@@ -50,7 +50,7 @@ class Example
 
       attr_reader :text
       attr_reader :check_id
-      gluon_accessor :checked
+      gluon_export_accessor :checked
     end
 
     def page_start

@@ -3,7 +3,7 @@ class Example
     include Gluon::Controller
     include Gluon::ERBView
 
-    gluon_accessor :foo
+    gluon_export_accessor :foo
 
     #def page_get
     #def page_post

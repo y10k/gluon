@@ -214,8 +214,8 @@ module Gluon::Test
         @bar = nil
       end
 
-      gluon_accessor :foo
-      gluon_accessor :bar
+      gluon_export_accessor :foo
+      gluon_export_accessor :bar
 
       def page_get
       end
@@ -286,9 +286,9 @@ module Gluon::Test
         @baz = nil
       end
 
-      gluon_accessor :foo
-      gluon_accessor :bar
-      gluon_accessor :baz
+      gluon_export_accessor :foo
+      gluon_export_accessor :bar
+      gluon_export_accessor :baz
 
       def page_get
       end
@@ -325,9 +325,9 @@ module Gluon::Test
         @baz = false
       end
 
-      gluon_accessor :foo
-      gluon_accessor :bar
-      gluon_accessor :baz
+      gluon_export_accessor :foo
+      gluon_export_accessor :bar
+      gluon_export_accessor :baz
 
       def page_get
       end
@@ -357,7 +357,7 @@ module Gluon::Test
     class OtherPage
       include Gluon::Controller
 
-      gluon_accessor :foo
+      gluon_export_accessor :foo
 
       def self.foo=(value)
         raise 'not to reach.'
@@ -398,7 +398,7 @@ module Gluon::Test
         @other = OtherPage.new
       end
 
-      gluon_reader :other
+      gluon_export_reader :other
 
       def page_get
       end
@@ -476,7 +476,7 @@ module Gluon::Test
       def bar
       end
 
-      gluon_accessor :baz
+      gluon_export_accessor :baz
     end
 
     def test_export_implicit
