@@ -16,6 +16,7 @@ module Gluon
 
     # :stopdoc:
     PATH_FILTER = {}
+    ADVICES = {}
     EXPORT = {}
     # :startdoc:
 
@@ -26,6 +27,28 @@ module Gluon
         nil
       end
       private :gluon_path_filter
+
+      def gluon_advice(name, advices={})
+        if (private_method_defined? name) then
+          raise NameError, "not advice private method `#{name}'"
+        end
+        if (protected_method_defined? name) then
+          raise NameError, "not advice protected method `#{name}'"
+        end
+        unless (method_defined? name) then
+          raise NameError, "not advice undefined method `#{name}'"
+        end
+
+        page_type = self
+        ADVICES[page_type] = {} unless (ADVICES.has_key? page_type)
+
+        name = name.to_s if (name.is_a? Symbol)
+        ADVICES[page_type][name] = {} unless (ADVICES.has_key? name)
+        ADVICES[page_type][name].update(advices)
+
+        nil
+      end
+      private :gluon_advice
 
       def gluon_export(name, advices={})
         if (private_method_defined? name) then
@@ -38,12 +61,7 @@ module Gluon
           raise NameError, "not export undefined method `#{name}'"
         end
 
-        page_type = self
-        EXPORT[page_type] = {} unless (EXPORT.has_key? page_type)
-
-        name = name.to_s if (name.is_a? Symbol)
-        EXPORT[page_type][name] = {} unless (EXPORT[page_type].has_key? name)
-        EXPORT[page_type][name].update(advices)
+        gluon_advice name, advices.dup.update(:export => true)
 
         nil
       end
@@ -82,14 +100,22 @@ module Gluon
         nil
       end
 
-      def find_exported_method(page_type, name)
-        name = name.to_s if (name.is_a? Symbol)
+      def find_advice(page_type, method_name)
+        method_name = method_name.to_s if (method_name.is_a? Symbol)
         for page_type in page_type.ancestors
-          if (exported = EXPORT[page_type]) then
-            if (advices = exported[name]) then
-              return advices
+          if (advices = ADVICES[page_type]) then
+            if (method_advices = advices[method_name]) then
+              return method_advices
             end
           end
+        end
+        {}
+      end
+
+      def find_exported_method(page_type, name)
+        advices = find_advice(page_type, name)
+        if (advices[:export]) then
+          return advices
         end
         nil
       end
