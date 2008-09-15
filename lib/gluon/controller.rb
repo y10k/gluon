@@ -43,7 +43,7 @@ module Gluon
         ADVICES[page_type] = {} unless (ADVICES.has_key? page_type)
 
         name = name.to_s if (name.is_a? Symbol)
-        ADVICES[page_type][name] = {} unless (ADVICES.has_key? name)
+        ADVICES[page_type][name] = {} unless (ADVICES[page_type].has_key? name)
         ADVICES[page_type][name].update(advices)
 
         nil
@@ -102,14 +102,15 @@ module Gluon
 
       def find_advice(page_type, method_name)
         method_name = method_name.to_s if (method_name.is_a? Symbol)
-        for page_type in page_type.ancestors
-          if (advices = ADVICES[page_type]) then
-            if (method_advices = advices[method_name]) then
-              return method_advices
+        advices = {}
+        page_type.ancestors.reverse_each do |ancestor|
+          if (advices_bundle = ADVICES[ancestor]) then
+            if (ancestor_advices = advices_bundle[method_name]) then
+              advices.update(ancestor_advices)
             end
           end
         end
-        {}
+        advices
       end
 
       def find_exported_method(page_type, name)

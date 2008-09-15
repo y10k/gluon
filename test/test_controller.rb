@@ -29,6 +29,88 @@ module Gluon::Test
       assert_nil(Gluon::Controller.find_path_filter(Plain))
     end
 
+    class Advice
+      def adviced
+      end
+      gluon_advice :adviced, :foo => 123
+
+      def not_adviced
+      end
+
+      def adviced_many
+      end
+      gluon_advice :adviced_many, :foo => 123, :bar => 'Hello world.'
+      gluon_advice :adviced_many, :baz => :HALO
+
+      def advice_defined_at_subclass
+      end
+
+      def advice_changed_at_subclass
+      end
+      gluon_advice :advice_changed_at_subclass, :foo => false
+
+      def advice_added_at_subclass
+      end
+      gluon_advice :advice_added_at_subclass, :foo => 123
+    end
+
+    class AdviceSubclass < Advice
+      gluon_advice :advice_defined_at_subclass, :foo => 123
+      gluon_advice :advice_changed_at_subclass, :foo => true
+      gluon_advice :advice_added_at_subclass, :bar => 'Hello world.'
+    end
+
+    def test_gluon_advice
+      assert_equal({ :foo => 123 },
+                   Gluon::Controller.find_advice(Advice, :adviced))
+    end
+
+    def test_gluon_advice_subclass
+      assert_equal({ :foo => 123 },
+                   Gluon::Controller.find_advice(AdviceSubclass, :adviced))
+    end
+
+    def test_gluon_advice_not_adviced
+      assert_equal({},
+                   Gluon::Controller.find_advice(Advice, :not_adviced))
+    end
+
+    def test_gluon_advice_not_adviced_subclass
+      assert_equal({},
+                   Gluon::Controller.find_advice(AdviceSubclass, :not_adviced))
+    end
+
+    def test_gluon_advice_many
+      assert_equal({ :foo => 123, :bar => 'Hello world.', :baz => :HALO },
+                   Gluon::Controller.find_advice(Advice, :adviced_many))
+    end
+
+    def test_gluon_advice_many_subclass
+      assert_equal({ :foo => 123, :bar => 'Hello world.', :baz => :HALO },
+                   Gluon::Controller.find_advice(AdviceSubclass, :adviced_many))
+    end
+
+    def test_gluon_advice_defined_subclass
+      assert_equal({},
+                   Gluon::Controller.find_advice(Advice, :advice_defined_at_subclass))
+      assert_equal({ :foo => 123 },
+                   Gluon::Controller.find_advice(AdviceSubclass, :advice_defined_at_subclass))
+    end
+
+    def test_gluon_advice_changed_at_subclass
+      assert_equal({ :foo => false },
+                   Gluon::Controller.find_advice(Advice, :advice_changed_at_subclass))
+      assert_equal({ :foo => true },
+                   Gluon::Controller.find_advice(AdviceSubclass, :advice_changed_at_subclass))
+    end
+
+    def test_gluon_advice_added_at_subclass
+      assert_equal({ :foo => 123 },
+                   Gluon::Controller.find_advice(Advice, :advice_added_at_subclass))
+      assert_equal({ :foo => 123, :bar => 'Hello world.' },
+                   Gluon::Controller.find_advice(AdviceSubclass, :advice_added_at_subclass))
+    end
+
     class Export
       def exported
       end
