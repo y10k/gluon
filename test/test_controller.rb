@@ -60,55 +60,155 @@ module Gluon::Test
       gluon_advice :advice_added_at_subclass, :bar => 'Hello world.'
     end
 
+    def test_gluon_advice
+      assert_equal(123,
+                   Gluon::Controller.find_advice(Advice,
+						 :adviced, :foo))
+    end
+
+    def test_gluon_advice_subclass
+      assert_equal(123,
+                   Gluon::Controller.find_advice(AdviceSubclass,
+						 :adviced, :foo))
+    end
+
+    def test_gluon_advice_not_defined
+      assert_nil(Gluon::Controller.find_advice(Advice,
+					       :adviced, :bar))
+    end
+
+    def test_gluon_advice_not_defined_subclass
+      assert_nil(Gluon::Controller.find_advice(AdviceSubclass,
+					       :adviced, :bar))
+    end
+
+    def test_gluon_advice_not_adviced
+      assert_nil(Gluon::Controller.find_advice(Advice,
+					       :not_adviced, :foo))
+    end
+
+    def test_gluon_advice_not_adviced_subclass
+      assert_nil(Gluon::Controller.find_advice(AdviceSubclass,
+					       :not_adviced, :foo))
+    end
+
+    def test_gluon_advice_many
+      assert_equal(123,
+                   Gluon::Controller.find_advice(Advice,
+						 :adviced_many, :foo))
+      assert_equal('Hello world.',
+                   Gluon::Controller.find_advice(Advice,
+						 :adviced_many, :bar))
+      assert_equal(:HALO,
+                   Gluon::Controller.find_advice(Advice,
+						 :adviced_many, :baz))
+    end
+
+    def test_gluon_advice_many_subclass
+      assert_equal(123,
+                   Gluon::Controller.find_advice(AdviceSubclass,
+						 :adviced_many, :foo))
+      assert_equal('Hello world.',
+                   Gluon::Controller.find_advice(AdviceSubclass,
+						 :adviced_many, :bar))
+      assert_equal(:HALO,
+                   Gluon::Controller.find_advice(AdviceSubclass,
+						 :adviced_many, :baz))
+    end
+
+    def test_gluon_advice_defined_subclass
+      assert_nil(Gluon::Controller.find_advice(Advice,
+					       :advice_defined_at_subclass, :foo))
+      assert_equal(123,
+                   Gluon::Controller.find_advice(AdviceSubclass,
+						 :advice_defined_at_subclass, :foo))
+    end
+
+    def test_gluon_advice_changed_at_subclass
+      assert_equal(false,
+                   Gluon::Controller.find_advice(Advice,
+						 :advice_changed_at_subclass, :foo))
+      assert_equal(true,
+                   Gluon::Controller.find_advice(AdviceSubclass,
+						 :advice_changed_at_subclass, :foo))
+    end
+
+    def test_gluon_advice_added_at_subclass
+      assert_equal(123,
+                   Gluon::Controller.find_advice(Advice,
+						 :advice_added_at_subclass, :foo))
+      assert_nil(Gluon::Controller.find_advice(Advice,
+					       :advice_added_at_subclass, :bar))
+
+      assert_equal(123,
+                   Gluon::Controller.find_advice(AdviceSubclass,
+						 :advice_added_at_subclass, :foo))
+      assert_equal('Hello world.',
+                   Gluon::Controller.find_advice(AdviceSubclass,
+						 :advice_added_at_subclass, :bar))
+    end
+
     def test_gluon_method_advices
       assert_equal({ :foo => 123 },
-                   Gluon::Controller.find_method_advices(Advice, :adviced))
+                   Gluon::Controller.find_method_advices(Advice,
+							 :adviced))
     end
 
     def test_gluon_method_advices_subclass
       assert_equal({ :foo => 123 },
-                   Gluon::Controller.find_method_advices(AdviceSubclass, :adviced))
+                   Gluon::Controller.find_method_advices(AdviceSubclass,
+							 :adviced))
     end
 
     def test_gluon_method_advices_not_adviced
       assert_equal({},
-                   Gluon::Controller.find_method_advices(Advice, :not_adviced))
+                   Gluon::Controller.find_method_advices(Advice,
+							 :not_adviced))
     end
 
     def test_gluon_method_advices_not_adviced_subclass
       assert_equal({},
-                   Gluon::Controller.find_method_advices(AdviceSubclass, :not_adviced))
+                   Gluon::Controller.find_method_advices(AdviceSubclass,
+							 :not_adviced))
     end
 
     def test_gluon_method_advices_many
       assert_equal({ :foo => 123, :bar => 'Hello world.', :baz => :HALO },
-                   Gluon::Controller.find_method_advices(Advice, :adviced_many))
+                   Gluon::Controller.find_method_advices(Advice,
+							 :adviced_many))
     end
 
     def test_gluon_method_advices_many_subclass
       assert_equal({ :foo => 123, :bar => 'Hello world.', :baz => :HALO },
-                   Gluon::Controller.find_method_advices(AdviceSubclass, :adviced_many))
+                   Gluon::Controller.find_method_advices(AdviceSubclass,
+							 :adviced_many))
     end
 
     def test_gluon_method_advices_defined_subclass
       assert_equal({},
-                   Gluon::Controller.find_method_advices(Advice, :advice_defined_at_subclass))
+                   Gluon::Controller.find_method_advices(Advice,
+							 :advice_defined_at_subclass))
       assert_equal({ :foo => 123 },
-                   Gluon::Controller.find_method_advices(AdviceSubclass, :advice_defined_at_subclass))
+                   Gluon::Controller.find_method_advices(AdviceSubclass,
+							 :advice_defined_at_subclass))
     end
 
     def test_gluon_method_advices_changed_at_subclass
       assert_equal({ :foo => false },
-                   Gluon::Controller.find_method_advices(Advice, :advice_changed_at_subclass))
+                   Gluon::Controller.find_method_advices(Advice,
+							 :advice_changed_at_subclass))
       assert_equal({ :foo => true },
-                   Gluon::Controller.find_method_advices(AdviceSubclass, :advice_changed_at_subclass))
+                   Gluon::Controller.find_method_advices(AdviceSubclass,
+							 :advice_changed_at_subclass))
     end
 
     def test_gluon_method_advices_added_at_subclass
       assert_equal({ :foo => 123 },
-                   Gluon::Controller.find_method_advices(Advice, :advice_added_at_subclass))
+                   Gluon::Controller.find_method_advices(Advice,
+							 :advice_added_at_subclass))
       assert_equal({ :foo => 123, :bar => 'Hello world.' },
-                   Gluon::Controller.find_method_advices(AdviceSubclass, :advice_added_at_subclass))
+                   Gluon::Controller.find_method_advices(AdviceSubclass,
+							 :advice_added_at_subclass))
     end
 
     class Export
@@ -153,94 +253,129 @@ module Gluon::Test
     end
 
     def test_gluon_export
-      assert(Gluon::Controller.find_exported_method(Export, :exported))
+      assert(Gluon::Controller.find_exported_method(Export,
+						    :exported))
     end
 
     def test_gluon_export_subclass
-      assert(Gluon::Controller.find_exported_method(ExportSubclass, :exported))
+      assert(Gluon::Controller.find_exported_method(ExportSubclass,
+						    :exported))
     end
 
     def test_gluon_export_with_advice
-      assert(advices = Gluon::Controller.find_exported_method(Export, :exported_with_advice))
+      assert(advices = Gluon::Controller.find_exported_method(Export,
+							      :exported_with_advice))
       assert_equal(123, advices[:foo])
     end
 
     def test_gluon_export_with_advice_subclass
-      assert(advices = Gluon::Controller.find_exported_method(ExportSubclass, :exported_with_advice))
+      assert(advices = Gluon::Controller.find_exported_method(ExportSubclass,
+							      :exported_with_advice))
       assert_equal(123, advices[:foo])
     end
 
     def test_gluon_export_not_exported
-      assert(! Gluon::Controller.find_exported_method(Export, :not_exported))
+      assert(! Gluon::Controller.find_exported_method(Export,
+						      :not_exported))
     end
 
     def test_gluon_export_not_exported_subclass
-      assert(! Gluon::Controller.find_exported_method(ExportSubclass, :not_exported))
+      assert(! Gluon::Controller.find_exported_method(ExportSubclass,
+						      :not_exported))
     end
 
     def test_gluon_export_not_defined_method
-      assert(! Gluon::Controller.find_exported_method(Export, :not_defined_method))
+      assert(! Gluon::Controller.find_exported_method(Export,
+						      :not_defined_method))
     end
 
     def test_gluon_export_not_defined_method_subclass
-      assert(! Gluon::Controller.find_exported_method(ExportSubclass, :not_defined_method))
+      assert(! Gluon::Controller.find_exported_method(ExportSubclass,
+						      :not_defined_method))
     end
 
     def test_gluon_export_changed_at_subclass
-      assert(! Gluon::Controller.find_exported_method(Export, :changed_at_subclass))
-      assert(Gluon::Controller.find_exported_method(ExportSubclass, :changed_at_subclass))
+      assert(! Gluon::Controller.find_exported_method(Export,
+						      :changed_at_subclass))
+      assert(Gluon::Controller.find_exported_method(ExportSubclass,
+						    :changed_at_subclass))
     end
 
     def test_gluon_export_advice_changed_at_subclass
-      assert(advices = Gluon::Controller.find_exported_method(Export, :advice_changed_at_subclass))
+      assert(advices = Gluon::Controller.find_exported_method(Export,
+							      :advice_changed_at_subclass))
       assert_equal(false, advices[:foo])
       assert((! advices.has_key? :bar))
 
-      assert(advices = Gluon::Controller.find_exported_method(ExportSubclass, :advice_changed_at_subclass))
+      assert(advices = Gluon::Controller.find_exported_method(ExportSubclass,
+							      :advice_changed_at_subclass))
       assert_equal(true, advices[:foo])
       assert_equal(123, advices[:bar])
     end
 
     def test_gluon_accessor
-      assert(advices = Gluon::Controller.find_exported_method(Export, :exported_reader_writer))
+      assert(advices = Gluon::Controller.find_exported_method(Export,
+							      :exported_reader_writer))
       assert_equal(true, advices[:accessor])
 
-      assert(advices = Gluon::Controller.find_exported_method(Export, :exported_reader_writer=))
+      assert(advices =
+	     Gluon::Controller.find_exported_method(Export,
+						    :exported_reader_writer=))
       assert_equal(true, advices[:accessor])
 
-      assert(advices = Gluon::Controller.find_exported_method(Export, :exported_reader))
+      assert(advices =
+	     Gluon::Controller.find_exported_method(Export,
+						    :exported_reader))
       assert_equal(true, advices[:accessor])
 
-      assert(advices = Gluon::Controller.find_exported_method(Export, :exported_writer=))
+      assert(advices =
+	     Gluon::Controller.find_exported_method(Export,
+						    :exported_writer=))
       assert_equal(true, advices[:accessor])
     end
 
     def test_gluon_accessor_subclass
-      assert(advices = Gluon::Controller.find_exported_method(ExportSubclass, :exported_reader_writer))
+      assert(advices =
+	     Gluon::Controller.find_exported_method(ExportSubclass,
+						    :exported_reader_writer))
       assert_equal(true, advices[:accessor])
 
-      assert(advices = Gluon::Controller.find_exported_method(ExportSubclass, :exported_reader_writer=))
+      assert(advices =
+	     Gluon::Controller.find_exported_method(ExportSubclass,
+						    :exported_reader_writer=))
       assert_equal(true, advices[:accessor])
 
-      assert(advices = Gluon::Controller.find_exported_method(ExportSubclass, :exported_reader))
+      assert(advices =
+	     Gluon::Controller.find_exported_method(ExportSubclass,
+						    :exported_reader))
       assert_equal(true, advices[:accessor])
 
-      assert(advices = Gluon::Controller.find_exported_method(ExportSubclass, :exported_writer=))
+      assert(advices =
+	     Gluon::Controller.find_exported_method(ExportSubclass,
+						    :exported_writer=))
       assert_equal(true, advices[:accessor])
     end
 
     def test_gluon_accessor_not_exported
-      assert(! Gluon::Controller.find_exported_method(Export, :not_exported_reader_writer))
-      assert(! Gluon::Controller.find_exported_method(Export, :not_exported_reader_writer=))
-      assert(! Gluon::Controller.find_exported_method(Export, :not_exported_reader))
-      assert(! Gluon::Controller.find_exported_method(Export, :not_exported_writer=))
+      assert(! Gluon::Controller.find_exported_method(Export,
+						      :not_exported_reader_writer))
+      assert(! Gluon::Controller.find_exported_method(Export,
+						      :not_exported_reader_writer=))
+      assert(! Gluon::Controller.find_exported_method(Export,
+						      :not_exported_reader))
+      assert(! Gluon::Controller.find_exported_method(Export,
+						      :not_exported_writer=))
     end
 
     def test_gluon_accessor_not_exported_subclass
-      assert(! Gluon::Controller.find_exported_method(ExportSubclass, :not_exported_reader_writer))
-      assert(! Gluon::Controller.find_exported_method(ExportSubclass, :not_exported_reader_writer=))
-      assert(! Gluon::Controller.find_exported_method(ExportSubclass, :not_exported_reader))
-      assert(! Gluon::Controller.find_exported_method(ExportSubclass, :not_exported_writer=))
+      assert(! Gluon::Controller.find_exported_method(ExportSubclass,
+						      :not_exported_reader_writer))
+      assert(! Gluon::Controller.find_exported_method(ExportSubclass,
+						      :not_exported_reader_writer=))
+      assert(! Gluon::Controller.find_exported_method(ExportSubclass,
+						      :not_exported_reader))
+      assert(! Gluon::Controller.find_exported_method(ExportSubclass,
+						      :not_exported_writer=))
     end
 
     def test_gluon_export_syntax_error_not_defined
