@@ -17,7 +17,6 @@ module Gluon
     # :stopdoc:
     PATH_FILTER = {}
     ADVICES = {}
-    EXPORT = {}
     # :startdoc:
 
     # = controller syntax
