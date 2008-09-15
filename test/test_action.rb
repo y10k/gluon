@@ -469,22 +469,6 @@ module Gluon::Test
     class PageWithExplicitExport
       include Gluon::Controller
 
-      def __view__
-        'no_view.rhtml'
-      end
-
-      def __default_view__
-        'no_view.rhtml'
-      end
-
-      def __cache_key__
-        :dummy_cache_tag
-      end
-
-      def __if_modified__(cache_tag)
-        true
-      end
-
       def foo
       end
       gluon_export :foo
@@ -497,15 +481,15 @@ module Gluon::Test
 
     def test_export_implicit
       build_page(PageWithExplicitExport)
-      assert_equal({}, (@action.export? 'foo'))
-      assert_equal(nil, (@action.export? 'bar'))
-      assert_equal({ :accessor => true }, (@action.export? 'baz'))
-      assert_equal({ :accessor => true }, (@action.export? 'baz='))
+      assert((@action.export? 'foo'))
+      assert(! (@action.export? 'bar'))
+      assert((@action.export? 'baz'))
+      assert((@action.export? 'baz='))
       for name in Object.instance_methods
-        assert_equal(nil, (@action.export? name.to_s))
+        assert(! (@action.export? name.to_s))
       end
       Gluon::Action::RESERVED_WORDS.each_key do |name|
-        assert_equal(false, (@action.export? name.to_s))
+        assert(! (@action.export? name.to_s))
       end
     end
 

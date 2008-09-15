@@ -144,7 +144,7 @@ module Gluon
       elsif (name =~ /^page_/) then
         false
       else
-        Controller.find_exported_method(this.class, name)
+        Controller.find_advice(this.class, name, :export)
       end
     end
 
@@ -158,8 +158,8 @@ module Gluon
       for name, value in params[:params]
         next if params[:used][name]
         writer = "#{name}="
-        if (advices = export? writer, this) then
-          unless (advices[:accessor]) then
+        if (export? writer, this) then
+          unless (Controller.find_advice(this.class, writer, :accessor)) then
             raise "not an accessor: #{this}.#{writer}"
           end
           @logger.debug("#{this}.#{name} = #{value}") if @logger.debug?
@@ -174,8 +174,10 @@ module Gluon
         when /\[\d+\]$/
           i = $&[1..-2].to_i
           name = $`
-          if (name == 'to_a' || (advices = export? name, this)) then
-            if (advices && ! advices[:accessor]) then
+          if (name == 'to_a' || (export? name, this)) then
+            if (! Controller.find_advice(this.class, name, :accessor) &&
+                name != 'to_a')
+            then
               raise "not an accessor: #{this}.#{name}"
             end
             ary = this.__send__(name)
@@ -185,7 +187,7 @@ module Gluon
           end
         else
           if (advices = export? name, this) then
-            unless (advices[:accessor]) then
+            unless (Controller.find_advice(this.class, name, :accessor)) then
               raise "not an accessor: #{this}.#{name}"
             end
             next_this = this.__send__(name)
@@ -205,8 +207,8 @@ module Gluon
     def call_actions
       if (funcs = @funcs[@prefix]) then
         funcs.each_key do |name|
-          if (advices = export? name) then
-            if (advices[:accessor]) then
+          if (export? name) then
+            if (Controller.find_advice(@controller.class, name, :accessor)) then
               raise "accessor is not action: #{@controller}.#{name}"
             end
             @logger.debug("#{@controller}.#{name}()") if @logger.debug?
