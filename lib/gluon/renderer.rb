@@ -31,9 +31,15 @@ module Gluon
     def compile(view, template)
       compiled_view = view.compile(template)
       template_c = "#{template}c"
-      File.open(template_c, 'w') {|out|
-        out.write(compiled_view)
-      }
+      begin
+        template_tmp = "#{template_c}.tmp.#{$$}.#{Thread.current.object_id}"
+        File.open(template_tmp, 'w') {|out|
+          out.write(compiled_view)
+        }
+        File.rename(template_tmp, template_c)
+      rescue SystemCallError
+        # nothing to do.
+      end
       view.evaluate(compiled_view, template_c)
     end
     private :compile
