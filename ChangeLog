@@ -1,5 +1,7 @@
 2008-09-15  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/erbview.rb, lib/gluon/renderer.rb: changed view API.
+
 	* lib/gluon/controller.rb: gluon controller syntax changed.
 
 2008-09-14  TOKI Yoshinori  <toki@freedom.ne.jp>

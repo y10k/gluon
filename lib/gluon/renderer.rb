@@ -29,13 +29,12 @@ module Gluon
     end
 
     def compile(view, template)
-      view_script = view.compile(template)
-      template_compiled = "#{template}c"
-      File.open(template_compiled, 'w') {|out|
-        out.write(view_script)
+      compiled_view = view.compile(template)
+      template_c = "#{template}c"
+      File.open(template_c, 'w') {|out|
+        out.write(compiled_view)
       }
-      m = Module.new
-      m.module_eval(view_script, template_compiled)
+      view.evaluate(compiled_view, template_c)
     end
     private :compile
 
