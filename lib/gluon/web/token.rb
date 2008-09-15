@@ -35,7 +35,7 @@ module Gluon
           @token = nil
         end
 
-        gluon_accessor :token
+        gluon_export_accessor :token
 
         def page_import
           @token = new_token
@@ -65,7 +65,7 @@ module Gluon
         @one_time_token = TokenField.new
       end
 
-      gluon_reader :one_time_token
+      gluon_export_reader :one_time_token
 
       def one_time_token_valid?
         @one_time_token.valid? @c

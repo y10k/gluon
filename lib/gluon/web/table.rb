@@ -25,7 +25,7 @@ module Gluon
           @header_columns = header_columns
         end
 
-        gluon_reader :item
+        gluon_export_reader :item
 
         def string?
           @item.kind_of? String

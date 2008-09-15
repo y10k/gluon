@@ -84,8 +84,8 @@ class Example
 
     attr_reader :auto_table
     attr_reader :manual_table
-    gluon_reader :auto_form_table
-    gluon_reader :manual_form_table
+    gluon_export_reader :auto_form_table
+    gluon_export_reader :manual_form_table
   end
 end
 
