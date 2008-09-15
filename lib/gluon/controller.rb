@@ -100,7 +100,7 @@ module Gluon
         nil
       end
 
-      def find_advice(page_type, method_name)
+      def find_method_advices(page_type, method_name)
         method_name = method_name.to_s if (method_name.is_a? Symbol)
         advices = {}
         page_type.ancestors.reverse_each do |ancestor|
@@ -114,7 +114,7 @@ module Gluon
       end
 
       def find_exported_method(page_type, name)
-        advices = find_advice(page_type, name)
+        advices = find_method_advices(page_type, name)
         if (advices[:export]) then
           return advices
         end
