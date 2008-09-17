@@ -21,7 +21,7 @@ module Gluon
     gluon_tag_end = %Q!(?:</\\s*gluon\\s*>)!
 
     ATTR_PARSE_PATTERN = %r!(#{token})\s*=\s*(#{double_quoted_cdata}|#{single_quoted_cdata})!im
-    PARSE_PATTERN = %r!(?:(.*)(?:(#{gluon_tag_single})|(#{gluon_tag_start})|(#{gluon_tag_end})))|(.+)\z!im
+    PARSE_PATTERN = %r!(?:(.*?)(?:(#{gluon_tag_single})|(#{gluon_tag_start})|(#{gluon_tag_end})))|(.+)\z!im
 
     class << self
       def html_unescape(text)
