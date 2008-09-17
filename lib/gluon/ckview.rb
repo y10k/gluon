@@ -11,12 +11,13 @@
 module Gluon
   # template like CGIKit 1.x
   module CKView
-    token = %q!(?:[^'"\s]+)!
-    double_quoted_cdata = %q!(?:"[^"]*")!
-    single_quoted_cdata = %q!(?:'[^']*')!
-    attr = %Q!(?:#{token}\\s*=\\s*(?:#{double_quoted_cdata}|#{single_quoted_cdata}))!
-    gluon_tag_single = %Q!(?:<\\s*gluon(?:\s+#{attr})*\\s*/>)!
-    gluon_tag_start = %Q!(?:<\\s*gluon(?:\s+#{attr})*\\s*>)!
+    token = %q![^'"\s]+!
+    double_quoted_cdata = %q!"[^"]*"!
+    single_quoted_cdata = %q!'[^']*'!
+    attr = %Q!#{token}\\s*=\\s*(?:#{double_quoted_cdata}|#{single_quoted_cdata})!
+    attrs = %Q!\\s+#{attr}(?:\\s*#{attr})*!
+    gluon_tag_single = %Q!(?:<\\s*gluon(?:#{attrs})?\\s*/>)!
+    gluon_tag_start = %Q!(?:<\\s*gluon(?:#{attrs})?\\s*>)!
     gluon_tag_end = %Q!(?:</\\s*gluon\\s*>)!
 
     ATTR_PARSE_PATTERN = %r!(#{token})\s*=\s*(#{double_quoted_cdata}|#{single_quoted_cdata})!im
