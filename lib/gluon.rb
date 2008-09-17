@@ -24,6 +24,7 @@ module Gluon
 
   autoload :Action, 'gluon/action'
   autoload :Builder, 'gluon/builder'
+  autoload :CKView, 'gluon/ckview'
   #autoload :Controller, 'gluon/controller'
   autoload :ERBView, 'gluon/erbview'
   autoload :MemoryStore, 'gluon/rs'
