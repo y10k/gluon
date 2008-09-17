@@ -56,15 +56,15 @@ module Gluon
         parsed_list = []
         text.scan(PARSE_PATTERN) do
           text = $1
-          gluon_single = $2
-          gluon_start = $3
-          gluon_end = $4
+          gtag_single = $2
+          gtag_start = $3
+          gtag_end = $4
           tail = $5
 
           parsed_list << [ :text, text ] if text
-          parsed_list << [ :gluon_single, gluon_single, parse_attrs(gluon_single) ] if gluon_single
-          parsed_list << [ :gluon_start, gluon_start, parse_attrs(gluon_start) ] if gluon_start
-          parsed_list << [ :gluon_end, gluon_end ] if gluon_end
+          parsed_list << [ :gluon_tag_single, gtag_single, parse_attrs(gtag_single) ] if gtag_single
+          parsed_list << [ :gluon_tag_start, gtag_start, parse_attrs(gtag_start) ] if gtag_start
+          parsed_list << [ :gluon_tag_end, gtag_end ] if tag_end
           parsed_list << [ :text, tail ] if tail
 
           parsed_list
