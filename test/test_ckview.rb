@@ -144,41 +144,73 @@ module Gluon::Test
       text << "</body>\n"
       text << "</html>\n"
 
-      assert_equal([ [ :text, "<html>\n<head><title>" ],
-                     [ :gluon_tag_single,
-                       "<gluon refkey=\"title\" />",
-                       { 'refkey' => 'title' }
-                     ],
-                     [ :text, "</title></head>\n<body>\n<h1>" ],
-                     [ :gluon_tag_single,
-                       "<gluon refkey=\"title\" />",
-                       { 'refkey' => 'title' }
-                     ],
-                     [ :text, "</h1>\n<p>" ],
-                     [ :gluon_tag_single,
-                       "<gluon refkey=\"message\" />",
-                       { 'refkey' => 'message' }
-                     ],
-                     [ :text, "</p>\n" ],
-                     [ :gluon_tag_start,
-                       "<gluon refkey=\"form?\">",
-                       { 'refkey' => 'form?' }
-                     ],
-                     [ :text, "\n  <form>\n    <p>\n      <label for=\"memo\">Memo:</label>\n      " ],
-                     [ :gluon_tag_single,
-                       "<gluon refkey=\"memo\" id=\"memo\" />",
-                       { 'refkey' => 'memo', 'id' => 'memo' }
-                     ],
-                     [ :text, "\n      " ],
-                     [ :gluon_tag_single,
-                       "<gluon refkey=\"ok\" />",
-                       { 'refkey' => 'ok' }
-                     ],
-                     [ :text, "\n    </p>\n  </form>\n" ],
-                     [ :gluon_tag_end, '</gluon>' ],
-                     [ :text, "\n</body>\n</html>\n" ]
-                   ],
-                   Gluon::CKView.parse(text))
+      parsed_list = Gluon::CKView.parse(text)
+      i = 0
+
+      assert_equal([ :text, "<html>\n<head><title>" ], parsed_list[i])
+      i += 1
+
+      assert_equal([ :gluon_tag_single,
+                     "<gluon refkey=\"title\" />",
+                     { 'refkey' => 'title' }
+                   ], parsed_list[i])
+      i += 1
+
+      assert_equal([ :text, "</title></head>\n<body>\n<h1>" ], parsed_list[i])
+      i += 1
+
+      assert_equal([ :gluon_tag_single,
+                     "<gluon refkey=\"title\" />",
+                     { 'refkey' => 'title' }
+                   ], parsed_list[i])
+      i += 1
+
+      assert_equal([ :text, "</h1>\n<p>" ], parsed_list[i])
+      i += 1
+
+      assert_equal([ :gluon_tag_single,
+                     "<gluon refkey=\"message\" />",
+                     { 'refkey' => 'message' }
+                   ], parsed_list[i])
+      i += 1
+
+      assert_equal([ :text, "</p>\n" ], parsed_list[i])
+      i += 1
+
+      assert_equal([ :gluon_tag_start,
+                     "<gluon refkey=\"form?\">",
+                     { 'refkey' => 'form?' }
+                   ], parsed_list[i])
+      i += 1
+
+      assert_equal([ :text, "\n  <form>\n    <p>\n      <label for=\"memo\">Memo:</label>\n      " ], parsed_list[i])
+      i += 1
+
+      assert_equal([ :gluon_tag_single,
+                     "<gluon refkey=\"memo\" id=\"memo\" />",
+                     { 'refkey' => 'memo', 'id' => 'memo' }
+                   ], parsed_list[i])
+      i += 1
+
+      assert_equal([ :text, "\n      " ], parsed_list[i])
+      i += 1
+
+      assert_equal([ :gluon_tag_single,
+                     "<gluon refkey=\"ok\" />",
+                     { 'refkey' => 'ok' }
+                   ], parsed_list[i])
+      i += 1
+
+      assert_equal([ :text, "\n    </p>\n  </form>\n" ], parsed_list[i])
+      i += 1
+
+      assert_equal([ :gluon_tag_end, '</gluon>' ], parsed_list[i])
+      i += 1
+
+      assert_equal([ :text, "\n</body>\n</html>\n" ], parsed_list[i])
+      i += 1
+
+      assert_equal(i, parsed_list.length)
     end
   end
 end
