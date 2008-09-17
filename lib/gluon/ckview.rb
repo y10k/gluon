@@ -64,11 +64,12 @@ module Gluon
           parsed_list << [ :text, text ] if text
           parsed_list << [ :gluon_tag_single, gtag_single, parse_attrs(gtag_single) ] if gtag_single
           parsed_list << [ :gluon_tag_start, gtag_start, parse_attrs(gtag_start) ] if gtag_start
-          parsed_list << [ :gluon_tag_end, gtag_end ] if tag_end
+          parsed_list << [ :gluon_tag_end, gtag_end ] if gtag_end
           parsed_list << [ :text, tail ] if tail
 
           parsed_list
         end
+        parsed_list
       end
     end
   end
