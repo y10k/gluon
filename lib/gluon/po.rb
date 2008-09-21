@@ -352,6 +352,32 @@ module Gluon
     end
     private :form_value
 
+    def mkattr_disabled(options)
+      if (options.key? :disabled) then
+        value = options[:disabled]
+        value = form_value(value) if (value.kind_of? Symbol)
+        if (value) then
+          return ' disabled="disabled"'
+        end
+      end
+
+      ''
+    end
+    private :mkattr_disabled
+
+    def mkattr_readonly(options)
+      if (options.key? :readonly) then
+        value = options[:readonly]
+        value = form_value(value) if (value.kind_of? Symbol)
+        if (value) then
+          return ' readonly="readonly"'
+        end
+      end
+
+      ''
+    end
+    private :mkattr_readonly
+
     # :stopdoc:
     MKINPUT_RESERVED_ATTRS = {
       'type' => true,
@@ -375,13 +401,8 @@ module Gluon
       elem << ' value="' << ERB::Util.html_escape(options[:value]) << '"' if (options.key? :value)
       elem << ' size="' << ERB::Util.html_escape(options[:size]) << '"' if (options.key? :size)
       elem << ' checked="checked"' if options[:checked]
-      for attr_key in [ :disabled, :readonly ]
-        if (options.key? attr_key) then
-          value = options[attr_key]
-          value = form_value(value) if (value.kind_of? Symbol)
-          elem << ' ' << attr_key.to_s << '="' << attr_key.to_s << '"' if value
-        end
-      end
+      elem << mkattr_disabled(options)
+      elem << mkattr_readonly(options)
       elem << ' />'
     end
     private :mkinput
@@ -445,11 +466,7 @@ module Gluon
       elem << ' name="' << ERB::Util.html_escape(name2) << '"'
       elem << ' size="' << ERB::Util.html_escape(options[:size]) << '"' if (options.key? :size)
       elem << ' multiple="multiple"' if options[:multiple]
-      if (options.key? :disabled) then
-        value = options[:disabled]
-        value = form_value(value) if (value.kind_of? Symbol)
-        elem << ' disabled="disabled"' if value
-      end
+      elem << mkattr_disabled(options)
       elem << '>'
 
       list = form_value(list) if (list.kind_of? Symbol)
@@ -491,13 +508,8 @@ module Gluon
       end
       elem << ' rows="' << ERB::Util.html_escape(options[:rows]) << '"' if (options.key? :rows)
       elem << ' cols="' << ERB::Util.html_escape(options[:cols]) << '"' if (options.key? :cols)
-      for attr_key in [ :disabled, :readonly ]
-        if (options.key? attr_key) then
-          value = options[attr_key]
-          value = form_value(value) if (value.kind_of? Symbol)
-          elem << ' ' << attr_key.to_s << '="' << attr_key.to_s << '"' if value
-        end
-      end
+      elem << mkattr_disabled(options)
+      elem << mkattr_readonly(options)
       elem << '>'
       elem << ERB::Util.html_escape(form_value(name))
       elem << '</textarea>'
