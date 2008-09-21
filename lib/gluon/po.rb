@@ -28,26 +28,6 @@ module Gluon
 
     def_delegator :@controller, :class, :page_type
 
-    def view_explicit?
-      @controller.respond_to? :__view__
-    end
-
-    def __view__
-      if (view_explicit?) then
-        @controller.__view__
-      else
-        @controller.class.name.gsub(/::/, '/') + '.rhtml'
-      end
-    end
-
-    def __default_view__
-      if (@controller.respond_to? :__default_view__) then
-        @controller.__default_view__
-      else
-        nil
-      end
-    end
-
     def self.query(params)
       s = ''
       sep = ''
