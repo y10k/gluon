@@ -375,6 +375,33 @@ module Gluon
     end
     private :mkattr_readonly
 
+    def mkattr_string(key, options)
+      if (options.key? key) then
+        value = options[key]
+        value = funcall(value) if (value.is_a? Symbol)
+        return " #{key}=\"#{ERB::Util.html_escape(value)}\""
+      end
+
+      ''
+    end
+    private :mkattr_string
+
+
+    def mkattr_size(options)
+      mkattr_string(:size, options)
+    end
+    private :mkattr_size
+
+    def mkattr_rows(options)
+      mkattr_size(:rows, options)
+    end
+    private :mkattr_rows
+
+    def mkattr_cols(options)
+      mkattr_string(:cols, options)
+    end
+    private :mkattr_cols
+
     # :stopdoc:
     MKINPUT_RESERVED_ATTRS = {
       'type' => true,
@@ -396,8 +423,8 @@ module Gluon
         elem << ' name="' << ERB::Util.html_escape("#{prefix}#{name}") << '"'
       end
       elem << ' value="' << ERB::Util.html_escape(options[:value]) << '"' if (options.key? :value)
-      elem << ' size="' << ERB::Util.html_escape(options[:size]) << '"' if (options.key? :size)
       elem << ' checked="checked"' if options[:checked]
+      elem << mkattr_size(options)
       elem << mkattr_disabled(options)
       elem << mkattr_readonly(options)
       elem << ' />'
@@ -461,8 +488,8 @@ module Gluon
 
       elem << mkelem_start('select', SELECT_RESERVED_ATTRS, options)
       elem << ' name="' << ERB::Util.html_escape(name2) << '"'
-      elem << ' size="' << ERB::Util.html_escape(options[:size]) << '"' if (options.key? :size)
       elem << ' multiple="multiple"' if options[:multiple]
+      elem << mkattr_size(options)
       elem << mkattr_disabled(options)
       elem << '>'
 
@@ -503,8 +530,8 @@ module Gluon
       else
         elem << ' name="' << ERB::Util.html_escape("#{prefix}#{name}") << '"'
       end
-      elem << ' rows="' << ERB::Util.html_escape(options[:rows]) << '"' if (options.key? :rows)
-      elem << ' cols="' << ERB::Util.html_escape(options[:cols]) << '"' if (options.key? :cols)
+      elem << mkattr_rows(options)
+      elem << mkattr_cols(options)
       elem << mkattr_disabled(options)
       elem << mkattr_readonly(options)
       elem << '>'
