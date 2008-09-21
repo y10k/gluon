@@ -373,7 +373,7 @@ module Gluon
     private :mkattr_size
 
     def mkattr_rows(options)
-      mkattr_size(:rows, options)
+      mkattr_string(:rows, options)
     end
     private :mkattr_rows
 
