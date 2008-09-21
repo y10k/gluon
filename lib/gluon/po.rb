@@ -352,29 +352,26 @@ module Gluon
     end
     private :form_value
 
-    def mkattr_disabled(options)
-      if (options.key? :disabled) then
-        value = options[:disabled]
+    def mkattr_bool(key, options)
+      if (options.key? key) then
+        value = options[key]
         value = form_value(value) if (value.kind_of? Symbol)
         if (value) then
-          return ' disabled="disabled"'
+          return "#{key}=\"#{key}\""
         end
       end
 
       ''
     end
+    private :mkattr_bool
+
+    def mkattr_disabled(options)
+      mkattr_bool(:disabled, options)
+    end
     private :mkattr_disabled
 
     def mkattr_readonly(options)
-      if (options.key? :readonly) then
-        value = options[:readonly]
-        value = form_value(value) if (value.kind_of? Symbol)
-        if (value) then
-          return ' readonly="readonly"'
-        end
-      end
-
-      ''
+      mkattr_bool(:readonly, options)
     end
     private :mkattr_readonly
 
