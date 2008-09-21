@@ -1,3 +1,7 @@
+2008-09-22  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/po.rb: check reserved HTML element attributes.
+
 2008-09-15  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/erbview.rb, lib/gluon/renderer.rb: changed view API.

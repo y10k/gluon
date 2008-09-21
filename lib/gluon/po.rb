@@ -170,7 +170,7 @@ module Gluon
       nil
     end
 
-    def mkelem_start(name, options={})
+    def mkelem_start(name, reserved_attrs, options={})
       elem = "<#{name}"
       for name in [ :id, :class ]
         if (options.key? name) then
@@ -180,6 +180,7 @@ module Gluon
       end
       if (options.key? :attrs) then
         for name, value in options[:attrs]
+          next if (reserved_attrs.key? name)
           elem << ' ' << name.to_s << '="' << ERB::Util.html_escape(value) << '"'
         end
       end
@@ -197,8 +198,15 @@ module Gluon
     end
     private :mkpath
 
+    # :stopdoc:
+    MKLINK_RESERVED_ATTRS = {
+      'href' => true,
+      'target' => true
+    }.freeze
+    # :startdoc:
+
     def mklink(href, options={})
-      elem = mkelem_start('a', options)
+      elem = mkelem_start('a', MKLINK_RESERVED_ATTRS, options)
       elem << ' href="' << ERB::Util.html_escape(mkpath(href, options)) << '"'
       elem << ' target="' << ERB::Util.html_escape(options[:target]) << '"' if (options.key? :target)
       elem << '>'
@@ -269,8 +277,15 @@ module Gluon
       mklink(path, options, &block)
     end
 
+    # :stopdoc:
+    MKFRAME_RESERVED_ATTRS = {
+      'src' => true,
+      'name' => true
+    }.freeze
+    # :startdoc:
+
     def mkframe(src, options={})
-      elem = mkelem_start('frame', options)
+      elem = mkelem_start('frame', MKFRAME_RESERVED_ATTRS, options)
       elem << ' src="' << ERB::Util.html_escape(mkpath(src, options)) << '"'
       elem << ' name="' << ERB::Util.html_escape(options[:name]) << '"' if (options.key? :name)
       elem << ' />'
@@ -337,8 +352,20 @@ module Gluon
     end
     private :form_value
 
+    # :stopdoc:
+    MKINPUT_RESERVED_ATTRS = {
+      'type' => true,
+      'name' => true,
+      'value' => true,
+      'size' => true,
+      'checked' => true,
+      'disabled' => true,
+      'readonly' => true
+    }.freeze
+    # :startdoc:
+
     def mkinput(type, name, options)
-      elem = mkelem_start('input', options)
+      elem = mkelem_start('input', MKINPUT_RESERVED_ATTRS, options)
       elem << ' type="' << ERB::Util.html_escape(type) << '"'
       if (options[:direct]) then
         elem << ' name="' << ERB::Util.html_escape(name) << '"'
@@ -396,6 +423,15 @@ module Gluon
       mkinput('radio', name, options)
     end
 
+    # :stopdoc:
+    SELECT_RESERVED_ATTRS = {
+      'name' => true,
+      'size' => true,
+      'multiple' => true,
+      'disabled' => true
+    }.freeze
+    # :startdoc:
+
     def select(name, list, options={})
       name2 = "#{prefix}#{name}" unless options[:direct]
 
@@ -405,7 +441,7 @@ module Gluon
         elem = ''
       end
 
-      elem << mkelem_start('select', options)
+      elem << mkelem_start('select', SELECT_RESERVED_ATTRS, options)
       elem << ' name="' << ERB::Util.html_escape(name2) << '"'
       elem << ' size="' << ERB::Util.html_escape(options[:size]) << '"' if (options.key? :size)
       elem << ' multiple="multiple"' if options[:multiple]
@@ -436,8 +472,18 @@ module Gluon
       elem << '</select>'
     end
 
+    # :stopdoc:
+    TEXTAREA_RESERVED_ATTRS = {
+      'name' => true,
+      'rows' => true,
+      'cols' => true,
+      'disabled' => true,
+      'readonly' => true
+    }.freeze
+    # :startdoc:
+
     def textarea(name, options={})
-      elem = mkelem_start('textarea', options)
+      elem = mkelem_start('textarea', TEXTAREA_RESERVED_ATTRS, options)
       if (options[:direct]) then
         elem << ' name="' << ERB::Util.html_escape(name) << '"'
       else
