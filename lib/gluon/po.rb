@@ -52,7 +52,7 @@ module Gluon
       s = ''
       sep = ''
       for name, value_list in params
-        unless (value_list.kind_of? Array) then
+        unless (value_list.is_a? Array) then
           value_list = [ value_list ]
         end
         for value in value_list
@@ -133,7 +133,7 @@ module Gluon
 
     def cond(name, options={})
       getopts(options, :negate => false)
-      if (name.kind_of? NegativeCondition) then
+      if (name.is_a? NegativeCondition) then
         name = name.operand
         options[:negate] = true
       end
@@ -244,19 +244,19 @@ module Gluon
     private :expand_path
 
     def link(name, options={}, &block)
-      name, options2 = funcall(name) if (name.kind_of? Symbol)
+      name, options2 = funcall(name) if (name.is_a? Symbol)
       path = expand_path(name)
       options = merge_opts(options, options2)
-      unless (path.kind_of? String) then
+      unless (path.is_a? String) then
         raise "unknon link name type: #{name.class}"
       end
       mklink(path, options, &block)
     end
 
     def link_uri(path, options={}, &block)
-      path, options2 = funcall(path) if (path.kind_of? Symbol)
+      path, options2 = funcall(path) if (path.is_a? Symbol)
       options = merge_opts(options, options2)
-      unless (path.kind_of? String) then
+      unless (path.is_a? String) then
         raise "unknon link path type: #{path.class}"
       end
       mklink(path, options, &block)
@@ -268,7 +268,7 @@ module Gluon
       options[:text] = name.to_s unless (options.key? :text)
       if (page = options[:page]) then
         path = expand_path(page)
-        unless (path.kind_of? String) then
+        unless (path.is_a? String) then
           raise "unknown action page type: #{path.class}"
         end
       else
@@ -293,19 +293,19 @@ module Gluon
     private :mkframe
 
     def frame(name, options={})
-      name, options2 = funcall(name) if (name.kind_of? Symbol)
+      name, options2 = funcall(name) if (name.is_a? Symbol)
       src = expand_path(name)
       options = merge_opts(options, options2)
-      unless (src.kind_of? String) then
+      unless (src.is_a? String) then
         raise "unknown frame src type: #{name.class}"
       end
       mkframe(src, options)
     end
 
     def frame_uri(src, options={})
-      src, options2 = funcall(src) if (src.kind_of? Symbol)
+      src, options2 = funcall(src) if (src.is_a? Symbol)
       options = merge_opts(options, options2)
-      unless (src.kind_of? String) then
+      unless (src.is_a? String) then
         raise "unknown frame src type: #{src.class}"
       end
       mkframe(src, options)
@@ -355,7 +355,7 @@ module Gluon
     def mkattr_bool(key, options)
       if (options.key? key) then
         value = options[key]
-        value = form_value(value) if (value.kind_of? Symbol)
+        value = funcall(value) if (value.is_a? Symbol)
         if (value) then
           return "#{key}=\"#{key}\""
         end
@@ -466,9 +466,9 @@ module Gluon
       elem << mkattr_disabled(options)
       elem << '>'
 
-      list = form_value(list) if (list.kind_of? Symbol)
+      list = funcall(list) if (list.is_a? Symbol)
       selects = form_value(name)
-      selects = [ selects ] unless (selects.kind_of? Array)
+      selects = [ selects ] unless (selects.is_a? Array)
       selected = {}
       for value in selects
         selected[value] = true
