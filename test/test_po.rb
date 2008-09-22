@@ -545,6 +545,101 @@ module Gluon::Test
       assert_equal('<input type="hidden" name="foo" value="Hello world." />', render_page('<%= hidden :foo %>'))
     end
 
+    class PageForCheckbox
+      include Gluon::Controller
+      include Gluon::ERBView
+      gluon_export_accessor :foo
+    end
+
+    def test_checkbox
+      build_page(PageForCheckbox)
+
+      @controller.foo = false
+      assert_equal('<input type="hidden" name="foo@type" value="bool" /><input type="checkbox" name="foo" value="true" />',
+                   render_page('<%= checkbox :foo %>'))
+
+      @controller.foo = true
+      assert_equal('<input type="hidden" name="foo@type" value="bool" /><input type="checkbox" name="foo" value="true" checked="checked" />',
+                   render_page('<%= checkbox :foo %>'))
+    end
+
+    class PageForRadio
+      include Gluon::Controller
+      include Gluon::ERBView
+      gluon_export_accessor :foo
+    end
+
+    def test_radio
+      build_page(PageForRadio)
+
+      @controller.foo = 'Apple'
+      assert_equal('<input type="radio" name="foo" value="Banana" />',
+                   render_page('<%= radio :foo, "Banana" %>'))
+
+      @controller.foo = 'Orange'
+      assert_equal('<input type="radio" name="foo" value="Orange" checked="checked" />',
+                   render_page('<%= radio :foo, "Orange" %>'))
+    end
+
+    class PageForSelect
+      include Gluon::Controller
+      include Gluon::ERBView
+      gluon_export_accessor :foo
+      gluon_export_accessor :fruits
+    end
+
+    def test_select
+      build_page(PageForSelect)
+
+      @controller.foo = 'banana'
+      @controller.fruits = [
+        %w[ apple Apple ],
+        %w[ banana Banana ],
+        %w[ orange Orange ]
+      ]
+      assert_equal('<select name="foo">' +
+                   '<option value="apple">Apple</option>' +
+                   '<option value="banana" selected="selected">Banana</option>' +
+                   '<option value="orange">Orange</option>' +
+                   '</select>',
+                   render_page('<%= select :foo, :fruits %>'))
+    end
+
+    def test_multiple_select
+      build_page(PageForSelect)
+
+      @controller.foo = %w[ apple orange ]
+      @controller.fruits = [
+        %w[ apple Apple ],
+        %w[ banana Banana ],
+        %w[ orange Orange ]
+      ]
+      assert_equal('<input type="hidden" name="foo@type" value="list" />' +
+                   '<select name="foo" multiple="multiple">' +
+                   '<option value="apple" selected="selected">Apple</option>' +
+                   '<option value="banana">Banana</option>' +
+                   '<option value="orange" selected="selected">Orange</option>' +
+                   '</select>',
+                   render_page('<%= select :foo, :fruits, :multiple => true %>'))
+    end
+
+    class PageForTextarea
+      include Gluon::Controller
+      include Gluon::ERBView
+      gluon_export_accessor :foo
+    end
+
+    def test_textarea
+      build_page(PageForTextarea)
+
+      assert_equal('<textarea name="foo"></textarea>',
+                   render_page('<%= textarea :foo %>'))
+
+      @controller.foo = "Hello world.\n"
+      assert_equal("<textarea name=\"foo\">Hello world.\n</textarea>",
+                   render_page('<%= textarea :foo %>'))
+    end
+
     class PageForForeachAction
       include Gluon::Controller
       include Gluon::ERBView
