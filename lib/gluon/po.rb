@@ -382,6 +382,25 @@ module Gluon
     end
     private :mkattr_cols
 
+    def make_controller_name(name, options)
+      if (options[:direct]) then
+        name
+      else
+        "#{prefix}#{name}"
+      end
+    end
+    private :make_controller_name
+
+    def make_hidden_type(name, type, options)
+      %Q'<input type="hidden" name="#{ERB::Util.html_escape(make_controller_name(name, options))}@type" value="#{ERB::Util.html_escape(type)}" />'
+    end
+    private :make_hidden_type
+
+    def mkattr_controller_name(name, options)
+      %Q' name="#{ERB::Util.html_escape(make_controller_name(name, options))}"'
+    end
+    private :mkattr_controller_name
+
     # :stopdoc:
     MKINPUT_RESERVED_ATTRS = {
       'type' => true,
@@ -397,11 +416,7 @@ module Gluon
     def mkinput(type, name, options)
       elem = mkelem_start('input', MKINPUT_RESERVED_ATTRS, options)
       elem << ' type="' << ERB::Util.html_escape(type) << '"'
-      if (options[:direct]) then
-        elem << ' name="' << ERB::Util.html_escape(name) << '"'
-      else
-        elem << ' name="' << ERB::Util.html_escape("#{prefix}#{name}") << '"'
-      end
+      elem << mkattr_controller_name(name, options)
       elem << ' value="' << ERB::Util.html_escape(options[:value]) << '"' if (options.key? :value)
       elem << ' checked="checked"' if options[:checked]
       elem << mkattr_size(options)
@@ -427,18 +442,11 @@ module Gluon
       mkinput('hidden', name, options.dup.update(:value => form_value(name)))
     end
 
-    def make_hidden(name, value)
-      %Q'<input type="hidden" name="#{ERB::Util.html_escape(name)}" value="#{ERB::Util.html_escape(value)}" />'
-    end
-    private :make_hidden
-
     def checkbox(name, options={})
       options = options.dup
       options[:value] = 'true' unless (options.key? :value)
       options[:checked] = form_value(name) ? true : false
-      name = "#{prefix}#{name}" unless options[:direct]
-      options[:direct] = true
-      make_hidden("#{name}@type", 'bool') << mkinput('checkbox', name, options)
+      make_hidden_type(name, 'bool', options) << mkinput('checkbox', name, options)
     end
 
     def radio(name, value, options={})
@@ -458,16 +466,14 @@ module Gluon
     # :startdoc:
 
     def select(name, list, options={})
-      name2 = "#{prefix}#{name}" unless options[:direct]
-
       if (options[:multiple]) then
-        elem = make_hidden("#{name2}@type", 'list')
+        elem = make_hidden_type(name, 'list', options)
       else
         elem = ''
       end
 
       elem << mkelem_start('select', SELECT_RESERVED_ATTRS, options)
-      elem << ' name="' << ERB::Util.html_escape(name2) << '"'
+      elem << mkattr_controller_name(name, options)
       elem << ' multiple="multiple"' if options[:multiple]
       elem << mkattr_size(options)
       elem << mkattr_disabled(options)
@@ -505,11 +511,7 @@ module Gluon
 
     def textarea(name, options={})
       elem = mkelem_start('textarea', TEXTAREA_RESERVED_ATTRS, options)
-      if (options[:direct]) then
-        elem << ' name="' << ERB::Util.html_escape(name) << '"'
-      else
-        elem << ' name="' << ERB::Util.html_escape("#{prefix}#{name}") << '"'
-      end
+      elem << mkattr_controller_name(name, options)
       elem << mkattr_rows(options)
       elem << mkattr_cols(options)
       elem << mkattr_disabled(options)
