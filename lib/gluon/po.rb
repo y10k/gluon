@@ -228,7 +228,7 @@ module Gluon
       path = expand_path(name)
       options = merge_opts(options, options2)
       unless (path.is_a? String) then
-        raise "unknon link name type: #{name.class}"
+        raise "unknown link name type: #{name.class}"
       end
       mklink(path, options, &block)
     end
