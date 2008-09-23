@@ -65,14 +65,12 @@ module Gluon::Test
                       render_page(%Q'<%= #{expr}, :id => "foo", :attrs => { "id" => "bar" } %>'))
 
       anon_page_type = Class.new(page_type)
-      anon_page_type.instance_eval{
-        define_method :__optional_id__ do
-          "foo"
-        end
+      anon_page_type.class_eval{
+        define_method(:optional_id) { "foo" }
       }
       build_page(anon_page_type)
       assert_match(/ id="foo"/,
-                   render_page(%Q'<%= #{expr}, :id => :__optional_id__ %>'))
+                   render_page(%Q'<%= #{expr}, :id => :optional_id %>'))
     end
     private :assert_optional_id
 
@@ -86,14 +84,12 @@ module Gluon::Test
                       render_page(%Q'<%= #{expr}, :class => "foo", :attrs => { "class" => "bar" } %>'))
 
       anon_page_type = Class.new(page_type)
-      anon_page_type.instance_eval{
-        define_method :__optional_class__ do
-          "foo"
-        end
+      anon_page_type.class_eval{
+        define_method(:optional_class) { "foo" }
       }
       build_page(anon_page_type)
       assert_match(/ class="foo"/,
-                   render_page(%Q'<%= #{expr}, :class => :__optional_class__ %>'))
+                   render_page(%Q'<%= #{expr}, :class => :optional_class %>'))
     end
     private :assert_optional_class
 
@@ -123,6 +119,22 @@ module Gluon::Test
                    render_page(%Q'<%= #{expr}, :disabled => false %>'))
       assert_no_match(/ disabled="disabled"/,
                    render_page(%Q'<%= #{expr} %>'))
+
+      anon_page_type = Class.new(page_type)
+      anon_page_type.class_eval{
+        define_method(:optional_disabled?) { true }
+      }
+      build_page(anon_page_type)
+      assert_match(/ disabled="disabled"/,
+                   render_page(%Q'<%= #{expr}, :disabled => :optional_disabled? %>'))
+
+      anon_page_type = Class.new(page_type)
+      anon_page_type.class_eval{
+        define_method(:optional_disabled?) { false }
+      }
+      build_page(anon_page_type)
+      assert_no_match(/ disabled="disabled"/,
+                      render_page(%Q'<%= #{expr}, :disabled => :optional_disabled? %>'))
     end
     private :assert_optional_disabled
 
@@ -134,6 +146,22 @@ module Gluon::Test
                    render_page(%Q'<%= #{expr}, :readonly => false %>'))
       assert_no_match(/ readonly="readonly"/,
                    render_page(%Q'<%= #{expr} %>'))
+
+      anon_page_type = Class.new(page_type)
+      anon_page_type.class_eval{
+        define_method(:optional_readonly?) { true }
+      }
+      build_page(anon_page_type)
+      assert_match(/ readonly="readonly"/,
+                   render_page(%Q'<%= #{expr}, :readonly => :optional_readonly? %>'))
+
+      anon_page_type = Class.new(page_type)
+      anon_page_type.class_eval{
+        define_method(:optional_readonly?) { false }
+      }
+      build_page(anon_page_type)
+      assert_no_match(/ readonly="readonly"/,
+                      render_page(%Q'<%= #{expr}, :readonly => :optional_readonly? %>'))
     end
     private :assert_optional_readonly
 
@@ -141,6 +169,14 @@ module Gluon::Test
       build_page(page_type)
       assert_match(/ size="123"/,
                    render_page(%Q'<%= #{expr}, :size => 123 %>'))
+
+      anon_page_type = Class.new(page_type)
+      anon_page_type.class_eval{
+        define_method(:optional_size) { 123 }
+      }
+      build_page(anon_page_type)
+      assert_match(/ size="123"/,
+                   render_page(%Q'<%= #{expr}, :size => :optional_size %>'))
     end
     private :assert_optional_size
 
@@ -148,6 +184,14 @@ module Gluon::Test
       build_page(page_type)
       assert_match(/ maxlength="123"/,
                    render_page(%Q'<%= #{expr}, :maxlength => 123 %>'))
+
+      anon_page_type = Class.new(page_type)
+      anon_page_type.class_eval{
+        define_method(:optional_maxlength) { 123 }
+      }
+      build_page(anon_page_type)
+      assert_match(/ maxlength="123"/,
+                   render_page(%Q'<%= #{expr}, :maxlength => :optional_maxlength %>'))
     end
     private :assert_optional_size
 
@@ -155,6 +199,14 @@ module Gluon::Test
       build_page(page_type)
       assert_match(/ rows="123"/,
                    render_page(%Q'<%= #{expr}, :rows => 123 %>'))
+
+      anon_page_type = Class.new(page_type)
+      anon_page_type.class_eval{
+        define_method(:optional_rows) { 123 }
+      }
+      build_page(anon_page_type)
+      assert_match(/ rows="123"/,
+                   render_page(%Q'<%= #{expr}, :rows => :optional_rows %>'))
     end
     private :assert_optional_size
 
@@ -162,6 +214,14 @@ module Gluon::Test
       build_page(page_type)
       assert_match(/ cols="123"/,
                    render_page(%Q'<%= #{expr}, :cols => 123 %>'))
+
+      anon_page_type = Class.new(page_type)
+      anon_page_type.class_eval{
+        define_method(:optional_cols) { 123 }
+      }
+      build_page(anon_page_type)
+      assert_match(/ cols="123"/,
+                   render_page(%Q'<%= #{expr}, :cols => :optional_cols %>'))
     end
     private :assert_optional_size
 

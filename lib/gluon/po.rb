@@ -344,8 +344,7 @@ module Gluon
 
     def mkattr_bool(key, options)
       if (options.key? key) then
-        value = options[key]
-        value = funcall(value) if (value.is_a? Symbol)
+        value = expand_value(key, options)
         if (value) then
           return " #{key}=\"#{key}\""
         end
@@ -367,8 +366,7 @@ module Gluon
 
     def mkattr_string(key, options)
       if (options.key? key) then
-        value = options[key]
-        value = funcall(value) if (value.is_a? Symbol)
+        value = expand_value(key, options)
         return " #{key}=\"#{ERB::Util.html_escape(value)}\""
       end
 
