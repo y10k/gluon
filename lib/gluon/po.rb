@@ -55,6 +55,7 @@ module Gluon
     private :prefix
 
     def getopts(options, default_options)
+      options = options.dup
       for key, value in default_options
         unless (options.key? key) then
           options[key] = value
@@ -97,7 +98,7 @@ module Gluon
     private :funcall
 
     def value(name=:to_s, options={})
-      getopts(options, :escape => true)
+      options = getopts(options, :escape => true)
       s = funcall(name).to_s
       s = ERB::Util.html_escape(s) if options[:escape]
       s
@@ -112,7 +113,7 @@ module Gluon
     end
 
     def cond(name, options={})
-      getopts(options, :negate => false)
+      options = getopts(options, :negate => false)
       if (name.is_a? NegativeCondition) then
         name = name.operand
         options[:negate] = true
