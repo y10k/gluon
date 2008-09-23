@@ -63,6 +63,16 @@ module Gluon::Test
                    render_page(%Q'<%= #{expr}, :id => "foo", :attrs => { "id" => "bar" } %>'))
       assert_no_match(/ id="bar"/,
                       render_page(%Q'<%= #{expr}, :id => "foo", :attrs => { "id" => "bar" } %>'))
+
+      anon_page_type = Class.new(page_type)
+      anon_page_type.instance_eval{
+        define_method :__optional_id__ do
+          "foo"
+        end
+      }
+      build_page(anon_page_type)
+      assert_match(/ id="foo"/,
+                   render_page(%Q'<%= #{expr}, :id => :__optional_id__ %>'))
     end
     private :assert_optional_id
 
@@ -74,6 +84,16 @@ module Gluon::Test
                    render_page(%Q'<%= #{expr}, :class => "foo", :attrs => { "class" => "bar" } %>'))
       assert_no_match(/ class="bar"/,
                       render_page(%Q'<%= #{expr}, :class => "foo", :attrs => { "class" => "bar" } %>'))
+
+      anon_page_type = Class.new(page_type)
+      anon_page_type.instance_eval{
+        define_method :__optional_class__ do
+          "foo"
+        end
+      }
+      build_page(anon_page_type)
+      assert_match(/ class="foo"/,
+                   render_page(%Q'<%= #{expr}, :class => :__optional_class__ %>'))
     end
     private :assert_optional_class
 
