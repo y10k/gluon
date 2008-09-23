@@ -233,10 +233,19 @@ module Gluon
     end
     private :expand_path
 
+    def expand_link_name(name, options)
+      if (name.is_a? Symbol) then
+        name, options2 = funcall(name)
+        return name, merge_opts(options, options2)
+      else
+        return name, options
+      end
+    end
+    private :expand_link_name
+
     def link(name, options={}, &block)
-      name, options2 = funcall(name) if (name.is_a? Symbol)
+      name, options = expand_link_name(name, options)
       path = expand_path(name)
-      options = merge_opts(options, options2)
       unless (path.is_a? String) then
         raise "unknown link name type: #{name.class}"
       end
@@ -244,8 +253,7 @@ module Gluon
     end
 
     def link_uri(path, options={}, &block)
-      path, options2 = funcall(path) if (path.is_a? Symbol)
-      options = merge_opts(options, options2)
+      path, options = expand_link_name(path, options)
       unless (path.is_a? String) then
         raise "unknon link path type: #{path.class}"
       end
@@ -283,9 +291,8 @@ module Gluon
     private :mkframe
 
     def frame(name, options={})
-      name, options2 = funcall(name) if (name.is_a? Symbol)
+      name, options = expand_link_name(name, options)
       src = expand_path(name)
-      options = merge_opts(options, options2)
       unless (src.is_a? String) then
         raise "unknown frame src type: #{name.class}"
       end
@@ -293,8 +300,7 @@ module Gluon
     end
 
     def frame_uri(src, options={})
-      src, options2 = funcall(src) if (src.is_a? Symbol)
-      options = merge_opts(options, options2)
+      src, options = expand_link_name(src, options)
       unless (src.is_a? String) then
         raise "unknown frame src type: #{src.class}"
       end
