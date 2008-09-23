@@ -184,7 +184,7 @@ module Gluon
 
     def mkpath(path, options={})
       path = path.dup
-      path << options[:path_info] if (options.key? :path_info)
+      path << ERB::Util.html_escape(options[:path_info]) if (options.key? :path_info)
       path = '/' if path.empty?
       path << '?' << PresentationObject.query(options[:query]) if (options.key? :query)
       path << '#' << ERB::Util.html_escape(options[:fragment]) if (options.key? :fragment)
