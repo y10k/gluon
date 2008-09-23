@@ -46,21 +46,22 @@ module Gluon
 
     def load(view, template)
       stat = File.stat(template)
-      @compile_lock.synchronize{
-        if (entry = @compile_cache[template]) then
-          if (entry[:stat].ino == stat.ino &&
-              entry[:stat].mtime == stat.mtime &&
-              entry[:stat].size == stat.size)
+      cc_entry = @compile_lock.synchronize{
+        @compile_cache[template] ||
+          @compile_cache[template] = { :lock => Mutex.new }
+      }
+      cc_entry[:lock].synchronize{
+        if (cc_entry.key? :stat) then
+          if (cc_entry[:stat].ino == stat.ino &&
+              cc_entry[:stat].mtime == stat.mtime &&
+              cc_entry[:stat].size == stat.size)
           then
-            return entry[:view_class]
+            return cc_entry[:view_class]
           end
         end
-
-        @compile_cache[template] = {
-          :stat => stat,
-          :view_class => compile(view, template)
-        }
-        @compile_cache[template][:view_class]
+        cc_entry[:view_class] = compile(view, template)
+        cc_entry[:stat] = stat
+        cc_entry[:view_class]
       }
     end
 
