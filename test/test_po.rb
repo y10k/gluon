@@ -55,6 +55,27 @@ module Gluon::Test
     end
     private :render_page
 
+    def assert_optional_id(page_type, expr)
+      build_page(page_type)
+      assert_match(/ id="foo"/,
+                   render_page(%Q'<%= #{expr}, :id => "foo" %>'))
+    end
+    private :assert_optional_id
+
+    def assert_optional_class(page_type, expr)
+      build_page(page_type)
+      assert_match(/ class="foo"/,
+                   render_page(%Q'<%= #{expr}, :class => "foo" %>'))
+    end
+    private :assert_optional_class
+
+    def assert_optional_attrs(page_type, expr)
+      build_page(page_type)
+      assert_match(/ foo="Apple" bar="Banana"/,
+                   render_page(%Q'<%= #{expr}, :attrs => { "foo" => "Apple", "bar" => "Banana" } %>'))
+    end
+    private :assert_optional_attrs
+
     class PageForValue
       include Gluon::Controller
       include Gluon::ERBView
@@ -237,6 +258,18 @@ module Gluon::Test
                    render_page('<%= link :page_with_query_and_fragment, :text => "query and fragment" %>'))
     end
 
+    def test_link_optional_id
+      assert_optional_id(PageForLink, 'link "/Foo"')
+    end
+
+    def test_link_optional_class
+      assert_optional_class(PageForLink, 'link "/Foo"')
+    end
+
+    def test_link_optional_attrs
+      assert_optional_attrs(PageForLink, 'link "/Foo"')
+    end
+
     def test_link_error
       build_page(PageForLink)
       assert_raise(RuntimeError) {
@@ -298,6 +331,21 @@ module Gluon::Test
                    render_page('<%= link_uri :uri_with_query, :query => { "lang" => "en" }, :text => "Ruby" %>'))
     end
 
+    def test_link_uri_optional_id
+      assert_optional_id(PageForLinkURI,
+                         'link_uri "http://www.ruby-lang.org"')
+    end
+
+    def test_link_uri_optional_class
+      assert_optional_class(PageForLinkURI,
+                            'link_uri "http://www.ruby-lang.org"')
+    end
+
+    def test_link_uri_optional_attrs
+      assert_optional_attrs(PageForLinkURI,
+                            'link_uri "http://www.ruby-lang.org"')
+    end
+
     def test_link_uri_error
       build_page(PageForLinkURI)
       assert_raise(RuntimeError) {
@@ -329,6 +377,18 @@ module Gluon::Test
                    render_page('<%= action :foo, :text => "action", :target => "_blank" %>'))
       assert_equal('<a href="/bar.cgi/another_page?foo%28%29">action</a>',
                    render_page("<%= action :foo, :text => 'action', :page => #{AnotherPage} %>"))
+    end
+
+    def test_action_optional_id
+      assert_optional_id(PageForAction, 'action :foo')
+    end
+
+    def test_action_optional_class
+      assert_optional_class(PageForAction, 'action :foo')
+    end
+
+    def test_action_optional_attrs
+      assert_optional_attrs(PageForAction, 'action :foo')
     end
 
     class PageForFrame
@@ -380,6 +440,18 @@ module Gluon::Test
                    render_page("<%= frame :page_with_query, :query => { 'foo' => 'baz' } %>"))
     end
 
+    def test_frame_optional_id
+      assert_optional_id(PageForFrame, 'frame "/Foo"')
+    end
+
+    def test_frame_optional_class
+      assert_optional_class(PageForFrame, 'frame "/Foo"')
+    end
+
+    def test_frame_optional_attrs
+      assert_optional_attrs(PageForFrame, 'frame "/Foo"')
+    end
+
     def test_frame_error
       build_page(PageForFrame)
       assert_raise(RuntimeError) {
@@ -425,6 +497,21 @@ module Gluon::Test
                    render_page('<%= frame_uri :uri_with_query %>'))
       assert_equal('<frame src="http://www.ruby-lang.org?lang=en" />',
                    render_page('<%= frame_uri :uri_with_query, :query => { "lang" => "en" } %>'))
+    end
+
+    def test_frame_uri_optional_id
+      assert_optional_id(PageForFrameURI,
+                         'frame_uri "http://www.ruby-lang.org"')
+    end
+
+    def test_frame_uri_optional_class
+      assert_optional_class(PageForFrameURI,
+                            'frame_uri "http://www.ruby-lang.org"')
+    end
+
+    def test_frame_uri_optional_attrs
+      assert_optional_attrs(PageForFrameURI,
+                            'frame_uri "http://www.ruby-lang.org"')
     end
 
     def test_frame_uri_error
@@ -498,6 +585,18 @@ module Gluon::Test
       assert_equal('<input type="text" name="foo" value="Hello world." />', render_page('<%= text :foo %>'))
     end
 
+    def test_text_optional_id
+      assert_optional_id(PageForText, 'text :foo')
+    end
+
+    def test_text_optional_class
+      assert_optional_class(PageForText, 'text :foo')
+    end
+
+    def test_text_optional_attrs
+      assert_optional_attrs(PageForText, 'text :foo')
+    end
+
     class PageForPassword
       include Gluon::Controller
       include Gluon::ERBView
@@ -511,6 +610,18 @@ module Gluon::Test
 
       @controller.foo = 'Hello world.'
       assert_equal('<input type="password" name="foo" value="Hello world." />', render_page('<%= password :foo %>'))
+    end
+
+    def test_password_optional_id
+      assert_optional_id(PageForPassword, 'password :foo')
+    end
+
+    def test_password_optional_class
+      assert_optional_class(PageForPassword, 'password :foo')
+    end
+
+    def test_password_optional_attrs
+      assert_optional_attrs(PageForPassword, 'password :foo')
     end
 
     class PageForSubmit
@@ -530,6 +641,18 @@ module Gluon::Test
                    render_page('<%= submit :foo, :value => "Push!" %>'))
     end
 
+    def test_submit_optional_id
+      assert_optional_id(PageForSubmit, 'submit :foo')
+    end
+
+    def test_submit_optional_class
+      assert_optional_class(PageForSubmit, 'submit :foo')
+    end
+
+    def test_submit_optional_attrs
+      assert_optional_attrs(PageForSubmit, 'submit :foo')
+    end
+
     class PageForHidden
       include Gluon::Controller
       include Gluon::ERBView
@@ -543,6 +666,18 @@ module Gluon::Test
 
       @controller.foo = 'Hello world.'
       assert_equal('<input type="hidden" name="foo" value="Hello world." />', render_page('<%= hidden :foo %>'))
+    end
+
+    def test_hidden_optional_id
+      assert_optional_id(PageForHidden, 'hidden :foo')
+    end
+
+    def test_hidden_optional_class
+      assert_optional_class(PageForHidden, 'hidden :foo')
+    end
+
+    def test_hidden_optional_attrs
+      assert_optional_attrs(PageForHidden, 'hidden :foo')
     end
 
     class PageForCheckbox
@@ -563,6 +698,18 @@ module Gluon::Test
                    render_page('<%= checkbox :foo %>'))
     end
 
+    def test_checkbox_optional_id
+      assert_optional_id(PageForCheckbox, 'checkbox :foo')
+    end
+
+    def test_checkbox_optional_class
+      assert_optional_class(PageForCheckbox, 'checkbox :foo')
+    end
+
+    def test_checkbox_optional_attrs
+      assert_optional_attrs(PageForCheckbox, 'checkbox :foo')
+    end
+
     class PageForRadio
       include Gluon::Controller
       include Gluon::ERBView
@@ -581,22 +728,37 @@ module Gluon::Test
                    render_page('<%= radio :foo, "Orange" %>'))
     end
 
+    def test_radio_optional_id
+      assert_optional_id(PageForRadio, 'radio :foo, "Banana"')
+    end
+
+    def test_radio_optional_class
+      assert_optional_class(PageForRadio, 'radio :foo, "Banana"')
+    end
+
+    def test_radio_optional_attrs
+      assert_optional_attrs(PageForRadio, 'radio :foo, "Banana"')
+    end
+
     class PageForSelect
       include Gluon::Controller
       include Gluon::ERBView
       gluon_export_accessor :foo
       gluon_export_accessor :fruits
+
+      def initialize
+        @fruits = [
+          %w[ apple Apple ],
+          %w[ banana Banana ],
+          %w[ orange Orange ]
+        ]
+      end
     end
 
     def test_select
       build_page(PageForSelect)
 
       @controller.foo = 'banana'
-      @controller.fruits = [
-        %w[ apple Apple ],
-        %w[ banana Banana ],
-        %w[ orange Orange ]
-      ]
       assert_equal('<select name="foo">' +
                    '<option value="apple">Apple</option>' +
                    '<option value="banana" selected="selected">Banana</option>' +
@@ -605,15 +767,22 @@ module Gluon::Test
                    render_page('<%= select :foo, :fruits %>'))
     end
 
+    def test_select_optional_id
+      assert_optional_id(PageForSelect, 'select :foo, :fruits')
+    end
+
+    def test_select_optional_class
+      assert_optional_class(PageForSelect, 'select :foo, :fruits')
+    end
+
+    def test_select_optional_attrs
+      assert_optional_attrs(PageForSelect, 'select :foo, :fruits')
+    end
+
     def test_multiple_select
       build_page(PageForSelect)
 
       @controller.foo = %w[ apple orange ]
-      @controller.fruits = [
-        %w[ apple Apple ],
-        %w[ banana Banana ],
-        %w[ orange Orange ]
-      ]
       assert_equal('<input type="hidden" name="foo@type" value="list" />' +
                    '<select name="foo" multiple="multiple">' +
                    '<option value="apple" selected="selected">Apple</option>' +
@@ -638,6 +807,18 @@ module Gluon::Test
       @controller.foo = "Hello world.\n"
       assert_equal("<textarea name=\"foo\">Hello world.\n</textarea>",
                    render_page('<%= textarea :foo %>'))
+    end
+
+    def test_textarea_optional_id
+      assert_optional_id(PageForTextarea, 'textarea :foo')
+    end
+
+    def test_textarea_optional_class
+      assert_optional_class(PageForTextarea, 'textarea :foo')
+    end
+
+    def test_textarea_optional_attrs
+      assert_optional_class(PageForTextarea, 'textarea :foo')
     end
 
     class PageForForeachAction
