@@ -97,10 +97,18 @@ module Gluon
     end
     private :funcall
 
+    def expand_value(key, options)
+      value = options[key]
+      value = funcall(value) if (value.is_a? Symbol)
+      value
+    end
+    private :expand_value
+
     def value(name=:to_s, options={})
       options = getopts(options, :escape => true)
+      escape = expand_value(:escape, options)
       s = funcall(name).to_s
-      s = ERB::Util.html_escape(s) if options[:escape]
+      s = ERB::Util.html_escape(s) if escape
       s
     end
 
@@ -150,13 +158,6 @@ module Gluon
       end
       nil
     end
-
-    def expand_value(key, options)
-      value = options[key]
-      value = funcall(value) if (value.is_a? Symbol)
-      value
-    end
-    private :expand_value
 
     def mkelem_start(name, reserved_attrs, options={})
       elem = "<#{name}"
