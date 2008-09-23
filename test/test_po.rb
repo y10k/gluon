@@ -236,6 +236,14 @@ module Gluon::Test
       def bar
         '&<>" foo'
       end
+
+      def yes
+        true
+      end
+
+      def no
+        false
+      end
     end
 
     def test_value
@@ -255,6 +263,16 @@ module Gluon::Test
                    render_page('<%= value :foo, :escape => false %>'))
       assert_equal('&<>" foo',
                    render_page('<%= value :bar, :escape => false %>'))
+
+      assert_equal('Hello world.',
+                   render_page('<%= value :foo, :escape => :yes %>'))
+      assert_equal('&amp;&lt;&gt;&quot; foo',
+                   render_page('<%= value :bar, :escape => :yes %>'))
+
+      assert_equal('Hello world.',
+                   render_page('<%= value :foo, :escape => :no %>'))
+      assert_equal('&<>" foo',
+                   render_page('<%= value :bar, :escape => :no %>'))
     end
 
     class PageForCond
