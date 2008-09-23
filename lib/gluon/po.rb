@@ -161,7 +161,9 @@ module Gluon
       end
       if (options.key? :attrs) then
         for name, value in options[:attrs]
-          next if (reserved_attrs.key? name)
+          next if (reserved_attrs.key? name.downcase)
+          next if (name == 'id')
+          next if (name == 'class')
           elem << ' ' << name.to_s << '="' << ERB::Util.html_escape(value) << '"'
         end
       end

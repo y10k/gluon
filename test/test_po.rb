@@ -59,6 +59,10 @@ module Gluon::Test
       build_page(page_type)
       assert_match(/ id="foo"/,
                    render_page(%Q'<%= #{expr}, :id => "foo" %>'))
+      assert_match(/ id="foo"/,
+                   render_page(%Q'<%= #{expr}, :id => "foo", :attrs => { "id" => "bar" } %>'))
+      assert_no_match(/ id="bar"/,
+                      render_page(%Q'<%= #{expr}, :id => "foo", :attrs => { "id" => "bar" } %>'))
     end
     private :assert_optional_id
 
@@ -66,6 +70,10 @@ module Gluon::Test
       build_page(page_type)
       assert_match(/ class="foo"/,
                    render_page(%Q'<%= #{expr}, :class => "foo" %>'))
+      assert_match(/ class="foo"/,
+                   render_page(%Q'<%= #{expr}, :class => "foo", :attrs => { "class" => "bar" } %>'))
+      assert_no_match(/ class="bar"/,
+                      render_page(%Q'<%= #{expr}, :class => "foo", :attrs => { "class" => "bar" } %>'))
     end
     private :assert_optional_class
 
@@ -76,6 +84,11 @@ module Gluon::Test
                    render_page(%Q'<%= #{expr}, :attrs => { "foo" => "Apple", "bar" => "Banana" } %>'))
 
       for name in reserved_attrs
+        assert_match(/^[a-z]+$/, name)
+        assert_no_match(/ #{Regexp.quote(name)}="not expected."/,
+                        render_page(%Q'<%= #{expr}, :attrs => { #{name.dump} => "not expected." } %>'))
+
+        name = name.upcase
         assert_no_match(/ #{Regexp.quote(name)}="not expected."/,
                         render_page(%Q'<%= #{expr}, :attrs => { #{name.dump} => "not expected." } %>'))
       end
