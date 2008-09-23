@@ -108,6 +108,10 @@ module Gluon::Test
         assert_no_match(/ #{Regexp.quote(name)}="not expected."/,
                         render_page(%Q'<%= #{expr}, :attrs => { #{name.dump} => "not expected." } %>'))
       end
+
+      assert_raise(TypeError) {
+        render_page(%Q'<%= #{expr}, :attrs => { :foo => "not expected." } %>')
+      }
     end
     private :assert_optional_attrs
 
