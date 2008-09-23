@@ -82,6 +82,28 @@ module Gluon::Test
     end
     private :assert_optional_attrs
 
+    def assert_optional_disabled(page_type, expr)
+      build_page(page_type)
+      assert_match(/ disabled="disabled"/,
+                   render_page(%Q'<%= #{expr}, :disabled => true %>'))
+      assert_no_match(/ disabled="disabled"/,
+                   render_page(%Q'<%= #{expr}, :disabled => false %>'))
+      assert_no_match(/ disabled="disabled"/,
+                   render_page(%Q'<%= #{expr} %>'))
+    end
+    private :assert_optional_disabled
+
+    def assert_optional_readonly(page_type, expr)
+      build_page(PageForText)
+      assert_match(/ readonly="readonly"/,
+                   render_page(%Q'<%= #{expr}, :readonly => true %>'))
+      assert_no_match(/ readonly="readonly"/,
+                   render_page(%Q'<%= #{expr}, :readonly => false %>'))
+      assert_no_match(/ readonly="readonly"/,
+                   render_page(%Q'<%= #{expr} %>'))
+    end
+    private :assert_optional_readonly
+
     class PageForValue
       include Gluon::Controller
       include Gluon::ERBView
@@ -609,6 +631,14 @@ module Gluon::Test
                             Gluon::PresentationObject::MKINPUT_RESERVED_ATTRS.keys)
     end
 
+    def test_text_optional_disabled
+      assert_optional_disabled(PageForText, 'text :foo')
+    end
+
+    def test_text_optional_readonly
+      assert_optional_readonly(PageForText, 'text :foo')
+    end
+
     class PageForPassword
       include Gluon::Controller
       include Gluon::ERBView
@@ -635,6 +665,14 @@ module Gluon::Test
     def test_password_optional_attrs
       assert_optional_attrs(PageForPassword, 'password :foo',
                             Gluon::PresentationObject::MKINPUT_RESERVED_ATTRS.keys)
+    end
+
+    def test_password_optional_disabled
+      assert_optional_disabled(PageForPassword, 'password :foo')
+    end
+
+    def test_password_optional_readonly
+      assert_optional_readonly(PageForPassword, 'password :foo')
     end
 
     class PageForSubmit
@@ -667,6 +705,14 @@ module Gluon::Test
                             Gluon::PresentationObject::MKINPUT_RESERVED_ATTRS.keys)
     end
 
+    def test_submit_optional_disabled
+      assert_optional_disabled(PageForSubmit, 'submit :foo')
+    end
+
+    def test_submit_optional_readonly
+      assert_optional_readonly(PageForSubmit, 'submit :foo')
+    end
+
     class PageForHidden
       include Gluon::Controller
       include Gluon::ERBView
@@ -693,6 +739,14 @@ module Gluon::Test
     def test_hidden_optional_attrs
       assert_optional_attrs(PageForHidden, 'hidden :foo',
                             Gluon::PresentationObject::MKINPUT_RESERVED_ATTRS.keys)
+    end
+
+    def test_hidden_optional_disabled
+      assert_optional_disabled(PageForHidden, 'hidden :foo')
+    end
+
+    def test_hidden_optional_readonly
+      assert_optional_readonly(PageForHidden, 'hidden :foo')
     end
 
     class PageForCheckbox
@@ -726,6 +780,14 @@ module Gluon::Test
                             Gluon::PresentationObject::MKINPUT_RESERVED_ATTRS.keys)
     end
 
+    def test_checkbox_optional_disabled
+      assert_optional_disabled(PageForCheckbox, 'checkbox :foo')
+    end
+
+    def test_checkbox_optional_readonly
+      assert_optional_readonly(PageForCheckbox, 'checkbox :foo')
+    end
+
     class PageForRadio
       include Gluon::Controller
       include Gluon::ERBView
@@ -755,6 +817,14 @@ module Gluon::Test
     def test_radio_optional_attrs
       assert_optional_attrs(PageForRadio, 'radio :foo, "Banana"',
                             Gluon::PresentationObject::MKINPUT_RESERVED_ATTRS.keys)
+    end
+
+    def test_radio_optional_disabled
+      assert_optional_disabled(PageForRadio, 'radio :foo, "Banana"')
+    end
+
+    def test_radio_optional_readonly
+      assert_optional_readonly(PageForRadio, 'radio :foo, "Banana"')
     end
 
     class PageForSelect
@@ -795,6 +865,10 @@ module Gluon::Test
     def test_select_optional_attrs
       assert_optional_attrs(PageForSelect, 'select :foo, :fruits',
                             Gluon::PresentationObject::SELECT_RESERVED_ATTRS.keys)
+    end
+
+    def test_select_optional_disabled
+      assert_optional_disabled(PageForSelect, 'select :foo, :fruits')
     end
 
     def test_multiple_select
@@ -838,6 +912,14 @@ module Gluon::Test
     def test_textarea_optional_attrs
       assert_optional_attrs(PageForTextarea, 'textarea :foo',
                             Gluon::PresentationObject::TEXTAREA_RESERVED_ATTRS.keys)
+    end
+
+    def test_textarea_optional_disabled
+      assert_optional_disabled(PageForTextarea, 'textarea :foo')
+    end
+
+    def test_textarea_optional_readonly
+      assert_optional_readonly(PageForTextarea, 'textarea :foo')
     end
 
     class PageForForeachAction

@@ -338,7 +338,7 @@ module Gluon
         value = options[key]
         value = funcall(value) if (value.is_a? Symbol)
         if (value) then
-          return "#{key}=\"#{key}\""
+          return " #{key}=\"#{key}\""
         end
       end
 
