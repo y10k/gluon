@@ -97,16 +97,16 @@ module Gluon
     end
     private :funcall
 
-    def expand_value(key, options)
+    def expand_option(key, options)
       value = options[key]
       value = funcall(value) if (value.is_a? Symbol)
       value
     end
-    private :expand_value
+    private :expand_option
 
     def value(name=:to_s, options={})
       options = getopts(options, :escape => true)
-      escape = expand_value(:escape, options)
+      escape = expand_option(:escape, options)
       s = funcall(name).to_s
       s = ERB::Util.html_escape(s) if escape
       s
@@ -163,7 +163,7 @@ module Gluon
       elem = "<#{name}"
       for name in [ :id, :class ]
         if (options.key? name) then
-          value = expand_value(name, options)
+          value = expand_option(name, options)
           elem << ' ' << name.to_s << '="' << ERB::Util.html_escape(value) << '"'
         end
       end
@@ -351,7 +351,7 @@ module Gluon
 
     def mkattr_bool(key, options)
       if (options.key? key) then
-        value = expand_value(key, options)
+        value = expand_option(key, options)
         if (value) then
           return " #{key}=\"#{key}\""
         end
@@ -373,7 +373,7 @@ module Gluon
 
     def mkattr_string(key, options)
       if (options.key? key) then
-        value = expand_value(key, options)
+        value = expand_option(key, options)
         return " #{key}=\"#{ERB::Util.html_escape(value)}\""
       end
 
