@@ -69,10 +69,16 @@ module Gluon::Test
     end
     private :assert_optional_class
 
-    def assert_optional_attrs(page_type, expr)
+    def assert_optional_attrs(page_type, expr, reserved_attrs)
       build_page(page_type)
+
       assert_match(/ foo="Apple" bar="Banana"/,
                    render_page(%Q'<%= #{expr}, :attrs => { "foo" => "Apple", "bar" => "Banana" } %>'))
+
+      for name in reserved_attrs
+        assert_no_match(/ #{Regexp.quote(name)}="not expected."/,
+                        render_page(%Q'<%= #{expr}, :attrs => { #{name.dump} => "not expected." } %>'))
+      end
     end
     private :assert_optional_attrs
 
@@ -267,7 +273,8 @@ module Gluon::Test
     end
 
     def test_link_optional_attrs
-      assert_optional_attrs(PageForLink, 'link "/Foo"')
+      assert_optional_attrs(PageForLink, 'link "/Foo"',
+                            Gluon::PresentationObject::MKLINK_RESERVED_ATTRS.keys)
     end
 
     def test_link_error
@@ -343,7 +350,8 @@ module Gluon::Test
 
     def test_link_uri_optional_attrs
       assert_optional_attrs(PageForLinkURI,
-                            'link_uri "http://www.ruby-lang.org"')
+                            'link_uri "http://www.ruby-lang.org"',
+                            Gluon::PresentationObject::MKLINK_RESERVED_ATTRS.keys)
     end
 
     def test_link_uri_error
@@ -388,7 +396,8 @@ module Gluon::Test
     end
 
     def test_action_optional_attrs
-      assert_optional_attrs(PageForAction, 'action :foo')
+      assert_optional_attrs(PageForAction, 'action :foo',
+                            Gluon::PresentationObject::MKLINK_RESERVED_ATTRS.keys)
     end
 
     class PageForFrame
@@ -449,7 +458,8 @@ module Gluon::Test
     end
 
     def test_frame_optional_attrs
-      assert_optional_attrs(PageForFrame, 'frame "/Foo"')
+      assert_optional_attrs(PageForFrame, 'frame "/Foo"',
+                            Gluon::PresentationObject::MKFRAME_RESERVED_ATTRS.keys)
     end
 
     def test_frame_error
@@ -511,7 +521,8 @@ module Gluon::Test
 
     def test_frame_uri_optional_attrs
       assert_optional_attrs(PageForFrameURI,
-                            'frame_uri "http://www.ruby-lang.org"')
+                            'frame_uri "http://www.ruby-lang.org"',
+                            Gluon::PresentationObject::MKFRAME_RESERVED_ATTRS.keys)
     end
 
     def test_frame_uri_error
@@ -594,7 +605,8 @@ module Gluon::Test
     end
 
     def test_text_optional_attrs
-      assert_optional_attrs(PageForText, 'text :foo')
+      assert_optional_attrs(PageForText, 'text :foo',
+                            Gluon::PresentationObject::MKINPUT_RESERVED_ATTRS.keys)
     end
 
     class PageForPassword
@@ -621,7 +633,8 @@ module Gluon::Test
     end
 
     def test_password_optional_attrs
-      assert_optional_attrs(PageForPassword, 'password :foo')
+      assert_optional_attrs(PageForPassword, 'password :foo',
+                            Gluon::PresentationObject::MKINPUT_RESERVED_ATTRS.keys)
     end
 
     class PageForSubmit
@@ -650,7 +663,8 @@ module Gluon::Test
     end
 
     def test_submit_optional_attrs
-      assert_optional_attrs(PageForSubmit, 'submit :foo')
+      assert_optional_attrs(PageForSubmit, 'submit :foo',
+                            Gluon::PresentationObject::MKINPUT_RESERVED_ATTRS.keys)
     end
 
     class PageForHidden
@@ -677,7 +691,8 @@ module Gluon::Test
     end
 
     def test_hidden_optional_attrs
-      assert_optional_attrs(PageForHidden, 'hidden :foo')
+      assert_optional_attrs(PageForHidden, 'hidden :foo',
+                            Gluon::PresentationObject::MKINPUT_RESERVED_ATTRS.keys)
     end
 
     class PageForCheckbox
@@ -707,7 +722,8 @@ module Gluon::Test
     end
 
     def test_checkbox_optional_attrs
-      assert_optional_attrs(PageForCheckbox, 'checkbox :foo')
+      assert_optional_attrs(PageForCheckbox, 'checkbox :foo',
+                            Gluon::PresentationObject::MKINPUT_RESERVED_ATTRS.keys)
     end
 
     class PageForRadio
@@ -737,7 +753,8 @@ module Gluon::Test
     end
 
     def test_radio_optional_attrs
-      assert_optional_attrs(PageForRadio, 'radio :foo, "Banana"')
+      assert_optional_attrs(PageForRadio, 'radio :foo, "Banana"',
+                            Gluon::PresentationObject::MKINPUT_RESERVED_ATTRS.keys)
     end
 
     class PageForSelect
@@ -776,7 +793,8 @@ module Gluon::Test
     end
 
     def test_select_optional_attrs
-      assert_optional_attrs(PageForSelect, 'select :foo, :fruits')
+      assert_optional_attrs(PageForSelect, 'select :foo, :fruits',
+                            Gluon::PresentationObject::SELECT_RESERVED_ATTRS.keys)
     end
 
     def test_multiple_select
@@ -818,7 +836,8 @@ module Gluon::Test
     end
 
     def test_textarea_optional_attrs
-      assert_optional_class(PageForTextarea, 'textarea :foo')
+      assert_optional_attrs(PageForTextarea, 'textarea :foo',
+                            Gluon::PresentationObject::TEXTAREA_RESERVED_ATTRS.keys)
     end
 
     class PageForForeachAction
