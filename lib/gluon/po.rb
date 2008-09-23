@@ -133,8 +133,7 @@ module Gluon
     def mkelem_start(name, reserved_attrs, options={})
       elem = "<#{name}"
       for name in [ :id, :class ]
-        if (options.key? name) then
-          value = getopt(name, options)
+        if (value = getopt(name, options)) then
           elem << ' ' << name.to_s << '="' << ERB::Util.html_escape(value) << '"'
         end
       end
@@ -143,9 +142,10 @@ module Gluon
           unless (name.is_a? String) then
             raise TypeError, "not a String: #{name.inspect}"
           end
-          next if (reserved_attrs.key? name.downcase)
-          next if (name == 'id')
-          next if (name == 'class')
+          n = name.downcase
+          next if (reserved_attrs.key? n)
+          next if (n == 'id')
+          next if (n == 'class')
           elem << ' ' << name << '="' << ERB::Util.html_escape(value) << '"'
         end
       end
@@ -346,14 +346,11 @@ module Gluon
     private :form_value
 
     def mkattr_bool(key, options)
-      if (options.key? key) then
-        value = getopt(key, options)
-        if (value) then
-          return " #{key}=\"#{key}\""
-        end
+      if (value = getopt(key, options)) then
+        " #{key}=\"#{key}\""
+      else
+        ''
       end
-
-      ''
     end
     private :mkattr_bool
 
@@ -368,12 +365,11 @@ module Gluon
     private :mkattr_readonly
 
     def mkattr_string(key, options)
-      if (options.key? key) then
-        value = getopt(key, options)
-        return " #{key}=\"#{ERB::Util.html_escape(value)}\""
+      if (value = getopt(key, options)) then
+        " #{key}=\"#{ERB::Util.html_escape(value)}\""
+      else
+        ''
       end
-
-      ''
     end
     private :mkattr_string
 
