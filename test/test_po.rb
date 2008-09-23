@@ -104,6 +104,20 @@ module Gluon::Test
     end
     private :assert_optional_readonly
 
+    def assert_optional_size(page_type, expr)
+      build_page(page_type)
+      assert_match(/ size="123"/,
+                   render_page(%Q'<%= #{expr}, :size => 123 %>'))
+    end
+    private :assert_optional_size
+
+    def assert_optional_maxlength(page_type, expr)
+      build_page(page_type)
+      assert_match(/ maxlength="123"/,
+                   render_page(%Q'<%= #{expr}, :maxlength => 123 %>'))
+    end
+    private :assert_optional_size
+
     class PageForValue
       include Gluon::Controller
       include Gluon::ERBView
@@ -639,6 +653,14 @@ module Gluon::Test
       assert_optional_readonly(PageForText, 'text :foo')
     end
 
+    def test_text_size
+      assert_optional_size(PageForText, 'text :foo')
+    end
+
+    def test_text_maxlength
+      assert_optional_maxlength(PageForText, 'text :foo')
+    end
+
     class PageForPassword
       include Gluon::Controller
       include Gluon::ERBView
@@ -673,6 +695,14 @@ module Gluon::Test
 
     def test_password_optional_readonly
       assert_optional_readonly(PageForPassword, 'password :foo')
+    end
+
+    def test_password_size
+      assert_optional_size(PageForPassword, 'password :foo')
+    end
+
+    def test_password_maxlength
+      assert_optional_maxlength(PageForPassword, 'password :foo')
     end
 
     class PageForSubmit
