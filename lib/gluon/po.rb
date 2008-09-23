@@ -54,38 +54,16 @@ module Gluon
     end
     private :prefix
 
-    def getopts(options, default_options)
-      options = options.dup
-      for key, value in default_options
-        unless (options.key? key) then
-          options[key] = value
-        end
+    def getopt(key, options, default=nil)
+      if (options.key? key) then
+        value = options[key]
+        value = funcall(value) if (value.is_a? Symbol)
+        return value
       end
-      options
+
+      default
     end
-    private :getopts
-
-    def merge_opts(*opts_list)
-      opts_list = opts_list.compact
-      if (opts_list.length == 1) then
-        return opts_list[0]
-      end
-
-      options = {}
-      opts_list.reverse_each do |o|
-        options.update(o)
-      end
-
-      query = nil
-      opts_list.map{|opts| opts[:query] }.compact.reverse_each do |q|
-        query = {} unless query
-        query.update(q)
-      end
-      options[:query] = query if query
-
-      options
-    end
-    private :merge_opts
+    private :getopt
 
     def funcall(name, *args)
       @stack.reverse_each do |prefix, child|
@@ -97,16 +75,8 @@ module Gluon
     end
     private :funcall
 
-    def expand_option(key, options)
-      value = options[key]
-      value = funcall(value) if (value.is_a? Symbol)
-      value
-    end
-    private :expand_option
-
     def value(name=:to_s, options={})
-      options = getopts(options, :escape => true)
-      escape = expand_option(:escape, options)
+      escape = getopt(:escape, options, true)
       s = funcall(name).to_s
       s = ERB::Util.html_escape(s) if escape
       s
@@ -121,12 +91,13 @@ module Gluon
     end
 
     def cond(name, options={})
-      options = getopts(options, :negate => false)
       if (name.is_a? NegativeCondition) then
         name = name.operand
-        options[:negate] = true
+        negate = true
+      else
+        negate = (options.key? :negate) ? options[:negate] : false
       end
-      unless (options[:negate]) then
+      unless (negate) then
         if (funcall(name)) then
           yield
         end
@@ -163,7 +134,7 @@ module Gluon
       elem = "<#{name}"
       for name in [ :id, :class ]
         if (options.key? name) then
-          value = expand_option(name, options)
+          value = getopt(name, options)
           elem << ' ' << name.to_s << '="' << ERB::Util.html_escape(value) << '"'
         end
       end
@@ -236,6 +207,28 @@ module Gluon
       end
     end
     private :expand_path
+
+    def merge_opts(*opts_list)
+      opts_list = opts_list.compact
+      if (opts_list.length == 1) then
+        return opts_list[0]
+      end
+
+      options = {}
+      opts_list.reverse_each do |o|
+        options.update(o)
+      end
+
+      query = nil
+      opts_list.map{|opts| opts[:query] }.compact.reverse_each do |q|
+        query = {} unless query
+        query.update(q)
+      end
+      options[:query] = query if query
+
+      options
+    end
+    private :merge_opts
 
     def expand_link_name(name, options)
       if (name.is_a? Symbol) then
@@ -354,7 +347,7 @@ module Gluon
 
     def mkattr_bool(key, options)
       if (options.key? key) then
-        value = expand_option(key, options)
+        value = getopt(key, options)
         if (value) then
           return " #{key}=\"#{key}\""
         end
@@ -376,7 +369,7 @@ module Gluon
 
     def mkattr_string(key, options)
       if (options.key? key) then
-        value = expand_option(key, options)
+        value = getopt(key, options)
         return " #{key}=\"#{ERB::Util.html_escape(value)}\""
       end
 
