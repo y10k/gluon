@@ -24,8 +24,16 @@ module Gluon
     end
 
     def default_template(controller)
-      File.join(@template_dir,
-                controller.class.name.gsub(/::/, File::SEPARATOR))
+      filename = controller.class.name.dup
+      filename.gsub!(/::/, File::SEPARATOR)
+      filename.gsub!(%r"[^0-9A-Za-z_/-]") {|special|
+        s = ''
+        special.each_byte do |i|
+          s << format('%%%02X', i)
+        end
+        s
+      }
+      File.join(@template_dir, filename)
     end
 
     def compile(view, template)
