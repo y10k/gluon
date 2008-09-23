@@ -367,7 +367,6 @@ module Gluon
     end
     private :mkattr_string
 
-
     def mkattr_size(options)
       mkattr_string(:size, options)
     end
