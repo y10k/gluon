@@ -440,10 +440,10 @@ module Gluon::Test
 
     def test_link_error
       build_page(PageForLink)
-      assert_raise(RuntimeError) {
+      assert_raise(TypeError) {
         render_page('<%= link 123 %>')
       }
-      assert_raise(RuntimeError) {
+      assert_raise(TypeError) {
         render_page('<%= link "foo", :text => 123 %>')
       }
       assert_raise(RuntimeError) {
@@ -517,10 +517,10 @@ module Gluon::Test
 
     def test_link_uri_error
       build_page(PageForLinkURI)
-      assert_raise(RuntimeError) {
+      assert_raise(TypeError) {
         render_page('<%= link_uri 123 %>')
       }
-      assert_raise(RuntimeError) {
+      assert_raise(TypeError) {
         render_page('<%= link_uri "foo", :text => 123 %>')
       }
     end
@@ -625,7 +625,7 @@ module Gluon::Test
 
     def test_frame_error
       build_page(PageForFrame)
-      assert_raise(RuntimeError) {
+      assert_raise(TypeError) {
         render_page('<%= frame 123 %>')
       }
     end
@@ -688,7 +688,7 @@ module Gluon::Test
 
     def test_frame_uri_error
       build_page(PageForFrameURI)
-      assert_raise(RuntimeError) {
+      assert_raise(TypeError) {
         render_page('<%= frame_uri 123 %>')
       }
     end

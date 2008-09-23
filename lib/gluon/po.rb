@@ -169,10 +169,13 @@ module Gluon
       end
       if (options.key? :attrs) then
         for name, value in options[:attrs]
+          unless (name.is_a? String) then
+            raise TypeError, "not a String: #{name.inspect}"
+          end
           next if (reserved_attrs.key? name.downcase)
           next if (name == 'id')
           next if (name == 'class')
-          elem << ' ' << name.to_s << '="' << ERB::Util.html_escape(value) << '"'
+          elem << ' ' << name << '="' << ERB::Util.html_escape(value) << '"'
         end
       end
       elem
@@ -208,7 +211,7 @@ module Gluon
         when String
           text = options[:text]
         else
-          raise "unknown link text type: #{options[:text].class}"
+          raise TypeError, "unknown link text type: #{options[:text].class}"
         end
         elem << ERB::Util.html_escape(text)
       elsif (block_given?) then
@@ -248,7 +251,7 @@ module Gluon
       name, options = expand_link_name(name, options)
       path = expand_path(name)
       unless (path.is_a? String) then
-        raise "unknown link name type: #{name.class}"
+        raise TypeError, "unknown link name type: #{name.class}"
       end
       mklink(path, options, &block)
     end
@@ -256,7 +259,7 @@ module Gluon
     def link_uri(path, options={}, &block)
       path, options = expand_link_name(path, options)
       unless (path.is_a? String) then
-        raise "unknon link path type: #{path.class}"
+        raise TypeError, "unknon link path type: #{path.class}"
       end
       mklink(path, options, &block)
     end
@@ -268,7 +271,7 @@ module Gluon
       if (page = options[:page]) then
         path = expand_path(page)
         unless (path.is_a? String) then
-          raise "unknown action page type: #{path.class}"
+          raise TypeError, "unknown action page type: #{path.class}"
         end
       else
         path = @c.req.script_name + @c.req.env['PATH_INFO']
@@ -295,7 +298,7 @@ module Gluon
       name, options = expand_link_name(name, options)
       src = expand_path(name)
       unless (src.is_a? String) then
-        raise "unknown frame src type: #{name.class}"
+        raise TypeError, "unknown frame src type: #{name.class}"
       end
       mkframe(src, options)
     end
@@ -303,7 +306,7 @@ module Gluon
     def frame_uri(src, options={})
       src, options = expand_link_name(src, options)
       unless (src.is_a? String) then
-        raise "unknown frame src type: #{src.class}"
+        raise TypeError, "unknown frame src type: #{src.class}"
       end
       mkframe(src, options)
     end
