@@ -24,9 +24,9 @@ module Gluon
     end
 
     def default_template(controller)
-      filename = controller.class.name.dup
+      filename = controller.class.to_s.dup
       filename.gsub!(/::/, File::SEPARATOR)
-      filename.gsub!(%r"[^0-9A-Za-z_/-]") {|special|
+      filename.gsub!(%r"[^0-9A-Za-z_/-]+") {|special|
         s = ''
         special.each_byte do |i|
           s << format('%%%02X', i)
