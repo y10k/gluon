@@ -372,6 +372,11 @@ module Gluon
     end
     private :mkattr_size
 
+    def mkattr_maxlength(options)
+      mkattr_string(:maxlength, options)
+    end
+    private :mkattr_maxlength
+
     def mkattr_rows(options)
       mkattr_string(:rows, options)
     end
@@ -407,6 +412,7 @@ module Gluon
       'name' => true,
       'value' => true,
       'size' => true,
+      'maxlength' => true,
       'checked' => true,
       'disabled' => true,
       'readonly' => true
@@ -420,6 +426,7 @@ module Gluon
       elem << ' value="' << ERB::Util.html_escape(options[:value]) << '"' if (options.key? :value)
       elem << ' checked="checked"' if options[:checked]
       elem << mkattr_size(options)
+      elem << mkattr_maxlength(options)
       elem << mkattr_disabled(options)
       elem << mkattr_readonly(options)
       elem << ' />'
