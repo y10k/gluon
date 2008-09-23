@@ -118,6 +118,20 @@ module Gluon::Test
     end
     private :assert_optional_size
 
+    def assert_optional_rows(page_type, expr)
+      build_page(page_type)
+      assert_match(/ rows="123"/,
+                   render_page(%Q'<%= #{expr}, :rows => 123 %>'))
+    end
+    private :assert_optional_size
+
+    def assert_optional_cols(page_type, expr)
+      build_page(page_type)
+      assert_match(/ cols="123"/,
+                   render_page(%Q'<%= #{expr}, :cols => 123 %>'))
+    end
+    private :assert_optional_size
+
     class PageForValue
       include Gluon::Controller
       include Gluon::ERBView
@@ -950,6 +964,14 @@ module Gluon::Test
 
     def test_textarea_optional_readonly
       assert_optional_readonly(PageForTextarea, 'textarea :foo')
+    end
+
+    def test_textarea_optional_rows
+      assert_optional_rows(PageForTextarea, 'textarea :foo')
+    end
+
+    def test_textarea_optional_cols
+      assert_optional_cols(PageForTextarea, 'textarea :foo')
     end
 
     class PageForForeachAction
