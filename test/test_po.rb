@@ -64,8 +64,7 @@ module Gluon::Test
       assert_no_match(/ id="bar"/,
                       render_page(%Q'<%= #{expr}, :id => "foo", :attrs => { "id" => "bar" } %>'))
 
-      anon_page_type = Class.new(page_type)
-      anon_page_type.class_eval{
+      anon_page_type = Class.new(page_type) {
         define_method(:optional_id) { "foo" }
       }
       build_page(anon_page_type)
@@ -83,8 +82,7 @@ module Gluon::Test
       assert_no_match(/ class="bar"/,
                       render_page(%Q'<%= #{expr}, :class => "foo", :attrs => { "class" => "bar" } %>'))
 
-      anon_page_type = Class.new(page_type)
-      anon_page_type.class_eval{
+      anon_page_type = Class.new(page_type) {
         define_method(:optional_class) { "foo" }
       }
       build_page(anon_page_type)
@@ -124,16 +122,14 @@ module Gluon::Test
       assert_no_match(/ disabled="disabled"/,
                    render_page(%Q'<%= #{expr} %>'))
 
-      anon_page_type = Class.new(page_type)
-      anon_page_type.class_eval{
+      anon_page_type = Class.new(page_type) {
         define_method(:optional_disabled?) { true }
       }
       build_page(anon_page_type)
       assert_match(/ disabled="disabled"/,
                    render_page(%Q'<%= #{expr}, :disabled => :optional_disabled? %>'))
 
-      anon_page_type = Class.new(page_type)
-      anon_page_type.class_eval{
+      anon_page_type = Class.new(page_type) {
         define_method(:optional_disabled?) { false }
       }
       build_page(anon_page_type)
@@ -151,16 +147,14 @@ module Gluon::Test
       assert_no_match(/ readonly="readonly"/,
                    render_page(%Q'<%= #{expr} %>'))
 
-      anon_page_type = Class.new(page_type)
-      anon_page_type.class_eval{
+      anon_page_type = Class.new(page_type) {
         define_method(:optional_readonly?) { true }
       }
       build_page(anon_page_type)
       assert_match(/ readonly="readonly"/,
                    render_page(%Q'<%= #{expr}, :readonly => :optional_readonly? %>'))
 
-      anon_page_type = Class.new(page_type)
-      anon_page_type.class_eval{
+      anon_page_type = Class.new(page_type) {
         define_method(:optional_readonly?) { false }
       }
       build_page(anon_page_type)
@@ -174,8 +168,7 @@ module Gluon::Test
       assert_match(/ size="123"/,
                    render_page(%Q'<%= #{expr}, :size => 123 %>'))
 
-      anon_page_type = Class.new(page_type)
-      anon_page_type.class_eval{
+      anon_page_type = Class.new(page_type) {
         define_method(:optional_size) { 123 }
       }
       build_page(anon_page_type)
@@ -189,8 +182,7 @@ module Gluon::Test
       assert_match(/ maxlength="123"/,
                    render_page(%Q'<%= #{expr}, :maxlength => 123 %>'))
 
-      anon_page_type = Class.new(page_type)
-      anon_page_type.class_eval{
+      anon_page_type = Class.new(page_type) {
         define_method(:optional_maxlength) { 123 }
       }
       build_page(anon_page_type)
@@ -204,8 +196,7 @@ module Gluon::Test
       assert_match(/ rows="123"/,
                    render_page(%Q'<%= #{expr}, :rows => 123 %>'))
 
-      anon_page_type = Class.new(page_type)
-      anon_page_type.class_eval{
+      anon_page_type = Class.new(page_type) {
         define_method(:optional_rows) { 123 }
       }
       build_page(anon_page_type)
@@ -219,8 +210,7 @@ module Gluon::Test
       assert_match(/ cols="123"/,
                    render_page(%Q'<%= #{expr}, :cols => 123 %>'))
 
-      anon_page_type = Class.new(page_type)
-      anon_page_type.class_eval{
+      anon_page_type = Class.new(page_type) {
         define_method(:optional_cols) { 123 }
       }
       build_page(anon_page_type)
