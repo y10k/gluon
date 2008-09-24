@@ -11,6 +11,7 @@
 require 'erb'
 require 'forwardable'
 require 'gluon/action'
+require 'gluon/controller'
 
 module Gluon
   class PresentationObject
@@ -54,14 +55,16 @@ module Gluon
     end
     private :prefix
 
-    def getopt(key, options, default=nil)
+    def getopt(key, options, method, default=nil)
       if (options.key? key) then
         value = options[key]
         value = funcall(value) if (value.is_a? Symbol)
-        return value
+        value
+      elsif (method) then
+        Controller.find_advice(@controller.class, method, key, default)
+      else
+        default
       end
-
-      default
     end
     private :getopt
 
@@ -76,7 +79,7 @@ module Gluon
     private :funcall
 
     def value(name=:to_s, options={})
-      escape = getopt(:escape, options, true)
+      escape = getopt(:escape, options, name, true)
       s = funcall(name).to_s
       s = ERB::Util.html_escape(s) if escape
       s
@@ -130,10 +133,10 @@ module Gluon
       nil
     end
 
-    def mkelem_start(name, reserved_attrs, options)
+    def mkelem_start(name, reserved_attrs, options, method)
       elem = "<#{name}"
       for name in [ :id, :class ]
-        if (value = getopt(name, options)) then
+        if (value = getopt(name, options, method)) then
           elem << ' ' << name.to_s << '="' << ERB::Util.html_escape(value) << '"'
         end
       end
@@ -170,8 +173,8 @@ module Gluon
     }.freeze
     # :startdoc:
 
-    def mklink(href, options)
-      elem = mkelem_start('a', MKLINK_RESERVED_ATTRS, options)
+    def mklink(href, options, method)
+      elem = mkelem_start('a', MKLINK_RESERVED_ATTRS, options, method)
       elem << ' href="' << ERB::Util.html_escape(mkpath(href, options)) << '"'
       elem << ' target="' << ERB::Util.html_escape(options[:target]) << '"' if (options.key? :target)
       elem << '>'
@@ -232,8 +235,9 @@ module Gluon
 
     def expand_link_name(name, options)
       if (name.is_a? Symbol) then
-        name, options2 = funcall(name)
-        return name, merge_opts(options, options2)
+        method = name
+        name, options2 = funcall(method)
+        return name, merge_opts(options, options2), method
       else
         return name, options
       end
@@ -241,20 +245,20 @@ module Gluon
     private :expand_link_name
 
     def link(name, options={}, &block)
-      name, options = expand_link_name(name, options)
+      name, options, method = expand_link_name(name, options)
       path = expand_path(name)
       unless (path.is_a? String) then
         raise TypeError, "unknown link name type: #{name.class}"
       end
-      mklink(path, options, &block)
+      mklink(path, options, method, &block)
     end
 
     def link_uri(path, options={}, &block)
-      path, options = expand_link_name(path, options)
+      path, options, method = expand_link_name(path, options)
       unless (path.is_a? String) then
         raise TypeError, "unknon link path type: #{path.class}"
       end
-      mklink(path, options, &block)
+      mklink(path, options, method, &block)
     end
 
     def action(name, options={}, &block)
@@ -269,7 +273,7 @@ module Gluon
       else
         path = @c.req.script_name + @c.req.env['PATH_INFO']
       end
-      mklink(path, options, &block)
+      mklink(path, options, name, &block)
     end
 
     # :stopdoc:
@@ -279,8 +283,8 @@ module Gluon
     }.freeze
     # :startdoc:
 
-    def mkframe(src, options)
-      elem = mkelem_start('frame', MKFRAME_RESERVED_ATTRS, options)
+    def mkframe(src, options, method)
+      elem = mkelem_start('frame', MKFRAME_RESERVED_ATTRS, options, method)
       elem << ' src="' << ERB::Util.html_escape(mkpath(src, options)) << '"'
       elem << ' name="' << ERB::Util.html_escape(options[:name]) << '"' if (options.key? :name)
       elem << ' />'
@@ -288,20 +292,20 @@ module Gluon
     private :mkframe
 
     def frame(name, options={})
-      name, options = expand_link_name(name, options)
+      name, options, method = expand_link_name(name, options)
       src = expand_path(name)
       unless (src.is_a? String) then
         raise TypeError, "unknown frame src type: #{name.class}"
       end
-      mkframe(src, options)
+      mkframe(src, options, method)
     end
 
     def frame_uri(src, options={})
-      src, options = expand_link_name(src, options)
+      src, options, method = expand_link_name(src, options)
       unless (src.is_a? String) then
         raise TypeError, "unknown frame src type: #{src.class}"
       end
-      mkframe(src, options)
+      mkframe(src, options, method)
     end
 
     def import(name, options={})
@@ -345,8 +349,8 @@ module Gluon
     end
     private :form_value
 
-    def mkattr_bool(key, options)
-      if (value = getopt(key, options)) then
+    def mkattr_bool(key, options, method)
+      if (value = getopt(key, options, method)) then
         " #{key}=\"#{key}\""
       else
         ''
@@ -354,18 +358,18 @@ module Gluon
     end
     private :mkattr_bool
 
-    def mkattr_disabled(options)
-      mkattr_bool(:disabled, options)
+    def mkattr_disabled(options, method)
+      mkattr_bool(:disabled, options, method)
     end
     private :mkattr_disabled
 
-    def mkattr_readonly(options)
-      mkattr_bool(:readonly, options)
+    def mkattr_readonly(options, method)
+      mkattr_bool(:readonly, options, method)
     end
     private :mkattr_readonly
 
-    def mkattr_string(key, options)
-      if (value = getopt(key, options)) then
+    def mkattr_string(key, options, method)
+      if (value = getopt(key, options, method)) then
         " #{key}=\"#{ERB::Util.html_escape(value)}\""
       else
         ''
@@ -373,23 +377,23 @@ module Gluon
     end
     private :mkattr_string
 
-    def mkattr_size(options)
-      mkattr_string(:size, options)
+    def mkattr_size(options, method)
+      mkattr_string(:size, options, method)
     end
     private :mkattr_size
 
-    def mkattr_maxlength(options)
-      mkattr_string(:maxlength, options)
+    def mkattr_maxlength(options, method)
+      mkattr_string(:maxlength, options, method)
     end
     private :mkattr_maxlength
 
-    def mkattr_rows(options)
-      mkattr_string(:rows, options)
+    def mkattr_rows(options, method)
+      mkattr_string(:rows, options, method)
     end
     private :mkattr_rows
 
-    def mkattr_cols(options)
-      mkattr_string(:cols, options)
+    def mkattr_cols(options, method)
+      mkattr_string(:cols, options, method)
     end
     private :mkattr_cols
 
@@ -425,48 +429,51 @@ module Gluon
     }.freeze
     # :startdoc:
 
-    def mkinput(type, name, options)
-      elem = mkelem_start('input', MKINPUT_RESERVED_ATTRS, options)
+    def mkinput(type, name, options, method)
+      elem = mkelem_start('input', MKINPUT_RESERVED_ATTRS, options, method)
       elem << ' type="' << ERB::Util.html_escape(type) << '"'
       elem << mkattr_controller_name(name, options)
       elem << ' value="' << ERB::Util.html_escape(options[:value]) << '"' if (options.key? :value)
       elem << ' checked="checked"' if options[:checked]
-      elem << mkattr_size(options)
-      elem << mkattr_maxlength(options)
-      elem << mkattr_disabled(options)
-      elem << mkattr_readonly(options)
+      elem << mkattr_size(options, method)
+      elem << mkattr_maxlength(options, method)
+      elem << mkattr_disabled(options, method)
+      elem << mkattr_readonly(options, method)
       elem << ' />'
     end
     private :mkinput
 
     def text(name, options={})
-      mkinput('text', name, options.dup.update(:value => form_value(name)))
+      options = options.dup.update(:value => form_value(name))
+      mkinput('text', name, options, name)
     end
 
     def password(name, options={})
-      mkinput('password', name, options.dup.update(:value => form_value(name)))
+      options = options.dup.update(:value => form_value(name))
+      mkinput('password', name, options, name)
     end
 
     def submit(name, options={})
-      mkinput('submit', "#{name}()", options)
+      mkinput('submit', "#{name}()", options, name)
     end
 
     def hidden(name, options={})
-      mkinput('hidden', name, options.dup.update(:value => form_value(name)))
+      options = options.dup.update(:value => form_value(name))
+      mkinput('hidden', name, options, name)
     end
 
     def checkbox(name, options={})
       options = options.dup
       options[:value] = 'true' unless (options.key? :value)
       options[:checked] = form_value(name) ? true : false
-      make_hidden_type(name, 'bool', options) << mkinput('checkbox', name, options)
+      make_hidden_type(name, 'bool', options) << mkinput('checkbox', name, options, name)
     end
 
     def radio(name, value, options={})
       options = options.dup
       options[:value] = value
       options[:checked] = value == form_value(name)
-      mkinput('radio', name, options)
+      mkinput('radio', name, options, name)
     end
 
     # :stopdoc:
@@ -485,11 +492,11 @@ module Gluon
         elem = ''
       end
 
-      elem << mkelem_start('select', SELECT_RESERVED_ATTRS, options)
+      elem << mkelem_start('select', SELECT_RESERVED_ATTRS, options, name)
       elem << mkattr_controller_name(name, options)
       elem << ' multiple="multiple"' if options[:multiple]
-      elem << mkattr_size(options)
-      elem << mkattr_disabled(options)
+      elem << mkattr_size(options, name)
+      elem << mkattr_disabled(options, name)
       elem << '>'
 
       list = funcall(list) if (list.is_a? Symbol)
@@ -523,12 +530,12 @@ module Gluon
     # :startdoc:
 
     def textarea(name, options={})
-      elem = mkelem_start('textarea', TEXTAREA_RESERVED_ATTRS, options)
+      elem = mkelem_start('textarea', TEXTAREA_RESERVED_ATTRS, options, name)
       elem << mkattr_controller_name(name, options)
-      elem << mkattr_rows(options)
-      elem << mkattr_cols(options)
-      elem << mkattr_disabled(options)
-      elem << mkattr_readonly(options)
+      elem << mkattr_rows(options, name)
+      elem << mkattr_cols(options, name)
+      elem << mkattr_disabled(options, name)
+      elem << mkattr_readonly(options, name)
       elem << '>'
       elem << ERB::Util.html_escape(form_value(name))
       elem << '</textarea>'
