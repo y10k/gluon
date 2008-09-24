@@ -130,7 +130,7 @@ module Gluon
       nil
     end
 
-    def mkelem_start(name, reserved_attrs, options={})
+    def mkelem_start(name, reserved_attrs, options)
       elem = "<#{name}"
       for name in [ :id, :class ]
         if (value = getopt(name, options)) then
@@ -153,7 +153,7 @@ module Gluon
     end
     private :mkelem_start
 
-    def mkpath(path, options={})
+    def mkpath(path, options)
       path = path.dup
       path << ERB::Util.html_escape(options[:path_info]) if (options.key? :path_info)
       path = '/' if path.empty?
@@ -170,7 +170,7 @@ module Gluon
     }.freeze
     # :startdoc:
 
-    def mklink(href, options={})
+    def mklink(href, options)
       elem = mkelem_start('a', MKLINK_RESERVED_ATTRS, options)
       elem << ' href="' << ERB::Util.html_escape(mkpath(href, options)) << '"'
       elem << ' target="' << ERB::Util.html_escape(options[:target]) << '"' if (options.key? :target)
@@ -279,7 +279,7 @@ module Gluon
     }.freeze
     # :startdoc:
 
-    def mkframe(src, options={})
+    def mkframe(src, options)
       elem = mkelem_start('frame', MKFRAME_RESERVED_ATTRS, options)
       elem << ' src="' << ERB::Util.html_escape(mkpath(src, options)) << '"'
       elem << ' name="' << ERB::Util.html_escape(options[:name]) << '"' if (options.key? :name)
@@ -339,7 +339,7 @@ module Gluon
       if (@stack.empty?) then
         @controller.__send__(name)
       else
-        prefix, child = @stack[01]
+        prefix, child = @stack[-1]
         child.__send__(name)
       end
     end
