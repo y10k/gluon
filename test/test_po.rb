@@ -55,7 +55,7 @@ module Gluon::Test
     end
     private :render_page
 
-    def assert_optional_id(page_type, expr)
+    def assert_optional_id(page_type, expr, method)
       build_page(page_type)
       assert_match(/ id="foo"/,
                    render_page(%Q'<%= #{expr}, :id => "foo" %>'))
@@ -65,15 +65,28 @@ module Gluon::Test
                       render_page(%Q'<%= #{expr}, :id => "foo", :attrs => { "id" => "bar" } %>'))
 
       anon_page_type = Class.new(page_type) {
-        define_method(:optional_id) { "foo" }
+        define_method(:optional_id) { 'foo' }
       }
       build_page(anon_page_type)
       assert_match(/ id="foo"/,
                    render_page(%Q'<%= #{expr}, :id => :optional_id %>'))
+
+      if (method) then
+        anon_page_type = Class.new(page_type) {
+          gluon_advice method, :id => 'foo'
+        }
+        build_page(anon_page_type)
+        assert_match(/ id="foo"/,
+                     render_page(%Q'<%= #{expr} %>'))
+        assert_match(/ id="bar"/,
+                     render_page(%Q'<%= #{expr}, :id => "bar" %>'))
+        assert_no_match(/ id="foo"/,
+                        render_page(%Q'<%= #{expr}, :id => "bar" %>'))
+      end
     end
     private :assert_optional_id
 
-    def assert_optional_class(page_type, expr)
+    def assert_optional_class(page_type, expr, method)
       build_page(page_type)
       assert_match(/ class="foo"/,
                    render_page(%Q'<%= #{expr}, :class => "foo" %>'))
@@ -83,11 +96,24 @@ module Gluon::Test
                       render_page(%Q'<%= #{expr}, :class => "foo", :attrs => { "class" => "bar" } %>'))
 
       anon_page_type = Class.new(page_type) {
-        define_method(:optional_class) { "foo" }
+        define_method(:optional_class) { 'foo' }
       }
       build_page(anon_page_type)
       assert_match(/ class="foo"/,
                    render_page(%Q'<%= #{expr}, :class => :optional_class %>'))
+
+      if (method) then
+        anon_page_type = Class.new(page_type) {
+          gluon_advice method, :class => 'foo'
+        }
+        build_page(anon_page_type)
+        assert_match(/ class="foo"/,
+                     render_page(%Q'<%= #{expr} %>'))
+        assert_match(/ class="bar"/,
+                     render_page(%Q'<%= #{expr}, :class => "bar" %>'))
+        assert_no_match(/ class="foo"/,
+                        render_page(%Q'<%= #{expr}, :class => "bar" %>'))
+      end
     end
     private :assert_optional_class
 
@@ -269,6 +295,30 @@ module Gluon::Test
                    render_page('<%= value :bar, :escape => :no %>'))
     end
 
+    def test_value_with_advice
+      anon_page_type = Class.new(PageForValue) {
+        gluon_advice :foo, :escape => true
+        gluon_advice :bar, :escape => true
+      }
+      build_page(anon_page_type)
+
+      assert_equal('Hello world.',
+                   render_page('<%= value :foo %>'))
+      assert_equal('&amp;&lt;&gt;&quot; foo',
+                   render_page('<%= value :bar %>'))
+
+      anon_page_type = Class.new(PageForValue) {
+        gluon_advice :foo, :escape => false
+        gluon_advice :bar, :escape => false
+      }
+      build_page(anon_page_type)
+
+      assert_equal('Hello world.',
+                   render_page('<%= value :foo %>'))
+      assert_equal('&<>" foo',
+                   render_page('<%= value :bar %>'))
+    end
+
     class PageForCond
       include Gluon::Controller
       include Gluon::ERBView
@@ -420,15 +470,15 @@ module Gluon::Test
     end
 
     def test_link_optional_id
-      assert_optional_id(PageForLink, 'link "/Foo"')
+      assert_optional_id(PageForLink, 'link :foo_path', :foo_path)
     end
 
     def test_link_optional_class
-      assert_optional_class(PageForLink, 'link "/Foo"')
+      assert_optional_class(PageForLink, 'link :foo_path', :foo_path)
     end
 
     def test_link_optional_attrs
-      assert_optional_attrs(PageForLink, 'link "/Foo"',
+      assert_optional_attrs(PageForLink, 'link :foo_path',
                             Gluon::PresentationObject::MKLINK_RESERVED_ATTRS.keys)
     end
 
@@ -495,17 +545,19 @@ module Gluon::Test
 
     def test_link_uri_optional_id
       assert_optional_id(PageForLinkURI,
-                         'link_uri "http://www.ruby-lang.org"')
+                         'link_uri :ruby_home_uri',
+                         :ruby_home_uri)
     end
 
     def test_link_uri_optional_class
       assert_optional_class(PageForLinkURI,
-                            'link_uri "http://www.ruby-lang.org"')
+                            'link_uri :ruby_home_uri',
+                            :ruby_home_uri)
     end
 
     def test_link_uri_optional_attrs
       assert_optional_attrs(PageForLinkURI,
-                            'link_uri "http://www.ruby-lang.org"',
+                            'link_uri :ruby_home_uri',
                             Gluon::PresentationObject::MKLINK_RESERVED_ATTRS.keys)
     end
 
@@ -543,11 +595,11 @@ module Gluon::Test
     end
 
     def test_action_optional_id
-      assert_optional_id(PageForAction, 'action :foo')
+      assert_optional_id(PageForAction, 'action :foo', :foo)
     end
 
     def test_action_optional_class
-      assert_optional_class(PageForAction, 'action :foo')
+      assert_optional_class(PageForAction, 'action :foo', :foo)
     end
 
     def test_action_optional_attrs
@@ -605,15 +657,15 @@ module Gluon::Test
     end
 
     def test_frame_optional_id
-      assert_optional_id(PageForFrame, 'frame "/Foo"')
+      assert_optional_id(PageForFrame, 'frame :foo', :foo)
     end
 
     def test_frame_optional_class
-      assert_optional_class(PageForFrame, 'frame "/Foo"')
+      assert_optional_class(PageForFrame, 'frame :foo', :foo)
     end
 
     def test_frame_optional_attrs
-      assert_optional_attrs(PageForFrame, 'frame "/Foo"',
+      assert_optional_attrs(PageForFrame, 'frame :foo',
                             Gluon::PresentationObject::MKFRAME_RESERVED_ATTRS.keys)
     end
 
@@ -665,18 +717,16 @@ module Gluon::Test
     end
 
     def test_frame_uri_optional_id
-      assert_optional_id(PageForFrameURI,
-                         'frame_uri "http://www.ruby-lang.org"')
+      assert_optional_id(PageForFrameURI, 'frame_uri :ruby_home', :ruby_home)
     end
 
     def test_frame_uri_optional_class
-      assert_optional_class(PageForFrameURI,
-                            'frame_uri "http://www.ruby-lang.org"')
+      assert_optional_class(PageForFrameURI, 'frame_uri :ruby_home', :ruby_home)
     end
 
     def test_frame_uri_optional_attrs
       assert_optional_attrs(PageForFrameURI,
-                            'frame_uri "http://www.ruby-lang.org"',
+                            'frame_uri :ruby_home',
                             Gluon::PresentationObject::MKFRAME_RESERVED_ATTRS.keys)
     end
 
@@ -752,11 +802,11 @@ module Gluon::Test
     end
 
     def test_text_optional_id
-      assert_optional_id(PageForText, 'text :foo')
+      assert_optional_id(PageForText, 'text :foo', :foo)
     end
 
     def test_text_optional_class
-      assert_optional_class(PageForText, 'text :foo')
+      assert_optional_class(PageForText, 'text :foo', :foo)
     end
 
     def test_text_optional_attrs
@@ -796,11 +846,11 @@ module Gluon::Test
     end
 
     def test_password_optional_id
-      assert_optional_id(PageForPassword, 'password :foo')
+      assert_optional_id(PageForPassword, 'password :foo', :foo)
     end
 
     def test_password_optional_class
-      assert_optional_class(PageForPassword, 'password :foo')
+      assert_optional_class(PageForPassword, 'password :foo', :foo)
     end
 
     def test_password_optional_attrs
@@ -828,9 +878,9 @@ module Gluon::Test
       include Gluon::Controller
       include Gluon::ERBView
 
-      def foo_action
+      def foo
       end
-      gluon_export :foo_action
+      gluon_export :foo
     end
 
     def test_submit
@@ -842,11 +892,11 @@ module Gluon::Test
     end
 
     def test_submit_optional_id
-      assert_optional_id(PageForSubmit, 'submit :foo')
+      assert_optional_id(PageForSubmit, 'submit :foo', :foo)
     end
 
     def test_submit_optional_class
-      assert_optional_class(PageForSubmit, 'submit :foo')
+      assert_optional_class(PageForSubmit, 'submit :foo', :foo)
     end
 
     def test_submit_optional_attrs
@@ -878,11 +928,11 @@ module Gluon::Test
     end
 
     def test_hidden_optional_id
-      assert_optional_id(PageForHidden, 'hidden :foo')
+      assert_optional_id(PageForHidden, 'hidden :foo', :foo)
     end
 
     def test_hidden_optional_class
-      assert_optional_class(PageForHidden, 'hidden :foo')
+      assert_optional_class(PageForHidden, 'hidden :foo', :foo)
     end
 
     def test_hidden_optional_attrs
@@ -917,11 +967,11 @@ module Gluon::Test
     end
 
     def test_checkbox_optional_id
-      assert_optional_id(PageForCheckbox, 'checkbox :foo')
+      assert_optional_id(PageForCheckbox, 'checkbox :foo', :foo)
     end
 
     def test_checkbox_optional_class
-      assert_optional_class(PageForCheckbox, 'checkbox :foo')
+      assert_optional_class(PageForCheckbox, 'checkbox :foo', :foo)
     end
 
     def test_checkbox_optional_attrs
@@ -956,11 +1006,11 @@ module Gluon::Test
     end
 
     def test_radio_optional_id
-      assert_optional_id(PageForRadio, 'radio :foo, "Banana"')
+      assert_optional_id(PageForRadio, 'radio :foo, "Banana"', :foo)
     end
 
     def test_radio_optional_class
-      assert_optional_class(PageForRadio, 'radio :foo, "Banana"')
+      assert_optional_class(PageForRadio, 'radio :foo, "Banana"', :foo)
     end
 
     def test_radio_optional_attrs
@@ -1004,11 +1054,11 @@ module Gluon::Test
     end
 
     def test_select_optional_id
-      assert_optional_id(PageForSelect, 'select :foo, :fruits')
+      assert_optional_id(PageForSelect, 'select :foo, :fruits', :foo)
     end
 
     def test_select_optional_class
-      assert_optional_class(PageForSelect, 'select :foo, :fruits')
+      assert_optional_class(PageForSelect, 'select :foo, :fruits', :foo)
     end
 
     def test_select_optional_attrs
@@ -1051,11 +1101,11 @@ module Gluon::Test
     end
 
     def test_textarea_optional_id
-      assert_optional_id(PageForTextarea, 'textarea :foo')
+      assert_optional_id(PageForTextarea, 'textarea :foo', :foo)
     end
 
     def test_textarea_optional_class
-      assert_optional_class(PageForTextarea, 'textarea :foo')
+      assert_optional_class(PageForTextarea, 'textarea :foo', :foo)
     end
 
     def test_textarea_optional_attrs
