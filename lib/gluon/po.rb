@@ -55,6 +55,16 @@ module Gluon
     end
     private :prefix
 
+    def curr_this
+      if (@stack.empty?) then
+        @controller
+      else
+        prefix, child = @stack[-1]
+        child
+      end
+    end
+    private :curr_this
+
     def find_this(name)
       @stack.reverse_each do |prefix, child|
         if (child.respond_to? name) then
@@ -276,6 +286,9 @@ module Gluon
     end
 
     def action(name, options={}, &block)
+      unless (curr_this.respond_to? name) then
+        raise NoMethodError, "undefined method `#{name}' for `#{curr_this.class}'"
+      end
       options[:query] = {} unless (options.key? :query)
       options[:query]["#{prefix}#{name}()"] = nil
       options[:text] = name.to_s unless (options.key? :text)
@@ -354,12 +367,7 @@ module Gluon
     end
 
     def form_value(name)
-      if (@stack.empty?) then
-        @controller.__send__(name)
-      else
-        prefix, child = @stack[-1]
-        child.__send__(name)
-      end
+      curr_this.__send__(name)
     end
     private :form_value
 
@@ -444,6 +452,9 @@ module Gluon
     # :startdoc:
 
     def mkinput(type, name, options, method)
+      unless (curr_this.respond_to? method) then
+        raise NoMethodError, "undefined method `#{method}' for `#{curr_this.class}'"
+      end
       elem = mkelem_start('input', MKINPUT_RESERVED_ATTRS, options, method)
       elem << ' type="' << ERB::Util.html_escape(type) << '"'
       elem << mkattr_controller_name(name, options)
