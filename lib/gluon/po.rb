@@ -55,28 +55,42 @@ module Gluon
     end
     private :prefix
 
+    def find_this(name)
+      @stack.reverse_each do |prefix, child|
+        if (child.respond_to? name) then
+          return child
+        end
+      end
+      @controller
+    end
+    private :find_this
+
+    def funcall(name, *args)
+      find_this(name).__send__(name, *args)
+    end
+    private :funcall
+
     def getopt(key, options, method, default=nil)
       if (options.key? key) then
         value = options[key]
         value = funcall(value) if (value.is_a? Symbol)
         value
       elsif (method) then
-        Controller.find_advice(@controller.class, method, key, default)
+        this = find_this(method)
+        value = Controller.find_advice(this.class, method, key, default)
+        case (value)
+        when Proc, Method
+          value.call
+        when UnboundMethod
+          value.bind(this).call
+        else
+          value
+        end
       else
         default
       end
     end
     private :getopt
-
-    def funcall(name, *args)
-      @stack.reverse_each do |prefix, child|
-        if (child.respond_to? name) then
-          return child.__send__(name, *args)
-        end
-      end
-      @controller.__send__(name, *args)
-    end
-    private :funcall
 
     def value(name=:to_s, options={})
       escape = getopt(:escape, options, name, true)

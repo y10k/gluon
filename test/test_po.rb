@@ -82,6 +82,21 @@ module Gluon::Test
                      render_page(%Q'<%= #{expr}, :id => "bar" %>'))
         assert_no_match(/ id="foo"/,
                         render_page(%Q'<%= #{expr}, :id => "bar" %>'))
+
+        anon_page_type = Class.new(page_type) {
+          gluon_advice method, :id => proc{ 'foo' }
+        }
+        build_page(anon_page_type)
+        assert_match(/ id="foo"/,
+                     render_page(%Q'<%= #{expr} %>'))
+
+        anon_page_type = Class.new(page_type) {
+          define_method(:optional_id) { 'foo' }
+          gluon_advice method, :id => instance_method(:optional_id)
+        }
+        build_page(anon_page_type)
+        assert_match(/ id="foo"/,
+                     render_page(%Q'<%= #{expr} %>'))
       end
     end
     private :assert_optional_id
@@ -113,6 +128,21 @@ module Gluon::Test
                      render_page(%Q'<%= #{expr}, :class => "bar" %>'))
         assert_no_match(/ class="foo"/,
                         render_page(%Q'<%= #{expr}, :class => "bar" %>'))
+
+        anon_page_type = Class.new(page_type) {
+          gluon_advice method, :class => proc{ 'foo' }
+        }
+        build_page(anon_page_type)
+        assert_match(/ class="foo"/,
+                     render_page(%Q'<%= #{expr} %>'))
+
+        anon_page_type = Class.new(page_type) {
+          define_method(:optional_class) { 'foo' }
+          gluon_advice method, :class => instance_method(:optional_class)
+        }
+        build_page(anon_page_type)
+        assert_match(/ class="foo"/,
+                     render_page(%Q'<%= #{expr} %>'))
       end
     end
     private :assert_optional_class
