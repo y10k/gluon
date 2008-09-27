@@ -1,3 +1,7 @@
+2008-09-27  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/po.rb: optional advices for presentation commands.
+
 2008-09-22  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/po.rb: check reserved HTML element attributes.
