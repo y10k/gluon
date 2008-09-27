@@ -3,12 +3,12 @@
 <form>
 <h3>single select</h3>
 <p><label for="foo">foo:</label>
-   <%= select :foo, :fruit_list, :id => 'foo' %>
+   <%= select :foo, :id => 'foo' %>
 </p>
 
 <h3>multiple select</h3>
 <p><label for="bar">bar:</label><br />
-   <%= select :bar, :planet_list, :id => 'bar', :multiple => true %>
+   <%= select :bar, :id => 'bar' %>
 </p>
 
 <p><%= submit :ok, :value => 'OK' %></p>

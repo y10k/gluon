@@ -12,8 +12,14 @@ class Example
 
     attr_reader :fruit_list
     attr_reader :planet_list
-    gluon_export_accessor :foo
-    gluon_export_accessor :bar
+
+    gluon_export_accessor :foo,
+      :list => instance_method(:fruit_list)
+
+    gluon_export_accessor :bar,
+      :list => instance_method(:planet_list),
+      :multiple => true,
+      :size => 5
 
     #def page_get
     #def page_post
