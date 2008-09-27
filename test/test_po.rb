@@ -1819,6 +1819,47 @@ module Gluon::Test
       }
     end
 
+#     def test_select_in_loop_inside_scope
+#       raise NotImplementedError, 'pending'
+#     end
+
+#     def test_select_in_loop_outside_scope
+#       raise NotImplementedError, 'pending'
+#     end
+
+    class PageForTextareaInLoop
+      include Gluon::Controller
+      include Gluon::ERBView
+
+      class Item
+        gluon_export_accessor :foo
+      end
+
+      def initialize
+        @list = [ Item.new ]
+      end
+
+      gluon_export_reader :list
+      gluon_export_accessor :bar
+    end
+
+    def test_textarea_in_loop_inside_scope
+      build_page(PageForTextareaInLoop)
+      assert_equal('<textarea name="list[0].foo"></textarea>',
+                   render_page('<% foreach :list do %>' +
+                               '<%= textarea :foo %>' +
+                               '<% end %>'))
+    end
+
+    def test_textarea_in_loop_outside_scope
+      build_page(PageForTextareaInLoop)
+      assert_raise(NoMethodError) {
+        render_page('<% foreach :list do %>' +
+                    '<%= textarea :bar %>' +
+                    '<% end %>')
+      }
+    end
+
     TEST_ONLY_ONCE = {
       :only_once => 0,
       :not_only_once => 0
