@@ -236,13 +236,9 @@ module Gluon
       elem << ' target="' << ERB::Util.html_escape(options[:target]) << '"' if (options.key? :target)
       elem << '>'
       if (options.key? :text) then
-        case (options[:text])
-        when Symbol
-          text = funcall(options[:text])
-        when String
-          text = options[:text]
-        else
-          raise TypeError, "unknown link text type: #{options[:text].class}"
+        text = getopt(:text, options, method, true)
+        unless (text.is_a? String) then
+          raise TypeError, "unknown link text type: #{text.class}"
         end
         elem << ERB::Util.html_escape(text)
       elsif (block_given?) then
@@ -255,18 +251,6 @@ module Gluon
       elem << '</a>'
     end
     private :mklink
-
-    def expand_path(name)
-      case (name)
-      when Class
-        @c.class2path(name) or raise "not mounted: #{name}"
-      when String
-        @c.req.script_name + name
-      else
-        name
-      end
-    end
-    private :expand_path
 
     def merge_opts(*opts_list)
       opts_list = opts_list.compact
@@ -300,6 +284,18 @@ module Gluon
       end
     end
     private :expand_link_name
+
+    def expand_path(name)
+      case (name)
+      when Class
+        @c.class2path(name) or raise "not mounted: #{name}"
+      when String
+        @c.req.script_name + name
+      else
+        name
+      end
+    end
+    private :expand_path
 
     def link(name, options={}, &block)
       name, options, method = expand_link_name(name, options)
