@@ -1781,6 +1781,44 @@ module Gluon::Test
       }
     end
 
+    class PageForRadioInLoop
+      include Gluon::Controller
+      include Gluon::ERBView
+
+      class Item
+        def initialize
+          @foo = 'Apple'
+        end
+
+        gluon_export_accessor :foo
+      end
+
+      def initialize
+        @list = [ Item.new ]
+        @bar = 'Banana'
+      end
+
+      gluon_export_reader :list
+      gluon_export_accessor :bar
+    end
+
+    def test_radio_in_loop_inside_scope
+      build_page(PageForRadioInLoop)
+      assert_equal('<input type="radio" name="list[0].foo" value="Apple" checked="checked" />',
+                   render_page('<% foreach :list do %>' +
+                               '<%= radio :foo, "Apple" %>' +
+                               '<% end %>'))
+    end
+
+    def test_radio_in_loop_outside_scope
+      build_page(PageForRadioInLoop)
+      assert_raise(NoMethodError) {
+        render_page('<% foreach :list do %>' +
+                    '<%= radio :bar, "Apple" %>' +
+                    '<% end %>')
+      }
+    end
+
     TEST_ONLY_ONCE = {
       :only_once => 0,
       :not_only_once => 0
