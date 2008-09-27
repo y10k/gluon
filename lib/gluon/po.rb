@@ -540,6 +540,10 @@ module Gluon
     # :startdoc:
 
     def select(name, options={})
+      unless (curr_this.respond_to? name) then
+        raise NoMethodError, "undefined method `#{name}' for `#{curr_this.class}'"
+      end
+
       unless (list = getopt(:list, options, name, false)) then
         raise ArgumentError, "need for list parameter for `#{curr_this.class}\##{name}'"
       end

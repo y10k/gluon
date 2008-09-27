@@ -1863,13 +1863,47 @@ module Gluon::Test
       }
     end
 
-#     def test_select_in_loop_inside_scope
-#       raise NotImplementedError, 'pending'
-#     end
+    class PageForSelectInLoop
+      include Gluon::Controller
+      include Gluon::ERBView
 
-#     def test_select_in_loop_outside_scope
-#       raise NotImplementedError, 'pending'
-#     end
+      class Item
+        def initialize
+          @foo = 'Apple'
+        end
+
+        gluon_export_accessor :foo, :list => %w[ Apple Banana Orange ]
+      end
+
+      def initialize
+        @list = [ Item.new ]
+        @bar = 'Bob'
+      end
+
+      gluon_export_reader :list
+      gluon_export_accessor :bar, :list => %w[ Alice Bob Kate ]
+    end
+
+    def test_select_in_loop_inside_scope
+      build_page(PageForSelectInLoop)
+      assert_equal('<select name="list[0].foo">' +
+                   '<option value="Apple" selected="selected">Apple</option>' +
+                   '<option value="Banana">Banana</option>' +
+                   '<option value="Orange">Orange</option>' +
+                   '</select>',
+                   render_page('<% foreach :list do %>' +
+                               '<%= select :foo %>' +
+                               '<% end %>'))
+    end
+
+    def test_select_in_loop_outside_scope
+      build_page(PageForSelectInLoop)
+      assert_raise(NoMethodError) {
+        render_page('<% foreach :list do %>' +
+                    '<%= select :bar %>' +
+                    '<% end %>')
+      }
+    end
 
     class PageForTextareaInLoop
       include Gluon::Controller
