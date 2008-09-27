@@ -39,7 +39,9 @@ module Gluon
           page_type
         ]
       end
-      @class2path[page_type] = location
+      unless (@class2path.key? page_type) then
+        @class2path[page_type] = location
+      end
       nil
     end
 
