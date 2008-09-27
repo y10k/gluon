@@ -1159,6 +1159,22 @@ module Gluon::Test
                    render_page('<%= select :foo, :list => :fruits, :multiple => true %>'))
     end
 
+    def test_multiple_select_with_advice
+      anon_page_type = Class.new(PageForSelect) {
+        gluon_advice :foo, :list => instance_method(:fruits), :multiple => true
+      }
+      build_page(anon_page_type)
+
+      @controller.foo = %w[ apple orange ]
+      assert_equal('<input type="hidden" name="foo@type" value="list" />' +
+                   '<select name="foo" multiple="multiple">' +
+                   '<option value="apple" selected="selected">Apple</option>' +
+                   '<option value="banana">Banana</option>' +
+                   '<option value="orange" selected="selected">Orange</option>' +
+                   '</select>',
+                   render_page('<%= select :foo %>'))
+    end
+
     class PageForTextarea
       include Gluon::Controller
       include Gluon::ERBView

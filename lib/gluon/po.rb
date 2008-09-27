@@ -544,19 +544,18 @@ module Gluon
         raise NoMethodError, "undefined method `#{name}' for `#{curr_this.class}'"
       end
 
-      unless (list = getopt(:list, options, name, false)) then
+      list = getopt(:list, options, name, false) or
         raise ArgumentError, "need for list parameter for `#{curr_this.class}\##{name}'"
-      end
+      multiple = getopt(:multiple, options, name, false, false)
 
-      if (options[:multiple]) then
+      if (multiple) then
         elem = make_hidden_type(name, 'list', options)
       else
         elem = ''
       end
-
       elem << mkelem_start('select', SELECT_RESERVED_ATTRS, options, name, false)
       elem << mkattr_controller_name(name, options)
-      elem << ' multiple="multiple"' if options[:multiple]
+      elem << ' multiple="multiple"' if multiple
       elem << mkattr_size(options, name)
       elem << mkattr_disabled(options, name)
       elem << '>'
