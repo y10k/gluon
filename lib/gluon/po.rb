@@ -55,16 +55,6 @@ module Gluon
     end
     private :prefix
 
-    def curr_this
-      if (@stack.empty?) then
-        @controller
-      else
-        prefix, child = @stack[-1]
-        child
-      end
-    end
-    private :curr_this
-
     def find_this(name)
       @stack.reverse_each do |prefix, child|
         if (child.respond_to? name) then
@@ -80,13 +70,34 @@ module Gluon
     end
     private :funcall
 
-    def getopt(key, options, method, default=nil)
+    def curr_this
+      if (@stack.empty?) then
+        @controller
+      else
+        prefix, child = @stack[-1]
+        child
+      end
+    end
+    private :curr_this
+
+    def curr_funcall(name)
+      curr_this.__send__(name)
+    end
+    private :curr_funcall
+
+    alias form_value curr_funcall; private :form_value
+
+    def getopt(key, options, method, search_stack, default=nil)
       if (options.key? key) then
         value = options[key]
         value = funcall(value) if (value.is_a? Symbol)
         value
       elsif (method) then
-        this = find_this(method)
+        if (search_stack) then
+          this = find_this(method)
+        else
+          this = curr_this
+        end
         value = Controller.find_advice(this.class, method, key, default)
         case (value)
         when Proc, Method
@@ -103,7 +114,7 @@ module Gluon
     private :getopt
 
     def value(name=:to_s, options={})
-      escape = getopt(:escape, options, name, true)
+      escape = getopt(:escape, options, name, true, true)
       s = funcall(name).to_s
       s = ERB::Util.html_escape(s) if escape
       s
@@ -138,7 +149,7 @@ module Gluon
 
     def foreach(name=:to_a, options={})
       i = 0
-      funcall(name).each do |child|
+      curr_funcall(name).each do |child|
         @stack.push [ "#{name}[#{i}]", child ]
         begin
           case (child)
@@ -157,10 +168,10 @@ module Gluon
       nil
     end
 
-    def mkelem_start(name, reserved_attrs, options, method)
+    def mkelem_start(name, reserved_attrs, options, method, search_stack)
       elem = "<#{name}"
       for name in [ :id, :class ]
-        if (value = getopt(name, options, method)) then
+        if (value = getopt(name, options, method, search_stack)) then
           elem << ' ' << name.to_s << '="' << ERB::Util.html_escape(value) << '"'
         end
       end
@@ -198,7 +209,7 @@ module Gluon
     # :startdoc:
 
     def mklink(href, options, method)
-      elem = mkelem_start('a', MKLINK_RESERVED_ATTRS, options, method)
+      elem = mkelem_start('a', MKLINK_RESERVED_ATTRS, options, method, true)
       elem << ' href="' << ERB::Util.html_escape(mkpath(href, options)) << '"'
       elem << ' target="' << ERB::Util.html_escape(options[:target]) << '"' if (options.key? :target)
       elem << '>'
@@ -286,9 +297,6 @@ module Gluon
     end
 
     def action(name, options={}, &block)
-      unless (curr_this.respond_to? name) then
-        raise NoMethodError, "undefined method `#{name}' for `#{curr_this.class}'"
-      end
       options[:query] = {} unless (options.key? :query)
       options[:query]["#{prefix}#{name}()"] = nil
       options[:text] = name.to_s unless (options.key? :text)
@@ -311,7 +319,7 @@ module Gluon
     # :startdoc:
 
     def mkframe(src, options, method)
-      elem = mkelem_start('frame', MKFRAME_RESERVED_ATTRS, options, method)
+      elem = mkelem_start('frame', MKFRAME_RESERVED_ATTRS, options, method, true)
       elem << ' src="' << ERB::Util.html_escape(mkpath(src, options)) << '"'
       elem << ' name="' << ERB::Util.html_escape(options[:name]) << '"' if (options.key? :name)
       elem << ' />'
@@ -366,13 +374,8 @@ module Gluon
       }
     end
 
-    def form_value(name)
-      curr_this.__send__(name)
-    end
-    private :form_value
-
     def mkattr_bool(key, options, method)
-      if (value = getopt(key, options, method)) then
+      if (value = getopt(key, options, method, false)) then
         " #{key}=\"#{key}\""
       else
         ''
@@ -391,7 +394,7 @@ module Gluon
     private :mkattr_readonly
 
     def mkattr_string(key, options, method)
-      if (value = getopt(key, options, method)) then
+      if (value = getopt(key, options, method, false)) then
         " #{key}=\"#{ERB::Util.html_escape(value)}\""
       else
         ''
@@ -452,10 +455,7 @@ module Gluon
     # :startdoc:
 
     def mkinput(type, name, options, method)
-      unless (curr_this.respond_to? method) then
-        raise NoMethodError, "undefined method `#{method}' for `#{curr_this.class}'"
-      end
-      elem = mkelem_start('input', MKINPUT_RESERVED_ATTRS, options, method)
+      elem = mkelem_start('input', MKINPUT_RESERVED_ATTRS, options, method, false)
       elem << ' type="' << ERB::Util.html_escape(type) << '"'
       elem << mkattr_controller_name(name, options)
       elem << ' value="' << ERB::Util.html_escape(options[:value]) << '"' if (options.key? :value)
@@ -479,6 +479,9 @@ module Gluon
     end
 
     def submit(name, options={})
+      unless (curr_this.respond_to? name) then
+        raise NoMethodError, "undefined method `#{name}' for `#{curr_this.class}'"
+      end
       mkinput('submit', "#{name}()", options, name)
     end
 
@@ -517,7 +520,7 @@ module Gluon
         elem = ''
       end
 
-      elem << mkelem_start('select', SELECT_RESERVED_ATTRS, options, name)
+      elem << mkelem_start('select', SELECT_RESERVED_ATTRS, options, name, false)
       elem << mkattr_controller_name(name, options)
       elem << ' multiple="multiple"' if options[:multiple]
       elem << mkattr_size(options, name)
@@ -555,7 +558,7 @@ module Gluon
     # :startdoc:
 
     def textarea(name, options={})
-      elem = mkelem_start('textarea', TEXTAREA_RESERVED_ATTRS, options, name)
+      elem = mkelem_start('textarea', TEXTAREA_RESERVED_ATTRS, options, name, false)
       elem << mkattr_controller_name(name, options)
       elem << mkattr_rows(options, name)
       elem << mkattr_cols(options, name)

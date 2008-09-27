@@ -15,8 +15,10 @@ module Gluon::Test
       include Gluon::ERBView
     end
 
+    VIEW_DIR = 'view'
+
     def setup
-      @view_dir = 'view'
+      @view_dir = VIEW_DIR
       FileUtils.rm_rf(@view_dir) # for debug
       FileUtils.mkdir_p(@view_dir)
       @renderer = Gluon::ViewRenderer.new(@view_dir)
@@ -798,7 +800,7 @@ module Gluon::Test
       end
 
       def page_render(po)
-        @c.view_render(Gluon::ERBView, 'view/Subpage.rhtml', po)
+        @c.view_render(Gluon::ERBView, File.join(VIEW_DIR, 'Subpage.rhtml'), po)
       end
     end
 
@@ -1222,7 +1224,7 @@ module Gluon::Test
       gluon_export :foo
 
       def page_render(po)
-        @c.view_render(Gluon::ERBView, 'view/SubpageAction.rhtml', po)
+        @c.view_render(Gluon::ERBView, File.join(VIEW_DIR, 'SubpageAction.rhtml'), po)
       end
     end
 
@@ -1243,6 +1245,540 @@ module Gluon::Test
       build_page(PageForImportAction)
 
       assert_equal('[0]', render_page('[<%= import :subpage %>]'))
+    end
+
+    class PageForValueInLoop
+      include Gluon::Controller
+      include Gluon::ERBView
+
+      class Item
+        def foo
+          'Apple'
+        end
+      end
+
+      def initialize
+        @list = [ Item.new ]
+      end
+
+      attr_reader :list
+
+      def bar
+        'Banana'
+      end
+    end
+
+    def test_value_in_loop_inside_scope
+      build_page(PageForValueInLoop)
+      assert_equal('Apple',
+                   render_page('<% foreach :list do %>' +
+                               '<%= value :foo %>' +
+                               '<% end %>'))
+    end
+
+    def test_value_in_loop_outside_scope
+      build_page(PageForValueInLoop)
+      assert_equal('Banana',
+                   render_page('<% foreach :list do %>' +
+                               '<%= value :bar %>' +
+                               '<% end %>'))
+    end
+
+    class PageForCondInLoop
+      include Gluon::Controller
+      include Gluon::ERBView
+
+      class Item
+        def foo?
+          true
+        end
+      end
+
+      def initialize
+        @list = [ Item.new ]
+        @bar = 'Banana'
+      end
+
+      attr_reader :list
+
+      def bar?
+        true
+      end
+    end
+
+    def test_cond_in_loop_inside_scope
+      build_page(PageForCondInLoop)
+      assert_equal('True',
+                   render_page('<% foreach :list do %>' +
+                               '<% cond :foo? do %>True<% end %>' +
+                               '<% end %>'))
+    end
+
+    def test_cond_in_loop_outside_scope
+      build_page(PageForCondInLoop)
+      assert_equal('True',
+                   render_page('<% foreach :list do %>' +
+                               '<% cond :bar? do %>True<% end %>' +
+                               '<% end %>'))
+    end
+
+    class PageForForeachInLoop
+      include Gluon::Controller
+      include Gluon::ERBView
+
+      class Item
+        def foo
+          %w[ x y z ]
+        end
+      end
+
+      def initialize
+        @list = [ Item.new ]
+      end
+
+      attr_reader :list
+
+      def bar
+        %w[ xx yy zz ]
+      end
+    end
+
+    def test_foreach_in_loop_inside_scope
+      build_page(PageForForeachInLoop)
+      assert_equal('xyz',
+                   render_page('<% foreach :list do %>' +
+                               '<% foreach :foo do %><%= value %><% end %>' +
+                               '<% end %>'))
+    end
+
+    def test_foreach_in_loop_outside_scope
+      build_page(PageForForeachInLoop)
+      assert_raise(NoMethodError) {
+        render_page('<% foreach :list do %>' +
+                    '<% foreach :bar do %><%= value %><% end %>' +
+                    '<% end %>')
+      }
+    end
+
+    class PageForLinkInLoop
+      include Gluon::Controller
+      include Gluon::ERBView
+
+      class Item
+        def foo
+          '/Foo'
+        end
+      end
+
+      def initialize
+        @list = [ Item.new ]
+      end
+
+      attr_reader :list
+
+      def bar
+        '/Bar'
+      end
+    end
+
+    def test_link_in_loop_inside_scope
+      build_page(PageForLinkInLoop)
+      assert_equal('<a href="/bar.cgi/Foo">/bar.cgi/Foo</a>',
+                   render_page('<% foreach :list do %>' +
+                               '<%= link :foo %>' +
+                               '<% end %>'))
+    end
+
+    def test_link_in_loop_outside_scope
+      build_page(PageForLinkInLoop)
+      assert_equal('<a href="/bar.cgi/Bar">/bar.cgi/Bar</a>',
+                   render_page('<% foreach :list do %>' +
+                               '<%= link :bar %>' +
+                               '<% end %>'))
+    end
+
+    class PageForLinkURIInLoop
+      include Gluon::Controller
+      include Gluon::ERBView
+
+      class Item
+        def foo
+          'http://foo'
+        end
+      end
+
+      def initialize
+        @list = [ Item.new ]
+      end
+
+      attr_reader :list
+
+      def bar
+        'http://bar'
+      end
+    end
+
+    def test_link_uri_in_loop_inside_scope
+      build_page(PageForLinkURIInLoop)
+      assert_equal('<a href="http://foo">http://foo</a>',
+                   render_page('<% foreach :list do %>' +
+                               '<%= link_uri :foo %>' +
+                               '<% end %>'))
+    end
+
+    def test_link_uri_in_loop_outside_scope
+      build_page(PageForLinkURIInLoop)
+      assert_equal('<a href="http://bar">http://bar</a>',
+                   render_page('<% foreach :list do %>' +
+                               '<%= link_uri :bar %>' +
+                               '<% end %>'))
+    end
+
+    class PageForActionInLoop
+      include Gluon::Controller
+      include Gluon::ERBView
+
+      class Item
+        def foo
+        end
+        gluon_export :foo
+      end
+
+      def initialize
+        @list = [ Item.new ]
+      end
+
+      gluon_export_reader :list
+
+      def bar
+      end
+      gluon_export :bar
+    end
+
+    def test_action_in_loop_insde_scope
+      build_page(PageForActionInLoop)
+      assert_equal('<a href="/bar.cgi?list%5B0%5D.foo%28%29">foo</a>',
+                   render_page('<% foreach :list do %>' +
+                               '<%= action :foo %>' +
+                               '<% end %>'))
+    end
+
+    def test_action_in_loop_outside_scope
+      build_page(PageForActionInLoop)
+      assert_equal('<a href="/bar.cgi?bar%28%29">foo</a>',
+                   render_page('<% foreach :list do %>' +
+                               '<%= action :bar %>' +
+                               '<% end %>'))
+    end
+
+    class PageForFrameInLoop
+      include Gluon::Controller
+      include Gluon::ERBView
+
+      class Item
+        def foo
+          '/Foo'
+        end
+      end
+
+      def initialize
+        @list = [ Item.new ]
+      end
+
+      attr_reader :list
+
+      def bar
+        '/Bar'
+      end
+    end
+
+    def test_frame_in_loop_inside_scope
+      build_page(PageForFrameInLoop)
+      assert_equal('<frame src="/bar.cgi/Foo" />',
+                   render_page('<% foreach :list do %>' +
+                               '<%= frame :foo %>' +
+                               '<% end %>'))
+    end
+
+    def test_frame_in_loop_outside_scope
+      build_page(PageForFrameInLoop)
+      assert_equal('<frame src="/bar.cgi/Bar" />',
+                   render_page('<% foreach :list do %>' +
+                               '<%= frame :bar %>' +
+                               '<% end %>'))
+    end
+
+    class PageForFrameURIInLoop
+      include Gluon::Controller
+      include Gluon::ERBView
+
+      class Item
+        def foo
+          'http://foo'
+        end
+      end
+
+      def initialize
+        @list = [ Item.new ]
+      end
+
+      attr_reader :list
+
+      def bar
+        'http://bar'
+      end
+    end
+
+    def test_frame_uri_in_loop_inside_scope
+      build_page(PageForFrameURIInLoop)
+      assert_equal('<frame src="http://foo" />',
+                   render_page('<% foreach :list do %>' +
+                               '<%= frame_uri :foo %>' +
+                               '<% end %>'))
+    end
+
+    def test_frame_uri_in_loop_outside_scope
+      build_page(PageForFrameURIInLoop)
+      assert_equal('<frame src="http://bar" />',
+                   render_page('<% foreach :list do %>' +
+                               '<%= frame_uri :bar %>' +
+                               '<% end %>'))
+    end
+
+    class PageForImportInLoop
+      include Gluon::Controller
+      include Gluon::ERBView
+
+      class Subpage
+        include Gluon::Controller
+
+        def initialize(text)
+          @text = text
+        end
+
+        attr_reader :text
+
+        def page_import         # checked by Gluon::Action
+        end
+
+        def page_render(po)
+          @c.view_render(Gluon::ERBView, File.join(VIEW_DIR, 'Subpage.rhtml'), po)
+        end
+      end
+
+      class Item
+        def initialize
+          @foo = Subpage.new('foo')
+        end
+
+        attr_reader :foo
+      end
+
+      def initialize
+        @list = [ Item.new ]
+        @bar = Subpage.new('bar')
+      end
+
+      attr_reader :list
+      attr_reader :bar
+    end
+
+    def test_import_in_loop_inside_scope
+      File.open(File.join(VIEW_DIR, 'Subpage.rhtml'), 'w') {|out|
+        out << '<%= value :text %>'
+      }
+      build_page(PageForImportInLoop)
+      assert_equal('foo',
+                   render_page('<% foreach :list do %>' +
+                               '<%= import :foo %>' +
+                               '<% end %>'))
+    end
+
+    def test_import_in_loop_outside_scope
+      File.open(File.join(VIEW_DIR, 'Subpage.rhtml'), 'w') {|out|
+        out << '<%= value :text %>'
+      }
+      build_page(PageForImportInLoop)
+      assert_equal('bar',
+                   render_page('<% foreach :list do %>' +
+                               '<%= import :bar %>' +
+                               '<% end %>'))
+    end
+
+    class PageForTextInLoop
+      include Gluon::Controller
+      include Gluon::ERBView
+
+      class Item
+        gluon_export_accessor :foo
+      end
+
+      def initialize
+        @list = [ Item.new ]
+      end
+
+      gluon_export_reader :list
+      gluon_export_accessor :bar
+    end
+
+    def test_text_in_loop_inside_scope
+      build_page(PageForTextInLoop)
+      assert_equal('<input type="text" name="list[0].foo" value="" />',
+                   render_page('<% foreach :list do %>' +
+                               '<%= text :foo %>' +
+                               '<% end %>'))
+    end
+
+    def test_text_in_loop_outside_scope
+      build_page(PageForTextInLoop)
+      assert_raise(NoMethodError) {
+        render_page('<% foreach :list do %>' +
+                    '<%= text :bar %>' +
+                    '<% end %>')
+      }
+    end
+
+    class PageForPasswordInLoop
+      include Gluon::Controller
+      include Gluon::ERBView
+
+      class Item
+        gluon_export_accessor :foo
+      end
+
+      def initialize
+        @list = [ Item.new ]
+      end
+
+      gluon_export_reader :list
+      gluon_export_accessor :bar
+    end
+
+    def test_password_in_loop_inside_scope
+      build_page(PageForPasswordInLoop)
+      assert_equal('<input type="password" name="list[0].foo" value="" />',
+                   render_page('<% foreach :list do %>' +
+                               '<%= password :foo %>' +
+                               '<% end %>'))
+    end
+
+    def test_password_in_loop_outside_scope
+      build_page(PageForPasswordInLoop)
+      assert_raise(NoMethodError) {
+        render_page('<% foreach :list do %>' +
+                    '<%= password :bar %>' +
+                    '<% end %>')
+      }
+    end
+
+    class PageForSubmitInLoop
+      include Gluon::Controller
+      include Gluon::ERBView
+
+      class Item
+        def foo
+        end
+        gluon_export :foo
+      end
+
+      def initialize
+        @list = [ Item.new ]
+      end
+
+      gluon_export_reader :list
+
+      def bar
+      end
+      gluon_export :bar
+    end
+
+    def test_submit_in_loop_inside_scope
+      build_page(PageForSubmitInLoop)
+      assert_equal('<input type="submit" name="list[0].foo()" />',
+                   render_page('<% foreach :list do %>' +
+                               '<%= submit :foo %>' +
+                               '<% end %>'))
+    end
+
+    def test_submit_in_loop_inside_scope
+      build_page(PageForSubmitInLoop)
+      assert_raise(NoMethodError) {
+        render_page('<% foreach :list do %>' +
+                    '<%= submit :bar %>' +
+                    '<% end %>')
+      }
+    end
+
+    class PageForHiddenInLoop
+      include Gluon::Controller
+      include Gluon::ERBView
+
+      class Item
+        gluon_export_accessor :foo
+      end
+
+      def initialize
+        @list = [ Item.new ]
+      end
+
+      gluon_export_reader :list
+      gluon_export_accessor :bar
+    end
+
+    def test_hidden_in_loop_inside_scope
+      build_page(PageForHiddenInLoop)
+      assert_equal('<input type="hidden" name="list[0].foo" value="" />',
+                   render_page('<% foreach :list do %>' +
+                               '<%= hidden :foo %>' +
+                               '<% end %>'))
+    end
+
+    def test_hidden_in_loop_outside_scope
+      build_page(PageForHiddenInLoop)
+      assert_raise(NoMethodError) {
+        render_page('<% foreach :list do %>' +
+                    '<%= hidden :bar %>' +
+                    '<% end %>')
+      }
+    end
+
+    class PageForCheckboxInLoop
+      include Gluon::Controller
+      include Gluon::ERBView
+
+      class Item
+        def initialize
+          @foo = true
+        end
+
+        gluon_export_accessor :foo
+      end
+
+      def initialize
+        @list = [ Item.new ]
+        @bar = false
+      end
+
+      gluon_export_reader :list
+      gluon_export_accessor :bar
+    end
+
+    def test_checkbox_in_loop_inside_scope
+      build_page(PageForCheckboxInLoop)
+      assert_equal('<input type="hidden" name="list[0].foo@type" value="bool" />' +
+                   '<input type="checkbox" name="list[0].foo" value="true" checked="checked" />',
+                   render_page('<% foreach :list do %>' +
+                               '<%= checkbox :foo %>' +
+                               '<% end %>'))
+    end
+
+    def test_checkbox_in_loop_outside_scope
+      build_page(PageForCheckboxInLoop)
+      assert_raise(NoMethodError) {
+        render_page('<% foreach :list do %>' +
+                    '<%= checkbox :bar %>' +
+                    '<% end %>')
+      }
     end
 
     TEST_ONLY_ONCE = {
