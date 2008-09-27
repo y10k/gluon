@@ -6,6 +6,10 @@ class Example
 
     gluon_path_filter EXAMPLE_FILTER
 
+    def filename
+      File.basename(@view)
+    end
+
     def view
       IO.read(@view)
     end

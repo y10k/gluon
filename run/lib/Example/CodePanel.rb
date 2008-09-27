@@ -8,6 +8,10 @@ class Example
 
     attr_reader :key
 
+    def filename
+      File.basename(@code)
+    end
+
     def code
       IO.read(@code)
     end
