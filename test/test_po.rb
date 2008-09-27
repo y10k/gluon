@@ -626,6 +626,16 @@ module Gluon::Test
                    render_page("<%= action :foo, :text => 'action', :page => #{AnotherPage} %>"))
     end
 
+    def test_action_with_advice
+      anon_page_type = Class.new(PageForAction) {
+        gluon_advice :foo, :query => { 'bar' => 'HALO' }, :text => 'Hello'
+      }
+      build_page(anon_page_type)
+      rendered_view = render_page('<%= action :foo %>')
+      assert_match(/<a href="[^"]*bar=HALO[^"]*"/, rendered_view, 'query advice')
+      assert_match(%r'^<a.*>Hello</a>$', rendered_view, 'text advice')
+    end
+
     def test_action_optional_id
       assert_optional_id(PageForAction, 'action :foo', :foo)
     end

@@ -316,10 +316,11 @@ module Gluon
 
     def action(name, options={}, &block)
       find_this(name) {
-        options[:query] = {} unless (options.key? :query)
-        options[:query]["#{prefix}#{name}()"] = nil
-        options[:text] = name.to_s unless (options.key? :text)
-        if (page = options[:page]) then
+        query = getopt(:query, options, name, true, {}).dup
+        query["#{prefix}#{name}()"] = nil
+        text = getopt(:text, options, name, true, name.to_s)
+        options = options.dup.update(:query => query, :text => text)
+        if (page = getopt(:page, options, name, true)) then
           path = expand_path(page)
           unless (path.is_a? String) then
             raise TypeError, "unknown action page type: #{path.class}"
