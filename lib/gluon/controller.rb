@@ -35,7 +35,7 @@ module Gluon
           raise NameError, "not advice protected method `#{name}' of `#{self}'"
         end
         unless (method_defined? name) then
-          raise NameError, "not advice undefined method `#{name}' of `#{self}'"
+          raise NoMethodError, "not advice undefined method `#{name}' of `#{self}'"
         end
 
         page_type = self
@@ -72,18 +72,7 @@ module Gluon
       private :gluon_writer
 
       def gluon_export(name, advices={})
-        if (private_method_defined? name) then
-          raise NameError, "not export private method `#{name}' of `#{self}'"
-        end
-        if (protected_method_defined? name) then
-          raise NameError, "not export protected method `#{name}' of `#{self}'"
-        end
-        unless (method_defined? name) then
-          raise NameError, "not export undefined method `#{name}' of `#{self}'"
-        end
-
         gluon_advice name, advices.dup.update(:export => true)
-
         nil
       end
       private :gluon_export

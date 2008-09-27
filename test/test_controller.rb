@@ -379,7 +379,7 @@ module Gluon::Test
     end
 
     def test_gluon_export_syntax_error_not_defined
-      assert_raise(NameError) {
+      assert_raise(NoMethodError) {
         Export.class_eval{
           gluon_export :not_defined_method
         }
