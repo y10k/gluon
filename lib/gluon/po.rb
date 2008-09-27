@@ -56,12 +56,34 @@ module Gluon
     private :prefix
 
     def find_this(name)
-      @stack.reverse_each do |prefix, child|
-        if (child.respond_to? name) then
-          return child
+      unless (block_given?) then
+        @stack.reverse_each do |prefix, child|
+          if (child.respond_to? name) then
+            return child
+          end
         end
+        @controller
+      else
+        stack_orig = @stack
+        @stack = @stack.dup
+        begin
+          until (@stack.empty?)
+            prefix, child = @stack[-1]
+            if (child.respond_to? name) then
+              return yield
+            end
+            @stack.pop
+          end
+
+          if (@controller.respond_to? name) then
+            return yield
+          end
+        ensure
+          @stack = stack_orig
+        end
+
+        raise NoMethodError, "undefined method `#{name}' for `#{@controller.class}'"
       end
-      @controller
     end
     private :find_this
 
@@ -297,18 +319,20 @@ module Gluon
     end
 
     def action(name, options={}, &block)
-      options[:query] = {} unless (options.key? :query)
-      options[:query]["#{prefix}#{name}()"] = nil
-      options[:text] = name.to_s unless (options.key? :text)
-      if (page = options[:page]) then
-        path = expand_path(page)
-        unless (path.is_a? String) then
-          raise TypeError, "unknown action page type: #{path.class}"
+      find_this(name) {
+        options[:query] = {} unless (options.key? :query)
+        options[:query]["#{prefix}#{name}()"] = nil
+        options[:text] = name.to_s unless (options.key? :text)
+        if (page = options[:page]) then
+          path = expand_path(page)
+          unless (path.is_a? String) then
+            raise TypeError, "unknown action page type: #{path.class}"
+          end
+        else
+          path = @c.req.script_name + @c.req.env['PATH_INFO']
         end
-      else
-        path = @c.req.script_name + @c.req.env['PATH_INFO']
-      end
-      mklink(path, options, name, &block)
+        mklink(path, options, name, &block)
+      }
     end
 
     # :stopdoc:

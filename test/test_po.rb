@@ -1465,7 +1465,7 @@ module Gluon::Test
 
     def test_action_in_loop_outside_scope
       build_page(PageForActionInLoop)
-      assert_equal('<a href="/bar.cgi?bar%28%29">foo</a>',
+      assert_equal('<a href="/bar.cgi?bar%28%29">bar</a>',
                    render_page('<% foreach :list do %>' +
                                '<%= action :bar %>' +
                                '<% end %>'))
