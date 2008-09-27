@@ -1,5 +1,7 @@
 2008-09-27  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/erbview.rb: default suffix changed.
+
 	* lib/gluon/web/token.rb: independent session.
 
 	* lib/gluon/po.rb: optional advices for presentation commands.

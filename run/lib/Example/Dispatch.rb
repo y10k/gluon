@@ -33,7 +33,7 @@ class Example
       EXAMPLES[key] = {
 	:class => Example.const_get(name),
 	:code => File.join(BASE_DIR, 'lib', 'Example', "#{name}.rb"),
-	:view => File.join(BASE_DIR, 'view', 'Example', "#{name}.rhtml"),
+	:view => File.join(BASE_DIR, 'view', 'Example', "#{name}#{Gluon::ERBView::SUFFIX}"),
         :title => title || key
       }
     end

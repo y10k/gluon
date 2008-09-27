@@ -95,7 +95,7 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    SUFFIX = '.rhtml'
+    SUFFIX = '.erb'
 
     class << self
       def compile(template_path)

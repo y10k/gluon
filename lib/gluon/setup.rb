@@ -60,7 +60,7 @@ module Gluon
     def install_libraries(src_dir, target_dir)
       Find.find(src_dir) do |path|
         case (path)
-        when /\.rb$|\.rhtml$/
+        when /\.rb$|\.erb$/
           name = path[src_dir.length..-1]
           target_path = target_dir + name
           FileUtils.mkdir_p(File.dirname(target_path))
