@@ -3,9 +3,10 @@ class Example
     include Gluon::Controller
     include Gluon::ERBView
 
+    FRUIT_LIST = %w[ apple banana orange ]
+    PLANET_LIST = %w[ Mercury Venus Earth Mars Jupiter Saturn Uranus Neptune ]
+
     def page_start
-      @fruit_list = %w[ apple banana orange ]
-      @planet_list = %w[ Mercury Venus Earth Mars Jupiter Saturn Uranus Neptune ]
       @foo = 'apple'
       @bar = %w[ Earth Jupiter ]
     end
@@ -13,11 +14,10 @@ class Example
     attr_reader :fruit_list
     attr_reader :planet_list
 
-    gluon_export_accessor :foo,
-      :list => instance_method(:fruit_list)
+    gluon_export_accessor :foo, :list => FRUIT_LIST
 
     gluon_export_accessor :bar,
-      :list => instance_method(:planet_list),
+      :list => PLANET_LIST,
       :multiple => true,
       :size => 5
 
