@@ -1047,6 +1047,23 @@ module Gluon::Test
                    render_page('<%= radio :foo, "Orange" %>'))
     end
 
+    def test_radio_with_advice
+      anon_page_type = Class.new(PageForRadio) {
+        gluon_advice :foo, :list => %w[ Apple Banana Orange ]
+      }
+      build_page(anon_page_type)
+
+      @controller.foo = 'Apple'
+      assert_equal('<input type="radio" name="foo" value="Banana" />',
+                   render_page('<%= radio :foo, "Banana" %>'))
+
+      @controller.foo = 'Orange'
+      assert_equal('<input type="radio" name="foo" value="Orange" checked="checked" />',
+                   render_page('<%= radio :foo, "Orange" %>'))
+
+      render_page('<%= radio :foo, "Melon" %>')
+    end
+
     def test_radio_optional_id
       assert_optional_id(PageForRadio, 'radio :foo, "Banana"', :foo)
     end

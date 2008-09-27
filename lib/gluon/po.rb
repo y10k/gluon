@@ -519,6 +519,11 @@ module Gluon
     end
 
     def radio(name, value, options={})
+      if (list = getopt(:list, {}, name, false)) then
+        unless (list.include? value) then
+          raise "unexpected value `#{value}' for `#{curr_this.class}\##{name}'"
+        end
+      end
       options = options.dup
       options[:value] = value
       options[:checked] = value == form_value(name)
