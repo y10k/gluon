@@ -12,7 +12,7 @@ module Gluon::Test
 
     def setup
       @view_dir = 'view'
-      @view_path = File.join(@view_dir, 'test_view.rhtml')
+      @view_path = File.join(@view_dir, 'test_view' + Gluon::ERBView::SUFFIX)
       FileUtils.rm_rf(@view_dir) # for debug
       FileUtils.mkdir_p(@view_dir)
       @renderer = Gluon::ViewRenderer.new(@view_dir)
@@ -46,7 +46,7 @@ module Gluon::Test
     class SimplePage
     end
 
-    def test_view_implicit
+    def test_view
       make_view{|out|
         out << "Hello world.\n"
       }

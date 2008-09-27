@@ -798,7 +798,8 @@ module Gluon::Test
 
     class Subpage
       include Gluon::Controller
-      include Gluon::ERBView
+
+      TEMPLATE = File.join(VIEW_DIR, 'Subpage' + Gluon::ERBView::SUFFIX)
 
       def initialize(message='Hello world.')
         @message = message
@@ -810,12 +811,12 @@ module Gluon::Test
       end
 
       def page_render(po)
-        @c.view_render(Gluon::ERBView, File.join(VIEW_DIR, 'Subpage.rhtml'), po)
+        @c.view_render(Gluon::ERBView, TEMPLATE, po)
       end
     end
 
     def test_import
-      File.open(File.join(@view_dir, 'Subpage.rhtml'), 'w') {|out|
+      File.open(Subpage::TEMPLATE, 'w') {|out|
         out << '<%= value :message %>'
       }
       build_page(PageForImport)
@@ -1265,7 +1266,8 @@ module Gluon::Test
 
     class SubpageAction
       include Gluon::Controller
-      include Gluon::ERBView
+
+      TEMPLATE = File.join(VIEW_DIR, 'SubpageAction' + Gluon::ERBView::SUFFIX)
 
       def initialize
         @calls = 0
@@ -1284,13 +1286,13 @@ module Gluon::Test
       gluon_export :foo
 
       def page_render(po)
-        @c.view_render(Gluon::ERBView, File.join(VIEW_DIR, 'SubpageAction.rhtml'), po)
+        @c.view_render(Gluon::ERBView, TEMPLATE, po)
       end
     end
 
     def test_import_action
       @env['QUERY_STRING'] = Gluon::PresentationObject.query('subpage.foo()' => nil)
-      File.open(File.join(@view_dir, 'SubpageAction.rhtml'), 'w') {|out|
+      File.open(SubpageAction::TEMPLATE, 'w') {|out|
         out << '<%= value :calls %>'
       }
       build_page(PageForImportAction)
@@ -1299,7 +1301,7 @@ module Gluon::Test
     end
 
     def test_import_action_no_call
-      File.open(File.join(@view_dir, 'SubpageAction.rhtml'), 'w') {|out|
+      File.open(SubpageAction::TEMPLATE, 'w') {|out|
         out << '<%= value :calls %>'
       }
       build_page(PageForImportAction)
@@ -1612,6 +1614,8 @@ module Gluon::Test
       class Subpage
         include Gluon::Controller
 
+        TEMPLATE = File.join(VIEW_DIR, 'Subpage' + Gluon::ERBView::SUFFIX)
+
         def initialize(text)
           @text = text
         end
@@ -1622,7 +1626,7 @@ module Gluon::Test
         end
 
         def page_render(po)
-          @c.view_render(Gluon::ERBView, File.join(VIEW_DIR, 'Subpage.rhtml'), po)
+          @c.view_render(Gluon::ERBView, TEMPLATE, po)
         end
       end
 
@@ -1644,7 +1648,7 @@ module Gluon::Test
     end
 
     def test_import_in_loop_inside_scope
-      File.open(File.join(VIEW_DIR, 'Subpage.rhtml'), 'w') {|out|
+      File.open(PageForImportInLoop::Subpage::TEMPLATE, 'w') {|out|
         out << '<%= value :text %>'
       }
       build_page(PageForImportInLoop)
@@ -1655,7 +1659,7 @@ module Gluon::Test
     end
 
     def test_import_in_loop_outside_scope
-      File.open(File.join(VIEW_DIR, 'Subpage.rhtml'), 'w') {|out|
+      File.open(PageForImportInLoop::Subpage::TEMPLATE, 'w') {|out|
         out << '<%= value :text %>'
       }
       build_page(PageForImportInLoop)
