@@ -31,6 +31,11 @@ module Gluon
         end
         private :new_token
 
+        def session(c)
+          c.session_get(true, :key => 'gluon-one_time_token')
+        end
+        private :session
+
         def page_start
           @token = nil
         end
@@ -39,7 +44,7 @@ module Gluon
 
         def page_import
           @token = new_token
-          @c.session_get[:one_time_token] = @token
+          session(@c)[:one_time_token] = @token
         end
 
         def page_render(po)
@@ -49,7 +54,7 @@ module Gluon
 
         def valid?(c)
           if (@token) then
-            if (curr_token = c.session_get[:one_time_token]) then
+            if (curr_token = session(c)[:one_time_token]) then
               @token == curr_token
             else
               false
