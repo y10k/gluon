@@ -1091,7 +1091,7 @@ module Gluon::Test
       include Gluon::Controller
       include Gluon::ERBView
       gluon_export_accessor :foo
-      gluon_export_accessor :fruits
+      attr_reader :fruits
 
       def initialize
         @fruits = [
@@ -1111,24 +1111,39 @@ module Gluon::Test
                    '<option value="banana" selected="selected">Banana</option>' +
                    '<option value="orange">Orange</option>' +
                    '</select>',
-                   render_page('<%= select :foo, :fruits %>'))
+                   render_page('<%= select :foo, :list => :fruits %>'))
+    end
+
+    def test_select_with_advice
+      anon_page_type = Class.new(PageForSelect) {
+        gluon_advice :foo, :list => instance_method(:fruits)
+      }
+      build_page(anon_page_type)
+
+      @controller.foo = 'banana'
+      assert_equal('<select name="foo">' +
+                   '<option value="apple">Apple</option>' +
+                   '<option value="banana" selected="selected">Banana</option>' +
+                   '<option value="orange">Orange</option>' +
+                   '</select>',
+                   render_page('<%= select :foo %>'))
     end
 
     def test_select_optional_id
-      assert_optional_id(PageForSelect, 'select :foo, :fruits', :foo)
+      assert_optional_id(PageForSelect, 'select :foo, :list => :fruits', :foo)
     end
 
     def test_select_optional_class
-      assert_optional_class(PageForSelect, 'select :foo, :fruits', :foo)
+      assert_optional_class(PageForSelect, 'select :foo, :list => :fruits', :foo)
     end
 
     def test_select_optional_attrs
-      assert_optional_attrs(PageForSelect, 'select :foo, :fruits',
+      assert_optional_attrs(PageForSelect, 'select :foo, :list => :fruits',
                             Gluon::PresentationObject::SELECT_RESERVED_ATTRS.keys)
     end
 
     def test_select_optional_disabled
-      assert_optional_disabled(PageForSelect, 'select :foo, :fruits')
+      assert_optional_disabled(PageForSelect, 'select :foo, :list => :fruits')
     end
 
     def test_multiple_select
@@ -1141,7 +1156,7 @@ module Gluon::Test
                    '<option value="banana">Banana</option>' +
                    '<option value="orange" selected="selected">Orange</option>' +
                    '</select>',
-                   render_page('<%= select :foo, :fruits, :multiple => true %>'))
+                   render_page('<%= select :foo, :list => :fruits, :multiple => true %>'))
     end
 
     class PageForTextarea

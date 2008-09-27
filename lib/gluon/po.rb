@@ -539,7 +539,11 @@ module Gluon
     }.freeze
     # :startdoc:
 
-    def select(name, list, options={})
+    def select(name, options={})
+      unless (list = getopt(:list, options, name, false)) then
+        raise ArgumentError, "need for list parameter for `#{curr_this.class}\##{name}'"
+      end
+
       if (options[:multiple]) then
         elem = make_hidden_type(name, 'list', options)
       else
@@ -553,7 +557,6 @@ module Gluon
       elem << mkattr_disabled(options, name)
       elem << '>'
 
-      list = funcall(list) if (list.is_a? Symbol)
       selects = form_value(name)
       selects = [ selects ] unless (selects.is_a? Array)
       selected = {}
