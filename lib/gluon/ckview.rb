@@ -11,7 +11,7 @@
 module Gluon
   # template like CGIKit 1.x
   module CKView
-    token = %q![^'"\s]+!
+    token = %q![^'"<>&\s]+!
     double_quoted_cdata = %q!"[^"]*"!
     single_quoted_cdata = %q!'[^']*'!
     attr = %Q!#{token}\\s*=\\s*(?:#{double_quoted_cdata}|#{single_quoted_cdata})!
