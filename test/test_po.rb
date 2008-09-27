@@ -1061,7 +1061,9 @@ module Gluon::Test
       assert_equal('<input type="radio" name="foo" value="Orange" checked="checked" />',
                    render_page('<%= radio :foo, "Orange" %>'))
 
-      render_page('<%= radio :foo, "Melon" %>')
+      assert_raise(ArgumentError) {
+        render_page('<%= radio :foo, "Melon" %>')
+      }
     end
 
     def test_radio_optional_id
