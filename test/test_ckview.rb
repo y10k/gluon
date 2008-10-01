@@ -500,6 +500,28 @@ module Gluon::Test
       assert_equal('',
                    render_page('<gluon name="bar">should be ignored.</gluon>'))
     end
+
+    class PageForLink
+      include Gluon::Controller
+      include Gluon::CKView
+
+      def foo
+        return '/Foo', :text => 'foo'
+      end
+      gluon_advice :foo, :type => :link
+    end
+
+    def test_link
+      build_page(PageForLink)
+      assert_equal('<a href="/bar.cgi/Foo">foo</a>',
+                   render_page('<gluon name="foo" />'))
+    end
+
+    def test_link_with_content
+      build_page(PageForLink)
+      assert_equal('<a href="/bar.cgi/Foo">Hello world.</a>',
+                   render_page('<gluon name="foo">Hello world.</gluon>'))
+    end
   end
 end
 

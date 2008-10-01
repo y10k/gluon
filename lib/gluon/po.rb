@@ -239,16 +239,16 @@ module Gluon
       elem << ' href="' << ERB::Util.html_escape(mkpath(href, options)) << '"'
       elem << ' target="' << ERB::Util.html_escape(options[:target]) << '"' if (options.key? :target)
       elem << '>'
-      if (options.key? :text) then
+      if (block_given?) then
+        out = ''
+        yield(out)
+        elem << out
+      elsif (options.key? :text) then
         text = getopt(:text, options, method, true)
         unless (text.is_a? String) then
           raise TypeError, "unknown link text type: #{text.class}"
         end
         elem << ERB::Util.html_escape(text)
-      elsif (block_given?) then
-        out = ''
-        yield(out)
-        elem << out
       else
         elem << ERB::Util.html_escape(href)
       end

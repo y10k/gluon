@@ -139,7 +139,21 @@ module Gluon
         @out = ''
       end
 
+      def block_result
+        out_save = @out
+        @out = ''
+        begin
+          yield
+          result = @out
+        ensure
+          @out = out_save
+        end
+        result
+      end
+      private :block_result
+
       def gluon(name, attrs={})
+        name = name.to_sym
         case (type = @po.find_controller_method_type(name))
         when :value
           @po.value(name)
@@ -153,9 +167,17 @@ module Gluon
             yield
           }
           ''
+        when :link
+          if (block_given?) then
+            @po.link(name) {|out|
+              out << block_result{ yield }
+            }
+          else
+            @po.link(name)
+          end
         else
           case (name)
-          when 'to_s'
+          when :to_s
             @po.value(name)
           else
             raise NotImplementedError, "`#{type}' of controller method type is not implemented for `#{name}'."
