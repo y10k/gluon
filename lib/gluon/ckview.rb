@@ -155,6 +155,7 @@ module Gluon
       def gluon(name, attrs={})
         name = name.to_sym
 
+        attrs = attrs.dup
         options = { :attrs => attrs }
         options[:id] = attrs.delete('id') if (attrs.key? 'id')
         options[:class] = attrs.delete('class') if (attrs.key? 'class')
