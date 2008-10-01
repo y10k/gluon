@@ -543,6 +543,32 @@ module Gluon::Test
     def test_link_optional_attrs
       assert_optional_attrs(PageForLink, 'foo')
     end
+
+    class PageForLinkURI
+      include Gluon::Controller
+      include Gluon::CKView
+
+      def ruby_home_uri
+        return 'http://www.ruby-lang.org', :text => 'Ruby'
+      end
+      gluon_advice :ruby_home_uri, :type => :link_uri
+    end
+
+    def test_link_uri
+      build_page(PageForLinkURI)
+      assert_equal('<a href="http://www.ruby-lang.org">Ruby</a>',
+                   render_page('<gluon name="ruby_home_uri" />'))
+    end
+
+    def test_link_uri_with_content
+      build_page(PageForLinkURI)
+      assert_equal('<a href="http://www.ruby-lang.org">ruby</a>',
+                   render_page('<gluon name="ruby_home_uri">ruby</gluon>'))
+    end
+
+    def test_link_uri_optional_attrs
+      assert_optional_attrs(PageForLinkURI, 'ruby_home_uri')
+    end
   end
 end
 
