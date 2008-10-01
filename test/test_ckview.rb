@@ -394,6 +394,22 @@ module Gluon::Test
     end
     private :render_page
 
+    def assert_optional_attrs(name)
+      assert_match(/ id="bar"/,
+                   render_page(%Q'<gluon name="#{name}" id="bar" />'))
+      assert_match(/ id="bar"/,
+                   render_page(%Q'<gluon name="#{name}" id="bar"></gluon>'))
+      assert_match(/ class="bar"/,
+                   render_page(%Q'<gluon name="#{name}" class="bar" />'))
+      assert_match(/ class="bar"/,
+                   render_page(%Q'<gluon name="#{name}" class="bar"></gluon>'))
+      assert_match(/ bar="baz"/,
+                   render_page(%Q'<gluon name="#{name}" bar="baz" />'))
+      assert_match(/ bar="baz"/,
+                   render_page(%Q'<gluon name="#{name}" bar="baz"></gluon>'))
+    end
+    private :assert_optional_attrs
+
     class SimplePage
       include Gluon::Controller
       include Gluon::CKView
@@ -525,12 +541,7 @@ module Gluon::Test
 
     def test_link_optional_attrs
       build_page(PageForLink)
-      assert_match(/ id="bar"/,
-                   render_page('<gluon name="foo" id="bar" />'))
-      assert_match(/ class="bar"/,
-                   render_page('<gluon name="foo" class="bar" />'))
-      assert_match(/ bar="baz"/,
-                   render_page('<gluon name="foo" bar="baz" />'))
+      assert_optional_attrs('foo')
     end
   end
 end
