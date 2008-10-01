@@ -404,6 +404,50 @@ module Gluon::Test
       assert_equal("Hello world.\n",
                    render_page("Hello world.\n"))
     end
+
+    class PageForValue
+      include Gluon::Controller
+      include Gluon::CKView
+
+      def foo
+        'Hello world.'
+      end
+      gluon_advice :foo, :type => :value
+
+      def bar
+        '&<>" foo'
+      end
+      gluon_advice :bar, :type => :value, :escape => true
+
+      def baz
+        '&<>" foo'
+      end
+      gluon_advice :baz, :type => :value, :escape => false
+    end
+
+    def test_value
+      build_page(PageForValue)
+      assert_equal('Hello world.',
+                   render_page('<gluon name="foo" />'))
+    end
+
+    def test_value_with_escape
+      build_page(PageForValue)
+      assert_equal('&amp;&lt;&gt;&quot; foo',
+                   render_page('<gluon name="bar" />'))
+    end
+
+    def test_value_with_no_escape
+      build_page(PageForValue)
+      assert_equal('&<>" foo',
+                   render_page('<gluon name="baz" />'))
+    end
+
+    def test_value_content_ignored
+      build_page(PageForValue)
+      assert_equal('Hello world.',
+                   render_page('<gluon name="foo">should be ignored.</gluon>'))
+    end
   end
 end
 

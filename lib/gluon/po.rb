@@ -135,6 +135,10 @@ module Gluon
     end
     private :getopt
 
+    def find_controller_method_type(method)
+      Controller.find_advice(find_this(method).class, method, :type)
+    end
+
     def value(name=:to_s, options={})
       escape = getopt(:escape, options, name, true, true)
       s = funcall(name).to_s

@@ -140,7 +140,12 @@ module Gluon
       end
 
       def gluon(name, attrs={})
-        raise NotImplemented, 'not implemented.'
+        case (type = @po.find_controller_method_type(name))
+        when :value
+          @po.value(name)
+        else
+          raise NotImplemented, 'not implemented.'
+        end
       end
     end
 
