@@ -143,8 +143,13 @@ module Gluon
         case (type = @po.find_controller_method_type(name))
         when :value
           @po.value(name)
+        when :cond
+          @po.cond(name) {
+            yield
+          }
+          ''
         else
-          raise NotImplemented, 'not implemented.'
+          raise NotImplementedError, "`#{type}' of controller method type is not implemented."
         end
       end
     end

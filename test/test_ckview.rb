@@ -448,6 +448,31 @@ module Gluon::Test
       assert_equal('Hello world.',
                    render_page('<gluon name="foo">should be ignored.</gluon>'))
     end
+
+    class PageForCond
+      include Gluon::Controller
+      include Gluon::CKView
+
+      def foo?
+        true
+      end
+      gluon_advice :foo?, :type => :cond
+
+      def bar?
+        false
+      end
+      gluon_advice :bar?, :type => :cond
+    end
+
+    def test_cond_true
+      build_page(PageForCond)
+      assert_equal('HALO', render_page('<gluon name="foo?">HALO</gluon>'))
+    end
+
+    def test_cond_false
+      build_page(PageForCond)
+      assert_equal('', render_page('<gluon name="bar?">HALO</gluon>'))
+    end
   end
 end
 
