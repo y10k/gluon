@@ -482,12 +482,23 @@ module Gluon::Test
         %w[ apple banana orange ]
       end
       gluon_advice :foo, :type => :foreach
+
+      def bar
+        []
+      end
+      gluon_advice :bar, :type => :foreach
     end
 
     def test_foreach
       build_page(PageForForeach)
       assert_equal('[apple][banana][orange]',
                    render_page('<gluon name="foo">[<gluon name="to_s" />]</gluon>'))
+    end
+
+    def test_foreach_empty_list
+      build_page(PageForForeach)
+      assert_equal('',
+                   render_page('<gluon name="bar">should be ignored.</gluon>'))
     end
   end
 end
