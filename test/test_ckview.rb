@@ -1,6 +1,8 @@
 #!/usr/local/bin/ruby
 
+require 'fileutils'
 require 'gluon'
+require 'rack'
 require 'test/unit'
 
 module Gluon::Test
@@ -338,6 +340,69 @@ module Gluon::Test
                      Gluon::CKView.mkcode(incremental_parsed_alist),
                      "#{i}th")
       }
+    end
+  end
+
+  class CKViewTemplateTest < Test::Unit::TestCase
+    # for ident(1)
+    CVS_ID = '$Id$'
+
+    VIEW_DIR = 'view'
+
+    class AnotherPage
+      include Gluon::Controller
+      include Gluon::CKView
+    end
+
+    def setup
+      @view_dir = VIEW_DIR
+      FileUtils.rm_rf(@view_dir) # for debug
+      FileUtils.mkdir_p(@view_dir)
+      @renderer = Gluon::ViewRenderer.new(@view_dir)
+
+      @env = Rack::MockRequest.env_for('http://foo:8080/bar.cgi')
+      @env['SCRIPT_NAME'] = '/bar.cgi'
+      @env['PATH_INFO'] = ''
+      @mock = Gluon::Mock.new(:url_map => { AnotherPage => '/another_page' },
+                              :view_dir => @view_dir)
+    end
+
+    def teardown
+      FileUtils.rm_rf(@view_dir) unless $DEBUG
+    end
+
+    def build_page(page_type)
+      @c = @mock.new_request(@env)
+      @params, @funcs = Gluon::Action.parse(@c.req.params)
+      @controller = page_type.new
+      @controller.c = @c
+      @action = Gluon::Action.new(@controller, @c, @params, @funcs)
+      @po = Gluon::PresentationObject.new(@controller, @c, @action)
+    end
+    private :build_page
+
+    def render_page(ckview_script, filename=nil)
+      unless (filename) then
+        filename = @c.default_template(@controller) + Gluon::CKView::SUFFIX
+      end
+      FileUtils.mkdir_p(File.dirname(filename))
+      File.open("#{filename}.tmp", 'w') {|out|
+        out << ckview_script
+      }
+      File.rename("#{filename}.tmp", filename) # to change i-node
+      @controller.page_render(@po)
+    end
+    private :render_page
+
+    class SimplePage
+      include Gluon::Controller
+      include Gluon::CKView
+    end
+
+    def test_text
+      build_page(SimplePage)
+      assert_equal("Hello world.\n",
+                   render_page("Hello world.\n"))
     end
   end
 end

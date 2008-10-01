@@ -11,6 +11,9 @@
 module Gluon
   # template like CGIKit 1.x
   module CKView
+    # for ident(1)
+    CVS_ID = '$Id$'
+
     token = %q![^'"<>&\s]+!
     double_quoted_cdata = %q!"[^"]*"!
     single_quoted_cdata = %q!'[^']*'!
@@ -127,6 +130,9 @@ module Gluon
     end
 
     class Context
+      # for ident(1)
+      CVS_ID = '$Id$'
+
       def initialize(po, rs_context)
         @po = po
         @c = rs_context
@@ -136,6 +142,12 @@ module Gluon
       def gluon(name, attrs={})
         raise NotImplemented, 'not implemented.'
       end
+    end
+
+    SUFFIX = '.ck'
+
+    def page_render(po)
+      @c.view_render(CKView, @c.default_template(self) + SUFFIX, po)
     end
   end
 end
