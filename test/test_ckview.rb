@@ -4,7 +4,7 @@ require 'gluon'
 require 'test/unit'
 
 module Gluon::Test
-  class CKViewTest < Test::Unit::TestCase
+  class CKViewParserTest < Test::Unit::TestCase
     # for ident(1)
     CVS_ID = '$Id$'
 
