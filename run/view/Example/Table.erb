@@ -1,13 +1,13 @@
-<h2>1. automatic string table</h2>
+<h2>1. automatic embedded table</h2>
 
 <%= import Gluon::Web::Table.new(:columns => 7,
                                  :items => 'a'..'z',
                                  :header_rows => 1,
                                  :summary => 'auto string table',
-                                 :caption => 'automatic (string)',
+                                 :caption => 'automatic (embedded)',
                                  :frame => 'box',
                                  :rules => 'all',
-                                 :id => 'auto-string-table')
+                                 :id => 'auto-embedded-table')
 %>
 
 <h2>2. automatic import table</h2>
