@@ -148,8 +148,18 @@ module Gluon
             yield
           }
           ''
+        when :foreach
+          @po.foreach(name) {
+            yield
+          }
+          ''
         else
-          raise NotImplementedError, "`#{type}' of controller method type is not implemented."
+          case (name)
+          when 'to_s'
+            @po.value(name)
+          else
+            raise NotImplementedError, "`#{type}' of controller method type is not implemented for `#{name}'."
+          end
         end
       end
     end

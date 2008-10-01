@@ -473,6 +473,22 @@ module Gluon::Test
       build_page(PageForCond)
       assert_equal('', render_page('<gluon name="bar?">HALO</gluon>'))
     end
+
+    class PageForForeach
+      include Gluon::Controller
+      include Gluon::CKView
+
+      def foo
+        %w[ apple banana orange ]
+      end
+      gluon_advice :foo, :type => :foreach
+    end
+
+    def test_foreach
+      build_page(PageForForeach)
+      assert_equal('[apple][banana][orange]',
+                   render_page('<gluon name="foo">[<gluon name="to_s" />]</gluon>'))
+    end
   end
 end
 
