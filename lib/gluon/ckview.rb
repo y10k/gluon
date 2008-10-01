@@ -72,6 +72,70 @@ module Gluon
         end
         parsed_list
       end
+
+      def mkopts(options)
+        options.map{|k, v| "#{k.dump} => #{v.dump}" }.join(', ')
+      end
+      private :mkopts
+
+      def mkind(indent_level)
+        '  ' * indent_level
+      end
+      private :mkind
+
+      def mkcode(parsed_list)
+        r = ''
+        ind = 0
+        for type, src, attrs in parsed_list
+          case (type)
+          when :text
+            r << mkind(ind) << "@out << #{src.dump}\n"
+          when :gluon_tag_single
+            attrs = attrs.dup
+            name = attrs.delete('name') or raise ArgumentError, "not found a name attribute in `#{src}'"
+            r << mkind(ind)
+            r << "@out << gluon(#{name.dump}"
+            r << ', ' << mkopts(attrs) unless attrs.empty?
+            r << ")\n"
+          when :gluon_tag_start
+            attrs = attrs.dup
+            name = attrs.delete('name') or raise ArgumentError, "not found a name attribute in `#{src}'"
+            r << mkind(ind)
+            r << "@out << gluon(#{name.dump}"
+            r << ', ' << mkopts(attrs) unless attrs.empty?
+            r << ") {\n"
+            ind += 1
+          when :gluon_tag_end
+            ind -= 1
+            r << mkind(ind) << "}\n"
+          else
+            raise "unknown parsed type: #{type}"
+          end
+        end
+        r
+      end
+
+      def compile(template_path)
+        mkcode(parse(IO.read(template_path)))
+      end
+
+      def evaluate(compiled_view, filename='__evaluate__')
+        context = Class.new(Context)
+        context.class_eval("def call\n#{compiled_view}\nend", filename, 0)
+        context
+      end
+    end
+
+    class Context
+      def initialize(po, rs_context)
+        @po = po
+        @c = rs_context
+        @out = ''
+      end
+
+      def gluon(name, attrs={})
+        raise NotImplemented, 'not implemented.'
+      end
     end
   end
 end

@@ -128,16 +128,16 @@ module Gluon::Test
 
     def test_parse_gluon_tag_all
       text = "<html>\n"
-      text << "<head><title><gluon refkey=\"title\" /></title></head>\n"
+      text << "<head><title><gluon name=\"title\" /></title></head>\n"
       text << "<body>\n"
-      text << "<h1><gluon refkey=\"title\" /></h1>\n"
-      text << "<p><gluon refkey=\"message\" /></p>\n"
-      text << "<gluon refkey=\"form?\">\n"
+      text << "<h1><gluon name=\"title\" /></h1>\n"
+      text << "<p><gluon name=\"message\" /></p>\n"
+      text << "<gluon name=\"form?\">\n"
       text << "  <form>\n"
       text << "    <p>\n"
       text << "      <label for=\"memo\">Memo:</label>\n"
-      text << "      <gluon refkey=\"memo\" id=\"memo\" />\n"
-      text << "      <gluon refkey=\"ok\" />\n"
+      text << "      <gluon name=\"memo\" id=\"memo\" />\n"
+      text << "      <gluon name=\"ok\" />\n"
       text << "    </p>\n"
       text << "  </form>\n"
       text << "</gluon>\n"
@@ -151,8 +151,8 @@ module Gluon::Test
       i += 1
 
       assert_equal([ :gluon_tag_single,
-                     "<gluon refkey=\"title\" />",
-                     { 'refkey' => 'title' }
+                     "<gluon name=\"title\" />",
+                     { 'name' => 'title' }
                    ], parsed_list[i])
       i += 1
 
@@ -160,8 +160,8 @@ module Gluon::Test
       i += 1
 
       assert_equal([ :gluon_tag_single,
-                     "<gluon refkey=\"title\" />",
-                     { 'refkey' => 'title' }
+                     "<gluon name=\"title\" />",
+                     { 'name' => 'title' }
                    ], parsed_list[i])
       i += 1
 
@@ -169,8 +169,8 @@ module Gluon::Test
       i += 1
 
       assert_equal([ :gluon_tag_single,
-                     "<gluon refkey=\"message\" />",
-                     { 'refkey' => 'message' }
+                     "<gluon name=\"message\" />",
+                     { 'name' => 'message' }
                    ], parsed_list[i])
       i += 1
 
@@ -178,8 +178,8 @@ module Gluon::Test
       i += 1
 
       assert_equal([ :gluon_tag_start,
-                     "<gluon refkey=\"form?\">",
-                     { 'refkey' => 'form?' }
+                     "<gluon name=\"form?\">",
+                     { 'name' => 'form?' }
                    ], parsed_list[i])
       i += 1
 
@@ -187,8 +187,8 @@ module Gluon::Test
       i += 1
 
       assert_equal([ :gluon_tag_single,
-                     "<gluon refkey=\"memo\" id=\"memo\" />",
-                     { 'refkey' => 'memo', 'id' => 'memo' }
+                     "<gluon name=\"memo\" id=\"memo\" />",
+                     { 'name' => 'memo', 'id' => 'memo' }
                    ], parsed_list[i])
       i += 1
 
@@ -196,8 +196,8 @@ module Gluon::Test
       i += 1
 
       assert_equal([ :gluon_tag_single,
-                     "<gluon refkey=\"ok\" />",
-                     { 'refkey' => 'ok' }
+                     "<gluon name=\"ok\" />",
+                     { 'name' => 'ok' }
                    ], parsed_list[i])
       i += 1
 
@@ -211,6 +211,133 @@ module Gluon::Test
       i += 1
 
       assert_equal(i, parsed_list.length)
+    end
+
+    def code(*lines)
+      lines.map{|t| t + "\n" }.join('')
+    end
+    private :code
+
+    def test_mkcode_text
+      assert_equal(code('@out << "Hello world.\n"'),
+                   Gluon::CKView.mkcode([ [ :text, "Hello world.\n" ] ]))
+    end
+
+    def test_mkcode_gluon_tag_single
+      assert_equal(code('@out << gluon("foo")'),
+                   Gluon::CKView.mkcode([ [ :gluon_tag_single,
+                                            '<gluon name="foo" />',
+                                            { 'name' => 'foo' } ]
+                                        ]))
+    end
+
+    def test_mkcode_gluon_tag_single_with_attrs
+      assert_equal(code('@out << gluon("foo", "bar" => "baz")'),
+                   Gluon::CKView.mkcode([ [ :gluon_tag_single,
+                                            '<gluon name="foo" bar="baz" />',
+                                            { 'name' => 'foo', 'bar' => 'baz' } ]
+                                        ]))
+    end
+
+    def test_mkcode_gluon_tag_single_without_name
+      assert_raise(ArgumentError) {
+        Gluon::CKView.mkcode([ [ :gluon_tag_single, '<gluon />', {} ] ])
+      }
+    end
+
+    def test_mkcode_gluon_tag_starg_end
+      assert_equal(code('@out << gluon("foo") {',
+                        '}'),
+                   Gluon::CKView.mkcode([ [ :gluon_tag_start,
+                                            '<gluon name="foo">',
+                                            { 'name' => 'foo' } ],
+                                          [ :gluon_tag_end,
+                                            '</gluon>' ]
+                                        ]))
+    end
+
+    def test_mkcode_gluon_tag_starg_end_with_attrs
+      assert_equal(code('@out << gluon("foo", "bar" => "baz") {',
+                        '}'),
+                   Gluon::CKView.mkcode([ [ :gluon_tag_start,
+                                            '<gluon name="foo" bar="baz">',
+                                            { 'name' => 'foo', 'bar' => 'baz' } ],
+                                          [ :gluon_tag_end,
+                                            '</gluon>' ]
+                                        ]))
+    end
+
+    def test_mkcode_gluon_tag_starg_end_contains_text
+      assert_equal(code('@out << gluon("foo") {',
+                        '  @out << "Hello world.\n"',
+                        '}'),
+                   Gluon::CKView.mkcode([ [ :gluon_tag_start,
+                                            '<gluon name="foo">',
+                                            { 'name' => 'foo' } ],
+                                          [ :text, "Hello world.\n" ],
+                                          [ :gluon_tag_end,
+                                            '</gluon>' ]
+                                        ]))
+    end
+
+    def test_mkcode_all_list
+      parsed_alist = [
+        [ :text, "<html>\n<head><title>" ],
+        [ :gluon_tag_single,
+          "<gluon name=\"title\" />",
+          { 'name' => 'title' } ],
+        [ :text, "</title></head>\n<body>\n<h1>" ],
+        [ :gluon_tag_single,
+          "<gluon name=\"title\" />",
+          { 'name' => 'title' } ],
+        [ :text, "</h1>\n<p>" ],
+        [ :gluon_tag_single,
+          "<gluon name=\"message\" />",
+          { 'name' => 'message' } ],
+        [ :text, "</p>\n" ],
+        [ :gluon_tag_start,
+          "<gluon name=\"form?\">",
+          { 'name' => 'form?' } ],
+        [ :text, "\n  <form>\n    <p>\n      <label for=\"memo\">Memo:</label>\n      " ],
+        [ :gluon_tag_single,
+          "<gluon name=\"memo\" id=\"memo\" />",
+          { 'name' => 'memo', 'id' => 'memo' } ],
+        [ :text, "\n      " ],
+        [ :gluon_tag_single,
+          "<gluon name=\"ok\" />",
+          { 'name' => 'ok' } ],
+        [ :text, "\n    </p>\n  </form>\n" ],
+        [ :gluon_tag_end, '</gluon>' ],
+        [ :text, "\n</body>\n</html>\n" ]
+      ]
+
+      expected_codes = [
+        '@out << "<html>\n<head><title>"',
+        '@out << gluon("title")',
+        '@out << "</title></head>\n<body>\n<h1>"',
+        '@out << gluon("title")',
+        '@out << "</h1>\n<p>"',
+        '@out << gluon("message")',
+        '@out << "</p>\n"',
+        '@out << gluon("form?") {',
+        '  @out << "\n  <form>\n    <p>\n      <label for=\"memo\">Memo:</label>\n      "',
+        '  @out << gluon("memo", "id" => "memo")',
+        '  @out << "\n      "',
+        '  @out << gluon("ok")',
+        '  @out << "\n    </p>\n  </form>\n"',
+        '}',
+        '@out << "\n</body>\n</html>\n"'
+      ]
+
+      incremental_parsed_alist = []
+      incremental_expected_codes = []
+      parsed_alist.zip(expected_codes).each_with_index {|(parsed_item, expected_code), i|
+        incremental_parsed_alist << parsed_item
+        incremental_expected_codes << expected_code
+        assert_equal(code(*incremental_expected_codes),
+                     Gluon::CKView.mkcode(incremental_parsed_alist),
+                     "#{i}th")
+      }
     end
   end
 end
