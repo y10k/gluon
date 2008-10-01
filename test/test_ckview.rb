@@ -394,7 +394,8 @@ module Gluon::Test
     end
     private :render_page
 
-    def assert_optional_attrs(name)
+    def assert_optional_attrs(page_type, name)
+      build_page(page_type)
       assert_match(/ id="bar"/,
                    render_page(%Q'<gluon name="#{name}" id="bar" />'))
       assert_match(/ id="bar"/,
@@ -540,8 +541,7 @@ module Gluon::Test
     end
 
     def test_link_optional_attrs
-      build_page(PageForLink)
-      assert_optional_attrs('foo')
+      assert_optional_attrs(PageForLink, 'foo')
     end
   end
 end
