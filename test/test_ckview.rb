@@ -522,6 +522,16 @@ module Gluon::Test
       assert_equal('<a href="/bar.cgi/Foo">Hello world.</a>',
                    render_page('<gluon name="foo">Hello world.</gluon>'))
     end
+
+    def test_link_optional_attrs
+      build_page(PageForLink)
+      assert_match(/ id="bar"/,
+                   render_page('<gluon name="foo" id="bar" />'))
+      assert_match(/ class="bar"/,
+                   render_page('<gluon name="foo" class="bar" />'))
+      assert_match(/ bar="baz"/,
+                   render_page('<gluon name="foo" bar="baz" />'))
+    end
   end
 end
 

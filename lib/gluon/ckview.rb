@@ -154,6 +154,9 @@ module Gluon
 
       def gluon(name, attrs={})
         name = name.to_sym
+        options = { :attrs => attrs }
+        options[:id] = attrs.delete('id') if (attrs.key? 'id')
+        options[:class] = attrs.delete('class') if (attrs.key? 'class')
         case (type = @po.find_controller_method_type(name))
         when :value
           @po.value(name)
@@ -169,11 +172,11 @@ module Gluon
           ''
         when :link
           if (block_given?) then
-            @po.link(name) {|out|
+            @po.link(name, options) {|out|
               out << block_result{ yield }
             }
           else
-            @po.link(name)
+            @po.link(name, options)
           end
         else
           case (name)
