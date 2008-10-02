@@ -569,6 +569,31 @@ module Gluon::Test
     def test_link_uri_optional_attrs
       assert_optional_attrs(PageForLinkURI, 'ruby_home_uri')
     end
+
+    class PageForAction
+      include Gluon::Controller
+      include Gluon::CKView
+
+      def foo
+      end
+      gluon_export :foo, :type => :action, :text => 'Action'
+    end
+
+    def test_action
+      build_page(PageForAction)
+      assert_equal('<a href="/bar.cgi?foo%28%29">Action</a>',
+                   render_page('<gluon name="foo" />'))
+    end
+
+    def test_action_with_content
+      build_page(PageForAction)
+      assert_equal('<a href="/bar.cgi?foo%28%29">Hello world.</a>',
+                   render_page('<gluon name="foo">Hello world.</gluon>'))
+    end
+
+    def test_action_optional_attrs
+      assert_optional_attrs(PageForAction, 'foo')
+    end
   end
 end
 

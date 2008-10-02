@@ -189,6 +189,14 @@ module Gluon
           else
             @po.link_uri(name, options)
           end
+        when :action
+          if (block_given?) then
+            @po.action(name, options) {|out|
+              out << block_result{ yield }
+            }
+          else
+            @po.action(name, options)
+          end
         else
           case (name)
           when :to_s
