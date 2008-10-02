@@ -197,6 +197,8 @@ module Gluon
           else
             @po.action(name, options)
           end
+        when :frame
+          @po.frame(name, options)
         else
           case (name)
           when :to_s

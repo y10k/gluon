@@ -448,13 +448,13 @@ module Gluon::Test
                    render_page('<gluon name="foo" />'))
     end
 
-    def test_value_with_escape
+    def test_value_escape
       build_page(PageForValue)
       assert_equal('&amp;&lt;&gt;&quot; foo',
                    render_page('<gluon name="bar" />'))
     end
 
-    def test_value_with_no_escape
+    def test_value_no_escape
       build_page(PageForValue)
       assert_equal('&<>" foo',
                    render_page('<gluon name="baz" />'))
@@ -534,7 +534,7 @@ module Gluon::Test
                    render_page('<gluon name="foo" />'))
     end
 
-    def test_link_with_content
+    def test_link_content
       build_page(PageForLink)
       assert_equal('<a href="/bar.cgi/Foo">Hello world.</a>',
                    render_page('<gluon name="foo">Hello world.</gluon>'))
@@ -560,7 +560,7 @@ module Gluon::Test
                    render_page('<gluon name="ruby_home_uri" />'))
     end
 
-    def test_link_uri_with_content
+    def test_link_uri_content
       build_page(PageForLinkURI)
       assert_equal('<a href="http://www.ruby-lang.org">ruby</a>',
                    render_page('<gluon name="ruby_home_uri">ruby</gluon>'))
@@ -585,7 +585,7 @@ module Gluon::Test
                    render_page('<gluon name="foo" />'))
     end
 
-    def test_action_with_content
+    def test_action_content
       build_page(PageForAction)
       assert_equal('<a href="/bar.cgi?foo%28%29">Hello world.</a>',
                    render_page('<gluon name="foo">Hello world.</gluon>'))
@@ -593,6 +593,32 @@ module Gluon::Test
 
     def test_action_optional_attrs
       assert_optional_attrs(PageForAction, 'foo')
+    end
+
+    class PageForFrame
+      include Gluon::Controller
+      include Gluon::CKView
+
+      def foo
+        '/Foo'
+      end
+      gluon_advice :foo, :type => :frame
+    end
+
+    def test_frame
+      build_page(PageForFrame)
+      assert_equal('<frame src="/bar.cgi/Foo" />',
+                   render_page('<gluon name="foo" />'))
+    end
+
+    def test_frame_content_ignored
+      build_page(PageForFrame)
+      assert_equal('<frame src="/bar.cgi/Foo" />',
+                   render_page('<gluon name="foo">Hello world.</gluon>'))
+    end
+
+    def test_frame_optional_attrs
+      assert_optional_attrs(PageForFrame, 'foo')
     end
   end
 end
