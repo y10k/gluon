@@ -201,6 +201,8 @@ module Gluon
           @po.frame(name, options)
         when :frame_uri
           @po.frame_uri(name, options)
+        when :import
+          @po.import(name, options)
         else
           case (name)
           when :to_s

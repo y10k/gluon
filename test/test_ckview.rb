@@ -646,6 +646,38 @@ module Gluon::Test
     def test_frame_uri_optional_attrs
       assert_optional_attrs(PageForFrameURI, 'ruby_home')
     end
+
+    class PageForImport
+      class Subpage
+        include Gluon::Controller
+
+        TEMPLATE = File.join(VIEW_DIR, 'Subpage' + Gluon::CKView::SUFFIX)
+
+        def page_import         # checked by Gluon::Action
+        end
+
+        def page_render(po)
+          @c.view_render(Gluon::CKView, TEMPLATE, po)
+        end
+      end
+
+      include Gluon::Controller
+      include Gluon::CKView
+
+      def subpage
+        Subpage.new
+      end
+      gluon_advice :subpage, :type => :import
+    end
+
+    def test_import
+      File.open(PageForImport::Subpage::TEMPLATE, 'w') {|w|
+        w << 'Hello world.'
+      }
+      build_page(PageForImport)
+      assert_equal('[Hello world.]',
+                   render_page('[<gluon name="subpage" />]'))
+    end
   end
 end
 
