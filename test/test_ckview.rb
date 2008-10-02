@@ -620,6 +620,32 @@ module Gluon::Test
     def test_frame_optional_attrs
       assert_optional_attrs(PageForFrame, 'foo')
     end
+
+    class PageForFrameURI
+      include Gluon::Controller
+      include Gluon::CKView
+
+      def ruby_home
+        'http://www.ruby-lang.org'
+      end
+      gluon_advice :ruby_home, :type => :frame_uri
+    end
+
+    def test_frame_uri
+      build_page(PageForFrameURI)
+      assert_equal('<frame src="http://www.ruby-lang.org" />',
+                   render_page('<gluon name="ruby_home" />'))
+    end
+
+    def test_frame_uri_content_ignored
+      build_page(PageForFrameURI)
+      assert_equal('<frame src="http://www.ruby-lang.org" />',
+                   render_page('<gluon name="ruby_home">Hello world.</gluon>'))
+    end
+
+    def test_frame_uri_optional_attrs
+      assert_optional_attrs(PageForFrameURI, 'ruby_home')
+    end
   end
 end
 

@@ -199,12 +199,18 @@ module Gluon
           end
         when :frame
           @po.frame(name, options)
+        when :frame_uri
+          @po.frame_uri(name, options)
         else
           case (name)
           when :to_s
             @po.value(name)
           else
-            raise NotImplementedError, "`#{type}' of controller method type is not implemented for `#{name}'."
+            if (type) then
+              raise "`#{type}' of unknown controller method type for `#{name}'."
+            else
+              raise NameError, "not defined controller type for `#{name}'"
+            end
           end
         end
       end
