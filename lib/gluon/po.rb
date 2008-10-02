@@ -20,10 +20,11 @@ module Gluon
 
     extend Forwardable
 
-    def initialize(controller, rs_context, action)
+    def initialize(controller, rs_context, action, &block)
       @controller = controller
       @c = rs_context
       @action = action
+      @parent_block = block
       @stack = []
     end
 
@@ -368,7 +369,7 @@ module Gluon
       mkframe(src, options, method)
     end
 
-    def import(name, options={})
+    def import(name, options={}, &block)
       case (name)
       when Symbol
         value = funcall(name)
@@ -395,8 +396,22 @@ module Gluon
 
       action = @action.new_action(controller, @c, next_prefix_list, prefix)
       action.setup.apply(:import) {
-        action.view_render
+        action.view_render(&block)
       }
+    end
+
+    def content
+      if (@parent_block) then
+        out = ''
+        @parent_block.call(out)
+        out
+      elsif (block_given?) then
+        out = ''
+        yield(out)
+        out
+      else
+        raise "not defined content at parent controller of `#{@controller}'."
+      end
     end
 
     def mkattr_bool(key, options, method)

@@ -678,6 +678,34 @@ module Gluon::Test
       assert_equal('[Hello world.]',
                    render_page('[<gluon name="subpage" />]'))
     end
+
+    def test_import_content
+      File.open(PageForImport::Subpage::TEMPLATE, 'w') {|w|
+        w << '[<gluon name="g:content" />]'
+      }
+      build_page(PageForImport)
+      assert_equal('[Hello world.]',
+                   render_page('<gluon name="subpage">Hello world.</gluon>'))
+    end
+
+    def test_import_content_default
+      File.open(PageForImport::Subpage::TEMPLATE, 'w') {|w|
+        w << '[<gluon name="g:content">Hello world.</gluon>]'
+      }
+      build_page(PageForImport)
+      assert_equal('[Hello world.]',
+                   render_page('<gluon name="subpage" />'))
+    end
+
+    def test_import_content_not_defined
+      File.open(PageForImport::Subpage::TEMPLATE, 'w') {|w|
+        w << '[<gluon name="g:content" />]'
+      }
+      build_page(PageForImport)
+      assert_raise(RuntimeError) {
+        render_page('<gluon name="subpage" />')
+      }
+    end
   end
 end
 

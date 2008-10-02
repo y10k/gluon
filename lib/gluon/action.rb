@@ -303,8 +303,8 @@ module Gluon
       r
     end
 
-    def view_render
-      po = PresentationObject.new(@controller, @c, self)
+    def view_render(&block)
+      po = PresentationObject.new(@controller, @c, self, &block)
       @logger.debug("#{@controller}.page_render(#{po})") if @logger.debug?
       @controller.page_render(po)
     end

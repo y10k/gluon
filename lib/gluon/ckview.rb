@@ -153,65 +153,88 @@ module Gluon
       private :block_result
 
       def gluon(name, attrs={})
-        name = name.to_sym
-
-        attrs = attrs.dup
-        options = { :attrs => attrs }
-        options[:id] = attrs.delete('id') if (attrs.key? 'id')
-        options[:class] = attrs.delete('class') if (attrs.key? 'class')
-
-        case (type = @po.find_controller_method_type(name))
-        when :value
-          @po.value(name)
-        when :cond
-          @po.cond(name) {
-            yield
-          }
-          ''
-        when :foreach
-          @po.foreach(name) {
-            yield
-          }
-          ''
-        when :link
-          if (block_given?) then
-            @po.link(name, options) {|out|
-              out << block_result{ yield }
-            }
-          else
-            @po.link(name, options)
-          end
-        when :link_uri
-          if (block_given?) then
-            @po.link_uri(name, options) {|out|
-              out << block_result{ yield }
-            }
-          else
-            @po.link_uri(name, options)
-          end
-        when :action
-          if (block_given?) then
-            @po.action(name, options) {|out|
-              out << block_result{ yield }
-            }
-          else
-            @po.action(name, options)
-          end
-        when :frame
-          @po.frame(name, options)
-        when :frame_uri
-          @po.frame_uri(name, options)
-        when :import
-          @po.import(name, options)
-        else
-          case (name)
-          when :to_s
-            @po.value(name)
-          else
-            if (type) then
-              raise "`#{type}' of unknown controller method type for `#{name}'."
+        case (name)
+        when /^g:/
+          command = $'
+          case (command)
+          when 'content'
+            if (block_given?) then
+              @po.content{|out|
+                out << block_result{ yield }
+              }
             else
-              raise NameError, "not defined controller type for `#{name}'"
+              @po.content
+            end
+          else
+            raise "`#{name}' of unknown view command."
+          end
+        else
+          name = name.to_sym
+
+          attrs = attrs.dup
+          options = { :attrs => attrs }
+          options[:id] = attrs.delete('id') if (attrs.key? 'id')
+          options[:class] = attrs.delete('class') if (attrs.key? 'class')
+
+          case (type = @po.find_controller_method_type(name))
+          when :value
+            @po.value(name)
+          when :cond
+            @po.cond(name) {
+              yield
+            }
+            ''
+          when :foreach
+            @po.foreach(name) {
+              yield
+            }
+            ''
+          when :link
+            if (block_given?) then
+              @po.link(name, options) {|out|
+                out << block_result{ yield }
+              }
+            else
+              @po.link(name, options)
+            end
+          when :link_uri
+            if (block_given?) then
+              @po.link_uri(name, options) {|out|
+                out << block_result{ yield }
+              }
+            else
+              @po.link_uri(name, options)
+            end
+          when :action
+            if (block_given?) then
+              @po.action(name, options) {|out|
+                out << block_result{ yield }
+              }
+            else
+              @po.action(name, options)
+            end
+          when :frame
+            @po.frame(name, options)
+          when :frame_uri
+            @po.frame_uri(name, options)
+          when :import
+            if (block_given?) then
+              @po.import(name, options) {|out|
+                out << block_result{ yield }
+              }
+            else
+              @po.import(name, options)
+            end
+          else
+            case (name)
+            when :to_s
+              @po.value(name)
+            else
+              if (type) then
+                raise "`#{type}' of unknown controller method type for `#{name}'."
+              else
+                raise NameError, "not defined controller type for `#{name}'"
+              end
             end
           end
         end
