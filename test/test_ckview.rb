@@ -706,6 +706,29 @@ module Gluon::Test
         render_page('<gluon name="subpage" />')
       }
     end
+
+    class PageForText
+      include Gluon::Controller
+      include Gluon::CKView
+
+      gluon_export_accessor :foo, :type => :text
+    end
+
+    def test_text
+      build_page(PageForText)
+      assert_equal('<input type="text" name="foo" value="" />',
+                   render_page('<gluon name="foo" />'))
+    end
+
+    def test_text_content_ignored
+      build_page(PageForText)
+      assert_equal('<input type="text" name="foo" value="" />',
+                   render_page('<gluon name="foo">Hello world.</gluon>'))
+    end
+
+    def test_text_optional_attrs
+      assert_optional_attrs(PageForText, 'foo')
+    end
   end
 end
 

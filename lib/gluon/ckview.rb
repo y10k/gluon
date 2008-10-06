@@ -225,6 +225,8 @@ module Gluon
             else
               @po.import(name, options)
             end
+          when :text
+            @po.text(name, options)
           else
             case (name)
             when :to_s
