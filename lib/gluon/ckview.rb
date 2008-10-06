@@ -233,7 +233,7 @@ module Gluon
               if (type) then
                 raise "`#{type}' of unknown controller method type for `#{@po.page_type}\##{name}'."
               else
-                raise NameError, "not defined controller type for `#{@po.page_type}\##{name}'"
+                raise NameError, "not defined controller method type for `#{@po.page_type}\##{name}'"
               end
             end
           end
