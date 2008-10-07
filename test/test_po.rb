@@ -197,7 +197,7 @@ module Gluon::Test
     private :assert_optional_disabled
 
     def assert_optional_readonly(page_type, expr)
-      build_page(PageForText)
+      build_page(page_type)
       assert_match(/ readonly="readonly"/,
                    render_page(%Q'<%= #{expr}, :readonly => true %>'))
       assert_no_match(/ readonly="readonly"/,
