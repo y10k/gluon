@@ -729,6 +729,29 @@ module Gluon::Test
     def test_text_optional_attrs
       assert_optional_attrs(PageForText, 'foo')
     end
+
+    class PageForPassword
+      include Gluon::Controller
+      include Gluon::CKView
+
+      gluon_export_accessor :foo, :type => :password
+    end
+
+    def test_password
+      build_page(PageForPassword)
+      assert_equal('<input type="password" name="foo" value="" />',
+                   render_page('<gluon name="foo" />'))
+    end
+
+    def test_password_content_ignored
+      build_page(PageForPassword)
+      assert_equal('<input type="password" name="foo" value="" />',
+                   render_page('<gluon name="foo">Hello world.</gluon>'))
+    end
+
+    def test_password_optional_attrs
+      assert_optional_attrs(PageForPassword, 'foo')
+    end
   end
 end
 

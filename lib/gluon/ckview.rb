@@ -227,6 +227,8 @@ module Gluon
             end
           when :text
             @po.text(name, options)
+          when :password
+            @po.password(name, options)
           else
             case (name)
             when :to_s
