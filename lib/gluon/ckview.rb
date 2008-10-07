@@ -166,7 +166,7 @@ module Gluon
               @po.content
             end
           else
-            raise "`#{name}' of unknown view command."
+            raise NameError, "`#{name}' of unknown view command."
           end
         else
           name = name.to_sym
@@ -233,7 +233,7 @@ module Gluon
               @po.value(name)
             else
               if (type) then
-                raise "`#{type}' of unknown controller method type for `#{@po.page_type}\##{name}'."
+                raise NameError, "`#{type}' of unknown controller method type for `#{@po.page_type}\##{name}'."
               else
                 raise NameError, "not defined controller method type for `#{@po.page_type}\##{name}'"
               end
