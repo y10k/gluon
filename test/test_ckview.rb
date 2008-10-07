@@ -752,6 +752,31 @@ module Gluon::Test
     def test_password_optional_attrs
       assert_optional_attrs(PageForPassword, 'foo')
     end
+
+    class PageForSubmit
+      include Gluon::Controller
+      include Gluon::CKView
+
+      def foo
+      end
+      gluon_export :foo, :type => :submit
+    end
+
+    def test_submit
+      build_page(PageForSubmit)
+      assert_equal('<input type="submit" name="foo()" />',
+                   render_page('<gluon name="foo" />'))
+    end
+
+    def test_submit_content_ignored
+      build_page(PageForSubmit)
+      assert_equal('<input type="submit" name="foo()" />',
+                   render_page('<gluon name="foo">Hello world.</gluon>'))
+    end
+
+    def test_submit_optional_attrs
+      assert_optional_attrs(PageForSubmit, 'foo')
+    end
   end
 end
 

@@ -229,6 +229,8 @@ module Gluon
             @po.text(name, options)
           when :password
             @po.password(name, options)
+          when :submit
+            @po.submit(name, options)
           else
             case (name)
             when :to_s
