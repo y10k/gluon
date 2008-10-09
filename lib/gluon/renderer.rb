@@ -24,8 +24,17 @@ module Gluon
     end
 
     def default_template(controller)
-      filename = controller.class.to_s.dup
-      filename.gsub!(/::/, File::SEPARATOR)
+      filename = controller.class.name
+      if (filename.empty?) then
+        filename = controller.class.to_s
+        if (c = controller.class.superclass) then
+          while (c.name.empty?)
+            c = c.superclass
+          end
+          filename = c.name + '/' + filename
+        end
+      end
+      filename.gsub!(/::/, '/')
       filename.gsub!(%r"[^0-9A-Za-z_/-]+") {|special|
         s = ''
         special.each_byte do |i|
