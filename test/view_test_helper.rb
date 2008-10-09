@@ -172,9 +172,7 @@ module Gluon::Test
     def_view_test :foreach, PageForForeach, '[apple][banana][orange]'
     def_view_test :foreach_empty_list, PageForForeach, ''
 
-    class PageForLink
-      include Gluon::Controller
-
+    class PageForLink < SimplePage
       def foo
         return '/Foo', :text => 'foo'
       end
@@ -186,9 +184,7 @@ module Gluon::Test
     def_view_test :link_content, PageForLink,
       '<a href="/bar.cgi/Foo">Hello world.</a>'
 
-    class PageForLinkURI
-      include Gluon::Controller
-
+    class PageForLinkURI < SimplePage
       def ruby_home
         return 'http://www.ruby-lang.org', :text => 'Ruby'
       end
@@ -200,9 +196,7 @@ module Gluon::Test
     def_view_test :link_uri_content, PageForLinkURI,
       '<a href="http://www.ruby-lang.org">ruby</a>'
 
-    class PageForAction
-      include Gluon::Controller
-
+    class PageForAction < SimplePage
       def foo
       end
       gluon_export :foo, :type => :action, :text => 'Action'
@@ -213,9 +207,7 @@ module Gluon::Test
     def_view_test :action_content, PageForAction,
       '<a href="/bar.cgi?foo%28%29">Hello world.</a>'
 
-    class PageForFrame
-      include Gluon::Controller
-
+    class PageForFrame < SimplePage
       def foo
         '/Foo'
       end
@@ -227,9 +219,7 @@ module Gluon::Test
     def_view_test :frame_content_ignored, PageForFrame,
       '<frame src="/bar.cgi/Foo" />'
 
-    class PageForFrameURI
-      include Gluon::Controller
-
+    class PageForFrameURI < SimplePage
       def ruby_home
         'http://www.ruby-lang.org'
       end
@@ -241,7 +231,7 @@ module Gluon::Test
     def_view_test :frame_uri_content_ignored, PageForFrameURI,
       '<frame src="http://www.ruby-lang.org" />'
 
-    class PageForImport
+    class PageForImport < SimplePage
       class Foo
         include Gluon::Controller
 
@@ -275,8 +265,6 @@ module Gluon::Test
         end
       end
 
-      include Gluon::Controller
-
       def foo
         Foo.new
       end
@@ -304,8 +292,7 @@ module Gluon::Test
       }
     end
 
-    class PageForText
-      include Gluon::Controller
+    class PageForText < SimplePage
       gluon_export_accessor :foo, :type => :text
     end
 
@@ -314,8 +301,7 @@ module Gluon::Test
     def_view_test :text_content_ignored, PageForText,
       '<input type="text" name="foo" value="" />'
 
-    class PageForPassword
-      include Gluon::Controller
+    class PageForPassword < SimplePage
       gluon_export_accessor :foo, :type => :password
     end
 
@@ -324,9 +310,7 @@ module Gluon::Test
     def_view_test :password_content_ignored, PageForPassword,
       '<input type="password" name="foo" value="" />'
 
-    class PageForSubmit
-      include Gluon::Controller
-
+    class PageForSubmit < SimplePage
       def foo
       end
       gluon_export :foo, :type => :submit
