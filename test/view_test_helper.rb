@@ -297,6 +297,13 @@ module Gluon::Test
     def_view_test :import_content, PageForImport, '[Hello world.]'
     def_view_test :import_content_default, PageForImport, '[Hello world.]'
 
+    def test_import_content_not_defined
+      build_page(PageForImport)
+      assert_raise(RuntimeError, view_message) {
+        render_page(view_template)
+      }
+    end
+
     class PageForText
       include Gluon::Controller
       gluon_export_accessor :foo, :type => :text

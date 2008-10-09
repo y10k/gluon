@@ -439,6 +439,10 @@ module Gluon::Test
       '<gluon name="baz" />'
     end
 
+    def view_template_import_content_not_defined
+      '<gluon name="bar" />'
+    end
+
     def view_template_text
       '<gluon name="foo" />'
     end
