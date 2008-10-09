@@ -4,6 +4,7 @@ require 'fileutils'
 require 'gluon'
 require 'rack'
 require 'test/unit'
+require 'view_test_helper'
 
 module Gluon::Test
   class CKViewParserTest < Test::Unit::TestCase
@@ -344,6 +345,126 @@ module Gluon::Test
   end
 
   class CKViewTemplateTest < Test::Unit::TestCase
+    include ViewTestHelper
+
+    def target_view_module
+      Gluon::CKView
+    end
+
+    def view_template_simple
+      "Hello world.\n"
+    end
+
+    def view_template_value
+      '<gluon name="foo" />'
+    end
+
+    def view_template_value_escape
+      '<gluon name="bar" />'
+    end
+
+    def view_template_value_no_escape
+      '<gluon name="baz" />'
+    end
+
+    def view_template_value_content_ignored
+      '<gluon name="foo">should be ignored.</gluon>'
+    end
+
+    def view_template_cond_true
+      '<gluon name="foo?">should be picked up.</gluon>'
+    end
+
+    def view_template_cond_false
+      '<gluon name="bar?">should be ignored.</gluon>'
+    end
+
+    def view_template_foreach
+      '<gluon name="foo">[<gluon name="to_s" />]</gluon>'
+    end
+
+    def view_template_foreach_empty_list
+      '<gluon name="bar">should be ignored.</gluon>'
+    end
+
+    def view_template_link
+      '<gluon name="foo" />'
+    end
+
+    def view_template_link_content
+      '<gluon name="foo">Hello world.</gluon>'
+    end
+
+    def view_template_link_uri
+      '<gluon name="ruby_home" />'
+    end
+
+    def view_template_link_uri_content
+      '<gluon name="ruby_home">ruby</gluon>'
+    end
+
+    def view_template_action
+      '<gluon name="foo" />'
+    end
+
+    def view_template_action_content
+      '<gluon name="foo">Hello world.</gluon>'
+    end
+
+    def view_template_frame
+      '<gluon name="foo" />'
+    end
+
+    def view_template_frame_content_ignored
+      '<gluon name="foo">Hello world.</gluon>'
+    end
+
+    def view_template_frame_uri
+      '<gluon name="ruby_home" />'
+    end
+
+    def view_template_frame_uri_content_ignored
+      '<gluon name="ruby_home">Hello world.</gluon>'
+    end
+
+    def view_template_import
+      '[<gluon name="foo" />]'
+    end
+
+    def view_template_import_content
+      '<gluon name="bar">Hello world.</gluon>'
+    end
+
+    def view_template_import_content_default
+      '<gluon name="baz" />'
+    end
+
+    def view_template_text
+      '<gluon name="foo" />'
+    end
+
+    def view_template_text_content_ignored
+      '<gluon name="foo">should be ignored.</gluon>'
+    end
+
+    def view_template_password
+      '<gluon name="foo" />'
+    end
+
+    def view_template_password_content_ignored
+      '<gluon name="foo">should be ignored.</gluon>'
+    end
+
+    def view_template_submit
+      '<gluon name="foo" />'
+    end
+
+    def view_template_submit_content_ignored
+      '<gluon name="foo">Hello world.</gluon>'
+    end
+  end
+
+  class CKViewTemplateTest2 < Test::Unit::TestCase
     # for ident(1)
     CVS_ID = '$Id$'
 
