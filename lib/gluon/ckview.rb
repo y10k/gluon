@@ -47,7 +47,7 @@ module Gluon
       def parse_attrs(element)
         attrs = {}
         element.scan(ATTR_PARSE_PATTERN) do
-          name = $1
+          name = $1.downcase
           value = $2
           value.sub!(/^["']/, '')
           value.sub!(/["']$/, '')
@@ -174,8 +174,17 @@ module Gluon
 
           attrs = attrs.dup
           options = { :attrs => attrs }
-          options[:id] = attrs.delete('id') if (attrs.key? 'id')
-          options[:class] = attrs.delete('class') if (attrs.key? 'class')
+          [ :id,
+            :class,
+            :size,
+            :maxlength,
+            :rows,
+            :cols
+          ].each do |attr_name|
+            if (attrs.key? attr_name.to_s) then
+              options[attr_name] = attrs.delete(attr_name.to_s)
+            end
+          end
 
           case (type = @po.find_controller_method_type(name))
           when :value
