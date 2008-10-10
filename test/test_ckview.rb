@@ -514,6 +514,14 @@ module Gluon::Test
     def view_template_select_multiple
       '<gluon name="bar" />'
     end
+
+    def view_template_textarea
+      '<gluon name="foo" />'
+    end
+
+    def view_template_textarea_value
+      '<gluon name="bar" />'
+    end
   end
 
   class CKViewTemplateTest2 < Test::Unit::TestCase

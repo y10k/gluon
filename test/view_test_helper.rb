@@ -415,6 +415,21 @@ module Gluon::Test
       '<option value="banana">Banana</option>' +
       '<option value="orange" selected="selected">Orange</option>' +
       '</select>'
+
+    class PageForTextarea < SimplePage
+      def initialize
+        @foo = nil
+        @bar = "Hello world.\n"
+      end
+
+      gluon_export_accessor :foo, :type => :textarea
+      gluon_export_accessor :bar, :type => :textarea
+    end
+
+    def_view_test :textarea, PageForTextarea,
+      '<textarea name="foo"></textarea>'
+    def_view_test :textarea_value, PageForTextarea,
+      %Q'<textarea name="bar">Hello world.\n</textarea>'
   end
 end
 

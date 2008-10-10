@@ -240,6 +240,8 @@ module Gluon
             @po.radio(name, value)
           when :select
             @po.select(name)
+          when :textarea
+            @po.textarea(name)
           else
             case (name)
             when :to_s
