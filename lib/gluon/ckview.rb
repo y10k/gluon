@@ -165,6 +165,14 @@ module Gluon
             else
               @po.content
             end
+          when 'lt'
+            '<'
+          when 'gt'
+            '>'
+          when 'amp'
+            '&'
+          when 'quot'
+            '"'
           else
             raise NameError, "`#{name}' of unknown view command."
           end
