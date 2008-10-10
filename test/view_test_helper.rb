@@ -60,7 +60,7 @@ module Gluon::Test
     private :render_page
 
     module Caller
-      def caller_frame(at=1)
+      def caller_frame(at)
         if (/^(.+?):(\d+)(?::in `(.*)')?/ =~ caller[at]) then
           file = $1
           line = $2.to_i
@@ -74,8 +74,8 @@ module Gluon::Test
     end
     include Caller
 
-    def view_template
-      file, line, method = caller_frame
+    def view_template(at=1)
+      file, line, method = caller_frame(at)
       if (method !~ /^test_/) then
         raise "not a test method of `#{self.class}\#{method}'"
       end
@@ -83,8 +83,8 @@ module Gluon::Test
     end
     private :view_template
 
-    def view_expected
-      file, line, method = caller_frame
+    def view_expected(at=1)
+      file, line, method = caller_frame(at)
       if (method !~ /^test_/) then
         raise "not a test method of `#{self.class}\#{method}'"
       end
@@ -92,8 +92,8 @@ module Gluon::Test
     end
     private :view_expected
 
-    def view_message
-      file, line, method = caller_frame
+    def view_message(at=1)
+      file, line, method = caller_frame(at)
       if (method !~ /^test_/) then
         raise "not a test method of `#{self.class}\#{method}'"
       end
