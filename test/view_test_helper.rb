@@ -60,8 +60,8 @@ module Gluon::Test
     private :render_page
 
     module Caller
-      def caller_frame(at=caller[1])
-        if (/^(.+?):(\d+)(?::in `(.*)')?/ =~ at) then
+      def caller_frame(at=1)
+        if (/^(.+?):(\d+)(?::in `(.*)')?/ =~ caller[at]) then
           file = $1
           line = $2.to_i
           method = $3
@@ -103,7 +103,7 @@ module Gluon::Test
     private :view_message
 
     def self.def_view_test(name, page_type, expected)
-      file, line, method = Caller.caller_frame(caller[0])
+      file, line, method = Caller.caller_frame(0)
       module_eval(<<-EOF, "#{__FILE__},test_#{name}(#{line})", __LINE__ + 1)
         def test_#{name}
           build_page(#{page_type})
