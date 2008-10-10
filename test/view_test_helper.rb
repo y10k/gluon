@@ -59,17 +59,20 @@ module Gluon::Test
     end
     private :render_page
 
-    def caller_frame(at=caller[1])
-      if (/^(.+?):(\d+)(?::in `(.*)')?/ =~ at) then
-        file = $1
-        line = $2.to_i
-        method = $3
-        return file, line, method
-      end
+    module Caller
+      def caller_frame(at=caller[1])
+        if (/^(.+?):(\d+)(?::in `(.*)')?/ =~ at) then
+          file = $1
+          line = $2.to_i
+          method = $3
+          return file, line, method
+        end
 
-      nil
+        nil
+      end
+      module_function :caller_frame
     end
-    private :caller_frame
+    include Caller
 
     def view_template
       file, line, method = caller_frame
@@ -100,7 +103,8 @@ module Gluon::Test
     private :view_message
 
     def self.def_view_test(name, page_type, expected)
-      module_eval(<<-EOF, "#{__FILE__},test_#{name}()", __LINE__ + 1)
+      file, line, method = Caller.caller_frame(caller[0])
+      module_eval(<<-EOF, "#{__FILE__},test_#{name}(#{line})", __LINE__ + 1)
         def test_#{name}
           build_page(#{page_type})
           assert_equal(view_expected,
@@ -337,6 +341,26 @@ module Gluon::Test
       '<input type="hidden" name="bar" value="Hello world." />'
     def_view_test :hidden_content_ignored, PageForHidden,
       '<input type="hidden" name="foo" value="" />'
+
+    class PageForCheckbox < SimplePage
+      def initialize
+        @foo = false
+        @bar = true
+      end
+
+      gluon_export_accessor :foo, :type => :checkbox
+      gluon_export_accessor :bar, :type => :checkbox
+    end
+
+    def_view_test :checkbox, PageForCheckbox,
+      '<input type="hidden" name="foo@type" value="bool" />' +
+      '<input type="checkbox" name="foo" value="true" />'
+    def_view_test :checkbox_checked, PageForCheckbox,
+      '<input type="hidden" name="bar@type" value="bool" />' +
+      '<input type="checkbox" name="bar" value="true" checked="checked" />'
+    def_view_test :checkbox_content_ignored, PageForCheckbox,
+      '<input type="hidden" name="foo@type" value="bool" />' +
+      '<input type="checkbox" name="foo" value="true" />'
   end
 end
 

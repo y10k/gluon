@@ -233,6 +233,8 @@ module Gluon
             @po.submit(name, options)
           when :hidden
             @po.hidden(name, options)
+          when :checkbox
+            @po.checkbox(name, options)
           else
             case (name)
             when :to_s

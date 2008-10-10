@@ -478,6 +478,18 @@ module Gluon::Test
     def view_template_hidden_content_ignored
       '<gluon name="foo">should be ignored.</gluon>'
     end
+
+    def view_template_checkbox
+      '<gluon name="foo" />'
+    end
+
+    def view_template_checkbox_checked
+      '<gluon name="bar" />'
+    end
+
+    def view_template_checkbox_content_ignored
+      '<gluon name="foo">should be ignored.</gluon>'
+    end
   end
 
   class CKViewTemplateTest2 < Test::Unit::TestCase
