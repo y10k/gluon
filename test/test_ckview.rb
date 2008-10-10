@@ -466,6 +466,18 @@ module Gluon::Test
     def view_template_submit_content_ignored
       '<gluon name="foo">Hello world.</gluon>'
     end
+
+    def view_template_hidden
+      '<gluon name="foo" />'
+    end
+
+    def view_template_hidden_value
+      '<gluon name="bar" />'
+    end
+
+    def view_template_hidden_content_ignored
+      '<gluon name="foo">should be ignored.</gluon>'
+    end
   end
 
   class CKViewTemplateTest2 < Test::Unit::TestCase

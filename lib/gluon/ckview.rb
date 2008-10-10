@@ -231,6 +231,8 @@ module Gluon
             @po.password(name, options)
           when :submit
             @po.submit(name, options)
+          when :hidden
+            @po.hidden(name, options)
           else
             case (name)
             when :to_s

@@ -320,6 +320,23 @@ module Gluon::Test
       '<input type="submit" name="foo()" />'
     def_view_test :submit_content_ignored, PageForSubmit,
       '<input type="submit" name="foo()" />'
+
+    class PageForHidden < SimplePage
+      def initialize
+        @foo = nil
+        @bar = 'Hello world.'
+      end
+
+      gluon_export_accessor :foo, :type => :hidden
+      gluon_export_accessor :bar, :type => :hidden
+    end
+
+    def_view_test :hidden, PageForHidden,
+      '<input type="hidden" name="foo" value="" />'
+    def_view_test :hidden_value, PageForHidden,
+      '<input type="hidden" name="bar" value="Hello world." />'
+    def_view_test :hidden_content_ignored, PageForHidden,
+      '<input type="hidden" name="foo" value="" />'
   end
 end
 
