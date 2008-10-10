@@ -386,11 +386,14 @@ module Gluon::Test
           %w[ orange Orange ]
         ]
         @foo = 'banana'
+        @bar = %w[ apple orange ]
       end
 
       attr_reader :fruits
       gluon_export_accessor :foo,
         :type => :select, :list => instance_method(:fruits)
+      gluon_export_accessor :bar,
+        :type => :select, :list => instance_method(:fruits), :multiple => true
     end
 
     def_view_test :select, PageForSelect,
@@ -404,6 +407,13 @@ module Gluon::Test
       '<option value="apple">Apple</option>' +
       '<option value="banana" selected="selected">Banana</option>' +
       '<option value="orange">Orange</option>' +
+      '</select>'
+    def_view_test :select_multiple, PageForSelect,
+      '<input type="hidden" name="bar@type" value="list" />' +
+      '<select name="bar" multiple="multiple">' +
+      '<option value="apple" selected="selected">Apple</option>' +
+      '<option value="banana">Banana</option>' +
+      '<option value="orange" selected="selected">Orange</option>' +
       '</select>'
   end
 end

@@ -510,6 +510,10 @@ module Gluon::Test
     def view_template_select_content_ignored
       '<gluon name="foo">should be ignored.</gluon>'
     end
+
+    def view_template_select_multiple
+      '<gluon name="bar" />'
+    end
   end
 
   class CKViewTemplateTest2 < Test::Unit::TestCase
