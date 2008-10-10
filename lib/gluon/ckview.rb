@@ -169,6 +169,7 @@ module Gluon
             raise NameError, "`#{name}' of unknown view command."
           end
         else
+          name, value = name.split(/=/, 2)
           name = name.to_sym
 
           attrs = attrs.dup
@@ -235,6 +236,8 @@ module Gluon
             @po.hidden(name, options)
           when :checkbox
             @po.checkbox(name, options)
+          when :radio
+            @po.radio(name, value)
           else
             case (name)
             when :to_s

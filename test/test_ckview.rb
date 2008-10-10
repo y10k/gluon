@@ -490,6 +490,18 @@ module Gluon::Test
     def view_template_checkbox_content_ignored
       '<gluon name="foo">should be ignored.</gluon>'
     end
+
+    def view_template_radio
+      '<gluon name="foo=apple" />'
+    end
+
+    def view_template_radio_checked
+      '<gluon name="foo=banana" />'
+    end
+
+    def view_template_radio_content_ignored
+      '<gluon name="foo=apple">should be ignored.</gluon>'
+    end
   end
 
   class CKViewTemplateTest2 < Test::Unit::TestCase

@@ -361,6 +361,22 @@ module Gluon::Test
     def_view_test :checkbox_content_ignored, PageForCheckbox,
       '<input type="hidden" name="foo@type" value="bool" />' +
       '<input type="checkbox" name="foo" value="true" />'
+
+    class PageForRadio < SimplePage
+      def initialize
+        @foo = 'banana'
+      end
+
+      gluon_export_accessor :foo,
+        :type => :radio, :list => %w[ apple banana orange ]
+    end
+
+    def_view_test :radio, PageForRadio,
+      '<input type="radio" name="foo" value="apple" />'
+    def_view_test :radio_checked, PageForRadio,
+      '<input type="radio" name="foo" value="banana" checked="checked" />'
+    def_view_test :radio_content_ignored, PageForRadio,
+      '<input type="radio" name="foo" value="apple" />'
   end
 end
 
