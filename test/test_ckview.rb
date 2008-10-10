@@ -502,6 +502,14 @@ module Gluon::Test
     def view_template_radio_content_ignored
       '<gluon name="foo=apple">should be ignored.</gluon>'
     end
+
+    def view_template_select
+      '<gluon name="foo" />'
+    end
+
+    def view_template_select_content_ignored
+      '<gluon name="foo">should be ignored.</gluon>'
+    end
   end
 
   class CKViewTemplateTest2 < Test::Unit::TestCase

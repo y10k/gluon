@@ -238,6 +238,8 @@ module Gluon
             @po.checkbox(name, options)
           when :radio
             @po.radio(name, value)
+          when :select
+            @po.select(name)
           else
             case (name)
             when :to_s

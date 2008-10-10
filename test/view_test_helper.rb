@@ -377,6 +377,34 @@ module Gluon::Test
       '<input type="radio" name="foo" value="banana" checked="checked" />'
     def_view_test :radio_content_ignored, PageForRadio,
       '<input type="radio" name="foo" value="apple" />'
+
+    class PageForSelect < SimplePage
+      def initialize
+        @fruits = [
+          %w[ apple Apple ],
+          %w[ banana Banana ],
+          %w[ orange Orange ]
+        ]
+        @foo = 'banana'
+      end
+
+      attr_reader :fruits
+      gluon_export_accessor :foo,
+        :type => :select, :list => instance_method(:fruits)
+    end
+
+    def_view_test :select, PageForSelect,
+      '<select name="foo">' +
+      '<option value="apple">Apple</option>' +
+      '<option value="banana" selected="selected">Banana</option>' +
+      '<option value="orange">Orange</option>' +
+      '</select>'
+    def_view_test :select_content_ignored, PageForSelect,
+      '<select name="foo">' +
+      '<option value="apple">Apple</option>' +
+      '<option value="banana" selected="selected">Banana</option>' +
+      '<option value="orange">Orange</option>' +
+      '</select>'
   end
 end
 
