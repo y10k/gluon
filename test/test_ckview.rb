@@ -974,6 +974,66 @@ module Gluon::Test
     def test_submit_optional_attrs
       assert_optional_attrs(PageForSubmit, 'foo')
     end
+
+    def test_view_command_lt
+      build_page(SimplePage)
+      assert_equal('<', render_page('<gluon name="g:lt" />'))
+    end
+
+    def test_view_command_lt_sparsed
+      build_page(SimplePage)
+      assert_equal('<', render_page('<gluon name=" g : lt  " />'))
+    end
+
+    def test_view_command_lt_content_ignored
+      build_page(SimplePage)
+      assert_equal('<', render_page('<gluon name="g:lt">should be ignored.</gluon>'))
+    end
+
+    def test_view_command_gt
+      build_page(SimplePage)
+      assert_equal('>', render_page('<gluon name="g:gt" />'))
+    end
+
+    def test_view_command_gt_sparsed
+      build_page(SimplePage)
+      assert_equal('>', render_page('<gluon name=" g : gt  " />'))
+    end
+
+    def test_view_command_gt_content_ignored
+      build_page(SimplePage)
+      assert_equal('>', render_page('<gluon name="g:gt">should be ignored.</gluon>'))
+    end
+
+    def test_view_command_amp
+      build_page(SimplePage)
+      assert_equal('&', render_page('<gluon name="g:amp" />'))
+    end
+
+    def test_view_command_amp_sparsed
+      build_page(SimplePage)
+      assert_equal('&', render_page('<gluon name=" g : amp  " />'))
+    end
+
+    def test_view_command_amp_content_ignored
+      build_page(SimplePage)
+      assert_equal('&', render_page('<gluon name="g:amp">should be ignored.</gluon>'))
+    end
+
+    def test_view_command_quot
+      build_page(SimplePage)
+      assert_equal('"', render_page('<gluon name="g:quot" />'))
+    end
+
+    def test_view_command_quot_sparsed
+      build_page(SimplePage)
+      assert_equal('"', render_page('<gluon name=" g : quot  " />'))
+    end
+
+    def test_view_command_quot_content_ignored
+      build_page(SimplePage)
+      assert_equal('"', render_page('<gluon name="g:quot">should be ignored.</gluon>'))
+    end
   end
 end
 

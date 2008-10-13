@@ -154,8 +154,8 @@ module Gluon
 
       def gluon(name, attrs={})
         case (name)
-        when /^g:/
-          command = $'
+        when /^\s*g\s*:/
+          command = $'.strip
           case (command)
           when 'content'
             if (block_given?) then
@@ -176,6 +176,8 @@ module Gluon
           else
             raise NameError, "`#{name}' of unknown view command."
           end
+        when /^\s*_\s*:/
+          raise NotImplemented, "not implemented view command: `_'"
         else
           name, value = name.split(/=/, 2)
           name = name.to_sym

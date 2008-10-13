@@ -103,7 +103,7 @@ module Gluon::Test
     private :view_message
 
     def self.def_view_test(name, page_type, expected)
-      file, line, method = Caller.caller_frame(0)
+      file, line, method = Caller.caller_frame(1)
       module_eval(<<-EOF, "#{__FILE__},test_#{name}(#{line})", __LINE__ + 1)
         def test_#{name}
           build_page(#{page_type})
@@ -186,7 +186,7 @@ module Gluon::Test
     def_view_test :link, PageForLink,
       '<a href="/bar.cgi/Foo">foo</a>'
     def_view_test :link_content, PageForLink,
-      '<a href="/bar.cgi/Foo">Hello world.</a>'
+      '<a href="/bar.cgi/Foo">should be picked up.</a>'
 
     class PageForLinkURI < SimplePage
       def ruby_home
@@ -198,7 +198,7 @@ module Gluon::Test
     def_view_test :link_uri, PageForLinkURI,
       '<a href="http://www.ruby-lang.org">Ruby</a>'
     def_view_test :link_uri_content, PageForLinkURI,
-      '<a href="http://www.ruby-lang.org">ruby</a>'
+      '<a href="http://www.ruby-lang.org">should be picked up.</a>'
 
     class PageForAction < SimplePage
       def foo
@@ -209,7 +209,7 @@ module Gluon::Test
     def_view_test :action, PageForAction,
       '<a href="/bar.cgi?foo%28%29">Action</a>'
     def_view_test :action_content, PageForAction,
-      '<a href="/bar.cgi?foo%28%29">Hello world.</a>'
+      '<a href="/bar.cgi?foo%28%29">should be picked up.</a>'
 
     class PageForFrame < SimplePage
       def foo
@@ -243,7 +243,7 @@ module Gluon::Test
         end
 
         def page_render(po)
-          'Hello world.'
+          'should be picked up.'
         end
       end
 
@@ -265,7 +265,7 @@ module Gluon::Test
         end
 
         def page_render(po)
-          '[' + po.content{|out| out << 'Hello world.' } + ']'
+          '[' + po.content{|out| out << 'should be picked up.' } + ']'
         end
       end
 
@@ -285,9 +285,9 @@ module Gluon::Test
       gluon_advice :baz, :type => :import
     end
 
-    def_view_test :import, PageForImport, '[Hello world.]'
-    def_view_test :import_content, PageForImport, '[Hello world.]'
-    def_view_test :import_content_default, PageForImport, '[Hello world.]'
+    def_view_test :import, PageForImport, '[should be picked up.]'
+    def_view_test :import_content, PageForImport, '[should be picked up.]'
+    def_view_test :import_content_default, PageForImport, '[should be picked up.]'
 
     def test_import_content_not_defined
       build_page(PageForImport)
@@ -297,20 +297,36 @@ module Gluon::Test
     end
 
     class PageForText < SimplePage
+      def initialize
+        @foo = nil
+        @bar = 'should be picked up.'
+      end
+
       gluon_export_accessor :foo, :type => :text
+      gluon_export_accessor :bar, :type => :text
     end
 
     def_view_test :text, PageForText,
       '<input type="text" name="foo" value="" />'
+    def_view_test :text_value, PageForText,
+      '<input type="text" name="bar" value="should be picked up." />'
     def_view_test :text_content_ignored, PageForText,
       '<input type="text" name="foo" value="" />'
 
     class PageForPassword < SimplePage
+      def initialize
+        @foo = nil
+        @bar = 'should be picked up.'
+      end
+
       gluon_export_accessor :foo, :type => :password
+      gluon_export_accessor :bar, :type => :password
     end
 
     def_view_test :password, PageForPassword,
       '<input type="password" name="foo" value="" />'
+    def_view_test :password_value, PageForPassword,
+      '<input type="password" name="bar" value="should be picked up." />'
     def_view_test :password_content_ignored, PageForPassword,
       '<input type="password" name="foo" value="" />'
 
@@ -318,10 +334,16 @@ module Gluon::Test
       def foo
       end
       gluon_export :foo, :type => :submit
+
+      def bar
+      end
+      gluon_export :bar, :type => :submit, :value => 'should be picked up.'
     end
 
     def_view_test :submit, PageForSubmit,
       '<input type="submit" name="foo()" />'
+    def_view_test :submit_value, PageForSubmit,
+      '<input type="submit" name="bar()" value="should be picked up." />'
     def_view_test :submit_content_ignored, PageForSubmit,
       '<input type="submit" name="foo()" />'
 
@@ -430,6 +452,8 @@ module Gluon::Test
       '<textarea name="foo"></textarea>'
     def_view_test :textarea_value, PageForTextarea,
       %Q'<textarea name="bar">Hello world.\n</textarea>'
+    def_view_test :textarea_content_ignored, PageForTextarea,
+      '<textarea name="foo"></textarea>'
   end
 end
 
