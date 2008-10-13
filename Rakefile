@@ -60,7 +60,7 @@ spec = Gem::Specification.new{|s|
   s.executables << 'gluon_setup' << 'gluon_update'
   s.files = Dir['{lib,run,test}/**/*.{rb,rhtml,cgi}'] +
     %w[ gluon.ru webrick mongrel ].map{|i| "run/server/#{i}" } +
-    %w[ ChangeLog Rakefile ]
+    %w[ lib/LICENSE ChangeLog Rakefile ]
   s.test_files = [ 'test/run.rb' ]
   s.has_rdoc = true
   s.rdoc_options = RDOC_OPTS
