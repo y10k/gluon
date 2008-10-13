@@ -1,3 +1,7 @@
+2008-10-14  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/ckview.rb: template like CGIKit 1.x.
+
 2008-09-27  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/erbview.rb: default suffix changed.
