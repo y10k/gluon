@@ -392,7 +392,7 @@ module Gluon::Test
     end
 
     def view_template_link_content
-      '<gluon name="foo">Hello world.</gluon>'
+      '<gluon name="foo">should be picked up.</gluon>'
     end
 
     def view_template_link_uri
@@ -400,7 +400,7 @@ module Gluon::Test
     end
 
     def view_template_link_uri_content
-      '<gluon name="ruby_home">ruby</gluon>'
+      '<gluon name="ruby_home">should be picked up.</gluon>'
     end
 
     def view_template_action
@@ -408,7 +408,7 @@ module Gluon::Test
     end
 
     def view_template_action_content
-      '<gluon name="foo">Hello world.</gluon>'
+      '<gluon name="foo">should be picked up.</gluon>'
     end
 
     def view_template_frame
@@ -416,7 +416,7 @@ module Gluon::Test
     end
 
     def view_template_frame_content_ignored
-      '<gluon name="foo">Hello world.</gluon>'
+      '<gluon name="foo">should be ignored.</gluon>'
     end
 
     def view_template_frame_uri
@@ -424,7 +424,7 @@ module Gluon::Test
     end
 
     def view_template_frame_uri_content_ignored
-      '<gluon name="ruby_home">Hello world.</gluon>'
+      '<gluon name="ruby_home">should be ignored.</gluon>'
     end
 
     def view_template_import
@@ -432,7 +432,7 @@ module Gluon::Test
     end
 
     def view_template_import_content
-      '<gluon name="bar">Hello world.</gluon>'
+      '<gluon name="bar">should be picked up.</gluon>'
     end
 
     def view_template_import_content_default
@@ -447,12 +447,20 @@ module Gluon::Test
       '<gluon name="foo" />'
     end
 
+    def view_template_text_value
+      '<gluon name="bar" />'
+    end
+
     def view_template_text_content_ignored
       '<gluon name="foo">should be ignored.</gluon>'
     end
 
     def view_template_password
       '<gluon name="foo" />'
+    end
+
+    def view_template_password_value
+      '<gluon name="bar" />'
     end
 
     def view_template_password_content_ignored
@@ -463,8 +471,12 @@ module Gluon::Test
       '<gluon name="foo" />'
     end
 
+    def view_template_submit_value
+      '<gluon name="bar" value="should be picked up." />'
+    end
+
     def view_template_submit_content_ignored
-      '<gluon name="foo">Hello world.</gluon>'
+      '<gluon name="foo">should be ignored.</gluon>'
     end
 
     def view_template_hidden
@@ -521,6 +533,10 @@ module Gluon::Test
 
     def view_template_textarea_value
       '<gluon name="bar" />'
+    end
+
+    def view_template_textarea_content_ignored
+      '<gluon name="foo">should be ignored.</gluon>'
     end
   end
 

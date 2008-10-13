@@ -494,11 +494,16 @@ module Gluon
     }.freeze
     # :startdoc:
 
+    # :stopdoc:
+    NoValue = Object.new.freeze
+    # :startdoc:
+
     def mkinput(type, name, options, method)
       elem = mkelem_start('input', MKINPUT_RESERVED_ATTRS, options, method, false)
       elem << ' type="' << ERB::Util.html_escape(type) << '"'
       elem << mkattr_controller_name(name, options)
-      elem << ' value="' << ERB::Util.html_escape(options[:value]) << '"' if (options.key? :value)
+      value = getopt(:value, options, method, false, NoValue)
+      elem << ' value="' << ERB::Util.html_escape(value) << '"' if (value != NoValue)
       elem << ' checked="checked"' if options[:checked]
       elem << mkattr_size(options, method)
       elem << mkattr_maxlength(options, method)
@@ -542,6 +547,9 @@ module Gluon
         unless (list.include? value) then
           raise ArgumentError, "unexpected value `#{value}' for `#{curr_this.class}\##{name}'"
         end
+      end
+      unless (value) then
+        raise ArgumentError, "not defined value: #{value.inspect}"
       end
       options = options.dup
       options[:value] = value
