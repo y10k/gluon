@@ -199,5 +199,37 @@ module Gluon::Test
     def view_template_textarea_content_ignored
       '<%= textarea :foo do |out| out << "should be ignored." end %>'
     end
+
+    TEST_ONLY_ONCE = {
+      :only_once => 0,
+      :not_only_once => 0
+    }
+
+    class PageForOnlyOnce
+      include Gluon::Controller
+      include Gluon::ERBView
+    end
+
+    def test_only_once
+      build_page(PageForOnlyOnce)
+
+      filename = @c.default_template(@controller) + Gluon::ERBView::SUFFIX
+      FileUtils.mkdir_p(File.dirname(filename))
+      File.open(filename, 'w') {|out|
+        out << "<% only_once do "
+        out << "#{self.class}::TEST_ONLY_ONCE[:only_once] += 1"
+        out << " end %>"
+        out << "<% "
+        out << "#{self.class}::TEST_ONLY_ONCE[:not_only_once] += 1"
+        out << " %>"
+      }
+
+      10.times do |i|
+        n = i + 1
+        assert_equal('', @controller.page_render(@po))
+        assert_equal(1, TEST_ONLY_ONCE[:only_once])
+        assert_equal(n, TEST_ONLY_ONCE[:not_only_once], "#{n}th")
+      end
+    end
   end
 end
