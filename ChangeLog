@@ -1,5 +1,7 @@
 2008-10-16  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/renderer.rb: api for any template.
+
 	* lib/gluon/action.rb: ignored any no-pair keyword in
 	query-string.
 

@@ -23,16 +23,23 @@ module Gluon
       @compile_cache = {}
     end
 
-    def default_template(controller)
-      filename = controller.class.name
-      if (filename.empty?) then
-        filename = controller.class.to_s
-        if (c = controller.class.superclass) then
-          while (c.name.empty?)
-            c = c.superclass
+    def expand_template(page_type)
+      case (page_type)
+      when Class
+        filename = page_type.name
+        if (filename.empty?) then
+          filename = page_type.to_s
+          if (c = page_type.superclass) then
+            while (c.name.empty?)
+              c = c.superclass
+            end
+            filename = c.name + '/' + filename
           end
-          filename = c.name + '/' + filename
         end
+      when String
+        filename = page_type
+      else
+        raise ArgumentError, "unknown page_type for template: #{page_type.class}"
       end
       filename.gsub!(/::/, '/')
       filename.gsub!(%r"[^0-9A-Za-z_/-]+") {|special|
@@ -43,6 +50,10 @@ module Gluon
         s
       }
       File.join(@template_dir, filename)
+    end
+
+    def default_template(controller)
+      expand_template(controller.class)
     end
 
     def compile(view, template)
