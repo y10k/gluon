@@ -27,21 +27,25 @@ module Gluon
 
     def mount(page_type, location, path_filter=nil)
       if (location == '/') then
-        @mapping << [
-          '',
-          path_filter || URLMap.find_path_filter(page_type) || '/',
-          page_type
-        ]
+        location = ''
+        path_filter = URLMap.find_path_filter(page_type) || '/' unless path_filter
       else
-        @mapping << [
-          location,
-          path_filter || URLMap.find_path_filter(page_type),
-          page_type
-        ]
+        path_filter = URLMap.find_path_filter(page_type) unless path_filter
       end
+
+      @mapping << [
+        location,
+        path_filter,
+        page_type
+      ]
+
       unless (@class2path.key? page_type) then
-        @class2path[page_type] = location
+        @class2path[page_type] = {
+          :location => location,
+          :path_filter => path_filter
+        }
       end
+
       nil
     end
 
@@ -78,8 +82,22 @@ module Gluon
       nil
     end
 
-    def class2path(page_type)
-      @class2path[page_type]
+    def class2path(page_type, path_info=nil)
+      if (mount_point = @class2path[page_type]) then
+        path = mount_point[:location]
+        if (path_info) then
+          if (path_info !~ mount_point[:path_filter]) then
+            raise ArgumentError, "`#{path_info}' of path_info is no match to `#{mount_point[:path_filter]}' of path_filter for `#{page_type}'"
+          end
+          path += path_info
+        end
+        if (path.empty?) then
+          path = '/'
+        end
+        return path
+      end
+
+      nil
     end
 
     def each

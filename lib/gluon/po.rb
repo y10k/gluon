@@ -219,9 +219,11 @@ module Gluon
     private :mkelem_start
 
     def mkpath(path, options)
-      path = path.dup
-      path << ERB::Util.html_escape(options[:path_info]) if (options.key? :path_info)
-      path = '/' if path.empty?
+      if (path.empty?) then
+        path = '/' 
+      else
+        path = ERB::Util.html_escape(path)
+      end
       path << '?' << PresentationObject.query(options[:query]) if (options.key? :query)
       path << '#' << ERB::Util.html_escape(options[:fragment]) if (options.key? :fragment)
       path
@@ -290,10 +292,10 @@ module Gluon
     end
     private :expand_link_name
 
-    def expand_path(name)
+    def expand_path(name, options)
       case (name)
       when Class
-        @c.class2path(name) or raise "not mounted: #{name}"
+        @c.class2path(name, options[:path_info]) or raise "not mounted: #{name}"
       when String
         @c.req.script_name + name
       else
@@ -304,7 +306,7 @@ module Gluon
 
     def link(name, options={}, &block)
       name, options, method = expand_link_name(name, options)
-      path = expand_path(name)
+      path = expand_path(name, options)
       unless (path.is_a? String) then
         raise TypeError, "unknown link name type: #{name.class}"
       end
@@ -326,7 +328,7 @@ module Gluon
         text = getopt(:text, options, name, true, name.to_s)
         options = options.dup.update(:query => query, :text => text)
         if (page = getopt(:page, options, name, true)) then
-          path = expand_path(page)
+          path = expand_path(page, options)
           unless (path.is_a? String) then
             raise TypeError, "unknown action page type: #{path.class}"
           end
@@ -354,7 +356,7 @@ module Gluon
 
     def frame(name, options={})
       name, options, method = expand_link_name(name, options)
-      src = expand_path(name)
+      src = expand_path(name, options)
       unless (src.is_a? String) then
         raise TypeError, "unknown frame src type: #{name.class}"
       end

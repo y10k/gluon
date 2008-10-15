@@ -292,8 +292,8 @@ module Gluon
 
     def_delegator :@url_map, :lookup
 
-    def class2path(page_type)
-      if (location = @url_map.class2path(page_type)) then
+    def class2path(page_type, path_info=nil)
+      if (location = @url_map.class2path(page_type, path_info)) then
         @req.script_name + location
       end
     end
@@ -343,9 +343,8 @@ module Gluon
       }
     end
 
-    def default_template(controller)
-      @renderer.default_template(controller)
-    end
+    def_delegator :@renderer, :expand_template
+    def_delegator :@renderer, :default_template
 
     def view_render(view, template, po)
       @renderer.render(view, template, self, po)

@@ -71,6 +71,28 @@ module Gluon::Test
       assert_nil(@url_map.class2path(Root))
     end
 
+    def test_class2path_path_info
+      @url_map.mount(Root, '/', %r"^/[A-Z][a-z]+$")
+      @url_map.mount(Foo, '/foo', %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$")
+      @url_map.setup
+
+      assert_equal('/Alice', @url_map.class2path(Root, '/Alice'))
+      assert_equal('/foo/1975-11-19', @url_map.class2path(Foo, '/1975-11-19'))
+    end
+
+    def test_class2path_path_info_no_match
+      @url_map.mount(Root, '/', %r"^/[A-Z][a-z]+$")
+      @url_map.mount(Foo, '/foo', %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$")
+      @url_map.setup
+
+      assert_raise(ArgumentError) {
+        @url_map.class2path(Root, '/alice')
+      }
+      assert_raise(ArgumentError) {
+        @url_map.class2path(Foo, '/2000')
+      }
+    end
+
     class PathFilterRoot
       gluon_path_filter %r"^/root$"
     end

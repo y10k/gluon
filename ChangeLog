@@ -1,3 +1,7 @@
+2008-10-16  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/urlmap.rb: optional path_info for class2path.
+
 2008-10-14  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/ckview.rb: template like CGIKit 1.x.
