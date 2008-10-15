@@ -53,7 +53,7 @@ module Gluon
                 parse_parameter(name.split(/\./), [], parsed_params, name, req_params)
               end
             end
-          else
+          elsif (value) then
             names = key.split(/\./)
             parse_parameter(names, value, parsed_params, key, req_params)
           end

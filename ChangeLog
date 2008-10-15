@@ -1,5 +1,8 @@
 2008-10-16  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/action.rb: ignored any no-pair keyword in
+	query-string.
+
 	* lib/gluon/urlmap.rb: optional path_info for class2path.
 
 2008-10-14  TOKI Yoshinori  <toki@freedom.ne.jp>
