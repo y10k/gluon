@@ -296,8 +296,6 @@ module Gluon
       case (name)
       when Class
         @c.class2path(name, options[:path_info]) or raise "not mounted: #{name}"
-      when String
-        @c.req.script_name + name
       else
         name
       end
@@ -309,14 +307,6 @@ module Gluon
       path = expand_path(name, options)
       unless (path.is_a? String) then
         raise TypeError, "unknown link name type: #{name.class}"
-      end
-      mklink(path, options, method, &block)
-    end
-
-    def link_uri(path, options={}, &block)
-      path, options, method = expand_link_name(path, options)
-      unless (path.is_a? String) then
-        raise TypeError, "unknon link path type: #{path.class}"
       end
       mklink(path, options, method, &block)
     end
@@ -359,14 +349,6 @@ module Gluon
       src = expand_path(name, options)
       unless (src.is_a? String) then
         raise TypeError, "unknown frame src type: #{name.class}"
-      end
-      mkframe(src, options, method)
-    end
-
-    def frame_uri(src, options={})
-      src, options, method = expand_link_name(src, options)
-      unless (src.is_a? String) then
-        raise TypeError, "unknown frame src type: #{src.class}"
       end
       mkframe(src, options, method)
     end

@@ -184,21 +184,9 @@ module Gluon::Test
     end
 
     def_view_test :link, PageForLink,
-      '<a href="/bar.cgi/Foo">foo</a>'
+      '<a href="/Foo">foo</a>'
     def_view_test :link_content, PageForLink,
-      '<a href="/bar.cgi/Foo">should be picked up.</a>'
-
-    class PageForLinkURI < SimplePage
-      def ruby_home
-        return 'http://www.ruby-lang.org', :text => 'Ruby'
-      end
-      gluon_advice :ruby_home, :type => :link_uri
-    end
-
-    def_view_test :link_uri, PageForLinkURI,
-      '<a href="http://www.ruby-lang.org">Ruby</a>'
-    def_view_test :link_uri_content, PageForLinkURI,
-      '<a href="http://www.ruby-lang.org">should be picked up.</a>'
+      '<a href="/Foo">should be picked up.</a>'
 
     class PageForAction < SimplePage
       def foo
@@ -219,21 +207,9 @@ module Gluon::Test
     end
 
     def_view_test :frame, PageForFrame,
-      '<frame src="/bar.cgi/Foo" />'
+      '<frame src="/Foo" />'
     def_view_test :frame_content_ignored, PageForFrame,
-      '<frame src="/bar.cgi/Foo" />'
-
-    class PageForFrameURI < SimplePage
-      def ruby_home
-        'http://www.ruby-lang.org'
-      end
-      gluon_advice :ruby_home, :type => :frame_uri
-    end
-
-    def_view_test :frame_uri, PageForFrameURI,
-      '<frame src="http://www.ruby-lang.org" />'
-    def_view_test :frame_uri_content_ignored, PageForFrameURI,
-      '<frame src="http://www.ruby-lang.org" />'
+      '<frame src="/Foo" />'
 
     class PageForImport < SimplePage
       class Foo

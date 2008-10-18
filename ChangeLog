@@ -1,3 +1,7 @@
+2008-10-19  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/po.rb: obsolete link_uri and frame_uri.
+
 2008-10-18  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/action.rb: timing of passing path_args is changed.
