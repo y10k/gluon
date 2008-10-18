@@ -332,6 +332,18 @@ module Gluon
       nil
     end
 
+    def validate(error_message)
+      if (yield) then
+        @results << true
+      else
+        @results << false
+        if (@errors) then
+          @errors << error_message
+        end
+      end
+      nil
+    end
+
     def validation
       @results.clear
       yield(self)
@@ -345,8 +357,11 @@ module Gluon
 
     module Syntax
       %w[ optional required validate_one_time_token ].each do |name|
-        module_eval(<<-EOF, "#{__FILE__}: #{Syntax}\##{name}", __LINE__ + 1)
+        module_eval(<<-EOF, "#{__FILE__},#{Syntax}\##{name}", __LINE__ + 1)
           def #{name}(*args, &block)
+            if (@__gluon_checker__) then
+              raise %q"not in validation checker block for `#{name}'."
+            end
             if (@__gluon_validator__) then
               @__gluon_validator__.#{name}(*args, &block)
             else
@@ -360,11 +375,11 @@ module Gluon
         module_eval(<<-EOF, "#{__FILE__}: #{Syntax}\##{name}", __LINE__ + 1)
           def #{name}(*args)
             if (@__gluon_validator__) then
+              if (@__gluon_checker__) then
+                raise %q"not nested validation checker block for `#{name}'."
+              end
               if (block_given?) then
                 @__gluon_validator__.#{name}(*args) {|checker|
-                  if (@__gluon_checker__) then
-                    raise 'not nested validation checker.'
-                  end
                   @__gluon_checker__ = checker
                   begin
                     r = yield
@@ -388,7 +403,6 @@ module Gluon
         validation_value
         validation_type
 
-        validate
         match not_match
         range not_range
 
@@ -417,6 +431,18 @@ module Gluon
             end
           end
         EOF
+      end
+
+      def validate(*args, &block)
+        if (@__gluon_validator__) then
+          if (@__gluon_checker__) then
+            @__gluon_checker__.validate(*args, &block)
+          else
+            @__gluon_validator__.validate(*args, &block)
+          end
+        else
+          super
+        end
       end
     end
 
