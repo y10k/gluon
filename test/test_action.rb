@@ -51,8 +51,12 @@ module Gluon::Test
 
       attr_reader :calls
 
-      def page_get(*args)
-        @calls << [ :page_get, args ]
+      def page_start(*args)
+        @calls << [ :page_start, args ]
+      end
+
+      def page_get
+        @calls << [ :page_get ]
       end
     end
 
@@ -65,7 +69,9 @@ module Gluon::Test
       }
 
       assert_equal(1, count)
-      assert_equal([ [ :page_get, %w[ foo bar ] ] ], @controller.calls)
+      assert_equal([ [ :page_start, %w[ foo bar ] ],
+                     [ :page_get ]
+                   ], @controller.calls)
     end
 
     class PageWithReqRes

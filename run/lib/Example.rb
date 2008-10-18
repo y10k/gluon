@@ -19,7 +19,7 @@ class Example
   autoload :Checkbox, 'Example/Checkbox'
   autoload :CodePanel, 'Example/CodePanel'
   autoload :Cond, 'Example/Cond'
-  autoload :Dispatch, 'Example/Dispatch'
+  autoload :DispatchController, 'Example/DispatchController'
   autoload :ErrorMessages, 'Example/ErrorMessages'
   autoload :ExamplePanel, 'Example/ExamplePanel'
   autoload :Foreach, 'Example/Foreach'

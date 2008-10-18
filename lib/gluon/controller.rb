@@ -157,9 +157,9 @@ module Gluon
     end
 
     ## define explicitly
-    # def page_get(*path_args)
-    # def page_head(*path_args)
-    # def page_post(*path_args)
+    # def page_get
+    # def page_head
+    # def page_post
 
     def page_end
     end

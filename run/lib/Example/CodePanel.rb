@@ -1,12 +1,6 @@
 class Example
   class CodePanel
-    include Dispatch
-    include Gluon::Controller
-    include Gluon::ERBView
-
-    gluon_path_filter EXAMPLE_FILTER
-
-    attr_reader :key
+    include DispatchController
 
     def filename
       File.basename(@code)

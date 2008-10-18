@@ -1,10 +1,6 @@
 class Example
   class ExamplePanel
-    include Dispatch
-    include Gluon::Controller
-    include Gluon::ERBView
-
-    gluon_path_filter EXAMPLE_FILTER
+    include DispatchController
 
     def example
       @class

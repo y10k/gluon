@@ -397,7 +397,7 @@ module Gluon
       next_prefix_list = @stack.map{|_prefix, child| _prefix } + [ curr_prefix ]
 
       action = @action.new_action(controller, @c, next_prefix_list, prefix)
-      action.setup.apply(:import) {
+      action.setup.apply([], :import) {
         action.view_render(&block)
       }
     end

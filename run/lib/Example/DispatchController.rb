@@ -1,5 +1,8 @@
 class Example
-  module Dispatch
+  module DispatchController
+    include Gluon::Controller
+    include Gluon::ERBView
+
     BASE_DIR = File.join(File.dirname(__FILE__), '..', '..')
 
     example_alist = [
@@ -24,10 +27,6 @@ class Example
     ]
 
     EXAMPLE_KEYS = example_alist.map{|k, n| k }
-    EXAMPLE_FILTER =
-      Regexp.compile('^/(' +
-                     EXAMPLE_KEYS.map{|k| Regexp.quote(k) }.join('|') +
-                     ')$')
     EXAMPLES = {}
     for key, name, title in example_alist
       EXAMPLES[key] = {
@@ -38,13 +37,19 @@ class Example
       }
     end
 
-    def page_get(key)
+    gluon_path_filter \
+      %r"^/(#{EXAMPLE_KEYS.map{|k| Regexp.quote(k) }.join('|')})$"
+
+    def page_start(key)
       @key = key
       ex = EXAMPLES[@key] or raise "not found a example: #{key.inspect}"
       @class = ex[:class]
       @code = ex[:code]
       @view = ex[:view]
       @title = ex[:title]
+    end
+
+    def page_get
     end
 
     attr_reader :key

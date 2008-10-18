@@ -5,14 +5,14 @@ class Example
 
     def page_start
       @examples = []
-      for key in Dispatch::EXAMPLE_KEYS
+      for key in DispatchController::EXAMPLE_KEYS
         key = key.dup
 
         class << key
           def example
             return Example::ExamplePanel,
               :path_info => "/#{self}",
-              :text => Example::Dispatch::EXAMPLES[self][:title]
+              :text => Example::DispatchController::EXAMPLES[self][:title]
           end
         end
 

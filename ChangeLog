@@ -1,3 +1,7 @@
+2008-10-18  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/action.rb: timing of passing path_args is changed.
+
 2008-10-16  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/renderer.rb: api for any template.

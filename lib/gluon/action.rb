@@ -245,13 +245,13 @@ module Gluon
     end
     private :page_around_hook
 
-    def page_method(name, path_args)
-      @logger.debug("#{@controller}.#{name}(#{path_args.join(',')})") if @logger.debug?
-      @controller.__send__(name, *path_args)
+    def page_method(name)
+      @logger.debug("#{@controller}.#{name}()") if @logger.debug?
+      @controller.__send__(name)
     end
     private :page_method
 
-    def page_http_request(path_args)
+    def page_http_request
       if (@c.req.request_method !~ /^[A-Z]+$/) then
         raise "unknown request-method: #{@c.req.request_method}"
       end
@@ -259,32 +259,35 @@ module Gluon
       case (name)
       when 'page_head'
         begin
-          page_method(:page_head, path_args)
+          page_method(:page_head)
         rescue NoMethodError
-          page_method(:page_get, path_args)
+          page_method(:page_get)
         end
       when 'page_around_hook', 'page_start', 'page_end', 'page_render'
         raise "invalid request-method: #{@c.req.request_method}"
       else
-        page_method(name, path_args)
+        page_method(name)
       end
       nil
     end
     private :page_http_request
 
-    def apply(path_args=[])
+    def apply(path_args=[], call_type=:http)
       @logger.debug("#{Action}#apply() for #{@controller} - start") if @logger.debug?
       @c.validation = nil
       r = nil
       page_around_hook{
-        @logger.debug("#{@controller}.page_start()") if @logger.debug?
-        @controller.page_start
+        @logger.debug("#{@controller}.page_start(#{path_args.join(',')})") if @logger.debug?
+        @controller.page_start(*path_args)
         set_params
         begin
-          if (path_args == :import) then
-            page_method(:page_import, [])
+          case (call_type)
+          when :http
+            page_http_request
+          when :import
+            page_method(:page_import)
           else
-            page_http_request(path_args)
+            raise "unknown call_type: #{call_type}"
           end
           @logger.debug("validation for #{@controller} => #{@c.validation.inspect}") if @logger.debug?
           if (@funcs.key? @prefix) then
@@ -305,7 +308,13 @@ module Gluon
 
     def view_render(&block)
       po = PresentationObject.new(@controller, @c, self, &block)
-      @logger.debug("#{@controller}.page_render(#{po})") if @logger.debug?
+      if (@logger.debug?) then
+        if (block) then
+          @logger.debug("#{@controller}.page_render(#{po},&#{block})")
+        else
+          @logger.debug("#{@controller}.page_render(#{po})")
+        end
+      end
       @controller.page_render(po)
     end
 

@@ -1,10 +1,6 @@
 class Example
   class ViewPanel
-    include Dispatch
-    include Gluon::Controller
-    include Gluon::ERBView
-
-    gluon_path_filter EXAMPLE_FILTER
+    include DispatchController
 
     def filename
       File.basename(@view)
