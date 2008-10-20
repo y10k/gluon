@@ -75,7 +75,7 @@ module Gluon::Test
     include Caller
 
     def self.def_view_test(name, page_type, expected)
-      file, line, method = Caller.caller_frame(1)
+      file, line, = Caller.caller_frame(1)
       module_eval(<<-EOF, "#{__FILE__},test_#{name}(#{line})", __LINE__ + 1)
         def view_expected_#{name}
           #{expected.dump}
@@ -89,33 +89,34 @@ module Gluon::Test
       EOF
     end
 
-    def assert_optional_id(page_type, expr)
+    def assert_optional_id(page_type, method, expr)
       anon_page_type = Class.new(page_type) {
-        gluon_advice :foo, :id => 'bar'
+        gluon_advice method, :id => 'foo'
       }
       build_page(anon_page_type)
-      assert_match(/ id="bar"/, render_page(expr))
+      assert_match(/ id="foo"/, render_page(expr))
 
       anon_page_type = Class.new(page_type) {
-        gluon_advice :foo, :id => proc{ 'bar' }
+        gluon_advice method, :id => proc{ 'foo' }
       }
       build_page(anon_page_type)
-      assert_match(/ id="bar"/, render_page(expr))
+      assert_match(/ id="foo"/, render_page(expr))
 
       anon_page_type = Class.new(page_type) {
-        define_method(:bar) { 'baz' }
-        gluon_advice :foo, :id => instance_method(:bar)
+        define_method(:opt_id) { 'foo' }
+        gluon_advice method, :id => instance_method(:opt_id)
       }
       build_page(anon_page_type)
-      assert_match(/ id="baz"/, render_page(expr))
+      assert_match(/ id="foo"/, render_page(expr))
     end
     private :assert_optional_id
 
-    def self.def_optional_id_test(name, page_type)
-      file, line, method = Caller.caller_frame(1)
+    def self.def_optional_id_test(name, page_type, method)
+      file, line, = Caller.caller_frame(1)
       module_eval(<<-EOF, "#{__FILE__},test_#{name}_optional_id(#{line})", __LINE__ + 1)
         def test_#{name}_optional_id
           assert_optional_id(#{page_type},
+                             #{method.to_sym.inspect},
                              view_template_#{name})
         end
       EOF
@@ -190,7 +191,7 @@ module Gluon::Test
       '<a href="/Foo">foo</a>'
     def_view_test :link_content, PageForLink,
       '<a href="/Foo">should be picked up.</a>'
-    def_optional_id_test :link, PageForLink
+    def_optional_id_test :link, PageForLink, :foo
 
     class PageForAction < SimplePage
       def foo
@@ -202,7 +203,7 @@ module Gluon::Test
       '<a href="/bar.cgi?foo%28%29">Action</a>'
     def_view_test :action_content, PageForAction,
       '<a href="/bar.cgi?foo%28%29">should be picked up.</a>'
-    def_optional_id_test :action, PageForAction
+    def_optional_id_test :action, PageForAction, :foo
 
     class PageForFrame < SimplePage
       def foo
@@ -215,7 +216,7 @@ module Gluon::Test
       '<frame src="/Foo" />'
     def_view_test :frame_content_ignored, PageForFrame,
       '<frame src="/Foo" />'
-    def_optional_id_test :frame, PageForFrame
+    def_optional_id_test :frame, PageForFrame, :foo
 
     class PageForImport < SimplePage
       class Foo
@@ -294,7 +295,7 @@ module Gluon::Test
       '<input type="text" name="bar" value="should be picked up." />'
     def_view_test :text_content_ignored, PageForText,
       '<input type="text" name="foo" value="" />'
-    def_optional_id_test :text, PageForText
+    def_optional_id_test :text, PageForText, :foo
 
     class PageForPassword < SimplePage
       def initialize
@@ -312,7 +313,7 @@ module Gluon::Test
       '<input type="password" name="bar" value="should be picked up." />'
     def_view_test :password_content_ignored, PageForPassword,
       '<input type="password" name="foo" value="" />'
-    def_optional_id_test :password, PageForPassword
+    def_optional_id_test :password, PageForPassword, :foo
 
     class PageForSubmit < SimplePage
       def foo
@@ -330,7 +331,7 @@ module Gluon::Test
       '<input type="submit" name="bar()" value="should be picked up." />'
     def_view_test :submit_content_ignored, PageForSubmit,
       '<input type="submit" name="foo()" />'
-    def_optional_id_test :submit, PageForSubmit
+    def_optional_id_test :submit, PageForSubmit, :foo
 
     class PageForHidden < SimplePage
       def initialize
@@ -348,7 +349,7 @@ module Gluon::Test
       '<input type="hidden" name="bar" value="Hello world." />'
     def_view_test :hidden_content_ignored, PageForHidden,
       '<input type="hidden" name="foo" value="" />'
-    def_optional_id_test :hidden, PageForHidden
+    def_optional_id_test :hidden, PageForHidden, :foo
 
     class PageForCheckbox < SimplePage
       def initialize
@@ -369,7 +370,7 @@ module Gluon::Test
     def_view_test :checkbox_content_ignored, PageForCheckbox,
       '<input type="hidden" name="foo@type" value="bool" />' +
       '<input type="checkbox" name="foo" value="true" />'
-    def_optional_id_test :checkbox, PageForCheckbox
+    def_optional_id_test :checkbox, PageForCheckbox, :foo
 
     class PageForRadio < SimplePage
       def initialize
@@ -386,7 +387,7 @@ module Gluon::Test
       '<input type="radio" name="foo" value="banana" checked="checked" />'
     def_view_test :radio_content_ignored, PageForRadio,
       '<input type="radio" name="foo" value="apple" />'
-    def_optional_id_test :radio, PageForRadio
+    def_optional_id_test :radio, PageForRadio, :foo
 
     class PageForSelect < SimplePage
       def initialize
@@ -425,7 +426,7 @@ module Gluon::Test
       '<option value="banana">Banana</option>' +
       '<option value="orange" selected="selected">Orange</option>' +
       '</select>'
-    def_optional_id_test :select, PageForSelect
+    def_optional_id_test :select, PageForSelect, :foo
 
     class PageForTextarea < SimplePage
       def initialize
@@ -443,7 +444,7 @@ module Gluon::Test
       %Q'<textarea name="bar">Hello world.\n</textarea>'
     def_view_test :textarea_content_ignored, PageForTextarea,
       '<textarea name="foo"></textarea>'
-    def_optional_id_test :textarea, PageForTextarea
+    def_optional_id_test :textarea, PageForTextarea, :foo
   end
 end
 
