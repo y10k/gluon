@@ -74,7 +74,7 @@ module Gluon::Test
     end
     include Caller
 
-    def self.def_view_test(name, page_type, expected)
+    def self.def_test_view(name, page_type, expected)
       file, line, = Caller.caller_frame(1)
       module_eval(<<-EOF, "#{__FILE__},test_#{name}(#{line})", __LINE__ + 1)
         def view_expected_#{name}
@@ -111,7 +111,7 @@ module Gluon::Test
     end
     private :assert_optional_id
 
-    def self.def_optional_id_test(name, page_type, method)
+    def self.def_test_optional_id(name, page_type, method)
       file, line, = Caller.caller_frame(1)
       module_eval(<<-EOF, "#{__FILE__},test_#{name}_optional_id(#{line})", __LINE__ + 1)
         def test_#{name}_optional_id
@@ -159,7 +159,7 @@ module Gluon::Test
       include Gluon::Controller
     end
 
-    def_view_test :simple, SimplePage, "Hello world.\n"
+    def_test_view :simple, SimplePage, "Hello world.\n"
 
     class PageForValue < SimplePage
       def foo
@@ -178,10 +178,10 @@ module Gluon::Test
       gluon_advice :baz, :type => :value, :escape => false
     end
 
-    def_view_test :value, PageForValue, 'Hello world.'
-    def_view_test :value_escape, PageForValue, '&amp;&lt;&gt;&quot; foo'
-    def_view_test :value_no_escape, PageForValue, '&<>" foo'
-    def_view_test :value_content_ignored, PageForValue, 'Hello world.'
+    def_test_view :value, PageForValue, 'Hello world.'
+    def_test_view :value_escape, PageForValue, '&amp;&lt;&gt;&quot; foo'
+    def_test_view :value_no_escape, PageForValue, '&<>" foo'
+    def_test_view :value_content_ignored, PageForValue, 'Hello world.'
 
     class PageForCond < SimplePage
       def foo?
@@ -195,8 +195,8 @@ module Gluon::Test
       gluon_advice :bar?, :type => :cond
     end
 
-    def_view_test :cond_true, PageForCond, 'should be picked up.'
-    def_view_test :cond_false, PageForCond, ''
+    def_test_view :cond_true, PageForCond, 'should be picked up.'
+    def_test_view :cond_false, PageForCond, ''
 
     class PageForForeach < SimplePage
       def foo
@@ -210,8 +210,8 @@ module Gluon::Test
       gluon_advice :bar, :type => :foreach
     end
 
-    def_view_test :foreach, PageForForeach, '[apple][banana][orange]'
-    def_view_test :foreach_empty_list, PageForForeach, ''
+    def_test_view :foreach, PageForForeach, '[apple][banana][orange]'
+    def_test_view :foreach_empty_list, PageForForeach, ''
 
     class PageForLink < SimplePage
       def foo
@@ -220,11 +220,11 @@ module Gluon::Test
       gluon_advice :foo, :type => :link
     end
 
-    def_view_test :link, PageForLink,
+    def_test_view :link, PageForLink,
       '<a href="/Foo">foo</a>'
-    def_view_test :link_content, PageForLink,
+    def_test_view :link_content, PageForLink,
       '<a href="/Foo">should be picked up.</a>'
-    def_optional_id_test :link, PageForLink, :foo
+    def_test_optional_id :link, PageForLink, :foo
     def_optional_class_test :link, PageForLink, :foo
 
     class PageForAction < SimplePage
@@ -233,11 +233,11 @@ module Gluon::Test
       gluon_export :foo, :type => :action, :text => 'Action'
     end
 
-    def_view_test :action, PageForAction,
+    def_test_view :action, PageForAction,
       '<a href="/bar.cgi?foo%28%29">Action</a>'
-    def_view_test :action_content, PageForAction,
+    def_test_view :action_content, PageForAction,
       '<a href="/bar.cgi?foo%28%29">should be picked up.</a>'
-    def_optional_id_test :action, PageForAction, :foo
+    def_test_optional_id :action, PageForAction, :foo
     def_optional_class_test :action, PageForAction, :foo
 
     class PageForFrame < SimplePage
@@ -247,11 +247,11 @@ module Gluon::Test
       gluon_advice :foo, :type => :frame
     end
 
-    def_view_test :frame, PageForFrame,
+    def_test_view :frame, PageForFrame,
       '<frame src="/Foo" />'
-    def_view_test :frame_content_ignored, PageForFrame,
+    def_test_view :frame_content_ignored, PageForFrame,
       '<frame src="/Foo" />'
-    def_optional_id_test :frame, PageForFrame, :foo
+    def_test_optional_id :frame, PageForFrame, :foo
     def_optional_class_test :frame, PageForFrame, :foo
 
     class PageForImport < SimplePage
@@ -304,9 +304,9 @@ module Gluon::Test
       gluon_advice :baz, :type => :import
     end
 
-    def_view_test :import, PageForImport, '[should be picked up.]'
-    def_view_test :import_content, PageForImport, '[should be picked up.]'
-    def_view_test :import_content_default, PageForImport, '[should be picked up.]'
+    def_test_view :import, PageForImport, '[should be picked up.]'
+    def_test_view :import_content, PageForImport, '[should be picked up.]'
+    def_test_view :import_content_default, PageForImport, '[should be picked up.]'
 
     def test_import_content_not_defined
       build_page(PageForImport)
@@ -325,13 +325,13 @@ module Gluon::Test
       gluon_export_accessor :bar, :type => :text
     end
 
-    def_view_test :text, PageForText,
+    def_test_view :text, PageForText,
       '<input type="text" name="foo" value="" />'
-    def_view_test :text_value, PageForText,
+    def_test_view :text_value, PageForText,
       '<input type="text" name="bar" value="should be picked up." />'
-    def_view_test :text_content_ignored, PageForText,
+    def_test_view :text_content_ignored, PageForText,
       '<input type="text" name="foo" value="" />'
-    def_optional_id_test :text, PageForText, :foo
+    def_test_optional_id :text, PageForText, :foo
     def_optional_class_test :text, PageForText, :foo
 
     class PageForPassword < SimplePage
@@ -344,13 +344,13 @@ module Gluon::Test
       gluon_export_accessor :bar, :type => :password
     end
 
-    def_view_test :password, PageForPassword,
+    def_test_view :password, PageForPassword,
       '<input type="password" name="foo" value="" />'
-    def_view_test :password_value, PageForPassword,
+    def_test_view :password_value, PageForPassword,
       '<input type="password" name="bar" value="should be picked up." />'
-    def_view_test :password_content_ignored, PageForPassword,
+    def_test_view :password_content_ignored, PageForPassword,
       '<input type="password" name="foo" value="" />'
-    def_optional_id_test :password, PageForPassword, :foo
+    def_test_optional_id :password, PageForPassword, :foo
     def_optional_class_test :password, PageForPassword, :foo
 
     class PageForSubmit < SimplePage
@@ -363,13 +363,13 @@ module Gluon::Test
       gluon_export :bar, :type => :submit, :value => 'should be picked up.'
     end
 
-    def_view_test :submit, PageForSubmit,
+    def_test_view :submit, PageForSubmit,
       '<input type="submit" name="foo()" />'
-    def_view_test :submit_value, PageForSubmit,
+    def_test_view :submit_value, PageForSubmit,
       '<input type="submit" name="bar()" value="should be picked up." />'
-    def_view_test :submit_content_ignored, PageForSubmit,
+    def_test_view :submit_content_ignored, PageForSubmit,
       '<input type="submit" name="foo()" />'
-    def_optional_id_test :submit, PageForSubmit, :foo
+    def_test_optional_id :submit, PageForSubmit, :foo
     def_optional_class_test :submit, PageForSubmit, :foo
 
     class PageForHidden < SimplePage
@@ -382,13 +382,13 @@ module Gluon::Test
       gluon_export_accessor :bar, :type => :hidden
     end
 
-    def_view_test :hidden, PageForHidden,
+    def_test_view :hidden, PageForHidden,
       '<input type="hidden" name="foo" value="" />'
-    def_view_test :hidden_value, PageForHidden,
+    def_test_view :hidden_value, PageForHidden,
       '<input type="hidden" name="bar" value="Hello world." />'
-    def_view_test :hidden_content_ignored, PageForHidden,
+    def_test_view :hidden_content_ignored, PageForHidden,
       '<input type="hidden" name="foo" value="" />'
-    def_optional_id_test :hidden, PageForHidden, :foo
+    def_test_optional_id :hidden, PageForHidden, :foo
     def_optional_class_test :hidden, PageForHidden, :foo
 
     class PageForCheckbox < SimplePage
@@ -401,16 +401,16 @@ module Gluon::Test
       gluon_export_accessor :bar, :type => :checkbox
     end
 
-    def_view_test :checkbox, PageForCheckbox,
+    def_test_view :checkbox, PageForCheckbox,
       '<input type="hidden" name="foo@type" value="bool" />' +
       '<input type="checkbox" name="foo" value="true" />'
-    def_view_test :checkbox_checked, PageForCheckbox,
+    def_test_view :checkbox_checked, PageForCheckbox,
       '<input type="hidden" name="bar@type" value="bool" />' +
       '<input type="checkbox" name="bar" value="true" checked="checked" />'
-    def_view_test :checkbox_content_ignored, PageForCheckbox,
+    def_test_view :checkbox_content_ignored, PageForCheckbox,
       '<input type="hidden" name="foo@type" value="bool" />' +
       '<input type="checkbox" name="foo" value="true" />'
-    def_optional_id_test :checkbox, PageForCheckbox, :foo
+    def_test_optional_id :checkbox, PageForCheckbox, :foo
     def_optional_class_test :checkbox, PageForCheckbox, :foo
 
     class PageForRadio < SimplePage
@@ -422,13 +422,13 @@ module Gluon::Test
         :type => :radio, :list => %w[ apple banana orange ]
     end
 
-    def_view_test :radio, PageForRadio,
+    def_test_view :radio, PageForRadio,
       '<input type="radio" name="foo" value="apple" />'
-    def_view_test :radio_checked, PageForRadio,
+    def_test_view :radio_checked, PageForRadio,
       '<input type="radio" name="foo" value="banana" checked="checked" />'
-    def_view_test :radio_content_ignored, PageForRadio,
+    def_test_view :radio_content_ignored, PageForRadio,
       '<input type="radio" name="foo" value="apple" />'
-    def_optional_id_test :radio, PageForRadio, :foo
+    def_test_optional_id :radio, PageForRadio, :foo
     def_optional_class_test :radio, PageForRadio, :foo
 
     class PageForSelect < SimplePage
@@ -449,26 +449,26 @@ module Gluon::Test
         :type => :select, :list => instance_method(:fruits), :multiple => true
     end
 
-    def_view_test :select, PageForSelect,
+    def_test_view :select, PageForSelect,
       '<select name="foo">' +
       '<option value="apple">Apple</option>' +
       '<option value="banana" selected="selected">Banana</option>' +
       '<option value="orange">Orange</option>' +
       '</select>'
-    def_view_test :select_content_ignored, PageForSelect,
+    def_test_view :select_content_ignored, PageForSelect,
       '<select name="foo">' +
       '<option value="apple">Apple</option>' +
       '<option value="banana" selected="selected">Banana</option>' +
       '<option value="orange">Orange</option>' +
       '</select>'
-    def_view_test :select_multiple, PageForSelect,
+    def_test_view :select_multiple, PageForSelect,
       '<input type="hidden" name="bar@type" value="list" />' +
       '<select name="bar" multiple="multiple">' +
       '<option value="apple" selected="selected">Apple</option>' +
       '<option value="banana">Banana</option>' +
       '<option value="orange" selected="selected">Orange</option>' +
       '</select>'
-    def_optional_id_test :select, PageForSelect, :foo
+    def_test_optional_id :select, PageForSelect, :foo
     def_optional_class_test :select, PageForSelect, :foo
 
     class PageForTextarea < SimplePage
@@ -481,13 +481,13 @@ module Gluon::Test
       gluon_export_accessor :bar, :type => :textarea
     end
 
-    def_view_test :textarea, PageForTextarea,
+    def_test_view :textarea, PageForTextarea,
       '<textarea name="foo"></textarea>'
-    def_view_test :textarea_value, PageForTextarea,
+    def_test_view :textarea_value, PageForTextarea,
       %Q'<textarea name="bar">Hello world.\n</textarea>'
-    def_view_test :textarea_content_ignored, PageForTextarea,
+    def_test_view :textarea_content_ignored, PageForTextarea,
       '<textarea name="foo"></textarea>'
-    def_optional_id_test :textarea, PageForTextarea, :foo
+    def_test_optional_id :textarea, PageForTextarea, :foo
     def_optional_class_test :textarea, PageForTextarea, :foo
   end
 end
