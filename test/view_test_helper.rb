@@ -74,46 +74,17 @@ module Gluon::Test
     end
     include Caller
 
-    def view_template(at=1)
-      file, line, method = caller_frame(at)
-      if (method !~ /^test_/) then
-        raise "not a test method of `#{self.class}\#{method}'"
-      end
-      __send__('view_template_' + method.sub(/^test_/, ''))
-    end
-    private :view_template
-
-    def view_expected(at=1)
-      file, line, method = caller_frame(at)
-      if (method !~ /^test_/) then
-        raise "not a test method of `#{self.class}\#{method}'"
-      end
-      __send__('view_expected_' + method.sub(/^test_/, ''))
-    end
-    private :view_expected
-
-    def view_message(at=1)
-      file, line, method = caller_frame(at)
-      if (method !~ /^test_/) then
-        raise "not a test method of `#{self.class}\#{method}'"
-      end
-      name = 'view_template_' + method.sub(/^test_/, '')
-      "test of `#{self.class}\##{name}'"
-    end
-    private :view_message
-
     def self.def_view_test(name, page_type, expected)
       file, line, method = Caller.caller_frame(1)
       module_eval(<<-EOF, "#{__FILE__},test_#{name}(#{line})", __LINE__ + 1)
-        def test_#{name}
-          build_page(#{page_type})
-          assert_equal(view_expected,
-                       render_page(view_template),
-                       view_message)
-        end
-
         def view_expected_#{name}
           #{expected.dump}
+        end
+
+        def test_#{name}
+          build_page(#{page_type})
+          assert_equal(view_expected_#{name},
+                       render_page(view_template_#{name}))
         end
       EOF
     end
@@ -302,8 +273,8 @@ module Gluon::Test
 
     def test_import_content_not_defined
       build_page(PageForImport)
-      assert_raise(RuntimeError, view_message) {
-        render_page(view_template)
+      assert_raise(RuntimeError) {
+        render_page(view_template_import_content_not_defined)
       }
     end
 
