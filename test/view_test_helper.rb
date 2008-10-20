@@ -122,6 +122,39 @@ module Gluon::Test
       EOF
     end
 
+    def assert_optional_class(page_type, method, expr)
+      anon_page_type = Class.new(page_type) {
+        gluon_advice method, :class => 'foo'
+      }
+      build_page(anon_page_type)
+      assert_match(/ class="foo"/, render_page(expr))
+
+      anon_page_type = Class.new(page_type) {
+        gluon_advice method, :class => proc{ 'foo' }
+      }
+      build_page(anon_page_type)
+      assert_match(/ class="foo"/, render_page(expr))
+
+      anon_page_type = Class.new(page_type) {
+        define_method(:opt_class) { 'foo' }
+        gluon_advice method, :class => instance_method(:opt_class)
+      }
+      build_page(anon_page_type)
+      assert_match(/ class="foo"/, render_page(expr))
+    end
+    private :assert_optional_class
+
+    def self.def_optional_class_test(name, page_type, method)
+      file, line, = Caller.caller_frame(1)
+      module_eval(<<-EOF, "#{__FILE__},test_#{name}_optional_class(#{line})", __LINE__ + 1)
+        def test_#{name}_optional_class
+          assert_optional_class(#{page_type},
+                                #{method.to_sym.inspect},
+                                view_template_#{name})
+        end
+      EOF
+    end
+
     class SimplePage
       include Gluon::Controller
     end
@@ -192,6 +225,7 @@ module Gluon::Test
     def_view_test :link_content, PageForLink,
       '<a href="/Foo">should be picked up.</a>'
     def_optional_id_test :link, PageForLink, :foo
+    def_optional_class_test :link, PageForLink, :foo
 
     class PageForAction < SimplePage
       def foo
@@ -204,6 +238,7 @@ module Gluon::Test
     def_view_test :action_content, PageForAction,
       '<a href="/bar.cgi?foo%28%29">should be picked up.</a>'
     def_optional_id_test :action, PageForAction, :foo
+    def_optional_class_test :action, PageForAction, :foo
 
     class PageForFrame < SimplePage
       def foo
@@ -217,6 +252,7 @@ module Gluon::Test
     def_view_test :frame_content_ignored, PageForFrame,
       '<frame src="/Foo" />'
     def_optional_id_test :frame, PageForFrame, :foo
+    def_optional_class_test :frame, PageForFrame, :foo
 
     class PageForImport < SimplePage
       class Foo
@@ -296,6 +332,7 @@ module Gluon::Test
     def_view_test :text_content_ignored, PageForText,
       '<input type="text" name="foo" value="" />'
     def_optional_id_test :text, PageForText, :foo
+    def_optional_class_test :text, PageForText, :foo
 
     class PageForPassword < SimplePage
       def initialize
@@ -314,6 +351,7 @@ module Gluon::Test
     def_view_test :password_content_ignored, PageForPassword,
       '<input type="password" name="foo" value="" />'
     def_optional_id_test :password, PageForPassword, :foo
+    def_optional_class_test :password, PageForPassword, :foo
 
     class PageForSubmit < SimplePage
       def foo
@@ -332,6 +370,7 @@ module Gluon::Test
     def_view_test :submit_content_ignored, PageForSubmit,
       '<input type="submit" name="foo()" />'
     def_optional_id_test :submit, PageForSubmit, :foo
+    def_optional_class_test :submit, PageForSubmit, :foo
 
     class PageForHidden < SimplePage
       def initialize
@@ -350,6 +389,7 @@ module Gluon::Test
     def_view_test :hidden_content_ignored, PageForHidden,
       '<input type="hidden" name="foo" value="" />'
     def_optional_id_test :hidden, PageForHidden, :foo
+    def_optional_class_test :hidden, PageForHidden, :foo
 
     class PageForCheckbox < SimplePage
       def initialize
@@ -371,6 +411,7 @@ module Gluon::Test
       '<input type="hidden" name="foo@type" value="bool" />' +
       '<input type="checkbox" name="foo" value="true" />'
     def_optional_id_test :checkbox, PageForCheckbox, :foo
+    def_optional_class_test :checkbox, PageForCheckbox, :foo
 
     class PageForRadio < SimplePage
       def initialize
@@ -388,6 +429,7 @@ module Gluon::Test
     def_view_test :radio_content_ignored, PageForRadio,
       '<input type="radio" name="foo" value="apple" />'
     def_optional_id_test :radio, PageForRadio, :foo
+    def_optional_class_test :radio, PageForRadio, :foo
 
     class PageForSelect < SimplePage
       def initialize
@@ -427,6 +469,7 @@ module Gluon::Test
       '<option value="orange" selected="selected">Orange</option>' +
       '</select>'
     def_optional_id_test :select, PageForSelect, :foo
+    def_optional_class_test :select, PageForSelect, :foo
 
     class PageForTextarea < SimplePage
       def initialize
@@ -445,6 +488,7 @@ module Gluon::Test
     def_view_test :textarea_content_ignored, PageForTextarea,
       '<textarea name="foo"></textarea>'
     def_optional_id_test :textarea, PageForTextarea, :foo
+    def_optional_class_test :textarea, PageForTextarea, :foo
   end
 end
 
