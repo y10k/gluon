@@ -56,14 +56,6 @@ module Gluon::Test
       '<%= link :foo do |out| out << "should be picked up." end %>'
     end
 
-    def view_template_link_uri
-      '<%= link_uri :ruby_home %>'
-    end
-
-    def view_template_link_uri_content
-      '<%= link_uri :ruby_home do |out| out << "should be picked up." end %>'
-    end
-
     def view_template_action
       '<%= action :foo %>'
     end
@@ -78,14 +70,6 @@ module Gluon::Test
 
     def view_template_frame_content_ignored
       '<%= frame :foo do |out| out << "should be ignored." end %>'
-    end
-
-    def view_template_frame_uri
-      '<%= frame_uri :ruby_home %>'
-    end
-
-    def view_template_frame_uri_content_ignored
-      '<%= frame_uri :ruby_home do |out| out << "should be ignored." end %>'
     end
 
     def view_template_import

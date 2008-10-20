@@ -395,14 +395,6 @@ module Gluon::Test
       '<gluon name="foo">should be picked up.</gluon>'
     end
 
-    def view_template_link_uri
-      '<gluon name="ruby_home" />'
-    end
-
-    def view_template_link_uri_content
-      '<gluon name="ruby_home">should be picked up.</gluon>'
-    end
-
     def view_template_action
       '<gluon name="foo" />'
     end
@@ -417,14 +409,6 @@ module Gluon::Test
 
     def view_template_frame_content_ignored
       '<gluon name="foo">should be ignored.</gluon>'
-    end
-
-    def view_template_frame_uri
-      '<gluon name="ruby_home" />'
-    end
-
-    def view_template_frame_uri_content_ignored
-      '<gluon name="ruby_home">should be ignored.</gluon>'
     end
 
     def view_template_import
