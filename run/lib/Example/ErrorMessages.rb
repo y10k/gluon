@@ -29,6 +29,7 @@ class Example
       @no_messages = Gluon::Web::ErrorMessages.new
     end
 
+    #def page_get
     def page_import
     end
 
