@@ -395,6 +395,14 @@ module Gluon::Test
       '<gluon name="foo">should be picked up.</gluon>'
     end
 
+    def view_template_link_embedded_attr_id
+      '<gluon name="foo" id="foo" />'
+    end
+
+    def view_template_link_embedded_attr_class
+      '<gluon name="foo" class="foo" />'
+    end
+
     def view_template_action
       '<gluon name="foo" />'
     end
@@ -403,12 +411,28 @@ module Gluon::Test
       '<gluon name="foo">should be picked up.</gluon>'
     end
 
+    def view_template_action_embedded_attr_id
+      '<gluon name="foo" id="foo" />'
+    end
+
+    def view_template_action_embedded_attr_class
+      '<gluon name="foo" class="foo" />'
+    end
+
     def view_template_frame
       '<gluon name="foo" />'
     end
 
     def view_template_frame_content_ignored
       '<gluon name="foo">should be ignored.</gluon>'
+    end
+
+    def view_template_frame_embedded_attr_id
+      '<gluon name="foo" id="foo" />'
+    end
+
+    def view_template_frame_embedded_attr_class
+      '<gluon name="foo" class="foo" />'
     end
 
     def view_template_import
@@ -439,6 +463,14 @@ module Gluon::Test
       '<gluon name="foo">should be ignored.</gluon>'
     end
 
+    def view_template_text_embedded_attr_id
+      '<gluon name="foo" id="foo" />'
+    end
+
+    def view_template_text_embedded_attr_class
+      '<gluon name="foo" class="foo" />'
+    end
+
     def view_template_password
       '<gluon name="foo" />'
     end
@@ -449,6 +481,14 @@ module Gluon::Test
 
     def view_template_password_content_ignored
       '<gluon name="foo">should be ignored.</gluon>'
+    end
+
+    def view_template_password_embedded_attr_id
+      '<gluon name="foo" id="foo" />'
+    end
+
+    def view_template_password_embedded_attr_class
+      '<gluon name="foo" class="foo" />'
     end
 
     def view_template_submit
@@ -463,6 +503,14 @@ module Gluon::Test
       '<gluon name="foo">should be ignored.</gluon>'
     end
 
+    def view_template_submit_embedded_attr_id
+      '<gluon name="foo" id="foo" />'
+    end
+
+    def view_template_submit_embedded_attr_class
+      '<gluon name="foo" class="foo" />'
+    end
+
     def view_template_hidden
       '<gluon name="foo" />'
     end
@@ -473,6 +521,14 @@ module Gluon::Test
 
     def view_template_hidden_content_ignored
       '<gluon name="foo">should be ignored.</gluon>'
+    end
+
+    def view_template_hidden_embedded_attr_id
+      '<gluon name="foo" id="foo" />'
+    end
+
+    def view_template_hidden_embedded_attr_class
+      '<gluon name="foo" class="foo" />'
     end
 
     def view_template_checkbox
@@ -487,6 +543,14 @@ module Gluon::Test
       '<gluon name="foo">should be ignored.</gluon>'
     end
 
+    def view_template_checkbox_embedded_attr_id
+      '<gluon name="foo" id="foo" />'
+    end
+
+    def view_template_checkbox_embedded_attr_class
+      '<gluon name="foo" class="foo" />'
+    end
+
     def view_template_radio
       '<gluon name="foo=apple" />'
     end
@@ -497,6 +561,14 @@ module Gluon::Test
 
     def view_template_radio_content_ignored
       '<gluon name="foo=apple">should be ignored.</gluon>'
+    end
+
+    def view_template_radio_embedded_attr_id
+      '<gluon name="foo=apple" id="foo" />'
+    end
+
+    def view_template_radio_embedded_attr_class
+      '<gluon name="foo=apple" class="foo" />'
     end
 
     def view_template_select
@@ -511,6 +583,14 @@ module Gluon::Test
       '<gluon name="bar" />'
     end
 
+    def view_template_select_embedded_attr_id
+      '<gluon name="foo" id="foo" />'
+    end
+
+    def view_template_select_embedded_attr_class
+      '<gluon name="foo" class="foo" />'
+    end
+
     def view_template_textarea
       '<gluon name="foo" />'
     end
@@ -521,6 +601,14 @@ module Gluon::Test
 
     def view_template_textarea_content_ignored
       '<gluon name="foo">should be ignored.</gluon>'
+    end
+
+    def view_template_textarea_embedded_attr_id
+      '<gluon name="foo" id="foo" />'
+    end
+
+    def view_template_textarea_embedded_attr_class
+      '<gluon name="foo" class="foo" />'
     end
   end
 end

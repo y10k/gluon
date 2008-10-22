@@ -6,6 +6,9 @@ require 'view_test_helper'
 
 module Gluon::Test
   class ERBViewTest < Test::Unit::TestCase
+    # for ident(1)
+    CVS_ID = '$Id$'
+
     include ViewTestHelper
 
     def target_view_module
@@ -56,6 +59,14 @@ module Gluon::Test
       '<%= link :foo do |out| out << "should be picked up." end %>'
     end
 
+    def view_template_link_embedded_attr_id
+      '<%= link :foo, :attrs => { "id" => "foo" } %>'
+    end
+
+    def view_template_link_embedded_attr_class
+      '<%= link :foo, :attrs => { "class" => "foo" } %>'
+    end
+
     def view_template_action
       '<%= action :foo %>'
     end
@@ -64,12 +75,28 @@ module Gluon::Test
       '<%= action :foo do |out| out << "should be picked up." end %>'
     end
 
+    def view_template_action_embedded_attr_id
+      '<%= action :foo, :attrs => { "id" => "foo" } %>'
+    end
+
+    def view_template_action_embedded_attr_class
+      '<%= action :foo, :attrs => { "class" => "foo" } %>'
+    end
+
     def view_template_frame
       '<%= frame :foo %>'
     end
 
     def view_template_frame_content_ignored
       '<%= frame :foo do |out| out << "should be ignored." end %>'
+    end
+
+    def view_template_frame_embedded_attr_id
+      '<%= frame :foo, :attrs => { "id" => "foo" } %>'
+    end
+
+    def view_template_frame_embedded_attr_class
+      '<%= frame :foo, :attrs => { "class" => "foo" } %>'
     end
 
     def view_template_import
@@ -100,6 +127,14 @@ module Gluon::Test
       '<%= text :foo do |out| out << "should be ignored." end %>'
     end
 
+    def view_template_text_embedded_attr_id
+      '<%= text :foo, :attrs => { "id" => "foo" } %>'
+    end
+
+    def view_template_text_embedded_attr_class
+      '<%= text :foo, :attrs => { "class" => "foo" } %>'
+    end
+
     def view_template_password
       '<%= password :foo %>'
     end
@@ -110,6 +145,14 @@ module Gluon::Test
 
     def view_template_password_content_ignored
       '<%= password :foo do |out| "should be ignored." end %>'
+    end
+
+    def view_template_password_embedded_attr_id
+      '<%= password :foo, :attrs => { "id" => "foo" } %>'
+    end
+
+    def view_template_password_embedded_attr_class
+      '<%= password :foo, :attrs => { "class" => "foo" } %>'
     end
 
     def view_template_submit
@@ -124,6 +167,14 @@ module Gluon::Test
       '<%= submit :foo do |out| out << "should be ignored." end %>'
     end
 
+    def view_template_submit_embedded_attr_id
+      '<%= submit :foo, :attrs => { "id" => "foo" } %>'
+    end
+
+    def view_template_submit_embedded_attr_class
+      '<%= submit :foo, :attrs => { "class" => "foo" } %>'
+    end
+
     def view_template_hidden
       '<%= hidden :foo %>'
     end
@@ -134,6 +185,14 @@ module Gluon::Test
 
     def view_template_hidden_content_ignored
       '<%= hidden :foo do |out| out << "should be ignored." end %>'
+    end
+
+    def view_template_hidden_embedded_attr_id
+      '<%= hidden :foo, :attrs => { "id" => "foo" } %>'
+    end
+
+    def view_template_hidden_embedded_attr_class
+      '<%= hidden :foo, :attrs => { "class" => "foo" } %>'
     end
 
     def view_template_checkbox
@@ -148,6 +207,14 @@ module Gluon::Test
       '<%= checkbox :foo do |out| out << "should be ignored." end %>'
     end
 
+    def view_template_checkbox_embedded_attr_id
+      '<%= checkbox :foo, :attrs => { "id" => "foo" } %>'
+    end
+
+    def view_template_checkbox_embedded_attr_class
+      '<%= checkbox :foo, :attrs => { "class" => "foo" } %>'
+    end
+
     def view_template_radio
       '<%= radio :foo, "apple" %>'
     end
@@ -158,6 +225,14 @@ module Gluon::Test
 
     def view_template_radio_content_ignored
       '<%= radio :foo, "apple" do |out| out << "should be ignored." end %>'
+    end
+
+    def view_template_radio_embedded_attr_id
+      '<%= radio :foo, "apple", :attrs => { "id" => "foo" } %>'
+    end
+
+    def view_template_radio_embedded_attr_class
+      '<%= radio :foo, "apple", :attrs => { "class" => "foo" } %>'
     end
 
     def view_template_select
@@ -172,6 +247,14 @@ module Gluon::Test
       '<%= select :bar, :multiple => true %>'
     end
 
+    def view_template_select_embedded_attr_id
+      '<%= select :foo, :attrs => { "id" => "foo" } %>'
+    end
+
+    def view_template_select_embedded_attr_class
+      '<%= select :foo, :attrs => { "class" => "foo" } %>'
+    end
+
     def view_template_textarea
       '<%= textarea :foo %>'
     end
@@ -182,6 +265,14 @@ module Gluon::Test
 
     def view_template_textarea_content_ignored
       '<%= textarea :foo do |out| out << "should be ignored." end %>'
+    end
+
+    def view_template_textarea_embedded_attr_id
+      '<%= textarea :foo, :attrs => { "id" => "foo" } %>'
+    end
+
+    def view_template_textarea_embedded_attr_class
+      '<%= textarea :foo, :attrs => { "class" => "foo" } %>'
     end
 
     TEST_ONLY_ONCE = {
@@ -211,8 +302,8 @@ module Gluon::Test
       10.times do |i|
         n = i + 1
         assert_equal('', @controller.page_render(@po))
-        assert_equal(1, TEST_ONLY_ONCE[:only_once])
-        assert_equal(n, TEST_ONLY_ONCE[:not_only_once], "#{n}th")
+        assert_equal(1, TEST_ONLY_ONCE[:only_once], "count: #{n}")
+        assert_equal(n, TEST_ONLY_ONCE[:not_only_once], "count :#{n}")
       end
     end
   end

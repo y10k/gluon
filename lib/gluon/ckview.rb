@@ -173,29 +173,15 @@ module Gluon
             '&'
           when 'quot'
             '"'
+          when '_'
+            raise NotImplemented, "not implemented view command: `_'"
           else
             raise NameError, "`#{name}' of unknown view command."
           end
-        when /^\s*_\s*:/
-          raise NotImplemented, "not implemented view command: `_'"
         else
           name, value = name.split(/=/, 2)
           name = name.to_sym
-
-          attrs = attrs.dup
           options = { :attrs => attrs }
-          [ :id,
-            :class,
-            :size,
-            :maxlength,
-            :rows,
-            :cols
-          ].each do |attr_name|
-            if (attrs.key? attr_name.to_s) then
-              options[attr_name] = attrs.delete(attr_name.to_s)
-            end
-          end
-
           case (type = @po.find_controller_method_type(name))
           when :value
             @po.value(name)
@@ -256,15 +242,15 @@ module Gluon
           when :checkbox
             @po.checkbox(name, options)
           when :radio
-            @po.radio(name, value)
+            @po.radio(name, value, options)
           when :select
-            @po.select(name)
+            @po.select(name, options)
           when :textarea
-            @po.textarea(name)
+            @po.textarea(name, options)
           else
             case (name)
             when :to_s
-              @po.value(name)
+              @po.value(name, options)
             else
               if (type) then
                 raise NameError, "`#{type}' of unknown controller method type for `#{@po.page_type}\##{name}'."

@@ -197,9 +197,11 @@ module Gluon
 
     def mkelem_start(name, reserved_attrs, options, method, search_stack)
       elem = "<#{name}"
+      used_attr = {}
       for name in [ :id, :class ]
         if (value = getopt(name, options, method, search_stack)) then
           elem << ' ' << name.to_s << '="' << ERB::Util.html_escape(value) << '"'
+          used_attr[name.to_s] = true
         end
       end
       if (options.key? :attrs) then
@@ -209,8 +211,7 @@ module Gluon
           end
           n = name.downcase
           next if (reserved_attrs.key? n)
-          next if (n == 'id')
-          next if (n == 'class')
+          next if (used_attr.key? n)
           elem << ' ' << name << '="' << ERB::Util.html_escape(value) << '"'
         end
       end
