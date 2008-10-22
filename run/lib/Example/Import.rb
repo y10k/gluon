@@ -7,7 +7,6 @@ class Example
       @message = message
     end
 
-    #def page_get
     def page_import
     end
 
