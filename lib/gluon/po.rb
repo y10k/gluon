@@ -195,25 +195,31 @@ module Gluon
       nil
     end
 
+    def mkattr(name, value)
+      case (value)
+      when TrueClass
+        ' ' << name.to_s << '="' << name.to_s << '"'
+      when FalseClass
+        ''
+      else
+        ' ' << name.to_s << '="' << ERB::Util.html_escape(value) << '"'
+      end
+    end
+    private :mkattr
+
     def mkelem_start(name, reserved_attrs, options, method, search_stack)
       elem = "<#{name}"
       used_attr = {}
-      for name in [ :id, :class ]
-        if (value = getopt(name, options, method, search_stack)) then
-          elem << ' ' << name.to_s << '="' << ERB::Util.html_escape(value) << '"'
-          used_attr[name.to_s] = true
-        end
+      for n, v in getopt(:attrs, {}, method, search_stack, {})
+        elem << mkattr(n, v)
+        used_attr[n.downcase] = true
       end
-      if (options.key? :attrs) then
-        for name, value in options[:attrs]
-          unless (name.is_a? String) then
-            raise TypeError, "not a String: #{name.inspect}"
-          end
-          n = name.downcase
-          next if (reserved_attrs.key? n)
-          next if (used_attr.key? n)
-          elem << ' ' << name << '="' << ERB::Util.html_escape(value) << '"'
-        end
+      for n, v in options
+        next unless (n.is_a? String)        
+        m = n.downcase
+        next if (reserved_attrs.key? m)
+        next if (used_attr.key? m)
+        elem << mkattr(n, v)
       end
       elem
     end
@@ -471,11 +477,7 @@ module Gluon
       'type' => true,
       'name' => true,
       'value' => true,
-      'size' => true,
-      'maxlength' => true,
-      'checked' => true,
-      'disabled' => true,
-      'readonly' => true
+      'checked' => true
     }.freeze
     # :startdoc:
 
@@ -490,10 +492,6 @@ module Gluon
       value = getopt(:value, options, method, false, NoValue)
       elem << ' value="' << ERB::Util.html_escape(value) << '"' if (value != NoValue)
       elem << ' checked="checked"' if options[:checked]
-      elem << mkattr_size(options, method)
-      elem << mkattr_maxlength(options, method)
-      elem << mkattr_disabled(options, method)
-      elem << mkattr_readonly(options, method)
       elem << ' />'
     end
     private :mkinput
@@ -545,9 +543,7 @@ module Gluon
     # :stopdoc:
     SELECT_RESERVED_ATTRS = {
       'name' => true,
-      'size' => true,
-      'multiple' => true,
-      'disabled' => true
+      'multiple' => true
     }.freeze
     # :startdoc:
 
@@ -568,8 +564,6 @@ module Gluon
       elem << mkelem_start('select', SELECT_RESERVED_ATTRS, options, name, false)
       elem << mkattr_controller_name(name, options)
       elem << ' multiple="multiple"' if multiple
-      elem << mkattr_size(options, name)
-      elem << mkattr_disabled(options, name)
       elem << '>'
 
       selects = form_value(name)
@@ -593,21 +587,13 @@ module Gluon
 
     # :stopdoc:
     TEXTAREA_RESERVED_ATTRS = {
-      'name' => true,
-      'rows' => true,
-      'cols' => true,
-      'disabled' => true,
-      'readonly' => true
+      'name' => true
     }.freeze
     # :startdoc:
 
     def textarea(name, options={})
       elem = mkelem_start('textarea', TEXTAREA_RESERVED_ATTRS, options, name, false)
       elem << mkattr_controller_name(name, options)
-      elem << mkattr_rows(options, name)
-      elem << mkattr_cols(options, name)
-      elem << mkattr_disabled(options, name)
-      elem << mkattr_readonly(options, name)
       elem << '>'
       elem << ERB::Util.html_escape(form_value(name))
       elem << '</textarea>'

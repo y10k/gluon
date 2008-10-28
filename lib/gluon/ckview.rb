@@ -152,7 +152,7 @@ module Gluon
       end
       private :block_result
 
-      def gluon(name, attrs={})
+      def gluon(name, options={})
         case (name)
         when /^\s*g\s*:/
           command = $'.strip
@@ -181,7 +181,6 @@ module Gluon
         else
           name, value = name.split(/=/, 2)
           name = name.to_sym
-          options = { :attrs => attrs }
           case (type = @po.find_controller_method_type(name))
           when :value
             @po.value(name)

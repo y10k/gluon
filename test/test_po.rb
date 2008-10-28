@@ -57,226 +57,6 @@ module Gluon::Test
     end
     private :render_page
 
-    def assert_optional_id(page_type, expr, method)
-      build_page(page_type)
-      assert_match(/ id="foo"/,
-                   render_page(%Q'<%= #{expr}, :id => "foo" %>'))
-      assert_match(/ id="foo"/,
-                   render_page(%Q'<%= #{expr}, :id => "foo", :attrs => { "id" => "bar" } %>'))
-      assert_no_match(/ id="bar"/,
-                      render_page(%Q'<%= #{expr}, :id => "foo", :attrs => { "id" => "bar" } %>'))
-
-      anon_page_type = Class.new(page_type) {
-        define_method(:optional_id) { 'foo' }
-      }
-      build_page(anon_page_type)
-      assert_match(/ id="foo"/,
-                   render_page(%Q'<%= #{expr}, :id => :optional_id %>'))
-
-      if (method) then
-        anon_page_type = Class.new(page_type) {
-          gluon_advice method, :id => 'foo'
-        }
-        build_page(anon_page_type)
-        assert_match(/ id="foo"/,
-                     render_page(%Q'<%= #{expr} %>'))
-        assert_match(/ id="bar"/,
-                     render_page(%Q'<%= #{expr}, :id => "bar" %>'))
-        assert_no_match(/ id="foo"/,
-                        render_page(%Q'<%= #{expr}, :id => "bar" %>'))
-
-        anon_page_type = Class.new(page_type) {
-          gluon_advice method, :id => proc{ 'foo' }
-        }
-        build_page(anon_page_type)
-        assert_match(/ id="foo"/,
-                     render_page(%Q'<%= #{expr} %>'))
-
-        anon_page_type = Class.new(page_type) {
-          define_method(:optional_id) { 'foo' }
-          gluon_advice method, :id => instance_method(:optional_id)
-        }
-        build_page(anon_page_type)
-        assert_match(/ id="foo"/,
-                     render_page(%Q'<%= #{expr} %>'))
-      end
-    end
-    private :assert_optional_id
-
-    def assert_optional_class(page_type, expr, method)
-      build_page(page_type)
-      assert_match(/ class="foo"/,
-                   render_page(%Q'<%= #{expr}, :class => "foo" %>'))
-      assert_match(/ class="foo"/,
-                   render_page(%Q'<%= #{expr}, :class => "foo", :attrs => { "class" => "bar" } %>'))
-      assert_no_match(/ class="bar"/,
-                      render_page(%Q'<%= #{expr}, :class => "foo", :attrs => { "class" => "bar" } %>'))
-
-      anon_page_type = Class.new(page_type) {
-        define_method(:optional_class) { 'foo' }
-      }
-      build_page(anon_page_type)
-      assert_match(/ class="foo"/,
-                   render_page(%Q'<%= #{expr}, :class => :optional_class %>'))
-
-      if (method) then
-        anon_page_type = Class.new(page_type) {
-          gluon_advice method, :class => 'foo'
-        }
-        build_page(anon_page_type)
-        assert_match(/ class="foo"/,
-                     render_page(%Q'<%= #{expr} %>'))
-        assert_match(/ class="bar"/,
-                     render_page(%Q'<%= #{expr}, :class => "bar" %>'))
-        assert_no_match(/ class="foo"/,
-                        render_page(%Q'<%= #{expr}, :class => "bar" %>'))
-
-        anon_page_type = Class.new(page_type) {
-          gluon_advice method, :class => proc{ 'foo' }
-        }
-        build_page(anon_page_type)
-        assert_match(/ class="foo"/,
-                     render_page(%Q'<%= #{expr} %>'))
-
-        anon_page_type = Class.new(page_type) {
-          define_method(:optional_class) { 'foo' }
-          gluon_advice method, :class => instance_method(:optional_class)
-        }
-        build_page(anon_page_type)
-        assert_match(/ class="foo"/,
-                     render_page(%Q'<%= #{expr} %>'))
-      end
-    end
-    private :assert_optional_class
-
-    def assert_optional_attrs(page_type, expr, reserved_attrs)
-      build_page(page_type)
-
-      assert_match(/ foo="Apple" bar="Banana"/,
-                   render_page(%Q'<%= #{expr}, :attrs => { "foo" => "Apple", "bar" => "Banana" } %>'))
-
-      for name in reserved_attrs
-        assert_match(/^[a-z]+$/, name)
-        assert_no_match(/ #{Regexp.quote(name)}="not expected."/,
-                        render_page(%Q'<%= #{expr}, :attrs => { #{name.dump} => "not expected." } %>'))
-
-        name = name.upcase
-        assert_no_match(/ #{Regexp.quote(name)}="not expected."/,
-                        render_page(%Q'<%= #{expr}, :attrs => { #{name.dump} => "not expected." } %>'))
-      end
-
-      assert_raise(TypeError) {
-        render_page(%Q'<%= #{expr}, :attrs => { :foo => "not expected." } %>')
-      }
-    end
-    private :assert_optional_attrs
-
-    def assert_optional_disabled(page_type, expr)
-      build_page(page_type)
-      assert_match(/ disabled="disabled"/,
-                   render_page(%Q'<%= #{expr}, :disabled => true %>'))
-      assert_no_match(/ disabled="disabled"/,
-                   render_page(%Q'<%= #{expr}, :disabled => false %>'))
-      assert_no_match(/ disabled="disabled"/,
-                   render_page(%Q'<%= #{expr} %>'))
-
-      anon_page_type = Class.new(page_type) {
-        define_method(:optional_disabled?) { true }
-      }
-      build_page(anon_page_type)
-      assert_match(/ disabled="disabled"/,
-                   render_page(%Q'<%= #{expr}, :disabled => :optional_disabled? %>'))
-
-      anon_page_type = Class.new(page_type) {
-        define_method(:optional_disabled?) { false }
-      }
-      build_page(anon_page_type)
-      assert_no_match(/ disabled="disabled"/,
-                      render_page(%Q'<%= #{expr}, :disabled => :optional_disabled? %>'))
-    end
-    private :assert_optional_disabled
-
-    def assert_optional_readonly(page_type, expr)
-      build_page(page_type)
-      assert_match(/ readonly="readonly"/,
-                   render_page(%Q'<%= #{expr}, :readonly => true %>'))
-      assert_no_match(/ readonly="readonly"/,
-                   render_page(%Q'<%= #{expr}, :readonly => false %>'))
-      assert_no_match(/ readonly="readonly"/,
-                   render_page(%Q'<%= #{expr} %>'))
-
-      anon_page_type = Class.new(page_type) {
-        define_method(:optional_readonly?) { true }
-      }
-      build_page(anon_page_type)
-      assert_match(/ readonly="readonly"/,
-                   render_page(%Q'<%= #{expr}, :readonly => :optional_readonly? %>'))
-
-      anon_page_type = Class.new(page_type) {
-        define_method(:optional_readonly?) { false }
-      }
-      build_page(anon_page_type)
-      assert_no_match(/ readonly="readonly"/,
-                      render_page(%Q'<%= #{expr}, :readonly => :optional_readonly? %>'))
-    end
-    private :assert_optional_readonly
-
-    def assert_optional_size(page_type, expr)
-      build_page(page_type)
-      assert_match(/ size="123"/,
-                   render_page(%Q'<%= #{expr}, :size => 123 %>'))
-
-      anon_page_type = Class.new(page_type) {
-        define_method(:optional_size) { 123 }
-      }
-      build_page(anon_page_type)
-      assert_match(/ size="123"/,
-                   render_page(%Q'<%= #{expr}, :size => :optional_size %>'))
-    end
-    private :assert_optional_size
-
-    def assert_optional_maxlength(page_type, expr)
-      build_page(page_type)
-      assert_match(/ maxlength="123"/,
-                   render_page(%Q'<%= #{expr}, :maxlength => 123 %>'))
-
-      anon_page_type = Class.new(page_type) {
-        define_method(:optional_maxlength) { 123 }
-      }
-      build_page(anon_page_type)
-      assert_match(/ maxlength="123"/,
-                   render_page(%Q'<%= #{expr}, :maxlength => :optional_maxlength %>'))
-    end
-    private :assert_optional_size
-
-    def assert_optional_rows(page_type, expr)
-      build_page(page_type)
-      assert_match(/ rows="123"/,
-                   render_page(%Q'<%= #{expr}, :rows => 123 %>'))
-
-      anon_page_type = Class.new(page_type) {
-        define_method(:optional_rows) { 123 }
-      }
-      build_page(anon_page_type)
-      assert_match(/ rows="123"/,
-                   render_page(%Q'<%= #{expr}, :rows => :optional_rows %>'))
-    end
-    private :assert_optional_size
-
-    def assert_optional_cols(page_type, expr)
-      build_page(page_type)
-      assert_match(/ cols="123"/,
-                   render_page(%Q'<%= #{expr}, :cols => 123 %>'))
-
-      anon_page_type = Class.new(page_type) {
-        define_method(:optional_cols) { 123 }
-      }
-      build_page(anon_page_type)
-      assert_match(/ cols="123"/,
-                   render_page(%Q'<%= #{expr}, :cols => :optional_cols %>'))
-    end
-    private :assert_optional_size
-
     class PageForValue
       include Gluon::Controller
       include Gluon::ERBView
@@ -454,8 +234,6 @@ module Gluon::Test
                    render_page('<%= link "http://www.ruby-lang.org" %>'))
       assert_equal('<a href="http://www.ruby-lang.org">Ruby</a>',
                    render_page('<%= link "http://www.ruby-lang.org", :text => "Ruby" %>'))
-      assert_equal('<a id="ruby" href="http://www.ruby-lang.org">Ruby</a>',
-                   render_page('<%= link "http://www.ruby-lang.org", :text => "Ruby", :id => "ruby" %>'))
       assert_equal('<a href="http://www.ruby-lang.org" target="_blank">Ruby</a>',
                    render_page('<%= link "http://www.ruby-lang.org", :text => "Ruby", :target => "_blank" %>'))
       assert_equal('<a href="http://www.ruby-lang.org?lang=ja">Ruby</a>',
@@ -465,8 +243,6 @@ module Gluon::Test
                    render_page('<%= link :ruby_home_uri %>'))
       assert_equal('<a href="http://www.ruby-lang.org">Ruby</a>',
                    render_page('<%= link :ruby_home_uri, :text => :ruby_home_text %>'))
-      assert_equal('<a id="ruby" href="http://www.ruby-lang.org">Ruby</a>',
-                   render_page('<%= link :ruby_home_uri, :text => :ruby_home_text, :id => "ruby" %>'))
       assert_equal('<a href="http://www.ruby-lang.org" target="_blank">Ruby</a>',
                    render_page('<%= link :ruby_home_uri, :text => :ruby_home_text, :target => "_blank" %>'))
       assert_equal('<a href="http://www.ruby-lang.org?lang=ja">Ruby</a>',
@@ -481,8 +257,6 @@ module Gluon::Test
                    render_page("<%= link #{AnotherPage} %>"))
       assert_equal('<a href="/bar.cgi/another_page">another page</a>',
                    render_page("<%= link #{AnotherPage}, :text => 'another page' %>"))
-      assert_equal('<a id="another_page" href="/bar.cgi/another_page">another page</a>',
-                   render_page("<%= link #{AnotherPage}, :text => 'another page', :id => 'another_page' %>"))
       assert_equal('<a href="/bar.cgi/another_page" target="_blank">another page</a>',
                    render_page("<%= link #{AnotherPage}, :text => 'another page', :target => '_blank' %>"))
       assert_equal('<a href="/bar.cgi/another_page#foo">another page</a>',
@@ -500,19 +274,6 @@ module Gluon::Test
                    render_page('<%= link :page_with_fragment, :text => "fragment" %>'))
       assert_equal('<a href="/bar.cgi/another_page?foo=bar#foo">query and fragment</a>',
                    render_page('<%= link :page_with_query_and_fragment, :text => "query and fragment" %>'))
-    end
-
-    def test_link_optional_id
-      assert_optional_id(PageForLink, 'link :ruby_home_uri', :ruby_home_uri)
-    end
-
-    def test_link_optional_class
-      assert_optional_class(PageForLink, 'link :ruby_home_uri', :ruby_home_uri)
-    end
-
-    def test_link_optional_attrs
-      assert_optional_attrs(PageForLink, 'link :ruby_home_uri',
-                            Gluon::PresentationObject::MKLINK_RESERVED_ATTRS.keys)
     end
 
     def test_link_error
@@ -543,8 +304,6 @@ module Gluon::Test
                    render_page('<%= action :foo %>'))
       assert_equal('<a href="/bar.cgi?foo%28%29">action</a>',
                    render_page('<%= action :foo, :text => "action" %>'))
-      assert_equal('<a id="foo" href="/bar.cgi?foo%28%29">action</a>',
-                   render_page('<%= action :foo, :text => "action", :id => "foo" %>'))
       assert_equal('<a href="/bar.cgi?foo%28%29" target="_blank">action</a>',
                    render_page('<%= action :foo, :text => "action", :target => "_blank" %>'))
       assert_equal('<a href="/bar.cgi/another_page?foo%28%29">action</a>',
@@ -559,19 +318,6 @@ module Gluon::Test
       rendered_view = render_page('<%= action :foo %>')
       assert_match(/<a href="[^"]*bar=HALO[^"]*"/, rendered_view, 'query advice')
       assert_match(%r'^<a.*>Hello</a>$', rendered_view, 'text advice')
-    end
-
-    def test_action_optional_id
-      assert_optional_id(PageForAction, 'action :foo', :foo)
-    end
-
-    def test_action_optional_class
-      assert_optional_class(PageForAction, 'action :foo', :foo)
-    end
-
-    def test_action_optional_attrs
-      assert_optional_attrs(PageForAction, 'action :foo',
-                            Gluon::PresentationObject::MKLINK_RESERVED_ATTRS.keys)
     end
 
     class PageForFrame
@@ -596,8 +342,6 @@ module Gluon::Test
 
       assert_equal('<frame src="http://www.ruby-lang.org" />',
                    render_page('<%= frame "http://www.ruby-lang.org" %>'))
-      assert_equal('<frame id="ruby" src="http://www.ruby-lang.org" />',
-                   render_page('<%= frame "http://www.ruby-lang.org", :id => "ruby" %>'))
       assert_equal('<frame src="http://www.ruby-lang.org" name="ruby" />',
                    render_page('<%= frame "http://www.ruby-lang.org", :name => "ruby" %>'))
       assert_equal('<frame src="http://www.ruby-lang.org?lang=ja" />',
@@ -605,8 +349,6 @@ module Gluon::Test
 
       assert_equal('<frame src="http://www.ruby-lang.org" />',
                    render_page('<%= frame :ruby_home %>'))
-      assert_equal('<frame id="ruby" src="http://www.ruby-lang.org" />',
-                   render_page('<%= frame :ruby_home, :id => "ruby" %>'))
       assert_equal('<frame src="http://www.ruby-lang.org" name="ruby" />',
                    render_page('<%= frame :ruby_home, :name => "ruby" %>'))
       assert_equal('<frame src="http://www.ruby-lang.org?lang=ja" />',
@@ -619,8 +361,6 @@ module Gluon::Test
 
       assert_equal('<frame src="/bar.cgi/another_page" />',
                    render_page("<%= frame #{AnotherPage} %>"))
-      assert_equal('<frame id="foo" src="/bar.cgi/another_page" />',
-                   render_page("<%= frame #{AnotherPage}, :id => 'foo' %>"))
       assert_equal('<frame src="/bar.cgi/another_page" name="foo" />',
                    render_page("<%= frame #{AnotherPage}, :name => 'foo' %>"))
       assert_equal('<frame src="/bar.cgi/another_page?foo=bar" />',
@@ -630,19 +370,6 @@ module Gluon::Test
                    render_page("<%= frame :page_with_query %>"))
       assert_equal('<frame src="/bar.cgi/another_page?foo=baz" />',
                    render_page("<%= frame :page_with_query, :query => { 'foo' => 'baz' } %>"))
-    end
-
-    def test_frame_optional_id
-      assert_optional_id(PageForFrame, 'frame :ruby_home', :ruby_home)
-    end
-
-    def test_frame_optional_class
-      assert_optional_class(PageForFrame, 'frame :ruby_home', :ruby_home)
-    end
-
-    def test_frame_optional_attrs
-      assert_optional_attrs(PageForFrame, 'frame :ruby_home',
-                            Gluon::PresentationObject::MKFRAME_RESERVED_ATTRS.keys)
     end
 
     def test_frame_error
@@ -717,35 +444,6 @@ module Gluon::Test
       assert_equal('<input type="text" name="foo" value="Hello world." />', render_page('<%= text :foo %>'))
     end
 
-    def test_text_optional_id
-      assert_optional_id(PageForText, 'text :foo', :foo)
-    end
-
-    def test_text_optional_class
-      assert_optional_class(PageForText, 'text :foo', :foo)
-    end
-
-    def test_text_optional_attrs
-      assert_optional_attrs(PageForText, 'text :foo',
-                            Gluon::PresentationObject::MKINPUT_RESERVED_ATTRS.keys)
-    end
-
-    def test_text_optional_disabled
-      assert_optional_disabled(PageForText, 'text :foo')
-    end
-
-    def test_text_optional_readonly
-      assert_optional_readonly(PageForText, 'text :foo')
-    end
-
-    def test_text_size
-      assert_optional_size(PageForText, 'text :foo')
-    end
-
-    def test_text_maxlength
-      assert_optional_maxlength(PageForText, 'text :foo')
-    end
-
     class PageForPassword
       include Gluon::Controller
       include Gluon::ERBView
@@ -759,35 +457,6 @@ module Gluon::Test
 
       @controller.foo = 'Hello world.'
       assert_equal('<input type="password" name="foo" value="Hello world." />', render_page('<%= password :foo %>'))
-    end
-
-    def test_password_optional_id
-      assert_optional_id(PageForPassword, 'password :foo', :foo)
-    end
-
-    def test_password_optional_class
-      assert_optional_class(PageForPassword, 'password :foo', :foo)
-    end
-
-    def test_password_optional_attrs
-      assert_optional_attrs(PageForPassword, 'password :foo',
-                            Gluon::PresentationObject::MKINPUT_RESERVED_ATTRS.keys)
-    end
-
-    def test_password_optional_disabled
-      assert_optional_disabled(PageForPassword, 'password :foo')
-    end
-
-    def test_password_optional_readonly
-      assert_optional_readonly(PageForPassword, 'password :foo')
-    end
-
-    def test_password_size
-      assert_optional_size(PageForPassword, 'password :foo')
-    end
-
-    def test_password_maxlength
-      assert_optional_maxlength(PageForPassword, 'password :foo')
     end
 
     class PageForSubmit
@@ -807,27 +476,6 @@ module Gluon::Test
                    render_page('<%= submit :foo, :value => "Push!" %>'))
     end
 
-    def test_submit_optional_id
-      assert_optional_id(PageForSubmit, 'submit :foo', :foo)
-    end
-
-    def test_submit_optional_class
-      assert_optional_class(PageForSubmit, 'submit :foo', :foo)
-    end
-
-    def test_submit_optional_attrs
-      assert_optional_attrs(PageForSubmit, 'submit :foo',
-                            Gluon::PresentationObject::MKINPUT_RESERVED_ATTRS.keys)
-    end
-
-    def test_submit_optional_disabled
-      assert_optional_disabled(PageForSubmit, 'submit :foo')
-    end
-
-    def test_submit_optional_readonly
-      assert_optional_readonly(PageForSubmit, 'submit :foo')
-    end
-
     class PageForHidden
       include Gluon::Controller
       include Gluon::ERBView
@@ -841,27 +489,6 @@ module Gluon::Test
 
       @controller.foo = 'Hello world.'
       assert_equal('<input type="hidden" name="foo" value="Hello world." />', render_page('<%= hidden :foo %>'))
-    end
-
-    def test_hidden_optional_id
-      assert_optional_id(PageForHidden, 'hidden :foo', :foo)
-    end
-
-    def test_hidden_optional_class
-      assert_optional_class(PageForHidden, 'hidden :foo', :foo)
-    end
-
-    def test_hidden_optional_attrs
-      assert_optional_attrs(PageForHidden, 'hidden :foo',
-                            Gluon::PresentationObject::MKINPUT_RESERVED_ATTRS.keys)
-    end
-
-    def test_hidden_optional_disabled
-      assert_optional_disabled(PageForHidden, 'hidden :foo')
-    end
-
-    def test_hidden_optional_readonly
-      assert_optional_readonly(PageForHidden, 'hidden :foo')
     end
 
     class PageForCheckbox
@@ -880,27 +507,6 @@ module Gluon::Test
       @controller.foo = true
       assert_equal('<input type="hidden" name="foo@type" value="bool" /><input type="checkbox" name="foo" value="true" checked="checked" />',
                    render_page('<%= checkbox :foo %>'))
-    end
-
-    def test_checkbox_optional_id
-      assert_optional_id(PageForCheckbox, 'checkbox :foo', :foo)
-    end
-
-    def test_checkbox_optional_class
-      assert_optional_class(PageForCheckbox, 'checkbox :foo', :foo)
-    end
-
-    def test_checkbox_optional_attrs
-      assert_optional_attrs(PageForCheckbox, 'checkbox :foo',
-                            Gluon::PresentationObject::MKINPUT_RESERVED_ATTRS.keys)
-    end
-
-    def test_checkbox_optional_disabled
-      assert_optional_disabled(PageForCheckbox, 'checkbox :foo')
-    end
-
-    def test_checkbox_optional_readonly
-      assert_optional_readonly(PageForCheckbox, 'checkbox :foo')
     end
 
     class PageForRadio
@@ -938,27 +544,6 @@ module Gluon::Test
       assert_raise(ArgumentError) {
         render_page('<%= radio :foo, "Melon" %>')
       }
-    end
-
-    def test_radio_optional_id
-      assert_optional_id(PageForRadio, 'radio :foo, "Banana"', :foo)
-    end
-
-    def test_radio_optional_class
-      assert_optional_class(PageForRadio, 'radio :foo, "Banana"', :foo)
-    end
-
-    def test_radio_optional_attrs
-      assert_optional_attrs(PageForRadio, 'radio :foo, "Banana"',
-                            Gluon::PresentationObject::MKINPUT_RESERVED_ATTRS.keys)
-    end
-
-    def test_radio_optional_disabled
-      assert_optional_disabled(PageForRadio, 'radio :foo, "Banana"')
-    end
-
-    def test_radio_optional_readonly
-      assert_optional_readonly(PageForRadio, 'radio :foo, "Banana"')
     end
 
     class PageForSelect
@@ -1001,23 +586,6 @@ module Gluon::Test
                    '<option value="orange">Orange</option>' +
                    '</select>',
                    render_page('<%= select :foo %>'))
-    end
-
-    def test_select_optional_id
-      assert_optional_id(PageForSelect, 'select :foo, :list => :fruits', :foo)
-    end
-
-    def test_select_optional_class
-      assert_optional_class(PageForSelect, 'select :foo, :list => :fruits', :foo)
-    end
-
-    def test_select_optional_attrs
-      assert_optional_attrs(PageForSelect, 'select :foo, :list => :fruits',
-                            Gluon::PresentationObject::SELECT_RESERVED_ATTRS.keys)
-    end
-
-    def test_select_optional_disabled
-      assert_optional_disabled(PageForSelect, 'select :foo, :list => :fruits')
     end
 
     def test_multiple_select
@@ -1064,35 +632,6 @@ module Gluon::Test
       @controller.foo = "Hello world.\n"
       assert_equal("<textarea name=\"foo\">Hello world.\n</textarea>",
                    render_page('<%= textarea :foo %>'))
-    end
-
-    def test_textarea_optional_id
-      assert_optional_id(PageForTextarea, 'textarea :foo', :foo)
-    end
-
-    def test_textarea_optional_class
-      assert_optional_class(PageForTextarea, 'textarea :foo', :foo)
-    end
-
-    def test_textarea_optional_attrs
-      assert_optional_attrs(PageForTextarea, 'textarea :foo',
-                            Gluon::PresentationObject::TEXTAREA_RESERVED_ATTRS.keys)
-    end
-
-    def test_textarea_optional_disabled
-      assert_optional_disabled(PageForTextarea, 'textarea :foo')
-    end
-
-    def test_textarea_optional_readonly
-      assert_optional_readonly(PageForTextarea, 'textarea :foo')
-    end
-
-    def test_textarea_optional_rows
-      assert_optional_rows(PageForTextarea, 'textarea :foo')
-    end
-
-    def test_textarea_optional_cols
-      assert_optional_cols(PageForTextarea, 'textarea :foo')
     end
 
     class PageForForeachAction

@@ -92,22 +92,22 @@ module Gluon::Test
     def assert_optional_id(page_type, method, start_with,
                            expr_simple, expr_embedded_attr)
       anon_page_type = Class.new(page_type) {
-        gluon_advice method, :id => 'foo'
+        gluon_advice method, :attrs => { 'id' => 'foo' }
       }
       build_page(anon_page_type)
       assert_match(start_with, render_page(expr_simple))
       assert_match(/ id="foo"/, render_page(expr_simple), 'immedate valule.')
 
       anon_page_type = Class.new(page_type) {
-        gluon_advice method, :id => proc{ 'foo' }
+        gluon_advice method, :attrs => proc{ { 'id' => 'foo' } }
       }
       build_page(anon_page_type)
       assert_match(start_with, render_page(expr_simple))
       assert_match(/ id="foo"/, render_page(expr_simple, 'procedure.'))
 
       anon_page_type = Class.new(page_type) {
-        define_method(:opt_id) { 'foo' }
-        gluon_advice method, :id => instance_method(:opt_id)
+        define_method(:opt_id) { return 'id' => 'foo' }
+        gluon_advice method, :attrs => instance_method(:opt_id)
       }
       build_page(anon_page_type)
       assert_match(start_with, render_page(expr_simple))
@@ -119,7 +119,7 @@ module Gluon::Test
 		   'embedded value at template.')
 
       anon_page_type = Class.new(page_type) {
-        gluon_advice method, :id => 'bar'
+        gluon_advice method, :attrs => { 'id' => 'bar' }
       }
       build_page(anon_page_type)
       assert_match(start_with, render_page(expr_embedded_attr))
@@ -146,22 +146,22 @@ module Gluon::Test
     def assert_optional_class(page_type, method, start_with,
                               expr_simple, expr_embedded_attr)
       anon_page_type = Class.new(page_type) {
-        gluon_advice method, :class => 'foo'
+        gluon_advice method, :attrs => { 'class' => 'foo' }
       }
       build_page(anon_page_type)
       assert_match(start_with, render_page(expr_simple))
       assert_match(/ class="foo"/, render_page(expr_simple), 'immedate value.')
 
       anon_page_type = Class.new(page_type) {
-        gluon_advice method, :class => proc{ 'foo' }
+        gluon_advice method, :attrs => proc{ { 'class' => 'foo' } }
       }
       build_page(anon_page_type)
       assert_match(start_with, render_page(expr_simple))
       assert_match(/ class="foo"/, render_page(expr_simple), 'procedure.')
 
       anon_page_type = Class.new(page_type) {
-        define_method(:opt_class) { 'foo' }
-        gluon_advice method, :class => instance_method(:opt_class)
+        define_method(:opt_class) { return 'class' => 'foo' }
+        gluon_advice method, :attrs => instance_method(:opt_class)
       }
       build_page(anon_page_type)
       assert_match(start_with, render_page(expr_simple))
@@ -173,7 +173,7 @@ module Gluon::Test
                    'embedded value at template.')
 
       anon_page_type = Class.new(page_type) {
-        gluon_advice method, :class => 'bar'
+        gluon_advice method, :attrs => { 'class' => 'bar' }
       }
       build_page(anon_page_type)
       assert_match(start_with, render_page(expr_embedded_attr))

@@ -60,11 +60,11 @@ module Gluon::Test
     end
 
     def view_template_link_embedded_attr_id
-      '<%= link :foo, :attrs => { "id" => "foo" } %>'
+      '<%= link :foo, "id" => "foo" %>'
     end
 
     def view_template_link_embedded_attr_class
-      '<%= link :foo, :attrs => { "class" => "foo" } %>'
+      '<%= link :foo, "class" => "foo" %>'
     end
 
     def view_template_action
@@ -76,11 +76,11 @@ module Gluon::Test
     end
 
     def view_template_action_embedded_attr_id
-      '<%= action :foo, :attrs => { "id" => "foo" } %>'
+      '<%= action :foo, "id" => "foo" %>'
     end
 
     def view_template_action_embedded_attr_class
-      '<%= action :foo, :attrs => { "class" => "foo" } %>'
+      '<%= action :foo, "class" => "foo" %>'
     end
 
     def view_template_frame
@@ -92,11 +92,11 @@ module Gluon::Test
     end
 
     def view_template_frame_embedded_attr_id
-      '<%= frame :foo, :attrs => { "id" => "foo" } %>'
+      '<%= frame :foo, "id" => "foo" %>'
     end
 
     def view_template_frame_embedded_attr_class
-      '<%= frame :foo, :attrs => { "class" => "foo" } %>'
+      '<%= frame :foo, "class" => "foo" %>'
     end
 
     def view_template_import
@@ -128,11 +128,11 @@ module Gluon::Test
     end
 
     def view_template_text_embedded_attr_id
-      '<%= text :foo, :attrs => { "id" => "foo" } %>'
+      '<%= text :foo, "id" => "foo" %>'
     end
 
     def view_template_text_embedded_attr_class
-      '<%= text :foo, :attrs => { "class" => "foo" } %>'
+      '<%= text :foo, "class" => "foo" %>'
     end
 
     def view_template_password
@@ -148,11 +148,11 @@ module Gluon::Test
     end
 
     def view_template_password_embedded_attr_id
-      '<%= password :foo, :attrs => { "id" => "foo" } %>'
+      '<%= password :foo, "id" => "foo" %>'
     end
 
     def view_template_password_embedded_attr_class
-      '<%= password :foo, :attrs => { "class" => "foo" } %>'
+      '<%= password :foo, "class" => "foo" %>'
     end
 
     def view_template_submit
@@ -168,11 +168,11 @@ module Gluon::Test
     end
 
     def view_template_submit_embedded_attr_id
-      '<%= submit :foo, :attrs => { "id" => "foo" } %>'
+      '<%= submit :foo, "id" => "foo" %>'
     end
 
     def view_template_submit_embedded_attr_class
-      '<%= submit :foo, :attrs => { "class" => "foo" } %>'
+      '<%= submit :foo, "class" => "foo" %>'
     end
 
     def view_template_hidden
@@ -188,11 +188,11 @@ module Gluon::Test
     end
 
     def view_template_hidden_embedded_attr_id
-      '<%= hidden :foo, :attrs => { "id" => "foo" } %>'
+      '<%= hidden :foo, "id" => "foo" %>'
     end
 
     def view_template_hidden_embedded_attr_class
-      '<%= hidden :foo, :attrs => { "class" => "foo" } %>'
+      '<%= hidden :foo, "class" => "foo" %>'
     end
 
     def view_template_checkbox
@@ -208,11 +208,11 @@ module Gluon::Test
     end
 
     def view_template_checkbox_embedded_attr_id
-      '<%= checkbox :foo, :attrs => { "id" => "foo" } %>'
+      '<%= checkbox :foo, "id" => "foo" %>'
     end
 
     def view_template_checkbox_embedded_attr_class
-      '<%= checkbox :foo, :attrs => { "class" => "foo" } %>'
+      '<%= checkbox :foo, "class" => "foo" %>'
     end
 
     def view_template_radio
@@ -228,11 +228,11 @@ module Gluon::Test
     end
 
     def view_template_radio_embedded_attr_id
-      '<%= radio :foo, "apple", :attrs => { "id" => "foo" } %>'
+      '<%= radio :foo, "apple", "id" => "foo" %>'
     end
 
     def view_template_radio_embedded_attr_class
-      '<%= radio :foo, "apple", :attrs => { "class" => "foo" } %>'
+      '<%= radio :foo, "apple", "class" => "foo" %>'
     end
 
     def view_template_select
@@ -248,11 +248,11 @@ module Gluon::Test
     end
 
     def view_template_select_embedded_attr_id
-      '<%= select :foo, :attrs => { "id" => "foo" } %>'
+      '<%= select :foo, "id" => "foo" %>'
     end
 
     def view_template_select_embedded_attr_class
-      '<%= select :foo, :attrs => { "class" => "foo" } %>'
+      '<%= select :foo, "class" => "foo" %>'
     end
 
     def view_template_textarea
@@ -268,11 +268,11 @@ module Gluon::Test
     end
 
     def view_template_textarea_embedded_attr_id
-      '<%= textarea :foo, :attrs => { "id" => "foo" } %>'
+      '<%= textarea :foo, "id" => "foo" %>'
     end
 
     def view_template_textarea_embedded_attr_class
-      '<%= textarea :foo, :attrs => { "class" => "foo" } %>'
+      '<%= textarea :foo, "class" => "foo" %>'
     end
 
     TEST_ONLY_ONCE = {
