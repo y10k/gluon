@@ -211,8 +211,10 @@ module Gluon
       elem = "<#{name}"
       used_attr = {}
       for n, v in getopt(:attrs, {}, method, search_stack, {})
+        m = n.downcase
+        next if (reserved_attrs.key? m)
         elem << mkattr(n, v)
-        used_attr[n.downcase] = true
+        used_attr[m] = true
       end
       for n, v in options
         next unless (n.is_a? String)        
