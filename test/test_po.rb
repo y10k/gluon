@@ -234,8 +234,8 @@ module Gluon::Test
                    render_page('<%= link "http://www.ruby-lang.org" %>'))
       assert_equal('<a href="http://www.ruby-lang.org">Ruby</a>',
                    render_page('<%= link "http://www.ruby-lang.org", :text => "Ruby" %>'))
-      assert_equal('<a href="http://www.ruby-lang.org" target="_blank">Ruby</a>',
-                   render_page('<%= link "http://www.ruby-lang.org", :text => "Ruby", :target => "_blank" %>'))
+      assert_equal('<a target="_blank" href="http://www.ruby-lang.org">Ruby</a>',
+                   render_page('<%= link "http://www.ruby-lang.org", :text => "Ruby", "target" => "_blank" %>'))
       assert_equal('<a href="http://www.ruby-lang.org?lang=ja">Ruby</a>',
                    render_page('<%= link "http://www.ruby-lang.org", :query => { "lang" => "ja" }, :text => "Ruby" %>'))
 
@@ -243,22 +243,22 @@ module Gluon::Test
                    render_page('<%= link :ruby_home_uri %>'))
       assert_equal('<a href="http://www.ruby-lang.org">Ruby</a>',
                    render_page('<%= link :ruby_home_uri, :text => :ruby_home_text %>'))
-      assert_equal('<a href="http://www.ruby-lang.org" target="_blank">Ruby</a>',
-                   render_page('<%= link :ruby_home_uri, :text => :ruby_home_text, :target => "_blank" %>'))
+      assert_equal('<a target="_blank" href="http://www.ruby-lang.org">Ruby</a>',
+                   render_page('<%= link :ruby_home_uri, :text => :ruby_home_text, "target" => "_blank" %>'))
       assert_equal('<a href="http://www.ruby-lang.org?lang=ja">Ruby</a>',
                    render_page('<%= link :ruby_home_uri, :query => { "lang" => "ja" }, :text => :ruby_home_text %>'))
 
       assert_equal('<a href="http://www.ruby-lang.org?lang=ja">Ruby</a>',
                    render_page('<%= link :ruby_home_with_query, :text => "Ruby" %>'))
-      assert_equal('<a href="http://www.ruby-lang.org?lang=en">Ruby</a>',
+      assert_equal('<a href="http://www.ruby-lang.org?lang=ja">Ruby</a>',
                    render_page('<%= link :ruby_home_with_query, :query => { "lang" => "en" }, :text => "Ruby" %>'))
 
       assert_equal('<a href="/bar.cgi/another_page">/bar.cgi/another_page</a>',
                    render_page("<%= link #{AnotherPage} %>"))
       assert_equal('<a href="/bar.cgi/another_page">another page</a>',
                    render_page("<%= link #{AnotherPage}, :text => 'another page' %>"))
-      assert_equal('<a href="/bar.cgi/another_page" target="_blank">another page</a>',
-                   render_page("<%= link #{AnotherPage}, :text => 'another page', :target => '_blank' %>"))
+      assert_equal('<a target="_blank" href="/bar.cgi/another_page">another page</a>',
+                   render_page("<%= link #{AnotherPage}, :text => 'another page', 'target' => '_blank' %>"))
       assert_equal('<a href="/bar.cgi/another_page#foo">another page</a>',
                    render_page("<%= link #{AnotherPage}, :text => 'another page', :fragment => 'foo' %>"))
       assert_equal('<a href="/bar.cgi/another_page?foo=bar">another page</a>',
@@ -268,7 +268,7 @@ module Gluon::Test
 
       assert_equal('<a href="/bar.cgi/another_page?foo=bar">query</a>',
                    render_page('<%= link :page_with_query, :text => "query" %>'))
-      assert_equal('<a href="/bar.cgi/another_page?foo=baz">query</a>',
+      assert_equal('<a href="/bar.cgi/another_page?foo=bar">query</a>',
                    render_page('<%= link :page_with_query, :query => { "foo" => "baz" }, :text => "query" %>'))
       assert_equal('<a href="/bar.cgi/another_page#foo">fragment</a>',
                    render_page('<%= link :page_with_fragment, :text => "fragment" %>'))
@@ -304,8 +304,8 @@ module Gluon::Test
                    render_page('<%= action :foo %>'))
       assert_equal('<a href="/bar.cgi?foo%28%29">action</a>',
                    render_page('<%= action :foo, :text => "action" %>'))
-      assert_equal('<a href="/bar.cgi?foo%28%29" target="_blank">action</a>',
-                   render_page('<%= action :foo, :text => "action", :target => "_blank" %>'))
+      assert_equal('<a target="_blank" href="/bar.cgi?foo%28%29">action</a>',
+                   render_page('<%= action :foo, :text => "action", "target" => "_blank" %>'))
       assert_equal('<a href="/bar.cgi/another_page?foo%28%29">action</a>',
                    render_page("<%= action :foo, :text => 'action', :page => #{AnotherPage} %>"))
     end
@@ -342,33 +342,33 @@ module Gluon::Test
 
       assert_equal('<frame src="http://www.ruby-lang.org" />',
                    render_page('<%= frame "http://www.ruby-lang.org" %>'))
-      assert_equal('<frame src="http://www.ruby-lang.org" name="ruby" />',
-                   render_page('<%= frame "http://www.ruby-lang.org", :name => "ruby" %>'))
+      assert_equal('<frame name="ruby" src="http://www.ruby-lang.org" />',
+                   render_page('<%= frame "http://www.ruby-lang.org", "name" => "ruby" %>'))
       assert_equal('<frame src="http://www.ruby-lang.org?lang=ja" />',
                    render_page('<%= frame "http://www.ruby-lang.org", :query => { "lang" => "ja" } %>'))
 
       assert_equal('<frame src="http://www.ruby-lang.org" />',
                    render_page('<%= frame :ruby_home %>'))
-      assert_equal('<frame src="http://www.ruby-lang.org" name="ruby" />',
-                   render_page('<%= frame :ruby_home, :name => "ruby" %>'))
+      assert_equal('<frame name="ruby" src="http://www.ruby-lang.org" />',
+                   render_page('<%= frame :ruby_home, "name" => "ruby" %>'))
       assert_equal('<frame src="http://www.ruby-lang.org?lang=ja" />',
                    render_page('<%= frame :ruby_home, :query => { "lang" => "ja" } %>'))
 
       assert_equal('<frame src="http://www.ruby-lang.org?lang=ja" />',
                    render_page('<%= frame :ruby_home_with_query %>'))
-      assert_equal('<frame src="http://www.ruby-lang.org?lang=en" />',
+      assert_equal('<frame src="http://www.ruby-lang.org?lang=ja" />',
                    render_page('<%= frame :ruby_home_with_query, :query => { "lang" => "en" } %>'))
 
       assert_equal('<frame src="/bar.cgi/another_page" />',
                    render_page("<%= frame #{AnotherPage} %>"))
-      assert_equal('<frame src="/bar.cgi/another_page" name="foo" />',
-                   render_page("<%= frame #{AnotherPage}, :name => 'foo' %>"))
+      assert_equal('<frame name="foo" src="/bar.cgi/another_page" />',
+                   render_page("<%= frame #{AnotherPage}, 'name' => 'foo' %>"))
       assert_equal('<frame src="/bar.cgi/another_page?foo=bar" />',
                    render_page("<%= frame #{AnotherPage}, :query => { 'foo' => 'bar' } %>"))
 
       assert_equal('<frame src="/bar.cgi/another_page?foo=bar" />',
                    render_page("<%= frame :page_with_query %>"))
-      assert_equal('<frame src="/bar.cgi/another_page?foo=baz" />',
+      assert_equal('<frame src="/bar.cgi/another_page?foo=bar" />',
                    render_page("<%= frame :page_with_query, :query => { 'foo' => 'baz' } %>"))
     end
 

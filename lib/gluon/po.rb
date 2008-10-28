@@ -239,15 +239,13 @@ module Gluon
 
     # :stopdoc:
     MKLINK_RESERVED_ATTRS = {
-      'href' => true,
-      'target' => true
+      'href' => true
     }.freeze
     # :startdoc:
 
     def mklink(href, options, method)
       elem = mkelem_start('a', MKLINK_RESERVED_ATTRS, options, method, true)
       elem << ' href="' << ERB::Util.html_escape(mkpath(href, options)) << '"'
-      elem << ' target="' << ERB::Util.html_escape(options[:target]) << '"' if (options.key? :target)
       elem << '>'
       if (block_given?) then
         out = ''
@@ -266,33 +264,14 @@ module Gluon
     end
     private :mklink
 
-    def merge_opts(*opts_list)
-      opts_list = opts_list.compact
-      if (opts_list.length == 1) then
-        return opts_list[0]
-      end
-
-      options = {}
-      opts_list.reverse_each do |o|
-        options.update(o)
-      end
-
-      query = nil
-      opts_list.map{|opts| opts[:query] }.compact.reverse_each do |q|
-        query = {} unless query
-        query.update(q)
-      end
-      options[:query] = query if query
-
-      options
-    end
-    private :merge_opts
-
     def expand_link_name(name, options)
       if (name.is_a? Symbol) then
         method = name
-        name, options2 = funcall(method)
-        return name, merge_opts(options, options2), method
+        name, controller_options = funcall(method)
+        if (controller_options) then
+          options = options.dup.update(controller_options)
+        end
+        return name, options, method
       else
         return name, options
       end
@@ -338,15 +317,13 @@ module Gluon
 
     # :stopdoc:
     MKFRAME_RESERVED_ATTRS = {
-      'src' => true,
-      'name' => true
+      'src' => true
     }.freeze
     # :startdoc:
 
     def mkframe(src, options, method)
       elem = mkelem_start('frame', MKFRAME_RESERVED_ATTRS, options, method, true)
       elem << ' src="' << ERB::Util.html_escape(mkpath(src, options)) << '"'
-      elem << ' name="' << ERB::Util.html_escape(options[:name]) << '"' if (options.key? :name)
       elem << ' />'
     end
     private :mkframe
