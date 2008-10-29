@@ -89,110 +89,98 @@ module Gluon::Test
       EOF
     end
 
-    def assert_optional_id(page_type, method, start_with,
-                           expr_simple, expr_embedded_attr)
+    def assert_attrs_advice_hash(page_type, method, start_with, expr)
       anon_page_type = Class.new(page_type) {
-        gluon_advice method, :attrs => { 'id' => 'foo' }
+        gluon_advice method, :attrs => {
+          'id' => 'foo',
+          'class' => 'bar',
+          'bool' => true
+        }
       }
       build_page(anon_page_type)
-      assert_match(start_with, render_page(expr_simple))
-      assert_match(/ id="foo"/, render_page(expr_simple), 'immedate valule.')
-
-      anon_page_type = Class.new(page_type) {
-        gluon_advice method, :attrs => proc{ { 'id' => 'foo' } }
-      }
-      build_page(anon_page_type)
-      assert_match(start_with, render_page(expr_simple))
-      assert_match(/ id="foo"/, render_page(expr_simple, 'procedure.'))
-
-      anon_page_type = Class.new(page_type) {
-        define_method(:opt_id) { return 'id' => 'foo' }
-        gluon_advice method, :attrs => instance_method(:opt_id)
-      }
-      build_page(anon_page_type)
-      assert_match(start_with, render_page(expr_simple))
-      assert_match(/ id="foo"/, render_page(expr_simple), 'instance method.')
-
-      build_page(page_type)
-      assert_match(start_with, render_page(expr_embedded_attr))
-      assert_match(/ id="foo"/, render_page(expr_embedded_attr),
-		   'embedded value at template.')
-
-      anon_page_type = Class.new(page_type) {
-        gluon_advice method, :attrs => { 'id' => 'bar' }
-      }
-      build_page(anon_page_type)
-      assert_match(start_with, render_page(expr_embedded_attr))
-      assert_match(/ id="bar"/, render_page(expr_embedded_attr),
-		   'advice than embedded.')
-      assert_no_match(/ id="foo"/, render_page(expr_embedded_attr),
-		      'advice than embedded.')
+      result = render_page(expr)
+      assert_match(start_with, result)
+      assert_match(/ id="foo"/, result)
+      assert_match(/ class="bar"/, result)
+      assert_match(/ bool="bool"/, result)
     end
-    private :assert_optional_id
+    private :assert_attrs_advice_hash
 
-    def self.def_test_optional_id(name, page_type, method, start_with)
+    def assert_attrs_advice_proc(page_type, method, start_with, expr)
+      anon_page_type = Class.new(page_type) {
+        gluon_advice method, :attrs => proc{
+          { 'id' => 'foo', 'class' => 'bar', 'bool' => true }
+        }
+      }
+      build_page(anon_page_type)
+      result = render_page(expr)
+      assert_match(start_with, result)
+      assert_match(/ id="foo"/, result)
+      assert_match(/ class="bar"/, result)
+      assert_match(/ bool="bool"/, result)
+    end
+    private :assert_attrs_advice_proc
+
+    def assert_attrs_advice_method(page_type, method, start_with, expr)
+      anon_page_type = Class.new(page_type) {
+        define_method(:controller_attrs) {
+          return 'id' => 'foo', 'class' => 'bar', 'bool' => true
+        }
+        gluon_advice method, :attrs => instance_method(:controller_attrs)
+      }
+      build_page(anon_page_type)
+      result = render_page(expr)
+      assert_match(start_with, result)
+      assert_match(/ id="foo"/, result)
+      assert_match(/ class="bar"/, result)
+      assert_match(/ bool="bool"/, result)
+    end
+    private :assert_attrs_advice_method
+
+    def assert_attrs_embedded(page_type, method, start_with, expr)
+      build_page(page_type)
+      result = render_page(expr)
+      assert_match(start_with, result)
+      assert_match(/ id="foo"/, result)
+      assert_match(/ class="bar"/, result)
+      assert_match(/ bool="bool"/, result)
+    end
+    private :assert_attrs_embedded
+
+    def assert_attrs_advice_over_embedded(page_type, method, start_with, expr)
+      anon_page_type = Class.new(page_type) {
+        gluon_advice method, :attrs => { 'id' => 'baz', 'bool' => false }
+      }
+      build_page(anon_page_type)
+      result = render_page(expr)
+      assert_match(start_with, result)
+      assert_no_match(/ id="foo"/, result)
+      assert_match(/ id="baz"/, result)
+      assert_match(/ class="bar"/, result)
+      assert_no_match(/ bool="bool"/, result)
+    end
+    private :assert_attrs_advice_over_embedded
+
+    def self.def_test_attrs(name, page_type, method, start_with)
       file, line, = Caller.caller_frame(1)
-      module_eval(<<-EOF, "#{__FILE__},test_#{name}_optional_id(#{line})", __LINE__ + 1)
-        def test_#{name}_optional_id
-          assert_optional_id(#{page_type},
-                             #{method.to_sym.inspect},
-                             /^\#{Regexp.quote(#{start_with.dump})}/,
-                             view_template_#{name},
-                             view_template_#{name}_embedded_attr_id)
+      args = "#{page_type}"
+      args << ", #{method.to_sym.inspect}"
+      args << ", /^\#{Regexp.quote(#{start_with.dump})}/"
+      module_eval(<<-EOF, "#{__FILE__},test_#{name}_attrs(#{line})", __LINE__ + 1)
+        def test_#{name}_attrs_advice_hash
+          assert_attrs_advice_hash(#{args}, view_template_#{name})
         end
-      EOF
-    end
-
-    def assert_optional_class(page_type, method, start_with,
-                              expr_simple, expr_embedded_attr)
-      anon_page_type = Class.new(page_type) {
-        gluon_advice method, :attrs => { 'class' => 'foo' }
-      }
-      build_page(anon_page_type)
-      assert_match(start_with, render_page(expr_simple))
-      assert_match(/ class="foo"/, render_page(expr_simple), 'immedate value.')
-
-      anon_page_type = Class.new(page_type) {
-        gluon_advice method, :attrs => proc{ { 'class' => 'foo' } }
-      }
-      build_page(anon_page_type)
-      assert_match(start_with, render_page(expr_simple))
-      assert_match(/ class="foo"/, render_page(expr_simple), 'procedure.')
-
-      anon_page_type = Class.new(page_type) {
-        define_method(:opt_class) { return 'class' => 'foo' }
-        gluon_advice method, :attrs => instance_method(:opt_class)
-      }
-      build_page(anon_page_type)
-      assert_match(start_with, render_page(expr_simple))
-      assert_match(/ class="foo"/, render_page(expr_simple), 'instance method.')
-
-      build_page(page_type)
-      assert_match(start_with, render_page(expr_embedded_attr))
-      assert_match(/ class="foo"/, render_page(expr_embedded_attr),
-                   'embedded value at template.')
-
-      anon_page_type = Class.new(page_type) {
-        gluon_advice method, :attrs => { 'class' => 'bar' }
-      }
-      build_page(anon_page_type)
-      assert_match(start_with, render_page(expr_embedded_attr))
-      assert_match(/ class="bar"/, render_page(expr_embedded_attr),
-                   'advice than embedded.')
-      assert_no_match(/ class="foo"/, render_page(expr_embedded_attr),
-                      'advice than embedded.')
-    end
-    private :assert_optional_class
-
-    def self.def_test_optional_class(name, page_type, method, start_with)
-      file, line, = Caller.caller_frame(1)
-      module_eval(<<-EOF, "#{__FILE__},test_#{name}_optional_class(#{line})", __LINE__ + 1)
-        def test_#{name}_optional_class
-          assert_optional_class(#{page_type},
-                                #{method.to_sym.inspect},
-                                /^\#{Regexp.quote(#{start_with.dump})}/,
-                                view_template_#{name},
-                                view_template_#{name}_embedded_attr_class)
+        def test_#{name}_attrs_advice_proc
+          assert_attrs_advice_proc(#{args}, view_template_#{name})
+        end
+        def test_#{name}_attrs_advice_method
+          assert_attrs_advice_method(#{args}, view_template_#{name})
+        end
+        def test_#{name}_attrs_embedded
+          assert_attrs_embedded(#{args}, view_template_#{name}_embedded_attrs)
+        end
+        def test_#{name}_attrs_advice_over_embedded
+          assert_attrs_advice_over_embedded(#{args}, view_template_#{name}_embedded_attrs)
         end
       EOF
     end
@@ -266,8 +254,7 @@ module Gluon::Test
       '<a href="/Foo">foo</a>'
     def_test_view :link_content, PageForLink,
       '<a href="/Foo">should be picked up.</a>'
-    def_test_optional_id :link, PageForLink, :foo, '<a '
-    def_test_optional_class :link, PageForLink, :foo, '<a '
+    def_test_attrs :link, PageForLink, :foo, '<a '
 
     class PageForAction < SimplePage
       def foo
@@ -279,8 +266,7 @@ module Gluon::Test
       '<a href="/bar.cgi?foo%28%29">Action</a>'
     def_test_view :action_content, PageForAction,
       '<a href="/bar.cgi?foo%28%29">should be picked up.</a>'
-    def_test_optional_id :action, PageForAction, :foo, '<a '
-    def_test_optional_class :action, PageForAction, :foo, '<a '
+    def_test_attrs :action, PageForAction, :foo, '<a '
 
     class PageForFrame < SimplePage
       def foo
@@ -293,8 +279,7 @@ module Gluon::Test
       '<frame src="/Foo" />'
     def_test_view :frame_content_ignored, PageForFrame,
       '<frame src="/Foo" />'
-    def_test_optional_id :frame, PageForFrame, :foo, '<frame '
-    def_test_optional_class :frame, PageForFrame, :foo, '<frame '
+    def_test_attrs :frame, PageForFrame, :foo, '<frame '
 
     class PageForImport < SimplePage
       class Foo
@@ -373,8 +358,7 @@ module Gluon::Test
       '<input type="text" name="bar" value="should be picked up." />'
     def_test_view :text_content_ignored, PageForText,
       '<input type="text" name="foo" value="" />'
-    def_test_optional_id :text, PageForText, :foo, '<input '
-    def_test_optional_class :text, PageForText, :foo, '<input '
+    def_test_attrs :text, PageForText, :foo, '<input '
 
     class PageForPassword < SimplePage
       def initialize
@@ -392,8 +376,7 @@ module Gluon::Test
       '<input type="password" name="bar" value="should be picked up." />'
     def_test_view :password_content_ignored, PageForPassword,
       '<input type="password" name="foo" value="" />'
-    def_test_optional_id :password, PageForPassword, :foo, '<input '
-    def_test_optional_class :password, PageForPassword, :foo, '<input '
+    def_test_attrs :password, PageForPassword, :foo, '<input '
 
     class PageForSubmit < SimplePage
       def foo
@@ -411,8 +394,7 @@ module Gluon::Test
       '<input type="submit" name="bar()" value="should be picked up." />'
     def_test_view :submit_content_ignored, PageForSubmit,
       '<input type="submit" name="foo()" />'
-    def_test_optional_id :submit, PageForSubmit, :foo, '<input '
-    def_test_optional_class :submit, PageForSubmit, :foo, '<input '
+    def_test_attrs :submit, PageForSubmit, :foo, '<input '
 
     class PageForHidden < SimplePage
       def initialize
@@ -430,8 +412,7 @@ module Gluon::Test
       '<input type="hidden" name="bar" value="Hello world." />'
     def_test_view :hidden_content_ignored, PageForHidden,
       '<input type="hidden" name="foo" value="" />'
-    def_test_optional_id :hidden, PageForHidden, :foo, '<input '
-    def_test_optional_class :hidden, PageForHidden, :foo, '<input '
+    def_test_attrs :hidden, PageForHidden, :foo, '<input '
 
     class PageForCheckbox < SimplePage
       def initialize
@@ -452,8 +433,7 @@ module Gluon::Test
     def_test_view :checkbox_content_ignored, PageForCheckbox,
       '<input type="hidden" name="foo@type" value="bool" />' +
       '<input type="checkbox" name="foo" value="true" />'
-    def_test_optional_id :checkbox, PageForCheckbox, :foo, '<input '
-    def_test_optional_class :checkbox, PageForCheckbox, :foo, '<input '
+    def_test_attrs :checkbox, PageForCheckbox, :foo, '<input '
 
     class PageForRadio < SimplePage
       def initialize
@@ -470,8 +450,7 @@ module Gluon::Test
       '<input type="radio" name="foo" value="banana" checked="checked" />'
     def_test_view :radio_content_ignored, PageForRadio,
       '<input type="radio" name="foo" value="apple" />'
-    def_test_optional_id :radio, PageForRadio, :foo, '<input '
-    def_test_optional_class :radio, PageForRadio, :foo, '<input '
+    def_test_attrs :radio, PageForRadio, :foo, '<input '
 
     class PageForSelect < SimplePage
       def initialize
@@ -510,8 +489,7 @@ module Gluon::Test
       '<option value="banana">Banana</option>' +
       '<option value="orange" selected="selected">Orange</option>' +
       '</select>'
-    def_test_optional_id :select, PageForSelect, :foo, '<select '
-    def_test_optional_class :select, PageForSelect, :foo, '<select '
+    def_test_attrs :select, PageForSelect, :foo, '<select '
 
     class PageForTextarea < SimplePage
       def initialize
@@ -529,8 +507,7 @@ module Gluon::Test
       %Q'<textarea name="bar">Hello world.\n</textarea>'
     def_test_view :textarea_content_ignored, PageForTextarea,
       '<textarea name="foo"></textarea>'
-    def_test_optional_id :textarea, PageForTextarea, :foo, '<textarea '
-    def_test_optional_class :textarea, PageForTextarea, :foo, '<textarea '
+    def_test_attrs :textarea, PageForTextarea, :foo, '<textarea '
   end
 end
 

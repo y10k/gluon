@@ -395,12 +395,8 @@ module Gluon::Test
       '<gluon name="foo">should be picked up.</gluon>'
     end
 
-    def view_template_link_embedded_attr_id
-      '<gluon name="foo" id="foo" />'
-    end
-
-    def view_template_link_embedded_attr_class
-      '<gluon name="foo" class="foo" />'
+    def view_template_link_embedded_attrs
+      '<gluon name="foo" id="foo" class="bar" bool="bool" />'
     end
 
     def view_template_action
@@ -411,12 +407,8 @@ module Gluon::Test
       '<gluon name="foo">should be picked up.</gluon>'
     end
 
-    def view_template_action_embedded_attr_id
-      '<gluon name="foo" id="foo" />'
-    end
-
-    def view_template_action_embedded_attr_class
-      '<gluon name="foo" class="foo" />'
+    def view_template_action_embedded_attrs
+      '<gluon name="foo" id="foo" class="bar" bool="bool" />'
     end
 
     def view_template_frame
@@ -427,12 +419,8 @@ module Gluon::Test
       '<gluon name="foo">should be ignored.</gluon>'
     end
 
-    def view_template_frame_embedded_attr_id
-      '<gluon name="foo" id="foo" />'
-    end
-
-    def view_template_frame_embedded_attr_class
-      '<gluon name="foo" class="foo" />'
+    def view_template_frame_embedded_attrs
+      '<gluon name="foo" id="foo" class="bar" bool="bool" />'
     end
 
     def view_template_import
@@ -463,12 +451,8 @@ module Gluon::Test
       '<gluon name="foo">should be ignored.</gluon>'
     end
 
-    def view_template_text_embedded_attr_id
-      '<gluon name="foo" id="foo" />'
-    end
-
-    def view_template_text_embedded_attr_class
-      '<gluon name="foo" class="foo" />'
+    def view_template_text_embedded_attrs
+      '<gluon name="foo" id="foo" class="bar" bool="bool" />'
     end
 
     def view_template_password
@@ -483,12 +467,8 @@ module Gluon::Test
       '<gluon name="foo">should be ignored.</gluon>'
     end
 
-    def view_template_password_embedded_attr_id
-      '<gluon name="foo" id="foo" />'
-    end
-
-    def view_template_password_embedded_attr_class
-      '<gluon name="foo" class="foo" />'
+    def view_template_password_embedded_attrs
+      '<gluon name="foo" id="foo" class="bar" bool="bool" />'
     end
 
     def view_template_submit
@@ -503,12 +483,8 @@ module Gluon::Test
       '<gluon name="foo">should be ignored.</gluon>'
     end
 
-    def view_template_submit_embedded_attr_id
-      '<gluon name="foo" id="foo" />'
-    end
-
-    def view_template_submit_embedded_attr_class
-      '<gluon name="foo" class="foo" />'
+    def view_template_submit_embedded_attrs
+      '<gluon name="foo" id="foo" class="bar" bool="bool" />'
     end
 
     def view_template_hidden
@@ -523,12 +499,8 @@ module Gluon::Test
       '<gluon name="foo">should be ignored.</gluon>'
     end
 
-    def view_template_hidden_embedded_attr_id
-      '<gluon name="foo" id="foo" />'
-    end
-
-    def view_template_hidden_embedded_attr_class
-      '<gluon name="foo" class="foo" />'
+    def view_template_hidden_embedded_attrs
+      '<gluon name="foo" id="foo" class="bar" bool="bool" />'
     end
 
     def view_template_checkbox
@@ -543,12 +515,8 @@ module Gluon::Test
       '<gluon name="foo">should be ignored.</gluon>'
     end
 
-    def view_template_checkbox_embedded_attr_id
-      '<gluon name="foo" id="foo" />'
-    end
-
-    def view_template_checkbox_embedded_attr_class
-      '<gluon name="foo" class="foo" />'
+    def view_template_checkbox_embedded_attrs
+      '<gluon name="foo" id="foo" class="bar" bool="bool" />'
     end
 
     def view_template_radio
@@ -563,12 +531,8 @@ module Gluon::Test
       '<gluon name="foo=apple">should be ignored.</gluon>'
     end
 
-    def view_template_radio_embedded_attr_id
-      '<gluon name="foo=apple" id="foo" />'
-    end
-
-    def view_template_radio_embedded_attr_class
-      '<gluon name="foo=apple" class="foo" />'
+    def view_template_radio_embedded_attrs
+      '<gluon name="foo=apple" id="foo" class="bar" bool="bool" />'
     end
 
     def view_template_select
@@ -583,12 +547,8 @@ module Gluon::Test
       '<gluon name="bar" />'
     end
 
-    def view_template_select_embedded_attr_id
-      '<gluon name="foo" id="foo" />'
-    end
-
-    def view_template_select_embedded_attr_class
-      '<gluon name="foo" class="foo" />'
+    def view_template_select_embedded_attrs
+      '<gluon name="foo" id="foo" class="bar" bool="bool" />'
     end
 
     def view_template_textarea
@@ -603,12 +563,8 @@ module Gluon::Test
       '<gluon name="foo">should be ignored.</gluon>'
     end
 
-    def view_template_textarea_embedded_attr_id
-      '<gluon name="foo" id="foo" />'
-    end
-
-    def view_template_textarea_embedded_attr_class
-      '<gluon name="foo" class="foo" />'
+    def view_template_textarea_embedded_attrs
+      '<gluon name="foo" id="foo" class="bar" bool="bool" />'
     end
   end
 end
