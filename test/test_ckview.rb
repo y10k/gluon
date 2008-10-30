@@ -396,7 +396,7 @@ module Gluon::Test
     end
 
     def view_template_link_embedded_attrs
-      '<gluon name="foo" id="foo" class="bar" bool="bool" />'
+      '<gluon name="foo" foo="Apple" bar="Banana" baz="baz" />'
     end
 
     def view_template_action
@@ -408,7 +408,7 @@ module Gluon::Test
     end
 
     def view_template_action_embedded_attrs
-      '<gluon name="foo" id="foo" class="bar" bool="bool" />'
+      '<gluon name="foo" foo="Apple" bar="Banana" baz="baz" />'
     end
 
     def view_template_frame
@@ -420,7 +420,7 @@ module Gluon::Test
     end
 
     def view_template_frame_embedded_attrs
-      '<gluon name="foo" id="foo" class="bar" bool="bool" />'
+      '<gluon name="foo" foo="Apple" bar="Banana" baz="baz" />'
     end
 
     def view_template_import
@@ -452,7 +452,7 @@ module Gluon::Test
     end
 
     def view_template_text_embedded_attrs
-      '<gluon name="foo" id="foo" class="bar" bool="bool" />'
+      '<gluon name="foo" foo="Apple" bar="Banana" baz="baz" />'
     end
 
     def view_template_password
@@ -468,7 +468,7 @@ module Gluon::Test
     end
 
     def view_template_password_embedded_attrs
-      '<gluon name="foo" id="foo" class="bar" bool="bool" />'
+      '<gluon name="foo" foo="Apple" bar="Banana" baz="baz" />'
     end
 
     def view_template_submit
@@ -484,7 +484,7 @@ module Gluon::Test
     end
 
     def view_template_submit_embedded_attrs
-      '<gluon name="foo" id="foo" class="bar" bool="bool" />'
+      '<gluon name="foo" foo="Apple" bar="Banana" baz="baz" />'
     end
 
     def view_template_hidden
@@ -500,7 +500,7 @@ module Gluon::Test
     end
 
     def view_template_hidden_embedded_attrs
-      '<gluon name="foo" id="foo" class="bar" bool="bool" />'
+      '<gluon name="foo" foo="Apple" bar="Banana" baz="baz" />'
     end
 
     def view_template_checkbox
@@ -516,7 +516,7 @@ module Gluon::Test
     end
 
     def view_template_checkbox_embedded_attrs
-      '<gluon name="foo" id="foo" class="bar" bool="bool" />'
+      '<gluon name="foo" foo="Apple" bar="Banana" baz="baz" />'
     end
 
     def view_template_radio
@@ -532,7 +532,7 @@ module Gluon::Test
     end
 
     def view_template_radio_embedded_attrs
-      '<gluon name="foo=apple" id="foo" class="bar" bool="bool" />'
+      '<gluon name="foo=apple" foo="Apple" bar="Banana" baz="baz" />'
     end
 
     def view_template_select
@@ -548,7 +548,7 @@ module Gluon::Test
     end
 
     def view_template_select_embedded_attrs
-      '<gluon name="foo" id="foo" class="bar" bool="bool" />'
+      '<gluon name="foo" foo="Apple" bar="Banana" baz="baz" />'
     end
 
     def view_template_textarea
@@ -564,7 +564,7 @@ module Gluon::Test
     end
 
     def view_template_textarea_embedded_attrs
-      '<gluon name="foo" id="foo" class="bar" bool="bool" />'
+      '<gluon name="foo" foo="Apple" bar="Banana" baz="baz" />'
     end
   end
 end

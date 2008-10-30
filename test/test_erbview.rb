@@ -60,7 +60,7 @@ module Gluon::Test
     end
 
     def view_template_link_embedded_attrs
-      '<%= link :foo, "id" => "foo", "class" => "bar", "bool" => true %>'
+      '<%= link :foo, "foo" => "Apple", "bar" => "Banana", "baz" => true %>'
     end
 
     def view_template_action
@@ -72,7 +72,7 @@ module Gluon::Test
     end
 
     def view_template_action_embedded_attrs
-      '<%= action :foo, "id" => "foo", "class" => "bar", "bool" => true %>'
+      '<%= action :foo, "foo" => "Apple", "bar" => "Banana", "baz" => true %>'
     end
 
     def view_template_frame
@@ -84,7 +84,7 @@ module Gluon::Test
     end
 
     def view_template_frame_embedded_attrs
-      '<%= frame :foo, "id" => "foo", "class" => "bar", "bool" => true %>'
+      '<%= frame :foo, "foo" => "Apple", "bar" => "Banana", "baz" => true %>'
     end
 
     def view_template_import
@@ -116,7 +116,7 @@ module Gluon::Test
     end
 
     def view_template_text_embedded_attrs
-      '<%= text :foo, "id" => "foo", "class" => "bar", "bool" => true %>'
+      '<%= text :foo, "foo" => "Apple", "bar" => "Banana", "baz" => true %>'
     end
 
     def view_template_password
@@ -132,7 +132,7 @@ module Gluon::Test
     end
 
     def view_template_password_embedded_attrs
-      '<%= password :foo, "id" => "foo", "class" => "bar", "bool" => true %>'
+      '<%= password :foo, "foo" => "Apple", "bar" => "Banana", "baz" => true %>'
     end
 
     def view_template_submit
@@ -148,7 +148,7 @@ module Gluon::Test
     end
 
     def view_template_submit_embedded_attrs
-      '<%= submit :foo, "id" => "foo", "class" => "bar", "bool" => true %>'
+      '<%= submit :foo, "foo" => "Apple", "bar" => "Banana", "baz" => true %>'
     end
 
     def view_template_hidden
@@ -164,7 +164,7 @@ module Gluon::Test
     end
 
     def view_template_hidden_embedded_attrs
-      '<%= hidden :foo, "id" => "foo", "class" => "bar", "bool" => true %>'
+      '<%= hidden :foo, "foo" => "Apple", "bar" => "Banana", "baz" => true %>'
     end
 
     def view_template_checkbox
@@ -180,7 +180,7 @@ module Gluon::Test
     end
 
     def view_template_checkbox_embedded_attrs
-      '<%= checkbox :foo, "id" => "foo", "class" => "bar", "bool" => true %>'
+      '<%= checkbox :foo, "foo" => "Apple", "bar" => "Banana", "baz" => true %>'
     end
 
     def view_template_radio
@@ -196,7 +196,7 @@ module Gluon::Test
     end
 
     def view_template_radio_embedded_attrs
-      '<%= radio :foo, "apple", "id" => "foo", "class" => "bar", "bool" => true %>'
+      '<%= radio :foo, "apple", "foo" => "Apple", "bar" => "Banana", "baz" => true %>'
     end
 
     def view_template_select
@@ -212,7 +212,7 @@ module Gluon::Test
     end
 
     def view_template_select_embedded_attrs
-      '<%= select :foo, "id" => "foo", "class" => "bar", "bool" => true %>'
+      '<%= select :foo, "foo" => "Apple", "bar" => "Banana", "baz" => true %>'
     end
 
     def view_template_textarea
@@ -228,7 +228,7 @@ module Gluon::Test
     end
 
     def view_template_textarea_embedded_attrs
-      '<%= textarea :foo, "id" => "foo", "class" => "bar", "bool" => true %>'
+      '<%= textarea :foo, "foo" => "Apple", "bar" => "Banana", "baz" => true %>'
     end
 
     TEST_ONLY_ONCE = {

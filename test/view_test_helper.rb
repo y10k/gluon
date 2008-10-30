@@ -92,48 +92,48 @@ module Gluon::Test
     def assert_attrs_advice_hash(page_type, method, start_with, expr)
       anon_page_type = Class.new(page_type) {
         gluon_advice method, :attrs => {
-          'id' => 'foo',
-          'class' => 'bar',
-          'bool' => true
+          'foo' => 'Apple',
+          'bar' => 'Banana',
+          'baz' => true
         }
       }
       build_page(anon_page_type)
       result = render_page(expr)
       assert_match(start_with, result)
-      assert_match(/ id="foo"/, result)
-      assert_match(/ class="bar"/, result)
-      assert_match(/ bool="bool"/, result)
+      assert_match(/ foo="Apple"/, result)
+      assert_match(/ bar="Banana"/, result)
+      assert_match(/ baz="baz"/, result)
     end
     private :assert_attrs_advice_hash
 
     def assert_attrs_advice_proc(page_type, method, start_with, expr)
       anon_page_type = Class.new(page_type) {
         gluon_advice method, :attrs => proc{
-          { 'id' => 'foo', 'class' => 'bar', 'bool' => true }
+          { 'foo' => 'Apple', 'bar' => 'Banana', 'baz' => true }
         }
       }
       build_page(anon_page_type)
       result = render_page(expr)
       assert_match(start_with, result)
-      assert_match(/ id="foo"/, result)
-      assert_match(/ class="bar"/, result)
-      assert_match(/ bool="bool"/, result)
+      assert_match(/ foo="Apple"/, result)
+      assert_match(/ bar="Banana"/, result)
+      assert_match(/ baz="baz"/, result)
     end
     private :assert_attrs_advice_proc
 
     def assert_attrs_advice_method(page_type, method, start_with, expr)
       anon_page_type = Class.new(page_type) {
         define_method(:controller_attrs) {
-          return 'id' => 'foo', 'class' => 'bar', 'bool' => true
+          return 'foo' => 'Apple', 'bar' => 'Banana', 'baz' => true
         }
         gluon_advice method, :attrs => instance_method(:controller_attrs)
       }
       build_page(anon_page_type)
       result = render_page(expr)
       assert_match(start_with, result)
-      assert_match(/ id="foo"/, result)
-      assert_match(/ class="bar"/, result)
-      assert_match(/ bool="bool"/, result)
+      assert_match(/ foo="Apple"/, result)
+      assert_match(/ bar="Banana"/, result)
+      assert_match(/ baz="baz"/, result)
     end
     private :assert_attrs_advice_method
 
@@ -141,23 +141,23 @@ module Gluon::Test
       build_page(page_type)
       result = render_page(expr)
       assert_match(start_with, result)
-      assert_match(/ id="foo"/, result)
-      assert_match(/ class="bar"/, result)
-      assert_match(/ bool="bool"/, result)
+      assert_match(/ foo="Apple"/, result)
+      assert_match(/ bar="Banana"/, result)
+      assert_match(/ baz="baz"/, result)
     end
     private :assert_attrs_embedded
 
     def assert_attrs_advice_over_embedded(page_type, method, start_with, expr)
       anon_page_type = Class.new(page_type) {
-        gluon_advice method, :attrs => { 'id' => 'baz', 'bool' => false }
+        gluon_advice method, :attrs => { 'foo' => 'Orange', 'baz' => false }
       }
       build_page(anon_page_type)
       result = render_page(expr)
       assert_match(start_with, result)
-      assert_no_match(/ id="foo"/, result)
-      assert_match(/ id="baz"/, result)
-      assert_match(/ class="bar"/, result)
-      assert_no_match(/ bool="bool"/, result)
+      assert_no_match(/ foo="Apple"/, result)
+      assert_match(/ foo="Orange"/, result)
+      assert_match(/ bar="Banana"/, result)
+      assert_no_match(/ baz="baz"/, result)
     end
     private :assert_attrs_advice_over_embedded
 
