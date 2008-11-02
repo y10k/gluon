@@ -81,6 +81,13 @@ module Gluon::Test
       '<%= link "http://www.ruby-lang.org", :text => "Ruby" %>'
     end
 
+    def_test_view :link_embedded_class, SimplePage,
+      '<a href="/bar.cgi/another_page/foo/123">/bar.cgi/another_page/foo/123</a>'
+
+    def view_template_link_embedded_class
+      %Q'<%= link #{AnotherPage}, :path_info => "/foo/123" %>'
+    end
+
     def view_template_action
       '<%= action :foo %>'
     end
