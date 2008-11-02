@@ -399,6 +399,10 @@ module Gluon::Test
       '<gluon name="foo" foo="Apple" bar="Banana" baz="baz" />'
     end
 
+    def view_template_link_class
+      '<gluon name="bar" />'
+    end
+
     def view_template_action
       '<gluon name="foo" />'
     end

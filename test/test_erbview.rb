@@ -59,6 +59,10 @@ module Gluon::Test
       '<%= link :foo do |out| out << "should be picked up." end %>'
     end
 
+    def view_template_link_class
+      '<%= link :bar %>'
+    end
+
     def view_template_link_embedded_attrs
       '<%= link :foo, "foo" => "Apple", "bar" => "Banana", "baz" => true %>'
     end

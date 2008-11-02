@@ -260,12 +260,19 @@ module Gluon::Test
         return '/Foo', :text => 'foo'
       end
       gluon_advice :foo, :type => :link
+
+      def bar
+        AnotherPage
+      end
+      gluon_advice :bar, :type => :link
     end
 
     def_test_view :link, PageForLink,
       '<a href="/Foo">foo</a>'
     def_test_view :link_content, PageForLink,
       '<a href="/Foo">should be picked up.</a>'
+    def_test_view :link_class, PageForLink,
+      '<a href="/bar.cgi/another_page">/bar.cgi/another_page</a>'
     def_test_attrs :link, PageForLink, :foo, '<a '
 
     class PageForAction < SimplePage
