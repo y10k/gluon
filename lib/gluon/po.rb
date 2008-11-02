@@ -305,7 +305,7 @@ module Gluon
         query["#{prefix}#{name}()"] = nil
         text = getopt(:text, options, name, true, name.to_s)
         options = options.dup.update(:query => query, :text => text)
-        if (page = getopt(:page, options, name, true)) then
+        if (page = options[:page]) then
           path = expand_path(page, options)
           unless (path.is_a? String) then
             raise TypeError, "unknown action page type: #{path.class}"
