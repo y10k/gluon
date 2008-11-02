@@ -67,6 +67,13 @@ module Gluon::Test
       '<%= link :foo, "foo" => "Apple", "bar" => "Banana", "baz" => true %>'
     end
 
+    def_test_view :link_embedded_string, SimplePage,
+      '<a href="http://www.ruby-lang.org">http://www.ruby-lang.org</a>'
+
+    def view_template_link_embedded_string
+      '<%= link "http://www.ruby-lang.org" %>'
+    end
+
     def view_template_action
       '<%= action :foo %>'
     end
