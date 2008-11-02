@@ -303,12 +303,19 @@ module Gluon::Test
         '/Foo'
       end
       gluon_advice :foo, :type => :frame
+
+      def bar
+        return AnotherPage, :path_info => '/foo/123'
+      end
+      gluon_advice :bar, :type => :frame
     end
 
     def_test_view :frame, PageForFrame,
       '<frame src="/Foo" />'
     def_test_view :frame_content_ignored, PageForFrame,
       '<frame src="/Foo" />'
+    def_test_view :frame_class, PageForFrame,
+      '<frame src="/bar.cgi/another_page/foo/123" />'
     def_test_attrs :frame, PageForFrame, :foo, '<frame '
 
     class PageForImport < SimplePage

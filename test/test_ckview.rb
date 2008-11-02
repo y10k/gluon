@@ -427,6 +427,10 @@ module Gluon::Test
       '<gluon name="foo">should be ignored.</gluon>'
     end
 
+    def view_template_frame_class
+      '<gluon name="bar" />'
+    end
+
     def view_template_frame_embedded_attrs
       '<gluon name="foo" foo="Apple" bar="Banana" baz="baz" />'
     end

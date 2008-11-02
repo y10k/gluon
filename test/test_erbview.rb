@@ -119,6 +119,10 @@ module Gluon::Test
       '<%= frame :foo do |out| out << "should be ignored." end %>'
     end
 
+    def view_template_frame_class
+      '<%= frame :bar %>'
+    end
+
     def view_template_frame_embedded_attrs
       '<%= frame :foo, "foo" => "Apple", "bar" => "Banana", "baz" => true %>'
     end
