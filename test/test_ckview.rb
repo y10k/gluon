@@ -407,8 +407,12 @@ module Gluon::Test
       '<gluon name="foo" />'
     end
 
+    def view_template_action_text
+      '<gluon name="bar" />'
+    end
+
     def view_template_action_content
-      '<gluon name="foo">should be picked up.</gluon>'
+      '<gluon name="bar">should be picked up.</gluon>'
     end
 
     def view_template_action_embedded_attrs

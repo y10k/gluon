@@ -92,8 +92,12 @@ module Gluon::Test
       '<%= action :foo %>'
     end
 
+    def view_template_action_text
+      '<%= action :bar %>'
+    end
+
     def view_template_action_content
-      '<%= action :foo do |out| out << "should be picked up." end %>'
+      '<%= action :bar do |out| out << "should be picked up." end %>'
     end
 
     def view_template_action_embedded_attrs
@@ -101,10 +105,10 @@ module Gluon::Test
     end
 
     def_test_view :action_page, PageForAction,
-      '<a href="/bar.cgi/another_page/foo/123?bar%28%29">bar</a>'
+      '<a href="/bar.cgi/another_page/foo/123?foo%28%29">foo</a>'
 
     def view_template_action_page
-      %Q'<%= action :bar, :page => #{AnotherPage}, :path_info => "/foo/123" %>'
+      %Q'<%= action :foo, :page => #{AnotherPage}, :path_info => "/foo/123" %>'
     end
 
     def view_template_frame

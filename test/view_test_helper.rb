@@ -283,13 +283,19 @@ module Gluon::Test
     class PageForAction < SimplePage
       def foo
       end
-      gluon_export :foo, :type => :action, :text => 'Action'
+      gluon_export :foo, :type => :action
+
+      def bar
+      end
+      gluon_export :bar, :type => :action, :text => 'Action'
     end
 
     def_test_view :action, PageForAction,
-      '<a href="/bar.cgi?foo%28%29">Action</a>'
+      '<a href="/bar.cgi?foo%28%29">foo</a>'
+    def_test_view :action_text, PageForAction,
+      '<a href="/bar.cgi?bar%28%29">Action</a>'
     def_test_view :action_content, PageForAction,
-      '<a href="/bar.cgi?foo%28%29">should be picked up.</a>'
+      '<a href="/bar.cgi?bar%28%29">should be picked up.</a>'
     def_test_attrs :action, PageForAction, :foo, '<a '
 
     class PageForFrame < SimplePage
