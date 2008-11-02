@@ -59,6 +59,15 @@ module Gluon::Test
     end
     private :render_page
 
+    module Syntax
+    end
+    extend Syntax
+
+    def self.included(other_module)
+      other_module.extend(Syntax)
+      super
+    end
+
     module Caller
       def caller_frame(at)
         if (/^(.+?):(\d+)(?::in `(.*)')?/ =~ caller[at]) then
@@ -72,21 +81,22 @@ module Gluon::Test
       end
       module_function :caller_frame
     end
-    include Caller
 
-    def self.def_test_view(name, page_type, expected)
-      file, line, = Caller.caller_frame(1)
-      module_eval(<<-EOF, "#{__FILE__},test_#{name}(#{line})", __LINE__ + 1)
-        def view_expected_#{name}
-          #{expected.dump}
-        end
-
-        def test_#{name}
-          build_page(#{page_type})
-          assert_equal(view_expected_#{name},
-                       render_page(view_template_#{name}))
-        end
-      EOF
+    module Syntax
+      def def_test_view(name, page_type, expected)
+        file, line, = Caller.caller_frame(1)
+        module_eval(<<-EOF, "#{__FILE__},test_#{name}(#{line})", __LINE__ + 1)
+          def view_expected_#{name}
+            #{expected.dump}
+          end
+  
+          def test_#{name}
+            build_page(#{page_type})
+            assert_equal(view_expected_#{name},
+                         render_page(view_template_#{name}))
+          end
+        EOF
+      end
     end
 
     def assert_attrs_advice_hash(page_type, method, start_with, expr)
@@ -161,28 +171,30 @@ module Gluon::Test
     end
     private :assert_attrs_advice_over_embedded
 
-    def self.def_test_attrs(name, page_type, method, start_with)
-      file, line, = Caller.caller_frame(1)
-      args = "#{page_type}"
-      args << ", #{method.to_sym.inspect}"
-      args << ", /^\#{Regexp.quote(#{start_with.dump})}/"
-      module_eval(<<-EOF, "#{__FILE__},test_#{name}_attrs(#{line})", __LINE__ + 1)
-        def test_#{name}_attrs_advice_hash
-          assert_attrs_advice_hash(#{args}, view_template_#{name})
-        end
-        def test_#{name}_attrs_advice_proc
-          assert_attrs_advice_proc(#{args}, view_template_#{name})
-        end
-        def test_#{name}_attrs_advice_method
-          assert_attrs_advice_method(#{args}, view_template_#{name})
-        end
-        def test_#{name}_attrs_embedded
-          assert_attrs_embedded(#{args}, view_template_#{name}_embedded_attrs)
-        end
-        def test_#{name}_attrs_advice_over_embedded
-          assert_attrs_advice_over_embedded(#{args}, view_template_#{name}_embedded_attrs)
-        end
-      EOF
+    module Syntax
+      def def_test_attrs(name, page_type, method, start_with)
+        file, line, = Caller.caller_frame(1)
+        args = "#{page_type}"
+        args << ", #{method.to_sym.inspect}"
+        args << ", /^\#{Regexp.quote(#{start_with.dump})}/"
+        module_eval(<<-EOF, "#{__FILE__},test_#{name}_attrs(#{line})", __LINE__ + 1)
+          def test_#{name}_attrs_advice_hash
+            assert_attrs_advice_hash(#{args}, view_template_#{name})
+          end
+          def test_#{name}_attrs_advice_proc
+            assert_attrs_advice_proc(#{args}, view_template_#{name})
+          end
+          def test_#{name}_attrs_advice_method
+            assert_attrs_advice_method(#{args}, view_template_#{name})
+          end
+          def test_#{name}_attrs_embedded
+            assert_attrs_embedded(#{args}, view_template_#{name}_embedded_attrs)
+          end
+          def test_#{name}_attrs_advice_over_embedded
+            assert_attrs_advice_over_embedded(#{args}, view_template_#{name}_embedded_attrs)
+          end
+        EOF
+      end
     end
 
     class SimplePage
