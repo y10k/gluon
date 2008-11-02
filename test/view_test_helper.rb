@@ -13,6 +13,11 @@ module Gluon::Test
 
     class AnotherPage
       include Gluon::Controller
+
+      gluon_path_filter %r"^/([A-Za-z_]+)/([0-9])+$"
+
+      def page_start(name, id)
+      end
     end
 
     def setup
@@ -85,7 +90,7 @@ module Gluon::Test
     module Syntax
       def def_test_view(name, page_type, expected)
         file, line, = Caller.caller_frame(1)
-        module_eval(<<-EOF, "#{__FILE__},test_#{name}(#{line})", __LINE__ + 1)
+        module_eval(<<-EOF, "#{file}:#{line} -> #{__FILE__}", __LINE__ + 1)
           def view_expected_#{name}
             #{expected.dump}
           end
@@ -262,7 +267,7 @@ module Gluon::Test
       gluon_advice :foo, :type => :link
 
       def bar
-        AnotherPage
+        return AnotherPage, :path_info => '/foo/123'
       end
       gluon_advice :bar, :type => :link
     end
@@ -272,7 +277,7 @@ module Gluon::Test
     def_test_view :link_content, PageForLink,
       '<a href="/Foo">should be picked up.</a>'
     def_test_view :link_class, PageForLink,
-      '<a href="/bar.cgi/another_page">/bar.cgi/another_page</a>'
+      '<a href="/bar.cgi/another_page/foo/123">/bar.cgi/another_page/foo/123</a>'
     def_test_attrs :link, PageForLink, :foo, '<a '
 
     class PageForAction < SimplePage
