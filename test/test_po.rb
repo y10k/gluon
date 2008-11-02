@@ -250,7 +250,7 @@ module Gluon::Test
 
       assert_equal('<a href="http://www.ruby-lang.org?lang=ja">Ruby</a>',
                    render_page('<%= link :ruby_home_with_query, :text => "Ruby" %>'))
-      assert_equal('<a href="http://www.ruby-lang.org?lang=ja">Ruby</a>',
+      assert_equal('<a href="http://www.ruby-lang.org?lang=en">Ruby</a>',
                    render_page('<%= link :ruby_home_with_query, :query => { "lang" => "en" }, :text => "Ruby" %>'))
 
       assert_equal('<a href="/bar.cgi/another_page">/bar.cgi/another_page</a>',
@@ -268,7 +268,7 @@ module Gluon::Test
 
       assert_equal('<a href="/bar.cgi/another_page?foo=bar">query</a>',
                    render_page('<%= link :page_with_query, :text => "query" %>'))
-      assert_equal('<a href="/bar.cgi/another_page?foo=bar">query</a>',
+      assert_equal('<a href="/bar.cgi/another_page?foo=baz">query</a>',
                    render_page('<%= link :page_with_query, :query => { "foo" => "baz" }, :text => "query" %>'))
       assert_equal('<a href="/bar.cgi/another_page#foo">fragment</a>',
                    render_page('<%= link :page_with_fragment, :text => "fragment" %>'))
@@ -356,7 +356,7 @@ module Gluon::Test
 
       assert_equal('<frame src="http://www.ruby-lang.org?lang=ja" />',
                    render_page('<%= frame :ruby_home_with_query %>'))
-      assert_equal('<frame src="http://www.ruby-lang.org?lang=ja" />',
+      assert_equal('<frame src="http://www.ruby-lang.org?lang=en" />',
                    render_page('<%= frame :ruby_home_with_query, :query => { "lang" => "en" } %>'))
 
       assert_equal('<frame src="/bar.cgi/another_page" />',
@@ -368,7 +368,7 @@ module Gluon::Test
 
       assert_equal('<frame src="/bar.cgi/another_page?foo=bar" />',
                    render_page("<%= frame :page_with_query %>"))
-      assert_equal('<frame src="/bar.cgi/another_page?foo=bar" />',
+      assert_equal('<frame src="/bar.cgi/another_page?foo=baz" />',
                    render_page("<%= frame :page_with_query, :query => { 'foo' => 'baz' } %>"))
     end
 
