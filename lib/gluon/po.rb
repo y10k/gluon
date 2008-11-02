@@ -384,54 +384,6 @@ module Gluon
       end
     end
 
-    def mkattr_bool(key, options, method)
-      if (value = getopt(key, options, method, false)) then
-        " #{key}=\"#{key}\""
-      else
-        ''
-      end
-    end
-    private :mkattr_bool
-
-    def mkattr_disabled(options, method)
-      mkattr_bool(:disabled, options, method)
-    end
-    private :mkattr_disabled
-
-    def mkattr_readonly(options, method)
-      mkattr_bool(:readonly, options, method)
-    end
-    private :mkattr_readonly
-
-    def mkattr_string(key, options, method)
-      if (value = getopt(key, options, method, false)) then
-        " #{key}=\"#{ERB::Util.html_escape(value)}\""
-      else
-        ''
-      end
-    end
-    private :mkattr_string
-
-    def mkattr_size(options, method)
-      mkattr_string(:size, options, method)
-    end
-    private :mkattr_size
-
-    def mkattr_maxlength(options, method)
-      mkattr_string(:maxlength, options, method)
-    end
-    private :mkattr_maxlength
-
-    def mkattr_rows(options, method)
-      mkattr_string(:rows, options, method)
-    end
-    private :mkattr_rows
-
-    def mkattr_cols(options, method)
-      mkattr_string(:cols, options, method)
-    end
-    private :mkattr_cols
-
     def make_controller_name(name, options)
       if (options[:direct]) then
         name
