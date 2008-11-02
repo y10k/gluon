@@ -271,7 +271,7 @@ module Gluon
         method = name
         name, controller_options = funcall(method)
         if (controller_options) then
-          options = options.dup.update(controller_options)
+          options = controller_options.dup.update(options)
         end
         return name, options, method
       else

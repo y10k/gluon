@@ -28,9 +28,13 @@ module Gluon
     def mount(page_type, location, path_filter=nil)
       if (location == '/') then
         location = ''
-        path_filter = URLMap.find_path_filter(page_type) || '/' unless path_filter
+        unless (path_filter) then
+          path_filter = URLMap.find_path_filter(page_type) || %r"^/$"
+        end
       else
-        path_filter = URLMap.find_path_filter(page_type) unless path_filter
+        unless (path_filter) then
+          path_filter = URLMap.find_path_filter(page_type)
+        end
       end
 
       @mapping << [
@@ -85,15 +89,30 @@ module Gluon
     def class2path(page_type, path_info=nil)
       if (mount_point = @class2path[page_type]) then
         path = mount_point[:location]
-        if (path_info) then
-          if (path_info !~ mount_point[:path_filter]) then
-            raise ArgumentError, "`#{path_info}' of path_info is no match to `#{mount_point[:path_filter]}' of path_filter for `#{page_type}'"
-          end
-          path += path_info
+
+        if (path.empty? && ! path_info) then
+          path_info = '/'
         end
+
+        if (path_filter = mount_point[:path_filter]) then
+          if (path_info) then
+            if (path_info !~ mount_point[:path_filter]) then
+              raise ArgumentError, "`#{path_info}' of path_info is no match to `#{mount_point[:path_filter]}' of path_filter for `#{page_type}'"
+            end
+            path += path_info
+          else
+            raise ArgumentError, "need for path_info for `#{page_type}'"
+          end
+        else
+          if (path_info) then
+            raise ArgumentError, "no need for path_info for `#{page_type}'"
+          end
+        end
+
         if (path.empty?) then
           path = '/'
         end
+
         return path
       end
 
