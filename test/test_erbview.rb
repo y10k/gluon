@@ -127,6 +127,20 @@ module Gluon::Test
       '<%= frame :foo, "foo" => "Apple", "bar" => "Banana", "baz" => true %>'
     end
 
+    def_test_view :frame_embedded_string, SimplePage,
+      '<frame src="http://www.ruby-lang.org" />'
+
+    def view_template_frame_embedded_string
+      '<%= frame "http://www.ruby-lang.org" %>'
+    end
+
+    def_test_view :frame_embedded_class, SimplePage,
+      '<frame src="/bar.cgi/another_page/foo/123" />'
+
+    def view_template_frame_embedded_class
+      %Q'<%= frame #{AnotherPage}, :path_info => "/foo/123" %>'
+    end
+
     def view_template_import
       '[<%= import :foo %>]'
     end
