@@ -61,7 +61,7 @@ module Gluon::Test
       assert_equal('/', @url_map.class2path(Root))
       assert_equal('/foo', @url_map.class2path(Foo))
       assert_equal('/bar', @url_map.class2path(Bar))
-      assert_equal('/bar', @url_map.class2path(Baz))
+      assert_equal('/bar/1975-11-19', @url_map.class2path(Baz, '/1975-11-19'))
     end
 
     def test_class2path_not_found
@@ -85,6 +85,9 @@ module Gluon::Test
       @url_map.mount(Foo, '/foo', %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$")
       @url_map.setup
 
+      assert_raise(ArgumentError) {
+        @url_map.class2path(Root)
+      }
       assert_raise(ArgumentError) {
         @url_map.class2path(Root, '/alice')
       }
