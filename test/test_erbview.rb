@@ -100,6 +100,13 @@ module Gluon::Test
       '<%= action :foo, "foo" => "Apple", "bar" => "Banana", "baz" => true %>'
     end
 
+    def_test_view :action_page, PageForAction,
+      '<a href="/bar.cgi/another_page/foo/123?bar%28%29">bar</a>'
+
+    def view_template_action_page
+      %Q'<%= action :bar, :page => #{AnotherPage}, :path_info => "/foo/123" %>'
+    end
+
     def view_template_frame
       '<%= frame :foo %>'
     end
