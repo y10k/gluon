@@ -46,11 +46,6 @@ module Gluon::Test
                    Gluon::CKView.parse_attrs("foo='\"'"))
     end
 
-    def test_parse_attrs_html_specials
-      assert_equal({ 'foo' => '<', 'bar' => '>', 'baz' => '&', 'quux' => '"' },
-                   Gluon::CKView.parse_attrs('foo="&lt;" bar="&gt;" baz="&amp;" quux="&quot;"'))
-    end
-
     def test_parse_attrs_empty
       assert_equal({}, Gluon::CKView.parse_attrs(''))
     end

@@ -27,23 +27,6 @@ module Gluon
     PARSE_PATTERN = %r!(?:(.*?)(?:(#{gluon_tag_single})|(#{gluon_tag_start})|(#{gluon_tag_end})))|(.+)\z!im
 
     class << self
-      def html_unescape(text)
-        text.gsub(/&[a-z]+;/i) {|special|
-          case (special)
-          when '&lt;'
-            '<'
-          when '&gt;'
-            '>'
-          when '&amp;'
-            '&'
-          when '&quot;'
-            '"'
-          else
-            raise "unknown HTML special: #{special}"
-          end
-        }
-      end
-
       def parse_attrs(element)
         attrs = {}
         element.scan(ATTR_PARSE_PATTERN) do
@@ -51,7 +34,7 @@ module Gluon
           value = $2
           value.sub!(/^["']/, '')
           value.sub!(/["']$/, '')
-          attrs[name] = html_unescape(value)
+          attrs[name] = value
         end
         attrs
       end
