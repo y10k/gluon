@@ -14,7 +14,7 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    token = %q![^'"<>&\s]+!
+    token = %q![^'"</>&\s]+!
     double_quoted_cdata = %q!"[^"]*"!
     single_quoted_cdata = %q!'[^']*'!
     attr = %Q!#{token}\\s*=\\s*(?:#{double_quoted_cdata}|#{single_quoted_cdata})!
