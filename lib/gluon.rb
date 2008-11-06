@@ -22,11 +22,12 @@ module Gluon
   # for ident(1)
   CVS_ID = '$Id$'
 
+  #autoload :Controller, 'gluon/controller'
   autoload :Action, 'gluon/action'
   autoload :Builder, 'gluon/builder'
   autoload :CKView, 'gluon/ckview'
-  #autoload :Controller, 'gluon/controller'
   autoload :ERBView, 'gluon/erbview'
+  autoload :HTMLEmbeddedView, 'gluon/htmlview'
   autoload :MemoryStore, 'gluon/rs'
   autoload :Mock, 'gluon/mock'
   autoload :NoLogger, 'gluon/nolog'
