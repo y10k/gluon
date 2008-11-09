@@ -79,54 +79,54 @@ module Gluon::Test
       assert_equal('foo', Gluon::HTMLEmbeddedView.parse_elem_name('</ foo  >'))
     end
 
-    def test_parse_cdata
+    def test_parse_html_cdata
       assert_equal([ [ :cdata, "Hello world.\n" ] ],
-                   Gluon::HTMLEmbeddedView.parse("Hello world.\n"))
+                   Gluon::HTMLEmbeddedView.parse_html("Hello world.\n"))
     end
 
-    def test_parse_elem_single
+    def test_parse_html_elem_single
       assert_equal([ [ :elem_single, '<foo />', 'foo', [] ] ],
-                   Gluon::HTMLEmbeddedView.parse('<foo />'))
+                   Gluon::HTMLEmbeddedView.parse_html('<foo />'))
     end
 
-    def test_parse_elem_single_with_attrs
+    def test_parse_html_elem_single_with_attrs
       assert_equal([ [ :elem_single,
                        '<foo bar="Apple" baz="Banana" />',
                        'foo',
                        [ %w[ bar Apple ], %w[ baz Banana ] ]
                      ]
                    ],
-                   Gluon::HTMLEmbeddedView.parse('<foo bar="Apple" baz="Banana" />'))
+                   Gluon::HTMLEmbeddedView.parse_html('<foo bar="Apple" baz="Banana" />'))
     end
 
-    def test_parse_elem_single_sparsed
+    def test_parse_html_elem_single_sparsed
       assert_equal([ [ :elem_single,
                        "<\nfoo bar  =  'Apple'\tbaz = 'Banana'\n/>",
                        'foo',
                        [ %w[ bar Apple ], %w[ baz  Banana ] ]
                      ]
                    ],
-                   Gluon::HTMLEmbeddedView.parse("<\nfoo bar  =  'Apple'\tbaz = 'Banana'\n/>"))
+                   Gluon::HTMLEmbeddedView.parse_html("<\nfoo bar  =  'Apple'\tbaz = 'Banana'\n/>"))
     end
 
-    def test_parse_elem_single_densed
+    def test_parse_html_elem_single_densed
       assert_equal([ [ :elem_single,
                        '<foo bar="Apple"baz="Banana"/>',
                        'foo',
                        [ %w[ bar Apple ], %w[ baz Banana ] ]
                      ]
                    ],
-                   Gluon::HTMLEmbeddedView.parse('<foo bar="Apple"baz="Banana"/>'))
+                   Gluon::HTMLEmbeddedView.parse_html('<foo bar="Apple"baz="Banana"/>'))
     end
 
     def test_parse_elem_start_end
       assert_equal([ [ :elem_start, '<foo>', 'foo', [] ],
                      [ :elem_end, '</foo>', 'foo' ]
                    ],
-                   Gluon::HTMLEmbeddedView.parse('<foo></foo>'))
+                   Gluon::HTMLEmbeddedView.parse_html('<foo></foo>'))
     end
 
-    def test_parse_elem_start_end_with_attrs
+    def test_parse_html_elem_start_end_with_attrs
       assert_equal([ [ :elem_start,
                        '<foo bar="Apple" baz="Banana">',
                        'foo',
@@ -134,7 +134,7 @@ module Gluon::Test
                      ],
                      [ :elem_end, '</foo>', 'foo' ]
                    ],
-                   Gluon::HTMLEmbeddedView.parse('<foo bar="Apple" baz="Banana"></foo>'))
+                   Gluon::HTMLEmbeddedView.parse_html('<foo bar="Apple" baz="Banana"></foo>'))
     end
 
     def test_parse_elem_start_end_sparsed
@@ -145,10 +145,10 @@ module Gluon::Test
                      ],
                      [ :elem_end, '</foo>', 'foo' ]
                    ],
-                   Gluon::HTMLEmbeddedView.parse("<\nfoo bar  =  'Apple'\tbaz = 'Banana'\n></foo>"))
+                   Gluon::HTMLEmbeddedView.parse_html("<\nfoo bar  =  'Apple'\tbaz = 'Banana'\n></foo>"))
     end
 
-    def test_parse_elem_start_end_densed
+    def test_parse_html_elem_start_end_densed
       assert_equal([ [ :elem_start,
                        '<foo bar="Apple"baz="Banana">',
                        'foo',
@@ -156,10 +156,10 @@ module Gluon::Test
                      ],
                      [ :elem_end, '</foo>', 'foo' ]
                    ],
-                   Gluon::HTMLEmbeddedView.parse('<foo bar="Apple"baz="Banana"></foo>'))
+                   Gluon::HTMLEmbeddedView.parse_html('<foo bar="Apple"baz="Banana"></foo>'))
     end
 
-    def test_parse_all
+    def test_parse_html_all
       text = "<html>\n"
       text << "<head><title gluon=\"title\">TITLE</title></head>\n"
       text << "<body>\n"
@@ -175,7 +175,7 @@ module Gluon::Test
       text << "</body>\n"
       text << "</html>\n"
 
-      parsed_list = Gluon::HTMLEmbeddedView.parse(text)
+      parsed_list = Gluon::HTMLEmbeddedView.parse_html(text)
       i = 0
 
       assert_equal([ :elem_start,

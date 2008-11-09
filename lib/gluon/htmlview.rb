@@ -45,7 +45,7 @@ module Gluon
         $1
       end
 
-      def parse(text)
+      def parse_html(text)
         parsed_list = []
         text.scan(PARSE_PATTERN) do
           cdata = $1
