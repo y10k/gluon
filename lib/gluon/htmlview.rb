@@ -25,7 +25,7 @@ module Gluon
 
     ATTR_PARSE_PATTERN = %r!(#{token})\s*=\s*(#{double_quoted_cdata}|#{single_quoted_cdata})!im
     ELEM_PARSE_PATTERN = %r!^</?\s*(#{token})!
-    PARSE_PATTERN = %r!(?:(.*?)(?:(#{elem_single})|(#{elem_start})|(#{elem_end})))|(.+)\z!im
+    HTML_PARSE_PATTERN = %r!(?:(.*?)(?:(#{elem_single})|(#{elem_start})|(#{elem_end})))|(.+)\z!im
 
     class << self
       def parse_attrs(element)
@@ -47,7 +47,7 @@ module Gluon
 
       def parse_html(text)
         parsed_list = []
-        text.scan(PARSE_PATTERN) do
+        text.scan(HTML_PARSE_PATTERN) do
           cdata = $1
           elem_single = $2
           elem_start = $3
