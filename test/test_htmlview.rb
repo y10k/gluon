@@ -9,42 +9,42 @@ module Gluon::Test
     CVS_ID = '$Id$'
 
     def test_parse_attrs
-      assert_equal({ 'foo' => 'apple' },
+      assert_equal([ %w[ foo apple ] ],
                    Gluon::HTMLEmbeddedView.parse_attrs('foo="apple"'))
     end
 
     def test_parse_attrs_many
-      assert_equal({ 'foo' => 'apple', 'bar' => 'banana' },
+      assert_equal([ %w[ foo apple ], %w[ bar banana ] ],
                    Gluon::HTMLEmbeddedView.parse_attrs('foo="apple" bar="banana"'))
     end
 
     def test_parse_attrs_sparsed
-      assert_equal({ 'foo' => 'apple', 'bar' => 'banana' },
+      assert_equal([ %w[ foo apple ], %w[ bar banana ] ],
                    Gluon::HTMLEmbeddedView.parse_attrs(' foo =  "apple"  bar   = "banana" '))
     end
 
     def test_parse_attrs_densed
-      assert_equal({ 'foo' => 'apple', 'bar' => 'banana' },
+      assert_equal([ %w[ foo apple ], %w[ bar banana ] ],
                    Gluon::HTMLEmbeddedView.parse_attrs('foo="apple"bar="banana"'))
     end
 
     def test_parse_attrs_single_quoted
-      assert_equal({ 'foo' => 'apple' },
+      assert_equal([ %w[ foo apple ] ],
                    Gluon::HTMLEmbeddedView.parse_attrs("foo='apple'"))
     end
 
     def test_parse_attrs_quote_in_double_quoted
-      assert_equal({ 'foo' => "'" },
+      assert_equal([ %w[ foo ' ] ],
                    Gluon::HTMLEmbeddedView.parse_attrs("foo=\"'\""))
     end
 
     def test_parse_attrs_quote_in_single_quoted
-      assert_equal({ 'foo' => '"' },
+      assert_equal([ %w[ foo " ] ],
                    Gluon::HTMLEmbeddedView.parse_attrs("foo='\"'"))
     end
 
     def test_parse_attrs_empty
-      assert_equal({}, Gluon::HTMLEmbeddedView.parse_attrs(''))
+      assert_equal([], Gluon::HTMLEmbeddedView.parse_attrs(''))
     end
 
     def test_parse_elem_name
@@ -85,7 +85,7 @@ module Gluon::Test
     end
 
     def test_parse_elem_single
-      assert_equal([ [ :elem_single, '<foo />', 'foo', {} ] ],
+      assert_equal([ [ :elem_single, '<foo />', 'foo', [] ] ],
                    Gluon::HTMLEmbeddedView.parse('<foo />'))
     end
 
@@ -93,7 +93,7 @@ module Gluon::Test
       assert_equal([ [ :elem_single,
                        '<foo bar="Apple" baz="Banana" />',
                        'foo',
-                       { 'bar' => 'Apple', 'baz' => 'Banana' }
+                       [ %w[ bar Apple ], %w[ baz Banana ] ]
                      ]
                    ],
                    Gluon::HTMLEmbeddedView.parse('<foo bar="Apple" baz="Banana" />'))
@@ -103,7 +103,7 @@ module Gluon::Test
       assert_equal([ [ :elem_single,
                        "<\nfoo bar  =  'Apple'\tbaz = 'Banana'\n/>",
                        'foo',
-                       { 'bar' => 'Apple', 'baz' => 'Banana' }
+                       [ %w[ bar Apple ], %w[ baz  Banana ] ]
                      ]
                    ],
                    Gluon::HTMLEmbeddedView.parse("<\nfoo bar  =  'Apple'\tbaz = 'Banana'\n/>"))
@@ -113,14 +113,14 @@ module Gluon::Test
       assert_equal([ [ :elem_single,
                        '<foo bar="Apple"baz="Banana"/>',
                        'foo',
-                       { 'bar' => 'Apple', 'baz' => 'Banana' }
+                       [ %w[ bar Apple ], %w[ baz Banana ] ]
                      ]
                    ],
                    Gluon::HTMLEmbeddedView.parse('<foo bar="Apple"baz="Banana"/>'))
     end
 
     def test_parse_elem_start_end
-      assert_equal([ [ :elem_start, '<foo>', 'foo', {} ],
+      assert_equal([ [ :elem_start, '<foo>', 'foo', [] ],
                      [ :elem_end, '</foo>', 'foo' ]
                    ],
                    Gluon::HTMLEmbeddedView.parse('<foo></foo>'))
@@ -130,7 +130,7 @@ module Gluon::Test
       assert_equal([ [ :elem_start,
                        '<foo bar="Apple" baz="Banana">',
                        'foo',
-                       { 'bar' => 'Apple', 'baz' => 'Banana' }
+                       [ %w[ bar Apple ], %w[ baz Banana ] ]
                      ],
                      [ :elem_end, '</foo>', 'foo' ]
                    ],
@@ -141,7 +141,7 @@ module Gluon::Test
       assert_equal([ [ :elem_start,
                        "<\nfoo bar  =  'Apple'\tbaz = 'Banana'\n>",
                        'foo',
-                       { 'bar' => 'Apple', 'baz' => 'Banana' }
+                       [ %w[ bar Apple ], %w[ baz Banana ] ]
                      ],
                      [ :elem_end, '</foo>', 'foo' ]
                    ],
@@ -152,7 +152,7 @@ module Gluon::Test
       assert_equal([ [ :elem_start,
                        '<foo bar="Apple"baz="Banana">',
                        'foo',
-                       { 'bar' => 'Apple', 'baz' => 'Banana' }
+                       [ %w[ bar Apple ], %w[ baz Banana ] ]
                      ],
                      [ :elem_end, '</foo>', 'foo' ]
                    ],
@@ -181,7 +181,7 @@ module Gluon::Test
       assert_equal([ :elem_start,
                      "<html>",
                      "html",
-                     {}
+                     []
                    ],
                    parsed_list[i])
       i += 1
@@ -192,7 +192,7 @@ module Gluon::Test
       assert_equal([ :elem_start,
                      "<head>",
                      "head",
-                     {}
+                     []
                    ],
                    parsed_list[i])
       i += 1
@@ -200,7 +200,7 @@ module Gluon::Test
       assert_equal([ :elem_start,
                      "<title gluon=\"title\">",
                      "title",
-                     { "gluon" => "title" }
+                     [ %w[ gluon title ] ]
                    ],
                    parsed_list[i])
       i += 1
@@ -220,7 +220,7 @@ module Gluon::Test
       assert_equal([ :elem_start,
                      "<body>",
                      "body",
-                     {}
+                     []
                    ],
                    parsed_list[i])
       i += 1
@@ -231,7 +231,7 @@ module Gluon::Test
       assert_equal([ :elem_start,
                      "<h1 gluon=\"title\">",
                      "h1",
-                     { "gluon" => "title" }
+                     [ %w[ gluon title ] ]
                    ],
                    parsed_list[i])
       i += 1
@@ -248,7 +248,7 @@ module Gluon::Test
       assert_equal([ :elem_start,
                      "<p gluon=\"message\">",
                      "p",
-                     { "gluon" => "message" }
+                     [ %w[ gluon message ] ]
                    ],
                    parsed_list[i])
       i += 1
@@ -265,7 +265,7 @@ module Gluon::Test
       assert_equal([ :elem_start,
                      "<form gluon=\"form?\">",
                      "form",
-                     { "gluon" => "form?" }
+                     [ %w[ gluon form? ] ]
                    ],
                    parsed_list[i])
       i += 1
@@ -276,7 +276,7 @@ module Gluon::Test
       assert_equal([ :elem_start,
                      "<p>",
                      "p",
-                     {}
+                     []
                    ],
                    parsed_list[i])
       i += 1
@@ -287,7 +287,7 @@ module Gluon::Test
       assert_equal([ :elem_start,
                      "<label for=\"memo\">",
                      "label",
-                     { "for" => "memo" }
+                     [ %w[ for memo ] ]
                    ],
                    parsed_list[i])
       i += 1
@@ -304,12 +304,12 @@ module Gluon::Test
       assert_equal([ :elem_single,
                      "<input gluon=\"memo\" id=\"memo\" name=\"memo\" type=\"text\" value=\"MEMO\" />",
                      "input",
-                     { "gluon" => "memo",
-                       "id" => "memo",
-                       "name" => "memo",
-                       "type" => "text",
-                       "value" => "MEMO"
-                     }
+                     [ %w[ gluon memo ],
+                       %w[ id memo ],
+                       %w[ name memo ],
+                       %w[ type text ],
+                       %w[ value MEMO ]
+                     ]
                    ],
                    parsed_list[i])
       i += 1
@@ -320,10 +320,10 @@ module Gluon::Test
       assert_equal([ :elem_single,
                      "<input gluon=\"ok\" name=\"ok\" type=\"submit\" />",
                      "input",
-                     { "name" => "ok",
-                       "gluon" => "ok",
-                       "type" => "submit"
-                     }
+                     [ %w[ gluon ok ],
+                       %w[ name ok ],
+                       %w[ type submit ]
+                     ]
                    ],
                    parsed_list[i])
       i += 1

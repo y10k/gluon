@@ -29,13 +29,13 @@ module Gluon
 
     class << self
       def parse_attrs(element)
-        attrs = {}
+        attrs = []
         element.scan(ATTR_PARSE_PATTERN) do
           name = $1.downcase
           value = $2
           value.sub!(/^["']/, '')
           value.sub!(/["']$/, '')
-          attrs[name] = value
+          attrs << [ name, value ]
         end
         attrs
       end
