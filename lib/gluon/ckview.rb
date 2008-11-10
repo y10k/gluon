@@ -185,14 +185,6 @@ module Gluon
             else
               @po.link(name, options)
             end
-          when :link_uri
-            if (block_given?) then
-              @po.link_uri(name, options) {|out|
-                out << block_result{ yield }
-              }
-            else
-              @po.link_uri(name, options)
-            end
           when :action
             if (block_given?) then
               @po.action(name, options) {|out|
@@ -203,8 +195,6 @@ module Gluon
             end
           when :frame
             @po.frame(name, options)
-          when :frame_uri
-            @po.frame_uri(name, options)
           when :import
             if (block_given?) then
               @po.import(name, options) {|out|
