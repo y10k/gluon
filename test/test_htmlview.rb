@@ -357,6 +357,31 @@ module Gluon::Test
 
       assert_equal(i, parsed_list.length)
     end
+
+    def test_parse_inline_cdata
+      assert_equal([ [ :cdata, 'Hello world.' ] ],
+                   Gluon::HTMLEmbeddedView.parse_inline('Hello world.'))
+    end
+
+    def test_parse_inline_special
+      assert_equal([ [ :gluon, 'foo' ] ],
+                   Gluon::HTMLEmbeddedView.parse_inline('${foo}'))
+    end
+
+    def test_parse_inline_cdata_special
+      assert_equal([ [ :cdata, 'foo ' ],
+                     [ :gluon, 'bar' ],
+                     [ :cdata, ' baz' ]
+                   ],
+                   Gluon::HTMLEmbeddedView.parse_inline('foo ${bar} baz'))
+    end
+
+    def test_parse_inline_escaped_special
+      assert_equal([ [ :cdata, '$' ],
+                     [ :cdata, '{foo}' ]
+                   ],
+                   Gluon::HTMLEmbeddedView.parse_inline('$${foo}'))
+    end
   end
 end
 

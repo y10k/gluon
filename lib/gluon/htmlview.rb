@@ -23,9 +23,9 @@ module Gluon
     elem_start = %Q!<\\s*#{token}(?:#{attrs})?\\s*>!
     elem_end = %Q!</\\s*#{token}\\s*>!
 
-    ATTR_PARSE_PATTERN = %r!(#{token})\s*=\s*(#{double_quoted_cdata}|#{single_quoted_cdata})!im
+    ATTR_PARSE_PATTERN = %r!(#{token})\s*=\s*(#{double_quoted_cdata}|#{single_quoted_cdata})!m
     ELEM_PARSE_PATTERN = %r!^</?\s*(#{token})!
-    HTML_PARSE_PATTERN = %r!(?:(.*?)(?:(#{elem_single})|(#{elem_start})|(#{elem_end})))|(.+)\z!im
+    HTML_PARSE_PATTERN = %r!(?:(.*?)(?:(#{elem_single})|(#{elem_start})|(#{elem_end})))|(.+)\z!m
 
     class << self
       def parse_attrs(element)
@@ -92,6 +92,37 @@ module Gluon
               :cdata,
               tail
             ]
+          end
+        end
+
+        parsed_list
+      end
+
+      def parse_inline(text)
+        parsed_list = []
+        text.scan(/(.*?)(\$\{.*?\}|\$\$)|(.+)\z/m) do
+          cdata = $1
+          special = $2
+          tail = $3
+
+          if (cdata && ! cdata.empty?) then
+            parsed_list << [ :cdata, cdata ]
+          end
+
+          if (special) then
+            case (special)
+            when /^\$\{/
+              name = special.sub(/^\$\{/, '').sub(/\}$/, '')
+              parsed_list << [ :gluon, name ]
+            when '$$'
+              parsed_list << [ :cdata, '$' ]
+            else
+              raise "unknown special syntax: #{special}"
+            end
+          end
+
+          if (tail && ! tail.empty?) then
+            parsed_list << [ :cdata, tail ]
           end
         end
 
