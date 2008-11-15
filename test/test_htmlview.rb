@@ -726,7 +726,6 @@ module Gluon::Test
       '<ol gluon="foo"><li gluon="to_s" /></ol>'
     end
 
-
     def view_template_foreach_empty_list
       '<ol gluon="bar">should be ignored.</ol>'
     end
