@@ -649,7 +649,6 @@ module Gluon::Test
                             ],
                             [ :gluon_tag_end, '</p>' ]
                           ]))
-
     end
 
     def test_mkcode_gluon_tag_start_end_contains_text
@@ -664,8 +663,6 @@ module Gluon::Test
                             [ :text, "Hello world.\n" ],
                             [ :gluon_tag_end, '</p>' ]
                           ]))
-
-
     end
   end
 end
