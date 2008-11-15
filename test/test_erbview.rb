@@ -56,7 +56,7 @@ module Gluon::Test
     end
 
     def view_template_link_content
-      '<%= link :foo do |out| out << "should be picked up." end %>'
+      '<% link_tag :foo do %>should be picked up.<% end %>'
     end
 
     def view_template_link_class
@@ -97,7 +97,7 @@ module Gluon::Test
     end
 
     def view_template_action_content
-      '<%= action :bar do |out| out << "should be picked up." end %>'
+      '<% action_tag :bar do %>should be picked up.<% end %>'
     end
 
     def view_template_action_embedded_attrs
@@ -146,7 +146,7 @@ module Gluon::Test
     end
 
     def view_template_import_content
-      '<%= import :bar do |out| out << "should be picked up." end %>'
+      '[<% import :bar do %>should be picked up.<% end %>]'
     end
 
     def view_template_import_content_default

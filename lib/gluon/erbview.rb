@@ -44,6 +44,7 @@ module Gluon
       def initialize(po, rs_context)
         @po = po
         @c = rs_context
+        @_erbout = ''
       end
 
       # for Gluon::PresentationObject#cond
@@ -71,6 +72,40 @@ module Gluon
       def_delegator :@po, :radio
       def_delegator :@po, :select
       def_delegator :@po, :textarea
+
+      def block_result
+        out_save = @_erbout
+        @_erbout = ''
+        begin
+          yield
+          result = @_erbout
+        ensure
+          @_erbout = out_save
+        end
+        result
+      end
+      private :block_result
+
+      def link_tag(*args)
+        @_erbout << link(*args) {|out|
+          out << block_result{ yield }
+        }
+        nil
+      end
+
+      def action_tag(*args)
+        @_erbout << action(*args) {|out|
+          out << block_result{ yield }
+        }
+        nil
+      end
+
+      def import_tag(*args)
+        @_erbout << import(*args) {|out|
+          out << block_result{ yield }
+        }
+        nil
+      end
     end
 
     class Handler
@@ -97,7 +132,7 @@ module Gluon
 
     class << self
       def compile(template_path)
-        ERB.new(IO.read(template_path)).src
+        ERB.new(IO.read(template_path), nil, nil, '@_erbout').src
       end
 
       def evaluate(compiled_view, filename='__evaluate__')
