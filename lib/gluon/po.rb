@@ -556,6 +556,8 @@ module Gluon
       case (type)
       when :command
         case (name)
+        when '_'
+          raise NotImplemented, "not implemented view command: `_'"
         when 'content'
           if (block_given?) then
             content{|out|
@@ -572,8 +574,6 @@ module Gluon
           '&'
         when 'quot'
           '"'
-        when '_'
-          raise NotImplemented, "not implemented view command: `_'"
         else
           raise NameError, "`#{name}' of unknown view command."
         end

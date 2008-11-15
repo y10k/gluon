@@ -339,18 +339,29 @@ module Gluon
       def gluon(name, elem_name, *attrs)
         type, name, value = @po.parse_gluon(name)
         case (type)
-        when :command, :value
-          if (block_given?) then
+        when :command
+          case (name)
+          when '_'
             mkelem(elem_name, attrs) {
               @po.gluon(type, name, value) {|out|
                 out << block_result{ yield }
               }
             }
+          when 'content'
+            if (block_given?) then
+              @po.gluon(type, name, value, attrs2opts(attrs)) {|out|
+                out << block_result{ yield }
+              }
+            else
+              @po.gluon(type, name, value, attrs2opts(attrs))
+            end
           else
-            mkelem(elem_name, attrs) {
-              @po.gluon(type, name, value)
-            }
+            @po.gluon(type, name, value)
           end
+        when :value
+          mkelem(elem_name, attrs) {
+            @po.gluon(type, name, value)
+          }
         when :foreach
           mkelem(elem_name, attrs) {
             block_result{
