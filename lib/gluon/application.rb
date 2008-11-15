@@ -36,6 +36,7 @@ module Gluon
     attr_writer :renderer
     attr_writer :session_man
     attr_writer :plugin_maker
+    attr_writer :backend_service_man
     attr_writer :page_cache
 
     def call(env)

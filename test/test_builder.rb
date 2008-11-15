@@ -71,15 +71,20 @@ module Gluon::Test
           end
         end
       }
-      @builder.build
-      assert_equal('foo plugin', @builder.plugin_get(:_foo))
-      assert_equal('bar plugin', @builder.plugin_get(:_bar))
-      @builder.plugin_get(:_foo) {|value|
-        assert_equal('foo plugin', value)
+
+      count = 0
+      @builder.build{|app, options|
+        assert_equal('foo plugin', @builder.plugin_get(:_foo))
+        assert_equal('bar plugin', @builder.plugin_get(:_bar))
+        @builder.plugin_get(:_foo) {|value|
+          assert_equal('foo plugin', value)
+        }
+        @builder.plugin_get(:_bar) {|value|
+          assert_equal('bar plugin', value)
+        }
+        count += 1
       }
-      @builder.plugin_get(:_bar) {|value|
-        assert_equal('bar plugin', value)
-      }
+      assert_equal(1, count)
     end
 
     def test_config_session_default_key

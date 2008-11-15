@@ -10,6 +10,7 @@
 
 require 'forwardable'
 require 'gluon/application'
+require 'gluon/backend'
 require 'gluon/nolog'
 require 'gluon/plugin'
 require 'gluon/renderer'
@@ -110,6 +111,7 @@ module Gluon
       @auto_reload = false
       @url_map = URLMap.new
       @plugin_maker = PluginMaker.new
+      @backend_service_man = BackendServiceManager.new
       @finalizer = proc{}
     end
 
@@ -160,6 +162,11 @@ module Gluon
           raise "unknown arguments: #{args.inspect}"
         end
       end
+      nil
+    end
+
+    def backend_service(adaptor)
+      @backend_service_man.register(adaptor)
       nil
     end
 
@@ -240,6 +247,7 @@ module Gluon
       def_delegator :@builder, :initial
       def_delegator :@builder, :final
       def_delegator :@builder, :session
+      def_delegator :@builder, :backend_service
     end
 
     class InitialContext < Context
@@ -288,92 +296,121 @@ module Gluon
 
       @logger.info("#{self}.build() - start")
 
-      @logger.info("#{@url_map}.setup()")
-      @url_map.setup
-      if (@logger.debug?) then
-        for location, path_filter, page_type in @url_map
-          @logger.debug("URL mapping: #{location};#{path_filter} -> #{page_type}")
-        end
-      end
-
-      @logger.info("new #{ViewRenderer} -> #{@view_dir}")
-      @renderer = ViewRenderer.new(@view_dir)
-
-      @logger.info("new #{SessionManager}")
-      if (@logger.debug?) then
-        for key, value in @session_conf.options
-          @logger.debug("#{SessionManager} option: #{key} -> #{value}")
-        end
-      end
-      @session_man = SessionManager.new(@session_conf.options)
-
-      @logger.info("#{@plugin_maker}.setup()")
-      @plugin_maker.setup
-
-      @logger.info("new #{Application}")
-      @app = Application.new
-      @app.logger = @logger
-      @app.url_map = @url_map
-      @app.renderer = @renderer
-      @app.session_man = @session_man
-      @app.plugin_maker = @plugin_maker
-      @logger.debug("#{@app}.page_cache = #{@page_cache}") if @logger.debug?
-      @app.page_cache = @page_cache
-
-      @logger.debug("auto_reload -> #{@auto_reload}") if @logger.debug?
-      if (@auto_reload) then
-        @app = AutoReloader.new(@app)
-      end
-      if (@access_log) then
-        @logger.debug("open access log -> #{@access_log}") if @logger.debug?
-        @access_logger = File.open(@access_log, 'a')
-        @access_logger.binmode
-        @access_logger.sync = true
-        @app = Rack::CommonLogger.new(@app, @access_logger)
-      else
-        @app = Rack::CommonLogger.new(@app)
-      end
-      @app = ErrorLogger.new(@app, @logger)
-      @app = Rack::ShowExceptions.new(@app)
-
-      @logger.info("#{self}.build() - end")
-
-      { :port => @port }
-    end
-
-    attr_reader :app
-
-    def run(handler, options)
       begin
-        @logger.info("#{self}.run() - start")
+        @logger.info("#{@url_map}.setup()")
+        @url_map.setup
         if (@logger.debug?) then
-          @logger.debug("#{self}.run(): handler -> #{handler}")
-          for key, value in options
-            @logger.debug("#{self}.run() option: #{key} -> #{value}")
+          for location, path_filter, page_type in @url_map
+            @logger.debug("URL mapping: #{location};#{path_filter} -> #{page_type}")
           end
         end
-        handler.run(@app, options)
-      rescue
-        @logger.error("error at #{handler}.run()")
-        @logger.error($!)
-        raise
+
+        @logger.info("new #{ViewRenderer} -> #{@view_dir}")
+        @renderer = ViewRenderer.new(@view_dir)
+
+        @logger.info("new #{SessionManager}")
+        if (@logger.debug?) then
+          for key, value in @session_conf.options
+            @logger.debug("#{SessionManager} option: #{key} -> #{value}")
+          end
+        end
+        @session_man = SessionManager.new(@session_conf.options)
+
+        @logger.info("#{@plugin_maker}.setup()")
+        @plugin_maker.setup
+        
+        @logger.info("#{@backend_service_man}.apply_around_hook()")
+        @backend_service_man.apply_around_hook{
+          @logger.info("#{@backend_service_man}.setup()")
+          @backend_service_man.setup
+
+          @logger.info("new #{Application}")
+          @app = Application.new
+          @app.logger = @logger
+          @app.url_map = @url_map
+          @app.renderer = @renderer
+          @app.session_man = @session_man
+          @app.plugin_maker = @plugin_maker
+          @app.backend_service_man = @backend_service_man
+          @logger.debug("#{@app}.page_cache = #{@page_cache}") if @logger.debug?
+          @app.page_cache = @page_cache
+
+          @logger.debug("auto_reload -> #{@auto_reload}") if @logger.debug?
+          if (@auto_reload) then
+            @app = AutoReloader.new(@app)
+          end
+
+          if (@access_log) then
+            @logger.debug("open access log -> #{@access_log}") if @logger.debug?
+            @access_logger = File.open(@access_log, 'a')
+            @access_logger.binmode
+            @access_logger.sync = true
+            @app = Rack::CommonLogger.new(@app, @access_logger)
+          else
+            @app = Rack::CommonLogger.new(@app)
+          end
+
+          @app = ErrorLogger.new(@app, @logger)
+          @app = Rack::ShowExceptions.new(@app)
+          @logger.info("#{self}.build() - end")
+          yield(:application => @app, :port => @port)
+        }
       ensure
-        @logger.debug("close access log") if @logger.debug?
-        @access_logger.close if @access_logger
-        @logger.debug("#{@session_man}.shutdown()") if @logger.debug?
-        @session_man.shutdown
-        @logger.debug("evaluate final context") if @logger.debug?
+        if (@access_logger) then
+          @logger.info("close access log")
+          begin
+            @access_logger.close if @access_logger
+          rescue
+            @logger.error('failed to close access log')
+            @logger.error($!)
+          end
+        end
+
+        if (@backend_service_man) then
+          @logger.info("#{@backend_service_man}.finalize()")
+          begin
+            @backend_service_man.finalize
+          rescue
+            @logger.error("failed to shutdown `#{@backend_service_man}'")
+            @logger.error($!)
+          end
+        end
+
+        @logger.info("evaluate final context")
         begin
           FinalContext.new(self).instance_eval(&@finalizer)
         rescue
-          @logger.error('error at final context')
+          @logger.error('failed to evaluate final context')
           @logger.error($!)
-          raise
         end
-        @logger.info("#{self}.run() - end")
-        @logger.info("close logger")
+
+        if (@session_man) then
+          @logger.info("#{@session_man}.shutdown()")
+          begin
+            @session_man.shutdown
+          rescue
+            @logger.error("failed to shutdown `#{@session_man}'")
+            @logger.error($!)
+          end
+        end
+
+        @logger.info('close logger')
         @logger.close
       end
+
+      nil
+    end
+
+    def run(handler, options)
+      @logger.info("#{self}.run() - start")
+      if (@logger.debug?) then
+        @logger.debug("#{self}.run(): handler -> #{handler}")
+        for key, value in options
+          @logger.debug("#{self}.run() option: #{key} -> #{value}")
+        end
+      end
+      handler.run(@app, options)
+      @logger.info("#{self}.run() - end")
       nil
     end
   end

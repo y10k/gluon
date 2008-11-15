@@ -17,8 +17,9 @@ options = {
 
 builder = Gluon::Builder.new(options)
 builder.load_conf
-params = builder.build
-builder.run(Rack::Handler::WEBrick, :Port => params[:port])
+builder.build{|options|
+  builder.run(Rack::Handler::WEBrick, :Port => options[:port])
+}
 
 # Local Variables:
 # mode: Ruby

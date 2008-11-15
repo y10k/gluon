@@ -13,9 +13,9 @@ options = {
 
 builder = Gluon::Builder.new(options)
 builder.load_conf
-builder.build
-
-run builder.app
+builder.build{|options|
+  run options[:application]
+}
 
 # Local Variables:
 # mode: Ruby
