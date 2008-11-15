@@ -165,6 +165,17 @@ module Gluon
       end
       private :append_elem_start
 
+      def append_gluon(expr_list, type, name, elem_name, attrs)
+        expr_list << [
+          type,
+          name,
+          elem_name,
+          attrs.reject{|n, v| n.downcase == 'gluon' }
+        ]
+        nil
+      end
+      private :append_gluon
+
       def mkexpr(html_list)
         expr_list = []
         for type, src, name, attrs in html_list
@@ -173,12 +184,9 @@ module Gluon
             append_text(expr_list, src)
           when :elem_single
             if (gluon_attr = attrs.find{|n,v| n.downcase == 'gluon' }) then
-              expr_list << [
-                :gluon_tag_single,
-                gluon_attr[1],
-                name,
-                attrs.reject{|n, v| n.downcase == 'gluon' }
-              ]
+              append_gluon(expr_list,
+                           :gluon_tag_single, gluon_attr[1],
+                           name, attrs)
             elsif (attrs.find{|n,v| v.index('$') }) then
               append_elem_start(expr_list, name, attrs)
               append_text(expr_list, ' />')
