@@ -60,10 +60,8 @@ module Gluon
       def_delegator :@po, :cond
       def_delegator :@po, :foreach
       def_delegator :@po, :link
-      def_delegator :@po, :link_uri
       def_delegator :@po, :action
       def_delegator :@po, :frame
-      def_delegator :@po, :frame_uri
       def_delegator :@po, :import
       def_delegator :@po, :text
       def_delegator :@po, :password
