@@ -139,6 +139,32 @@ module Gluon
       end
       private :append_text
 
+      def append_elem_start(expr_list, elem_name, attrs)
+        append_text(expr_list, "<#{elem_name}")
+        for name, value in attrs
+          quote = (value =~ /"/) ? "'" : '"'
+          append_text(expr_list, %Q' #{name}=#{quote}')
+          for type, text in parse_inline(value)
+            case (type)
+            when :text
+              append_text(expr_list, text)
+            when :gluon
+              expr_list << [
+                :gluon_tag_single,
+                text,
+                :inline,
+                []
+              ]
+            else
+              raise "unknown inline syntax type: #{type}"
+            end
+          end
+          append_text(expr_list, quote)
+        end
+        nil
+      end
+      private :append_elem_start
+
       def mkexpr(html_list)
         expr_list = []
         for type, src, name, attrs in html_list
@@ -154,7 +180,8 @@ module Gluon
                 attrs.reject{|n, v| n.downcase == 'gluon' }
               ]
             elsif (attrs.find{|n,v| v.index('$') }) then
-              raise NotImplementedError, 'now implementing...'
+              append_elem_start(expr_list, name, attrs)
+              append_text(expr_list, ' />')
             else
               append_text(expr_list, src)
             end

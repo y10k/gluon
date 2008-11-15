@@ -441,6 +441,61 @@ module Gluon::Test
                             ]
                           ]))
     end
+
+    def test_mkexpr_elem_gluon_inline_syntax
+      assert_equal([ [ :text, '<span id="' ],
+                     [ :gluon_tag_single,
+                       'foo',
+                       :inline,
+                       []
+                     ],
+                     [ :text, '" />' ]
+                   ],
+                   mkexpr([ [ :elem_single,
+                              '<span id="${foo}" />',
+                              'span',
+                              [ [ 'id', '${foo}' ] ]
+                            ]
+                          ]))
+    end
+
+    def test_mkexpr_elem_gluon_inline_syntax_attrs
+      assert_equal([ [ :text, '<span id="' ],
+                     [ :gluon_tag_single,
+                       'foo',
+                       :inline,
+                       []
+                     ],
+                     [ :text, '" class="message" />' ]
+                   ],
+                   mkexpr([ [ :elem_single,
+                              '<span id="${foo}" class="message" />',
+                              'span',
+                              [ [ 'id', '${foo}' ],
+                                [ 'class', 'message' ]
+                              ]
+                            ]
+                          ]))
+    end
+
+    def test_mkexpr_elem_gluon_inline_syntax_special_characters
+      assert_equal([ [ :text, '<span id="' ],
+                     [ :gluon_tag_single,
+                       'foo',
+                       :inline,
+                       []
+                     ],
+                     [ :text, "\" title='$ $$ \"$foo\"' />" ]
+                   ],
+                   mkexpr([ [ :elem_single,
+                              "<span id=\"${foo}\" title='$$ $$$$ \"$foo\"' />",
+                              'span',
+                              [ [ 'id', '${foo}' ],
+                                [ 'title', '$$ $$$$ "$foo"' ]
+                              ]
+                            ]
+                          ]))
+    end
   end
 end
 
