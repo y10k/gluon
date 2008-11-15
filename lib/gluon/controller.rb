@@ -10,6 +10,12 @@
 
 module Gluon
   # = controller and meta-data
+  # these methods may be explicitly defined at included class.
+  # * page_get
+  # * page_head
+  # * page_post
+  # * __if_modified__(cache_tag)
+  # 
   module Controller
     # for ident(1)
     CVS_ID = '$Id$'
@@ -169,7 +175,6 @@ module Gluon
 
     ## define explicitly
     # def __if_modified__(cache_tag)
-    # end
   end
 end
 

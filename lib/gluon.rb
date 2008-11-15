@@ -24,6 +24,8 @@ module Gluon
 
   #autoload :Controller, 'gluon/controller'
   autoload :Action, 'gluon/action'
+  autoload :BackendServiceAdaptor, 'gluon/backend'
+  autoload :BackendServiceManagerTest, 'gluon/backend'
   autoload :Builder, 'gluon/builder'
   autoload :CKView, 'gluon/ckview'
   autoload :ERBView, 'gluon/erbview'
