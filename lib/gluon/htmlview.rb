@@ -178,6 +178,7 @@ module Gluon
 
       def mkexpr(html_list)
         expr_list = []
+        elem_stack_map = {}
         for type, src, name, attrs in html_list
           case (type)
           when :cdata
@@ -194,11 +195,35 @@ module Gluon
               append_text(expr_list, src)
             end
           when :elem_start
-            raise NotImplementedError, 'now implementing...'
+            elem_key = name.downcase
+            elem_stack_map[elem_key] = [] unless (elem_stack_map.key? elem_key)
+            if (gluon_attr = attrs.find{|n,v| n.downcase == 'gluon' }) then
+              elem_stack_map[elem_key].push(true)
+              append_gluon(expr_list,
+                           :gluon_tag_start, gluon_attr[1],
+                           name, attrs)
+            elsif (attrs.find{|n,v| v.index('$') }) then
+              elem_stack_map[elem_key].push(false)
+              append_elem_start(expr_list, name, attrs)
+              append_text(expr_list, '>')
+            else
+              elem_stack_map[elem_key].push(false)
+              append_text(expr_list, src)
+            end
           when :elem_end
-            raise NotImplementedError, 'now implementing...'
+            elem_key = name.downcase
+            if (elem_stack_map.key? elem_key) then
+              is_gluon = elem_stack_map[elem_key].pop
+            else
+              is_gluon = false
+            end
+            if (is_gluon) then
+              expr_list << [ :gluon_tag_end, src ]
+            else
+              append_text(expr_list, src)
+            end
           else
-            raise "unknown parsed type: #{type}"
+            raise "unknown html type: #{type}"
           end
         end
 
