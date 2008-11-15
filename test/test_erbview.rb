@@ -146,7 +146,7 @@ module Gluon::Test
     end
 
     def view_template_import_content
-      '[<% import :bar do %>should be picked up.<% end %>]'
+      '<% import_tag :bar do %>should be picked up.<% end %>'
     end
 
     def view_template_import_content_default
