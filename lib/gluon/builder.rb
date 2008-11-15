@@ -367,9 +367,9 @@ module Gluon
         end
 
         if (@backend_service_man) then
-          @logger.info("#{@backend_service_man}.finalize()")
+          @logger.info("#{@backend_service_man}.shutdown()")
           begin
-            @backend_service_man.finalize
+            @backend_service_man.shutdown
           rescue
             @logger.error("failed to shutdown `#{@backend_service_man}'")
             @logger.error($!)

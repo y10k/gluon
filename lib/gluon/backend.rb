@@ -79,11 +79,11 @@ module Gluon
       self
     end
 
-    def finalize
+    def shutdown
       @service_set.each_value do |adaptor|
         adaptor.gluon_service_end
       end
-      self
+      nil
     end
 
     def new_services
