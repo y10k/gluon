@@ -412,7 +412,7 @@ module Gluon::Test
                           ]))
     end
 
-    def test_mkexpr_elem_gluon_single
+    def test_mkexpr_elem_single_gluon
       assert_equal([ [ :gluon_tag_single, 'foo', 'span', [] ] ],
                    mkexpr([ [ :elem_single,
                               '<span gluon="foo" />',
@@ -422,7 +422,7 @@ module Gluon::Test
                           ]))
     end
 
-    def test_mkexpr_elem_gluon_single_attrs
+    def test_mkexpr_elem_single_gluon_attrs
       assert_equal([ [ :gluon_tag_single, 
                        'foo',
                        'span',
@@ -442,7 +442,7 @@ module Gluon::Test
                           ]))
     end
 
-    def test_mkexpr_elem_gluon_inline_syntax
+    def test_mkexpr_elem_single_gluon_inline_syntax
       assert_equal([ [ :text, '<span id="' ],
                      [ :gluon_tag_single,
                        'foo',
@@ -459,7 +459,7 @@ module Gluon::Test
                           ]))
     end
 
-    def test_mkexpr_elem_gluon_inline_syntax_attrs
+    def test_mkexpr_elem_single_gluon_inline_syntax_attrs
       assert_equal([ [ :text, '<span id="' ],
                      [ :gluon_tag_single,
                        'foo',
@@ -478,7 +478,7 @@ module Gluon::Test
                           ]))
     end
 
-    def test_mkexpr_elem_gluon_inline_syntax_special_characters
+    def test_mkexpr_elem_single_gluon_inline_syntax_special_characters
       assert_equal([ [ :text, '<span id="' ],
                      [ :gluon_tag_single,
                        'foo',
@@ -494,6 +494,86 @@ module Gluon::Test
                                 [ 'title', '$$ $$$$ "$foo"' ]
                               ]
                             ]
+                          ]))
+    end
+
+    def test_mkexpr_elem_start_end
+      assert_equal([ [ :text, '<p id="foo">Hello world.</p>' ] ],
+                   mkexpr([ [ :elem_start,
+                              '<p id="foo">',
+                              'p',
+                              [ %w[ id foo ] ]
+                            ],
+                            [ :cdata, 'Hello world.' ],
+                            [ :elem_end, '</p>', 'p' ]
+                          ]))
+    end
+
+    def test_mkexpr_elem_start_end_unbalanced_elem_start
+      assert_equal([ [ :text, '<p><p id="foo">Hello world.</p>' ] ],
+                   mkexpr([ [ :elem_start,
+                              '<p>',
+                              'p',
+                              []
+                            ],
+                            [ :elem_start,
+                              '<p id="foo">',
+                              'p',
+                              [ %w[ id foo ] ]
+                            ],
+                            [ :cdata, 'Hello world.' ],
+                            [ :elem_end, '</p>', 'p' ]
+                          ]))
+    end
+
+    def test_mkexpr_elem_start_end_unbalanced_elem_end
+      assert_equal([ [ :text, '<p id="foo">Hello world.</p></p>' ] ],
+                   mkexpr([ [ :elem_start,
+                              '<p id="foo">',
+                              'p',
+                              [ %w[ id foo ] ]
+                            ],
+                            [ :cdata, 'Hello world.' ],
+                            [ :elem_end, '</p>', 'p' ],
+                            [ :elem_end, '</p>', 'p' ]
+                          ]))
+    end
+
+    def test_mkexpr_elem_start_end_gluon
+      assert_equal([ [ :gluon_tag_start,
+                       'foo',
+                       'p',
+                       []
+                     ],
+                     [ :text, 'Hello world.' ],
+                     [ :gluon_tag_end, '</p>' ]
+                   ],
+                   mkexpr([ [ :elem_start,
+                              '<p gluon="foo">',
+                              'p',
+                              [ %w[ gluon foo ] ]
+                            ],
+                            [ :cdata, 'Hello world.' ],
+                            [ :elem_end, '</p>', 'p' ]
+                          ]))
+    end
+
+    def test_mkexpr_elem_start_end_gluon_inline_syntax
+      assert_equal([ [ :text, '<p title="{' ],
+                     [ :gluon_tag_single,
+                       'foo',
+                       :inline,
+                       []
+                     ],
+                     [ :text, '} $ $$ $foo">Hello world.</p>' ]
+                   ],
+                   mkexpr([ [ :elem_start,
+                              '<p title="{${foo}} $$ $$$$ $foo">',
+                              'p',
+                              [ [ 'title', '{${foo}} $$ $$$$ $foo' ] ]
+                            ],
+                            [ :cdata, 'Hello world.' ],
+                            [ :elem_end, '</p>', 'p' ]
                           ]))
     end
   end
