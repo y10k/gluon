@@ -89,7 +89,7 @@ module Gluon::Test
                    Gluon::HTMLEmbeddedView.parse_html('<foo />'))
     end
 
-    def test_parse_html_elem_single_with_attrs
+    def test_parse_html_elem_single_attrs
       assert_equal([ [ :elem_single,
                        '<foo bar="Apple" baz="Banana" />',
                        'foo',
@@ -126,7 +126,7 @@ module Gluon::Test
                    Gluon::HTMLEmbeddedView.parse_html('<foo></foo>'))
     end
 
-    def test_parse_html_elem_start_end_with_attrs
+    def test_parse_html_elem_start_end_attrs
       assert_equal([ [ :elem_start,
                        '<foo bar="Apple" baz="Banana">',
                        'foo',
@@ -359,7 +359,7 @@ module Gluon::Test
     end
 
     def test_parse_inline_cdata
-      assert_equal([ [ :cdata, 'Hello world.' ] ],
+      assert_equal([ [ :text, 'Hello world.' ] ],
                    Gluon::HTMLEmbeddedView.parse_inline('Hello world.'))
     end
 
@@ -369,18 +369,77 @@ module Gluon::Test
     end
 
     def test_parse_inline_cdata_special
-      assert_equal([ [ :cdata, 'foo ' ],
+      assert_equal([ [ :text, 'foo ' ],
                      [ :gluon, 'bar' ],
-                     [ :cdata, ' baz' ]
+                     [ :text, ' baz' ]
                    ],
                    Gluon::HTMLEmbeddedView.parse_inline('foo ${bar} baz'))
     end
 
     def test_parse_inline_escaped_special
-      assert_equal([ [ :cdata, '$' ],
-                     [ :cdata, '{foo}' ]
+      assert_equal([ [ :text, '$' ],
+                     [ :text, '{foo}' ]
                    ],
                    Gluon::HTMLEmbeddedView.parse_inline('$${foo}'))
+    end
+
+    # shortcut
+    def mkexpr(*args)
+      Gluon::HTMLEmbeddedView.mkexpr(*args)
+    end
+    private :mkexpr
+
+    def test_mkexpr_cdata
+      assert_equal([ [ :text, "Hello world.\n" ] ],
+                   mkexpr([ [ :cdata, "Hello world.\n" ] ]))
+    end
+
+    def test_mkexpr_cdata_compaction
+      assert_equal([ [ :text, "Hello world.\n" ] ],
+                   mkexpr([ [ :cdata, 'Hello' ],
+                            [ :cdata, ' world.' ],
+                            [ :cdata, "\n" ]
+                          ]))
+    end
+
+    def test_mkexpr_elem_single
+      assert_equal([ [ :text, '<foo bar="Apple" baz="Banana" />' ] ],
+                   mkexpr([ [ :elem_single,
+                              '<foo bar="Apple" baz="Banana" />',
+                              'foo',
+                              [ %w[ bar Apple ], %w[ baz Banana ] ]
+                            ]
+                          ]))
+    end
+
+    def test_mkexpr_elem_gluon_single
+      assert_equal([ [ :gluon_tag_single, 'foo', 'span', [] ] ],
+                   mkexpr([ [ :elem_single,
+                              '<span gluon="foo" />',
+                              'span',
+                              [ %w[ gluon foo ] ]
+                            ]
+                          ]))
+    end
+
+    def test_mkexpr_elem_gluon_single_attrs
+      assert_equal([ [ :gluon_tag_single, 
+                       'foo',
+                       'span',
+                       [ %w[ id foo ],
+                         %w[ class message ]
+                       ]
+                     ]
+                   ],
+                   mkexpr([ [ :elem_single,
+                              '<span gluon="foo" id="foo" class="message" />',
+                              'span',
+                              [ %w[ gluon foo ],
+                                %w[ id foo ],
+                                %w[ class message ]
+                              ]
+                            ]
+                          ]))
     end
   end
 end

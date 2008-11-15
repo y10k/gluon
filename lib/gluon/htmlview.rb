@@ -106,7 +106,7 @@ module Gluon
           tail = $3
 
           if (cdata && ! cdata.empty?) then
-            parsed_list << [ :cdata, cdata ]
+            parsed_list << [ :text, cdata ]
           end
 
           if (special) then
@@ -115,18 +115,59 @@ module Gluon
               name = special.sub(/^\$\{/, '').sub(/\}$/, '')
               parsed_list << [ :gluon, name ]
             when '$$'
-              parsed_list << [ :cdata, '$' ]
+              parsed_list << [ :text, '$' ]
             else
               raise "unknown special syntax: #{special}"
             end
           end
 
           if (tail && ! tail.empty?) then
-            parsed_list << [ :cdata, tail ]
+            parsed_list << [ :text, tail ]
           end
         end
 
         parsed_list
+      end
+
+      def append_text(expr_list, text)
+        if (expr_list.empty? || expr_list.last[0] != :text) then
+          expr_list << [ :text, text.dup ]
+        else
+          expr_list.last[1] << text
+        end
+        nil
+      end
+      private :append_text
+
+      def mkexpr(html_list)
+        expr_list = []
+        for type, src, name, attrs in html_list
+          case (type)
+          when :cdata
+            append_text(expr_list, src)
+          when :elem_single
+            if (gluon_attr = attrs.find{|n,v| n.downcase == 'gluon' }) then
+              expr_list << [
+                :gluon_tag_single,
+                gluon_attr[1],
+                name,
+                attrs.reject{|n, v| n.downcase == 'gluon' }
+              ]
+            elsif (attrs.find{|n,v| v.index('$') }) then
+              raise NotImplementedError, 'now implementing...'
+            else
+              append_text(expr_list, src)
+            end
+          when :elem_start
+            raise NotImplementedError, 'now implementing...'
+          when :elem_end
+            raise NotImplementedError, 'now implementing...'
+          else
+            raise "unknown parsed type: #{type}"
+          end
+        end
+
+        expr_list
       end
     end
   end
