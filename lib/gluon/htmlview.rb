@@ -280,6 +280,105 @@ module Gluon
 
         r
       end
+
+      def compile(template_path)
+        mkcode(mkexpr(parse_html(IO.read(template_path))))
+      end
+
+      def evaluate(compiled_view, filename='__evaluate__')
+        context = Class.new(Context)
+        context.class_eval("def call\n#{compiled_view}\nend", filename, 0)
+        context
+      end
+    end
+
+    class Context
+      # for ident(1)
+      CVS_ID = '$Id$'
+
+      def initialize(po, rs_context)
+        @po = po
+        @c = rs_context
+        @out = ''
+      end
+
+      def block_result
+        out_save = @out
+        @out = ''
+        begin
+          yield
+          result = @out
+        ensure
+          @out = out_save
+        end
+        result
+      end
+      private :block_result
+
+      def mkelem(name, attrs)
+        elem_start = "<#{name}"
+        for name, value in attrs
+          quote = (value =~ /"/) ? "'" : '"'
+          elem_start << " #{name}=" << quote << value << quote
+        end
+        elem_start << '>'
+
+        elem_start + yield + "</#{name}>"
+      end
+      private :mkelem
+
+      def attrs2opts(attrs)
+        options = {}
+        for name, value in attrs
+          options[name] = value
+        end
+        options
+      end
+      private :attrs2opts
+
+      def gluon(name, elem_name, *attrs)
+        type, name, value = @po.parse_gluon(name)
+        case (type)
+        when :command, :value
+          if (block_given?) then
+            mkelem(elem_name, attrs) {
+              @po.gluon(type, name, value) {|out|
+                out << block_result{ yield }
+              }
+            }
+          else
+            mkelem(elem_name, attrs) {
+              @po.gluon(type, name, value)
+            }
+          end
+        when :foreach
+          mkelem(elem_name, attrs) {
+            block_result{
+              @po.gluon(type, name, value) { yield }
+            }
+          }
+        when :cond
+          @po.gluon(type, name, value) {
+            @out << mkelem(elem_name, attrs) {
+              block_result{ yield }
+            }
+          }
+        else
+          if (block_given?) then
+            @po.gluon(type, name, value, attrs2opts(attrs)) {|out|
+              out << block_result{ yield }
+            }
+          else
+            @po.gluon(type, name, value, attrs2opts(attrs))
+          end
+        end
+      end
+    end
+
+    SUFFIX = '.html'
+
+    def page_render(po)
+      @c.view_render(HTMLEmbeddedView, @c.default_template(self) + SUFFIX, po)
     end
   end
 end

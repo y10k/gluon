@@ -257,7 +257,7 @@ module Gluon::Test
       gluon_advice :bar, :type => :foreach
     end
 
-    def_test_view :foreach, PageForForeach, '[apple][banana][orange]'
+    def_test_view :foreach, PageForForeach, '<ol><li>apple</li><li>banana</li><li>orange</li></ol>'
     def_test_view :foreach_empty_list, PageForForeach, ''
 
     class PageForLink < SimplePage

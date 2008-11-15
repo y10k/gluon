@@ -136,101 +136,20 @@ module Gluon
       private :block_result
 
       def gluon(name, options={})
-        case (name)
-        when /^\s*g\s*:/
-          command = $'.strip
-          case (command)
-          when 'content'
-            if (block_given?) then
-              @po.content{|out|
-                out << block_result{ yield }
-              }
-            else
-              @po.content
-            end
-          when 'lt'
-            '<'
-          when 'gt'
-            '>'
-          when 'amp'
-            '&'
-          when 'quot'
-            '"'
-          when '_'
-            raise NotImplemented, "not implemented view command: `_'"
+        type, name, value = @po.parse_gluon(name)
+        if (block_given?) then
+          case (type)
+          when :cond, :foreach
+            @po.gluon(type, name, value, options) {
+              yield
+            }
           else
-            raise NameError, "`#{name}' of unknown view command."
+            @po.gluon(type, name, value, options) {|out|
+              out << block_result{ yield }
+            }
           end
         else
-          name, value = name.split(/=/, 2)
-          name = name.to_sym
-          case (type = @po.find_controller_method_type(name))
-          when :value
-            @po.value(name)
-          when :cond
-            @po.cond(name) {
-              yield
-            }
-            ''
-          when :foreach
-            @po.foreach(name) {
-              yield
-            }
-            ''
-          when :link
-            if (block_given?) then
-              @po.link(name, options) {|out|
-                out << block_result{ yield }
-              }
-            else
-              @po.link(name, options)
-            end
-          when :action
-            if (block_given?) then
-              @po.action(name, options) {|out|
-                out << block_result{ yield }
-              }
-            else
-              @po.action(name, options)
-            end
-          when :frame
-            @po.frame(name, options)
-          when :import
-            if (block_given?) then
-              @po.import(name, options) {|out|
-                out << block_result{ yield }
-              }
-            else
-              @po.import(name, options)
-            end
-          when :text
-            @po.text(name, options)
-          when :password
-            @po.password(name, options)
-          when :submit
-            @po.submit(name, options)
-          when :hidden
-            @po.hidden(name, options)
-          when :checkbox
-            @po.checkbox(name, options)
-          when :radio
-            @po.radio(name, value, options)
-          when :select
-            @po.select(name, options)
-          when :textarea
-            @po.textarea(name, options)
-          else
-            case (name)
-            when :to_s
-              @po.value(name, options)
-            else
-              if (type) then
-                raise NameError, "`#{type}' of unknown controller method type for `#{@po.page_type}\##{name}'."
-              else
-                raise NameError, "not defined controller method type for `#{@po.page_type}\##{name}'"
-              end
-            end
-          end
+          @po.gluon(type, name, value, options)
         end
       end
     end

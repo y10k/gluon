@@ -1,8 +1,6 @@
 #!/usr/local/bin/ruby
 
-require 'fileutils'
 require 'gluon'
-require 'rack'
 require 'test/unit'
 require 'view_test_helper'
 
@@ -375,7 +373,7 @@ module Gluon::Test
     end
 
     def view_template_foreach
-      '<gluon name="foo">[<gluon name="to_s" />]</gluon>'
+      '<ol><gluon name="foo"><li><gluon name="to_s" /></li></gluon></ol>'
     end
 
     def view_template_foreach_empty_list

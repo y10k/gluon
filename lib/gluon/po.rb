@@ -529,6 +529,112 @@ module Gluon
       elem << ERB::Util.html_escape(form_value(name))
       elem << '</textarea>'
     end
+
+    def parse_gluon(name)
+      case (name)
+      when /^\s*g\s*:/
+        command = $'.strip
+        return :command, command
+      else
+        name, value = name.split(/=/, 2)
+        name = name.to_sym
+        unless (type = find_controller_method_type(name)) then
+          case (name)
+          when :to_s
+            type = :value
+          when :to_a
+            type = :foreach
+          else
+            raise NameError, "not defined controller method type for `#{page_type}\##{name}'"
+          end
+        end
+        return type, name, value
+      end
+    end
+
+    def gluon(type, name, value, options={})
+      case (type)
+      when :command
+        case (name)
+        when 'content'
+          if (block_given?) then
+            content{|out|
+              out << block_result{ yield }
+            }
+          else
+            content
+          end
+        when 'lt'
+          '<'
+        when 'gt'
+          '>'
+        when 'amp'
+          '&'
+        when 'quot'
+          '"'
+        when '_'
+          raise NotImplemented, "not implemented view command: `_'"
+        else
+          raise NameError, "`#{name}' of unknown view command."
+        end
+      when :value
+        value(name)
+      when :cond
+        cond(name) {
+          yield
+        }
+        ''
+      when :foreach
+        foreach(name) {
+          yield
+        }
+        ''
+      when :link
+        if (block_given?) then
+          link(name, options) {|out|
+            yield(out)
+          }
+        else
+          link(name, options)
+        end
+      when :action
+        if (block_given?) then
+          action(name, options) {|out|
+            yield(out)
+          }
+        else
+          action(name, options)
+        end
+      when :frame
+        frame(name, options)
+      when :import
+        if (block_given?) then
+          import(name, options) {|out|
+            yield(out)
+          }
+        else
+          import(name, options)
+        end
+      when :text
+        text(name, options)
+      when :password
+        password(name, options)
+      when :submit
+        submit(name, options)
+      when :hidden
+        hidden(name, options)
+      when :checkbox
+        checkbox(name, options)
+      when :radio
+        radio(name, value, options)
+      when :select
+        select(name, options)
+      when :textarea
+        textarea(name, options)
+      else
+        raise NameError, "not defined controller method type for `#{page_type}\##{name}'"
+      end
+    end
   end
 end
 

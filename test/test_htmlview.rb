@@ -2,6 +2,7 @@
 
 require 'gluon'
 require 'test/unit'
+require 'view_test_helper'
 
 module Gluon::Test
   class HTMLEmbeddedViewParserTest < Test::Unit::TestCase
@@ -663,6 +664,267 @@ module Gluon::Test
                             [ :text, "Hello world.\n" ],
                             [ :gluon_tag_end, '</p>' ]
                           ]))
+    end
+  end
+
+  class HTMLEmbeddedViewTemplateTest < Test::Unit::TestCase
+    include ViewTestHelper
+
+    def target_view_module
+      Gluon::HTMLEmbeddedView
+    end
+
+    def view_template_simple
+      "Hello world.\n"
+    end
+
+    def view_template_value
+      '<span gluon="foo" />'
+    end
+
+    def view_expected_value
+      "<span>#{super}</span>"
+    end
+
+    def view_template_value_escape
+      '<span gluon="bar" />'
+    end
+
+    def view_expected_value_escape
+      "<span>#{super}</span>"
+    end
+
+    def view_template_value_no_escape
+      '<span gluon="baz" />'
+    end
+
+    def view_expected_value_no_escape
+      "<span>#{super}</span>"
+    end
+
+    def view_template_value_content_ignored
+      '<span gluon="foo">should be ignored.</span>'
+    end
+
+    def view_expected_value_content_ignored
+      "<span>#{super}</span>"
+    end
+
+    def view_template_cond_true
+      '<span gluon="foo?">should be picked up.</span>'
+    end
+
+    def view_expected_cond_true
+      "<span>#{super}</span>"
+    end
+
+    def view_template_cond_false
+      '<span gluon="bar?">should be ignored.</span>'
+    end
+
+    def view_template_foreach
+      '<ol gluon="foo"><li gluon="to_s" /></ol>'
+    end
+
+
+    def view_template_foreach_empty_list
+      '<ol gluon="bar">should be ignored.</ol>'
+    end
+
+    def view_expected_foreach_empty_list
+      "<ol>#{super}</ol>"
+    end
+
+    def view_template_link
+      '<a gluon="foo" />'
+    end
+
+    def view_template_link_content
+      '<a gluon="foo">should be picked up.</a>'
+    end
+
+    def view_template_link_embedded_attrs
+      '<a gluon="foo" foo="Apple" bar="Banana" baz="baz" />'
+    end
+
+    def view_template_link_class
+      '<a gluon="bar" />'
+    end
+
+    def view_template_action
+      '<a gluon="foo" />'
+    end
+
+    def view_template_action_text
+      '<a gluon="bar" />'
+    end
+
+    def view_template_action_content
+      '<a gluon="bar">should be picked up.</a>'
+    end
+
+    def view_template_action_embedded_attrs
+      '<a gluon="foo" foo="Apple" bar="Banana" baz="baz" />'
+    end
+
+    def view_template_frame
+      '<frame gluon="foo" />'
+    end
+
+    def view_template_frame_content_ignored
+      '<frame gluon="foo">should be ignored.</frame>'
+    end
+
+    def view_template_frame_class
+      '<frame gluon="bar" />'
+    end
+
+    def view_template_frame_embedded_attrs
+      '<frame gluon="foo" foo="Apple" bar="Banana" baz="baz" />'
+    end
+
+    def view_template_import
+      '[<div gluon="foo" />]'
+    end
+
+    def view_template_import_content
+      '<div gluon="bar">should be picked up.</div>'
+    end
+
+    def view_template_import_content_default
+      '<div gluon="baz" />'
+    end
+
+    def view_template_import_content_not_defined
+      '<div gluon="bar" />'
+    end
+
+    def view_template_text
+      '<input gluon="foo" />'
+    end
+
+    def view_template_text_value
+      '<input gluon="bar" />'
+    end
+
+    def view_template_text_content_ignored
+      '<input gluon="foo">should be ignored.</input>'
+    end
+
+    def view_template_text_embedded_attrs
+      '<input gluon="foo" foo="Apple" bar="Banana" baz="baz" />'
+    end
+
+    def view_template_password
+      '<input gluon="foo" />'
+    end
+
+    def view_template_password_value
+      '<input gluon="bar" />'
+    end
+
+    def view_template_password_content_ignored
+      '<input gluon="foo">should be ignored.</input>'
+    end
+
+    def view_template_password_embedded_attrs
+      '<input gluon="foo" foo="Apple" bar="Banana" baz="baz" />'
+    end
+
+    def view_template_submit
+      '<input gluon="foo" />'
+    end
+
+    def view_template_submit_value
+      '<input gluon="bar" value="should be picked up." />'
+    end
+
+    def view_template_submit_content_ignored
+      '<input gluon="foo">should be ignored.</input>'
+    end
+
+    def view_template_submit_embedded_attrs
+      '<input gluon="foo" foo="Apple" bar="Banana" baz="baz" />'
+    end
+
+    def view_template_hidden
+      '<input gluon="foo" />'
+    end
+
+    def view_template_hidden_value
+      '<input gluon="bar" />'
+    end
+
+    def view_template_hidden_content_ignored
+      '<input gluon="foo">should be ignored.</input>'
+    end
+
+    def view_template_hidden_embedded_attrs
+      '<input gluon="foo" foo="Apple" bar="Banana" baz="baz" />'
+    end
+
+    def view_template_checkbox
+      '<input gluon="foo" />'
+    end
+
+    def view_template_checkbox_checked
+      '<input gluon="bar" />'
+    end
+
+    def view_template_checkbox_content_ignored
+      '<input gluon="foo">should be ignored.</input>'
+    end
+
+    def view_template_checkbox_embedded_attrs
+      '<input gluon="foo" foo="Apple" bar="Banana" baz="baz" />'
+    end
+
+    def view_template_radio
+      '<input gluon="foo=apple" />'
+    end
+
+    def view_template_radio_checked
+      '<input gluon="foo=banana" />'
+    end
+
+    def view_template_radio_content_ignored
+      '<input gluon="foo=apple">should be ignored.</input>'
+    end
+
+    def view_template_radio_embedded_attrs
+      '<input gluon="foo=apple" foo="Apple" bar="Banana" baz="baz" />'
+    end
+
+    def view_template_select
+      '<input gluon="foo" />'
+    end
+
+    def view_template_select_content_ignored
+      '<input gluon="foo">should be ignored.</input>'
+    end
+
+    def view_template_select_multiple
+      '<select gluon="bar" />'
+    end
+
+    def view_template_select_embedded_attrs
+      '<select gluon="foo" foo="Apple" bar="Banana" baz="baz" />'
+    end
+
+    def view_template_textarea
+      '<textarea gluon="foo" />'
+    end
+
+    def view_template_textarea_value
+      '<textarea gluon="bar" />'
+    end
+
+    def view_template_textarea_content_ignored
+      '<textarea gluon="foo">should be ignored.</textarea>'
+    end
+
+    def view_template_textarea_embedded_attrs
+      '<textarea gluon="foo" foo="Apple" bar="Banana" baz="baz" />'
     end
   end
 end

@@ -44,7 +44,7 @@ module Gluon::Test
     end
 
     def view_template_foreach
-      '<% foreach :foo do %>[<%= value %>]<% end %>'
+      '<ol><% foreach :foo do %><li><%= value %></li><% end %></ol>'
     end
 
     def view_template_foreach_empty_list
