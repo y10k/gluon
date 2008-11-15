@@ -60,7 +60,7 @@ module Gluon::Test
                    Gluon::CKView.parse('<gluon />'))
     end
 
-    def test_parse_gluon_tag_single_with_attrs
+    def test_parse_gluon_tag_single_attrs
       assert_equal([ [ :gluon_tag_single,
                        '<gluon foo="Apple" bar="Banana" />',
                        { 'foo' => 'Apple', 'bar' => 'Banana' }
@@ -94,7 +94,7 @@ module Gluon::Test
                    Gluon::CKView.parse('<gluon></gluon>'))
     end
 
-    def test_parse_gluon_tag_start_end_with_attrs
+    def test_parse_gluon_tag_start_end_attrs
       assert_equal([ [ :gluon_tag_start,
                        '<gluon foo="Apple" bar="Banana">',
                        { 'foo' => 'Apple', 'bar' => 'Banana' }
@@ -229,7 +229,7 @@ module Gluon::Test
                                         ]))
     end
 
-    def test_mkcode_gluon_tag_single_with_attrs
+    def test_mkcode_gluon_tag_single_attrs
       assert_equal(code('@out << gluon("foo", "bar" => "baz")'),
                    Gluon::CKView.mkcode([ [ :gluon_tag_single,
                                             '<gluon name="foo" bar="baz" />',
@@ -237,13 +237,13 @@ module Gluon::Test
                                         ]))
     end
 
-    def test_mkcode_gluon_tag_single_without_name
+    def test_mkcode_gluon_tag_single_no_name
       assert_raise(ArgumentError) {
         Gluon::CKView.mkcode([ [ :gluon_tag_single, '<gluon />', {} ] ])
       }
     end
 
-    def test_mkcode_gluon_tag_starg_end
+    def test_mkcode_gluon_tag_start_end
       assert_equal(code('@out << gluon("foo") {',
                         '}'),
                    Gluon::CKView.mkcode([ [ :gluon_tag_start,
@@ -254,7 +254,7 @@ module Gluon::Test
                                         ]))
     end
 
-    def test_mkcode_gluon_tag_starg_end_with_attrs
+    def test_mkcode_gluon_tag_start_end_attrs
       assert_equal(code('@out << gluon("foo", "bar" => "baz") {',
                         '}'),
                    Gluon::CKView.mkcode([ [ :gluon_tag_start,
@@ -265,7 +265,7 @@ module Gluon::Test
                                         ]))
     end
 
-    def test_mkcode_gluon_tag_starg_end_contains_text
+    def test_mkcode_gluon_tag_start_end_contains_text
       assert_equal(code('@out << gluon("foo") {',
                         '  @out << "Hello world.\n"',
                         '}'),
