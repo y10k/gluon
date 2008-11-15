@@ -229,6 +229,57 @@ module Gluon
 
         expr_list
       end
+
+      def mkopts(attrs)
+        attrs.map{|k, v| "[ #{k.dump}, #{v.dump} ]" }.join(', ')
+      end
+      private :mkopts
+
+      def mkind(indent_level)
+        '  ' * indent_level
+      end
+      private :mkind
+
+      def dump_s(value)
+        case (value)
+        when String
+          value.dump
+        when Symbol
+          ':' + value.to_s
+        else
+          raise "not a String or Symbol: #{value}"
+        end
+      end
+      private :dump_s
+
+      def mkcode(expr_list)
+        r = ''
+        ind = 0
+        for type, name, elem_name, attrs in expr_list
+          case (type)
+          when :text
+            r << mkind(ind) << "@out << #{name.dump}\n"
+          when :gluon_tag_single
+            r << mkind(ind)
+            r << "@out << gluon(#{name.dump}, #{dump_s(elem_name)}"
+            r << ', ' << mkopts(attrs) unless attrs.empty?
+            r << ")\n"
+          when :gluon_tag_start
+            r << mkind(ind)
+            r << "@out << gluon(#{name.dump}, #{dump_s(elem_name)}"
+            r << ', ' << mkopts(attrs) unless attrs.empty?
+            r << ") {\n"
+            ind += 1
+          when :gluon_tag_end
+            ind -= 1
+            r << mkind(ind) << "}\n"
+          else
+            raise "unknown expr type: #{type}"
+          end
+        end
+
+        r
+      end
     end
   end
 end

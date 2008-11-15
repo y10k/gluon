@@ -576,6 +576,97 @@ module Gluon::Test
                             [ :elem_end, '</p>', 'p' ]
                           ]))
     end
+
+    def code(*lines)
+      lines.map{|t| t + "\n" }.join('')
+    end
+    private :code
+
+    # shortcut
+    def mkcode(*args)
+      Gluon::HTMLEmbeddedView.mkcode(*args)
+    end
+    private :mkcode
+
+    def test_mkcode_text
+      assert_equal(code('@out << "Hello world.\n"'),
+                   mkcode([ [ :text, "Hello world.\n" ] ]))
+    end
+
+    def test_mkcode_gluon_tag_single
+      assert_equal(code('@out << gluon("foo", "p")'),
+                   mkcode([ [ :gluon_tag_single,
+                              'foo',
+                              'p',
+                              []
+                            ]
+                          ]))
+    end
+
+    def test_mkcode_gluon_tag_single_attrs
+      assert_equal(code('@out << gluon("foo", "p", [ "id", "foo" ], [ "class", "message" ])'),
+                   mkcode([ [ :gluon_tag_single,
+                              'foo',
+                              'p',
+                              [ %w[ id foo ], %w[ class message ] ]
+                            ]
+                          ]))
+    end
+
+    def test_mkcode_gluon_tag_single_inline
+      assert_equal(code('@out << "<span id=\""',
+                        '@out << gluon("foo", :inline)',
+                        '@out << "\" />"'),
+                   mkcode([ [ :text, '<span id="' ],
+                            [ :gluon_tag_single,
+                              'foo',
+                              :inline,
+                              []
+                            ],
+                            [ :text, '" />' ]
+                          ]))
+    end
+
+    def test_mkcode_gluon_tag_start_end
+      assert_equal(code('@out << gluon("foo", "p") {',
+                        '}'),
+                   mkcode([ [ :gluon_tag_start,
+                              'foo',
+                              'p',
+                              []
+                            ],
+                            [ :gluon_tag_end, '</p>' ]
+                          ]))
+    end
+
+    def test_mkcode_gluon_tag_start_end_attrs
+      assert_equal(code('@out << gluon("foo", "p", [ "id", "foo" ], [ "class", "message" ]) {',
+                        '}'),
+                   mkcode([ [ :gluon_tag_start,
+                              'foo',
+                              'p',
+                              [ %w[ id foo ], %w[ class message ] ],
+                            ],
+                            [ :gluon_tag_end, '</p>' ]
+                          ]))
+
+    end
+
+    def test_mkcode_gluon_tag_start_end_contains_text
+      assert_equal(code('@out << gluon("foo", "p") {',
+                        '  @out << "Hello world.\n"',
+                        '}'),
+                   mkcode([ [ :gluon_tag_start,
+                              'foo',
+                              'p',
+                              [],
+                            ],
+                            [ :text, "Hello world.\n" ],
+                            [ :gluon_tag_end, '</p>' ]
+                          ]))
+
+
+    end
   end
 end
 
