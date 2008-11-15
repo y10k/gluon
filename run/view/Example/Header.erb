@@ -1,12 +1,12 @@
 <p>
   <% cond :example? do %><em>example</em><% end %>
-  <% cond neg(:example?) do %><%= link :example, :target => 'main', :text => 'example' %><% end %>
+  <% cond neg(:example?) do %><%= link :example, 'target' => 'main', :text => 'example' %><% end %>
 
   <% cond :code? do %><em>code</em><% end %>
-  <% cond neg(:code?) do %><%= link :code, :target => 'main', :text => 'code' %><% end %>
+  <% cond neg(:code?) do %><%= link :code, 'target' => 'main', :text => 'code' %><% end %>
 
   <% cond :view? do %><em>view</em><% end %>
-  <% cond neg(:view?) do %><%= link :view, :target => 'main', :text => 'view' %><% end %>
+  <% cond neg(:view?) do %><%= link :view, 'target' => 'main', :text => 'view' %><% end %>
 </p>
 
 <%#

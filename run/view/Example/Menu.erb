@@ -5,10 +5,10 @@
 <body>
 <h2>examples</h2>
 
-<p><%= link Welcom, :target => '_top', :text => 'return to top.' %></p>
+<p><%= link Welcom, 'target' => '_top', :text => 'return to top.' %></p>
 <ul>
   <% foreach :examples do %>
-    <li><%= link :example, :target => 'main' %></li>
+    <li><%= link :example, 'target' => 'main' %></li>
   <% end %>
 </ul>
 
