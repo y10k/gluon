@@ -409,8 +409,11 @@ module Gluon
           @logger.debug("#{self}.run() option: #{key} -> #{value}")
         end
       end
-      handler.run(@app, options)
-      @logger.info("#{self}.run() - end")
+      begin
+        handler.run(@app, options)
+      ensure
+        @logger.info("#{self}.run() - end")
+      end
       nil
     end
   end
