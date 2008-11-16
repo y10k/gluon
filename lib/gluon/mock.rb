@@ -21,23 +21,33 @@ module Gluon
 
     extend Forwardable
 
+    def hash2struct(hash)
+      keys = []
+      values =[]
+      for key, value in hash
+	keys << key
+	values << value
+      end
+
+      keys << :__empty__ if keys.empty?
+      struct = Struct.new(*keys)
+
+      proc{
+	struct.new(*values)
+      }
+    end
+    private :hash2struct
+
     def initialize(options={})
       @url_map = URLMap.new
       (options[:url_map] || []).each do |page_type, location, path_filter|
 	@url_map.mount(page_type, location, path_filter)
       end
       @url_map.setup
-
       @session_man = MockSessionManager.new
       @session = nil
-
-      plugin = options[:plugin] || {}
-      @plugin_maker = PluginMaker.new
-      for name, value in plugin
-	@plugin_maker.add(name, value)
-      end
-      @plugin_maker.setup
-
+      @plugin_maker = hash2struct(options[:plugin] || {})
+      @backend_service_maker = hash2struct(options[:backend_service] || {})
       @view_dir = options[:view_dir] || Dir.getwd
       @renderer = ViewRenderer.new(@view_dir)
     end
@@ -48,9 +58,10 @@ module Gluon
       req = Rack::Request.new(env)
       res = Rack::Response.new
       @session = @session_man.new_mock_session(req, res)
-      plugin = @plugin_maker.new_plugin
-      Gluon::RequestResponseContext.new(req, res, @session,
-					@url_map, plugin, @renderer)
+      c = Gluon::RequestResponseContext.new(req, res, @session, @url_map, @renderer)
+      c.plugin = @plugin_maker.call
+      c.backend_services = @backend_service_maker.call
+      c
     end
 
     def_delegator :@session, :get_for_mock, :session_get

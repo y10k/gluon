@@ -67,9 +67,10 @@ module Gluon
             req.env['gluon.path_info'] = gluon_path_info
             req.env['gluon.path_args'] = gluon_path_args
             req.env['gluon.page_cache'] = @page_cache
-            plugin = @plugin_maker.call
-            rs_context = RequestResponseContext.new(req, res, session, @url_map, plugin, @renderer)
+            rs_context = RequestResponseContext.new(req, res, session, @url_map, @renderer)
             rs_context.logger = @logger
+            rs_context.plugin = @plugin_maker.call
+            rs_context.backend_services = @backend_service_man.call
             rs_context.cache_tag = nil
             action = Action.new(controller, rs_context, params, funcs).setup
             action.logger = @logger

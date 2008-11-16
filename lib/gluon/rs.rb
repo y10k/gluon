@@ -264,24 +264,28 @@ module Gluon
 
     extend Forwardable
 
-    def initialize(req, res, session, url_map, plugin, renderer)
+    def initialize(req, res, session, url_map, renderer)
       @req = req
       @res = res
       @session = session
       @url_map = url_map
-      @plugin = plugin
       @renderer = renderer
       @logger = NoLogger.instance
+      @plugin = nil
+      @backend_services = nil
       @cache_tag = nil
       @validation = nil
     end
 
     attr_reader :req
     attr_reader :res
-    attr_reader :plugin
     attr_accessor :logger
+    attr_accessor :plugin
+    attr_accessor :backend_services
     attr_accessor :cache_tag
     attr_accessor :validation
+
+    alias bs backend_services
 
     def_delegator :@session, :get, :session_get
     def_delegator :@session, :id, :session_id

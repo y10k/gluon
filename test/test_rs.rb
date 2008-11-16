@@ -326,11 +326,8 @@ module Gluon::Test
       @url_map = Gluon::URLMap.new
       @url_map.mount(Foo, '/foo')
       @url_map.setup
-      @plugin_maker = Gluon::PluginMaker.new
-      @plugin_maker.setup
-      @plugin = @plugin_maker.new_plugin
       @renderer = Gluon::ViewRenderer.new(Dir.getwd)
-      @c = Gluon::RequestResponseContext.new(@req, @res, @session, @url_map, @plugin, @renderer)
+      @c = Gluon::RequestResponseContext.new(@req, @res, @session, @url_map, @renderer)
     end
 
     def test_req_res
