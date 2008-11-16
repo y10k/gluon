@@ -1,5 +1,5 @@
 <%= import :errors %>
-<form>
+<form action="<%= value :action_path %>" target="main">
   <%= import :one_time_token %>	<!-- for Gluon::Web::OneTimeToken -->
   <p><%= value :now %></p>
   <p>Counter: <%= value :count %></p>

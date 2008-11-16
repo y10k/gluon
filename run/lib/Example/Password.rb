@@ -11,6 +11,10 @@ class Example
       @c.validation = true
     end
 
+    def action_path
+      @c.class2path(Password, @c.path_info)
+    end
+
     def ok
       # nothing to do.
     end

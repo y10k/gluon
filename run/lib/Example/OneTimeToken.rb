@@ -41,6 +41,10 @@ class Example
       end
     end
 
+    def action_path
+      @c.class2path(OneTimeToken, @c.path_info)
+    end
+
     attr_reader :errors
     attr_reader :count
 

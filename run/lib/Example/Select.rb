@@ -11,11 +11,7 @@ class Example
       @bar = %w[ Earth Jupiter ]
     end
 
-    attr_reader :fruit_list
-    attr_reader :planet_list
-
     gluon_export_accessor :foo, :list => FRUIT_LIST
-
     gluon_export_accessor :bar,
       :list => PLANET_LIST,
       :multiple => true,
@@ -25,6 +21,10 @@ class Example
     #def page_post
     def page_import
       @c.validation = true
+    end
+
+    def action_path
+      @c.class2path(Select, @c.path_info)
     end
 
     def bar_join

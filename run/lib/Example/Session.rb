@@ -20,6 +20,10 @@ class Example
       @c.validation = true
     end
 
+    def action_path
+      @c.class2path(Session, @c.path_info)
+    end
+
     def new_session
       @c.session_delete
       @session = @c.session_get(true)

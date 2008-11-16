@@ -1,8 +1,8 @@
 <h2>1. text</h2>
 
-<form>
+<form action="<%= value :action_path %>" target="main">
 <p><label for="foo">input:</label>
-   <%= text :foo, :id => 'foo' %>
+   <%= text :foo, 'id' => 'foo' %>
 </p>
 <p><%= submit :ok, :value => 'OK' %></p>
 </form>

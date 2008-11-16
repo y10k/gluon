@@ -1,8 +1,8 @@
 <h2>1. textarea</h2>
 
-<form>
+<form action="<%= value :action_path %>" target="main">
 <p><label for="foo">foo:</label><br />
-   <%= textarea :foo, :id => 'foo' %>
+   <%= textarea :foo, 'id' => 'foo' %>
 </p>
 <p><%= submit :ok, :value => 'OK' %></p>
 </form>

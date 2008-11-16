@@ -1,16 +1,16 @@
 <h2>1. radio</h2>
 
-<form>
+<form action="<%= value :action_path %>" target="main">
 <h3>radio buttons of foo</h3>
-<p><%= radio :foo, 'apple', :id => 'apple' %> <label for="apple">apple</label>,
-   <%= radio :foo, 'banana', :id => 'banana' %> <label for="banana">banana</label>,
-   <%= radio :foo, 'orange', :id => 'orange' %> <label for="orange">orange</label>
+<p><%= radio :foo, 'apple', 'id' => 'apple' %> <label for="apple">apple</label>,
+   <%= radio :foo, 'banana', 'id' => 'banana' %> <label for="banana">banana</label>,
+   <%= radio :foo, 'orange', 'id' => 'orange' %> <label for="orange">orange</label>
 </p>
 
 <h3>radio buttons of bar</h3>
-<p><%= radio :bar, 'Alice', :id => 'alice' %> <label for="alice">Alice</label>,
-   <%= radio :bar, 'Bob', :id => 'bob' %> <label for="bob">Bob</label>,
-   <%= radio :bar, 'Kate', :id => 'kate' %> <label for="kate">Kate</label>
+<p><%= radio :bar, 'Alice', 'id' => 'alice' %> <label for="alice">Alice</label>,
+   <%= radio :bar, 'Bob', 'id' => 'bob' %> <label for="bob">Bob</label>,
+   <%= radio :bar, 'Kate', 'id' => 'kate' %> <label for="kate">Kate</label>
 </p>
 
 <p><%= submit :ok, :value => 'OK' %></p>

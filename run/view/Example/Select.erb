@@ -1,14 +1,14 @@
 <h2>1. select</h2>
 
-<form>
+<form action="<%= value :action_path %>" target="main">
 <h3>single select</h3>
 <p><label for="foo">foo:</label>
-   <%= select :foo, :id => 'foo' %>
+   <%= select :foo, 'id' => 'foo' %>
 </p>
 
 <h3>multiple select</h3>
 <p><label for="bar">bar:</label><br />
-   <%= select :bar, :id => 'bar' %>
+   <%= select :bar, 'id' => 'bar' %>
 </p>
 
 <p><%= submit :ok, :value => 'OK' %></p>

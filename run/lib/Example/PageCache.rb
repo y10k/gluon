@@ -46,6 +46,10 @@ class Example
       @c.validation = true
     end
 
+    def action_path
+      @c.class2path(PageCache, @c.path_info)
+    end
+
     attr_reader :created_time
 
     def page_cache?

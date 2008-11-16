@@ -19,6 +19,10 @@ class Example
       @c.validation = true
     end
 
+    def action_path
+      @c.class2path(Checkbox, @c.path_info)
+    end
+
     def ok
       # nothing to do.
     end

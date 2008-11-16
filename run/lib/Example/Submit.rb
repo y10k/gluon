@@ -13,6 +13,10 @@ class Example
       @c.validation = true
     end
 
+    def action_path
+      @c.class2path(Submit, @c.path_info)
+    end
+
     def foo
       @results << 'foo is called.'
     end

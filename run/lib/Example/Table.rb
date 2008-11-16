@@ -82,6 +82,10 @@ class Example
     def page_import
     end
 
+    def action_path
+      @c.class2path(Table, @c.path_info)
+    end
+
     attr_reader :auto_table
     attr_reader :manual_table
     gluon_export_reader :auto_form_table

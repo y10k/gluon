@@ -32,14 +32,14 @@
 
 <h2>3. automatic table on form</h2>
 
-<form>
+<form action="<%= value :action_path %>" target="main">
 <%= import :auto_form_table %>
 <p><input type="submit" /></p>
 </form>
 
 <h2>4. manual table on form</h2>
 
-<form>
+<form action="<%= value :action_path %>" target="main">
 <table id="manual-form-table" summary="manual form table" border="1">
   <caption>manual (form)</caption>
   <% foreach :manual_form_table do |i| %>

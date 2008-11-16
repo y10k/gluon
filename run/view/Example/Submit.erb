@@ -1,6 +1,6 @@
 <h2>1. submit</h2>
 
-<form>
+<form action="<%= value :action_path %>" target="main">
 <p><%= submit :foo, :value => 'foo' %></p> <!-- call foo method -->
 <p><%= submit :bar, :value => 'bar' %></p> <!-- call bar method -->
 </form>

@@ -24,7 +24,7 @@
 
 <p>this page is created at <em><%= value :created_time %></em>.</p>
 <p><%= link Example::PageCache, :text => 'reload this page.' %></p>
-<form method="post">
+<form method="post" action="<%= value :action_path %>" target="main">
 <p><%= submit :expire, :value => 'expire page cache.' %></p>
 </form>
 
