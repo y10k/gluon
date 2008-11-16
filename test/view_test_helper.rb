@@ -152,6 +152,27 @@ module Gluon::Test
     end
     private :assert_attrs_advice_method
 
+    def assert_attrs_advice_each_value(page_type, method, start_with, expr)
+      anon_page_type = Class.new(page_type) {
+        define_method(:controller_attr_baz?) { true }
+        define_method(:controller_attr_quux?) { false }
+        gluon_advice method, :attrs => {
+          'foo' => 'Apple',
+          'bar' => proc{ 'Banana' },
+          'baz' => instance_method(:controller_attr_baz?),
+          'quux' => instance_method(:controller_attr_quux?)
+        }
+      }
+      build_page(anon_page_type)
+      result = render_page(expr)
+      assert_match(start_with, result)
+      assert_match(/ foo="Apple"/, result)
+      assert_match(/ bar="Banana"/, result)
+      assert_match(/ baz="baz"/, result)
+      assert_no_match(/ quux/, result)
+    end
+    private :assert_attrs_advice_each_value
+
     def assert_attrs_embedded(page_type, method, start_with, expr)
       build_page(page_type)
       result = render_page(expr)
@@ -191,6 +212,9 @@ module Gluon::Test
           end
           def test_#{name}_attrs_advice_method
             assert_attrs_advice_method(#{args}, view_template_#{name})
+          end
+          def test_#{name}_attrs_advice_each_value
+            assert_attrs_advice_each_value(#{args}, view_template_#{name})
           end
           def test_#{name}_attrs_embedded
             assert_attrs_embedded(#{args}, view_template_#{name}_embedded_attrs)

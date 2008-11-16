@@ -195,14 +195,34 @@ module Gluon
       nil
     end
 
-    def mkattr(name, value)
+    def mkattr(name, value, method, search_stack)
+      case (value)
+      when Symbol
+        if (search_stack) then
+          value = funcall(value)
+        else
+          value = curr_funcall(value)
+        end
+      when Proc, Method
+        value = value.call
+      when UnboundMethod
+        if (search_stack) then
+          this = find_this(method)
+        else
+          this = curr_this
+        end
+        value = value.bind(this).call
+      end
+
       case (value)
       when TrueClass
-        ' ' << name.to_s << '="' << name.to_s << '"'
+        ' ' << ERB::Util.html_escape(name.to_s) <<
+          '="' << ERB::Util.html_escape(name.to_s) << '"'
       when FalseClass
         ''
       else
-        ' ' << name.to_s << '="' << ERB::Util.html_escape(value) << '"'
+        ' ' << ERB::Util.html_escape(name.to_s) <<
+          '="' << ERB::Util.html_escape(value) << '"'
       end
     end
     private :mkattr
@@ -213,7 +233,7 @@ module Gluon
       for n, v in getopt(:attrs, {}, method, search_stack, {})
         m = n.downcase
         next if (reserved_attrs.key? m)
-        elem << mkattr(n, v)
+        elem << mkattr(n, v, method, search_stack)
         used_attr[m] = true
       end
       for n, v in options
@@ -221,7 +241,7 @@ module Gluon
         m = n.downcase
         next if (reserved_attrs.key? m)
         next if (used_attr.key? m)
-        elem << mkattr(n, v)
+        elem << mkattr(n, v, method, search_stack)
       end
       elem
     end

@@ -1,3 +1,7 @@
+2008-11-17  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/po.rb: settings of each attribute of HTML element.
+
 2008-11-16  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/backend.rb: backend service for application.
