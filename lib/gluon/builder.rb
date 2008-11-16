@@ -165,8 +165,16 @@ module Gluon
       nil
     end
 
-    def backend_service(adaptor)
-      @backend_service_man.register(adaptor)
+    def backend_service(adaptor=nil)
+      if (adaptor) then
+        if (block_given?) then
+          raise 'no need for block'
+        end
+        @backend_service_man.register(adaptor)
+      else
+        @backend_service_man.register(yield)
+      end
+
       nil
     end
 
