@@ -9,6 +9,8 @@
 #
 
 require 'digest'
+require 'gluon/controller'
+require 'gluon/erbview'
 
 module Gluon
   module Web

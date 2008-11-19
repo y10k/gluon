@@ -8,6 +8,9 @@
 #   :include:../../LICENSE
 #
 
+require 'gluon/controller'
+require 'gluon/erbview'
+
 module Gluon
   module Web
     # = table rendering utility
