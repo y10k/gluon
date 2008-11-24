@@ -87,6 +87,42 @@ module Gluon::Test
       assert_equal(1, count)
     end
 
+    class FooAdaptor
+      include Gluon::BackendServiceAdaptor
+
+      def gluon_service_key
+        :foo
+      end
+
+      def gluon_service_get
+        :foo_backend_service
+      end
+    end
+
+    def test_config_backend_service
+      @builder.eval_conf %Q{
+        backend_service #{FooAdaptor}.new
+      }
+    end
+
+    def test_config_backend_service_block
+      @builder.eval_conf %Q{
+        backend_service do
+          #{FooAdaptor}.new
+        end
+      }
+    end
+
+    def test_config_backend_service_syntax_error
+      assert_raise(RuntimeError) {
+        @builder.eval_conf %Q{
+          backend_service #{FooAdaptor}.new do
+            #{FooAdaptor}.new
+          end
+        }
+      }
+    end
+
     def test_config_session_default_key
       @builder.eval_conf %q{
         session do
