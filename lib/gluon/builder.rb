@@ -11,6 +11,7 @@
 require 'forwardable'
 require 'gluon/application'
 require 'gluon/backend'
+require 'gluon/errmap'
 require 'gluon/nolog'
 require 'gluon/plugin'
 require 'gluon/renderer'
