@@ -45,10 +45,10 @@ module Gluon
         end
 
         page_type = self
-        ADVICES[page_type] = {} unless (ADVICES.has_key? page_type)
+        ADVICES[page_type] = {} unless (ADVICES.key? page_type)
 
         name = name.to_s if (name.is_a? Symbol)
-        ADVICES[page_type][name] = {} unless (ADVICES[page_type].has_key? name)
+        ADVICES[page_type][name] = {} unless (ADVICES[page_type].key? name)
         ADVICES[page_type][name].update(advices)
 
         nil
@@ -121,7 +121,7 @@ module Gluon
         for page_type in page_type.ancestors
           if (advices_bundle = ADVICES[page_type]) then
             if (advices = advices_bundle[method_name]) then
-              if (advices.has_key? advice_key) then
+              if (advices.key? advice_key) then
                 return advices[advice_key]
               end
             end
