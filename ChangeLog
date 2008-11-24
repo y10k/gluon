@@ -1,3 +1,7 @@
+2008-11-24  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/application.rb: default handler.
+
 2008-11-17  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/builder.rb: block syntax of back-end service for

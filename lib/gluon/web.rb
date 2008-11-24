@@ -15,6 +15,7 @@ module Gluon
     CVS_ID = '$Id$'
 
     autoload :ErrorMessages, 'gluon/web/error'
+    autoload :NotFoundErrorPage, 'gluon/web/404'
     autoload :OneTimeToken, 'gluon/web/token'
     autoload :Table, 'gluon/web/table'
   end

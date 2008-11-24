@@ -109,6 +109,7 @@ module Gluon
       @port = 9202
       @page_cache = false
       @auto_reload = false
+      @default_handler = nil
       @url_map = URLMap.new
       @plugin_maker = PluginMaker.new
       @backend_service_man = BackendServiceManager.new
@@ -127,6 +128,8 @@ module Gluon
     attr_accessor :port
     attr_accessor :page_cache
     attr_accessor :auto_reload
+
+    attr_accessor :default_handler
 
     def mount(page_type, location, *args)
       @url_map.mount(page_type, location, *args)
@@ -251,6 +254,7 @@ module Gluon
       def_delegator :@builder, :port=, :port
       def_delegator :@builder, :page_cache=, :page_cache
       def_delegator :@builder, :auto_reload=, :auto_reload
+      def_delegator :@builder, :default_handler=, :default_handler
       def_delegator :@builder, :mount
       def_delegator :@builder, :initial
       def_delegator :@builder, :final
@@ -342,6 +346,8 @@ module Gluon
           @app.backend_service_man = @backend_service_man
           @logger.debug("#{@app}.page_cache = #{@page_cache}") if @logger.debug?
           @app.page_cache = @page_cache
+          @app.default_handler = @default_handler
+          @logger.debug("#{@app}.default_handler = #{@default_handler}") if @logger.debug?
 
           @logger.debug("auto_reload -> #{@auto_reload}") if @logger.debug?
           if (@auto_reload) then

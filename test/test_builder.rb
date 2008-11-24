@@ -52,6 +52,13 @@ module Gluon::Test
       assert_equal(true, @builder.page_cache)
     end
 
+    def test_config_default_handler
+      @builder.eval_conf %q{
+        default_handler Gluon::Web::NotFoundErrorPage
+      }
+      assert_equal(Gluon::Web::NotFoundErrorPage, @builder.default_handler)
+    end
+
     class Foo
     end
 

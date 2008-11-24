@@ -4,6 +4,8 @@ port 9202
 log_file "#{base_dir}/gluon.log"
 access_log "#{base_dir}/access.log"
 
+default_handler Gluon::Web::NotFoundErrorPage
+
 # for debug
 page_cache false
 auto_reload true
