@@ -66,24 +66,6 @@ module Gluon
     end
   end
 
-  # = error logging decorator for Rack application
-  class ErrorLogger
-    def initialize(app, logger)
-      @app = app
-      @logger = logger
-    end
-
-    def call(env)
-      begin
-        @app.call(env)
-      rescue
-        @logger.error('internal application error')
-        @logger.error($!)
-        raise
-      end
-    end
-  end
-
   class Builder
     # for ident(1)
     CVS_ID = '$Id$'
@@ -110,6 +92,7 @@ module Gluon
       @page_cache = false
       @auto_reload = false
       @default_handler = nil
+      @error_map = ErrorMap.new
       @url_map = URLMap.new
       @plugin_maker = PluginMaker.new
       @backend_service_man = BackendServiceManager.new
@@ -130,6 +113,11 @@ module Gluon
     attr_accessor :auto_reload
 
     attr_accessor :default_handler
+
+    def error_handler(exception_type, page_type)
+      @error_map.error_handler(exception_type, page_type)
+      nil
+    end
 
     def mount(page_type, location, *args)
       @url_map.mount(page_type, location, *args)
@@ -255,6 +243,7 @@ module Gluon
       def_delegator :@builder, :page_cache=, :page_cache
       def_delegator :@builder, :auto_reload=, :auto_reload
       def_delegator :@builder, :default_handler=, :default_handler
+      def_delegator :@builder, :error_handler
       def_delegator :@builder, :mount
       def_delegator :@builder, :initial
       def_delegator :@builder, :final
@@ -309,6 +298,14 @@ module Gluon
       @logger.info("#{self}.build() - start")
 
       begin
+        @logger.info("#{@error_map}.setup()")
+        @error_map.setup
+        if (@logger.debug?) then
+          for exception_type, page_type in @error_map
+            @logger.debug("Error mapping: #{exception_type} -> #{page_type}")
+          end
+        end
+
         @logger.info("#{@url_map}.setup()")
         @url_map.setup
         if (@logger.debug?) then
@@ -340,6 +337,7 @@ module Gluon
           @app = Application.new
           @app.logger = @logger
           @app.url_map = @url_map
+          @app.error_map = @error_map
           @app.renderer = @renderer
           @app.session_man = @session_man
           @app.plugin_maker = @plugin_maker
@@ -364,7 +362,6 @@ module Gluon
             @app = Rack::CommonLogger.new(@app)
           end
 
-          @app = ErrorLogger.new(@app, @logger)
           @app = Rack::ShowExceptions.new(@app)
           @logger.info("#{self}.build() - end")
           yield(:application => @app, :port => @port)

@@ -15,6 +15,7 @@ log_level Logger::DEBUG
 #page_cache true
 #auto_reload false
 #log_level Logger::INFO
+#error_handler StandardError, Gluon::Web::InternalServerErrorPage
 
 require 'Welcom'
 require 'Example'

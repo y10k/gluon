@@ -1,3 +1,7 @@
+2008-11-25  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/application.rb, lib/gluon/errmap.rb: error handler.
+
 2008-11-24  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/application.rb: default handler.
