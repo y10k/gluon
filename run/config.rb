@@ -6,16 +6,16 @@ access_log "#{base_dir}/access.log"
 
 default_handler Gluon::Web::NotFoundErrorPage
 
-# for debug
-page_cache false
-auto_reload true
-log_level Logger::DEBUG
-
-# for product
-#page_cache true
-#auto_reload false
-#log_level Logger::INFO
-#error_handler StandardError, Gluon::Web::InternalServerErrorPage
+if ENV.key? 'DEBUG' then
+  page_cache false
+  auto_reload true
+  log_level Logger::DEBUG
+else
+  page_cache true
+  auto_reload false
+  log_level Logger::INFO
+  error_handler StandardError, Gluon::Web::InternalServerErrorPage
+end
 
 require 'Welcom'
 require 'Example'
