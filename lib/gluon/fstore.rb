@@ -38,12 +38,19 @@ module Gluon
     end
     private :session_path
 
+    def creat_and_open(path)
+      File.open(path, File::WRONLY | File::CREAT | File::EXCL) {|w|
+        yield(w)
+      }
+    end
+    private :creat_and_open
+
     def create(session)
       make_store
       begin
         id = yield
         ssn_path = session_path(id)
-        File.open(ssn_path, File::WRONLY | File::CREAT | File::EXCL) {|w|
+        creat_and_open(ssn_path) {|w|
           w.binmode
           w.write(session)
         }
@@ -61,7 +68,7 @@ module Gluon
       count = 0
       begin
         ssn_path_tmp = "#{ssn_path}.tmp.#{count}"
-        File.open(ssn_path_tmp, File::WRONLY | File::CREAT | File::EXCL) {|w|
+        creat_and_open(ssn_path_tmp) {|w|
           w.binmode
           w.write(session)
         }
@@ -103,31 +110,38 @@ module Gluon
     SESSION_PATH_PATTERN = Regexp.compile(SESSION_EXT)
     # :startdoc:
 
+    def try_flock_ex(path)
+      File.open(path, File::WRONLY) {|f|
+        if (f.flock(File::LOCK_EX | File::LOCK_NB)) then
+          begin
+            yield
+          ensure
+            f.flock(File::LOCK_UN)
+          end
+        end
+      }
+    end
+    private :try_flock_ex
+
     def expire(alive_time)
       make_store
       now = Time.now
       last_expired_time = File.mtime(@store_expired)
       if (now - last_expired_time >= @expire_interval) then
-        File.open(@store_expired, File::WRONLY) {|w|
-          if (w.flock(File::LOCK_EX | File::LOCK_NB)) then
-            begin
-              Dir.foreach(@store_dir) do |path|
-                case (path)
-                when EXPIRED
-                  next
-                when SESSION_PATH_PATTERN
-                  ssn_path = File.join(@store_dir, path)
-                  mtime = File.mtime(ssn_path)
-                  if (mtime < alive_time) then
-                    FileUtils.rm_f(ssn_path)
-                  end
-                end
+        try_flock_ex(@store_expired) {
+          Dir.foreach(@store_dir) do |path|
+            case (path)
+            when EXPIRED
+              next
+            when SESSION_PATH_PATTERN
+              ssn_path = File.join(@store_dir, path)
+              mtime = File.mtime(ssn_path)
+              if (mtime < alive_time) then
+                FileUtils.rm_f(ssn_path)
               end
-              FileUtils.touch(@store_expired)
-            ensure
-              w.flock(File::LOCK_UN)
             end
           end
+          FileUtils.touch(@store_expired)
         }
       end
 
