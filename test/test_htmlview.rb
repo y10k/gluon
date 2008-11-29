@@ -668,6 +668,9 @@ module Gluon::Test
   end
 
   class HTMLEmbeddedViewTemplateTest < Test::Unit::TestCase
+    # for ident(1)
+    CVS_ID = '$Id$'
+
     include ViewTestHelper
 
     def target_view_module
