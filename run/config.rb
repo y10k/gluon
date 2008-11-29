@@ -22,7 +22,7 @@ session do
   default_path '/' # should be replaced by application context path
 end
 
-#### begin of example ####
+## :example:start
 
 require 'Welcom'
 require 'Example'
@@ -37,7 +37,7 @@ mount Example::ViewPanel, '/example/view_panel'
 # ignored `Example::Panel'
 mount Example::PageCache, '/example/ex_panel/pagecache'
 
-##### end of example #####
+## :example:stop
 
 # Local Variables:
 # mode: Ruby
