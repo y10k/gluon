@@ -19,6 +19,7 @@ end
 
 session do
   store Gluon::FileStore.new("#{base_dir}/session")
+  default_path '/' # should be replaced by application context path
 end
 
 #### begin of example ####
