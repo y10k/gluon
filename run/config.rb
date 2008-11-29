@@ -17,6 +17,10 @@ else
   error_handler StandardError, Gluon::Web::InternalServerErrorPage
 end
 
+session do
+  store Gluon::FileStore.new("#{base_dir}/session")
+end
+
 #### begin of example ####
 
 require 'Welcom'

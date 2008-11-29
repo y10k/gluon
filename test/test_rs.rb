@@ -14,6 +14,15 @@ module Gluon::Test
       @store = Gluon::MemoryStore.new(:expire_interval => 0)
     end
 
+    def test_load_empty
+      assert_nil(@store.load('foo'))
+    end
+
+    def test_load_empty2
+      assert_nil(@store.load('foo'), 'FIRST')
+      assert_nil(@store.load('foo'), 'SECOND')
+    end
+
     def test_save_and_load
       assert_nil(@store.load('foo'))
       @store.save('foo', "Hello world.\n")
@@ -33,6 +42,11 @@ module Gluon::Test
     end
 
     def test_create
+      assert_equal('foo', @store.create('bar') { 'foo' })
+      assert_equal('bar', @store.load('foo'))
+    end
+
+    def test_create_empty
       assert_equal('foo', @store.create('') { 'foo' })
       assert_equal('', @store.load('foo'))
     end

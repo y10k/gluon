@@ -30,6 +30,7 @@ module Gluon
   autoload :CKView, 'gluon/ckview'
   autoload :ERBView, 'gluon/erbview'
   autoload :ErrorMap, 'gluon/errmap'
+  autoload :FileStore, 'gluon/fstore'
   autoload :HTMLEmbeddedView, 'gluon/htmlview'
   autoload :MemoryStore, 'gluon/rs'
   autoload :Mock, 'gluon/mock'
