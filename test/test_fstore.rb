@@ -12,12 +12,12 @@ module Gluon::Test
 
     def setup
       @store_path = 'session'
-      FileUtils.rm_rf(@store_path) unless $DEBUG
+      FileUtils.rm_rf(@store_path) if $DEBUG
       @store = Gluon::FileStore.new(@store_path, :expire_interval => 0)
     end
 
     def teardown
-      FileUtils.rm_rf(@store_path) if $DEBUG
+      FileUtils.rm_rf(@store_path) unless $DEBUG
     end
 
     def test_load_empty
