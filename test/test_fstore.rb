@@ -1,6 +1,5 @@
 #!/usr/local/bin/ruby
 
-require 'digest'
 require 'fileutils'
 require 'gluon'
 require 'test/unit'
