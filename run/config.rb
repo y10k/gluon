@@ -17,6 +17,8 @@ else
   error_handler StandardError, Gluon::Web::InternalServerErrorPage
 end
 
+#### begin of example ####
+
 require 'Welcom'
 require 'Example'
 
@@ -27,6 +29,8 @@ mount Example::ExamplePanel, '/example/ex_panel'
 mount Example::CodePanel, '/example/code_panel'
 mount Example::ViewPanel, '/example/view_panel'
 mount Example::PageCache, '/example/ex_panel/pagecache' # ignored `Example::Panel'
+
+##### end of example #####
 
 # Local Variables:
 # mode: Ruby
