@@ -47,6 +47,7 @@ module Gluon
 
     def create(session)
       make_store
+
       begin
         id = yield
         ssn_path = session_path(id)
@@ -125,6 +126,7 @@ module Gluon
 
     def expire(alive_time)
       make_store
+
       now = Time.now
       last_expired_time = File.mtime(@store_expired)
       if (now - last_expired_time >= @expire_interval) then
