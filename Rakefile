@@ -16,18 +16,21 @@ end
 
 task :default => [ :package ]
 
+desc 'unit-test.'
 task :test do
   cd_v(TEST_DIR) {
     sh 'rake'
   }
 end
 
+desc 'create document.'
 task :rdoc do
   cd_v(LIB_DIR) {
     sh 'rdoc', '-o', "../#{RDOC_DIR}", *RDOC_OPTS
   }
 end
 
+desc 'start example for debug.l'
 task :example do
   cd_v(RUNTIME_DIR) {
     if (ENV.key? 'RUBYLIB') then
@@ -60,14 +63,17 @@ Rake::GemPackageTask.new(spec) do |pkg|
   pkg.need_tar = true
 end
 
+desc 'install.'
 task :gem_install => [ :gem ] do
   sh 'gem', 'install', "pkg/gluon-#{Gluon::VERSION}.gem"
 end
 
+desc 'clean up work files.'
 task :clean => [ :clobber_package ] do
   rm_rf RDOC_DIR
 end
 
+desc 'clean up all work files.'
 task :clean_all => :clean do
   rm_rf EXAMPLE_DIR
 end
