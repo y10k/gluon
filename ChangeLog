@@ -1,5 +1,7 @@
 2008-12-02  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* run/cgi-bin/run.cgi -> run/cgi-bin/gluon.cgi.
+
 	* bin/gluon_example, bin/gluon_setup, lib/gluon/setup.rb: renewal
 	architecture.
 
