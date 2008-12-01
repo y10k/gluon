@@ -57,8 +57,8 @@ spec = Gem::Specification.new{|s|
   s.summary = 'simple web application framework'
   s.author = 'TOKI Yoshinori'
   s.email = 'toki@freedom.ne.jp'
-  s.executables << 'gluon_setup' << 'gluon_update'
-  s.files = Dir['{lib,run,test}/**/*.{rb,rhtml,cgi}'] +
+  s.executables << 'gluon_setup' << 'gluon_example'
+  s.files = Dir['{lib,run,test}/**/*.{rb,rhtml,erb,cgi}'] +
     %w[ gluon.ru webrick mongrel ].map{|i| "run/server/#{i}" } +
     %w[ lib/LICENSE ChangeLog Rakefile ]
   s.test_files = [ 'test/run.rb' ]
