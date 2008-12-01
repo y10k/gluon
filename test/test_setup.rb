@@ -47,8 +47,8 @@ module Gluon::Test
       assert(File.file? inst_path(Gluon::Setup::SERVER_DIR, 'gluon.ru'))
       assert(! (File.executable? inst_path(Gluon::Setup::SERVER_DIR, 'gluon.ru')))
 
-      assert(File.file? inst_path(Gluon::Setup::CGI_DIR, 'run.cgi'))
-      assert(File.executable? inst_path(Gluon::Setup::CGI_DIR, 'run.cgi'))
+      assert(File.file? inst_path(Gluon::Setup::CGI_DIR, 'gluon.cgi'))
+      assert(File.executable? inst_path(Gluon::Setup::CGI_DIR, 'gluon.cgi'))
 
       assert(File.file? inst_path('Rakefile'))
       assert(! (File.executable? inst_path('Rakefile')))

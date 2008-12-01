@@ -47,7 +47,7 @@ module Gluon
     def install_runtime
       [ [ SERVER_DIR, EXEC_MODE, %w[ webrick mongrel ] ],
         [ SERVER_DIR, FILE_MODE, %w[ gluon.ru ] ],
-        [ CGI_DIR,    EXEC_MODE, %w[ run.cgi ] ],
+        [ CGI_DIR,    EXEC_MODE, %w[ gluon.cgi ] ],
       ].each do |top_dir, mode, files|
         from_dir = File.join(RUNTIME, top_dir)
         to_dir = File.join(@install_dir, top_dir)
