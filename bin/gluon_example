@@ -15,7 +15,7 @@ end
 
 setup = Gluon::Setup.new(options[:target_directory],
                          :verbose => options[:verbose])
-setup.command_setup
+setup.command_example
 
 # Local Variables:
 # mode: Ruby

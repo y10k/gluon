@@ -1,3 +1,10 @@
+2008-12-02  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* bin/gluon_example, bin/gluon_setup, lib/gluon/setup.rb: renewal
+	architecture.
+
+	* bin/gluon_update: obsolete.
+
 2008-11-30  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/fstore.rb: session store by file.
