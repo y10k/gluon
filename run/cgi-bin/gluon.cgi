@@ -3,7 +3,6 @@
 # for ident(1)
 CVS_ID = '$Id$'
 
-require 'rubygems'
 require 'gluon'
 require 'rack'
 
