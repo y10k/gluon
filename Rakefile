@@ -6,9 +6,7 @@ LIB_DIR = 'lib'
 TEST_DIR = 'test'
 RDOC_DIR = 'api'
 RDOC_OPTS = %w[ -SNa -m Gluon ]
-EXAMPLE_DIR = 'welcom'
-GLUON_SETUP = File.join(BIN_DIR, 'gluon_setup')
-GLUON_UPDATE = File.join(BIN_DIR, 'gluon_update')
+RUNTIME_DIR = 'run'
 
 def cd_v(dir)
   cd(dir, :verbose => true) {
@@ -31,22 +29,14 @@ task :rdoc do
 end
 
 task :example do
-  sv_type = ENV['SERVER'] || 'webrick'
-  ruby '-I', LIB_DIR, "run/server/#{sv_type}"
-end
-
-task :example_test => [ :example_install ] do
-  sv_type = ENV['SERVER'] || 'webrick'
-  ruby '-I', LIB_DIR, "#{EXAMPLE_DIR}/server/#{sv_type}"
-end
-
-task :example_install do
-  rm_f "#{EXAMPLE_DIR}/config.rb"
-  ruby '-I', LIB_DIR, GLUON_SETUP, EXAMPLE_DIR
-end
-
-task :example_update do
-  ruby '-I', LIB_DIR, GLUON_UPDATE, EXAMPLE_DIR
+  cd_v(RUNTIME_DIR) {
+    if (ENV.key? 'RUBYLIB') then
+      ENV['RUBYLIB'] += ":../#{LIB_DIR}"
+    else
+      ENV['RUBYLIB'] = "../#{LIB_DIR}"
+    end
+    sh 'rake'
+  }
 end
 
 require 'rake/gempackagetask'

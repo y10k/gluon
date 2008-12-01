@@ -1,0 +1,42 @@
+# for ident(1)
+CVS_ID = '$Id$'
+
+THIS_DIR = File.dirname(__FILE__)
+
+def run_server
+  sv_type = ENV['SERVER'] || 'webrick'
+  ruby "#{THIS_DIR}/server/#{sv_type}"
+end
+
+task :default => [ :debug ]
+
+desc 'start server for debug.'
+task :debug do
+  ENV['DEBUG'] = 't'
+  run_server
+end
+
+desc 'start server.'
+task :run do
+  run_server
+end
+
+desc 'start cgi server. (not implemented)'
+task :cgi do
+  raise 'not implemented CGI server task.'
+end
+
+desc 'unit-test. (not implemented)'
+task :test do
+  raise 'not implemented test task.'
+end
+
+desc 'update runtime libraries.'
+task :update_runtime do
+  sh 'gluon_example', '-d', THIS_DIR
+end
+
+# Local Variables:
+# mode: Ruby
+# indent-tabs-mode: nil
+# End:

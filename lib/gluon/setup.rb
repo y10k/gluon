@@ -47,7 +47,7 @@ module Gluon
     def install_runtime
       [ [ SERVER_DIR, EXEC_MODE, %w[ webrick mongrel ] ],
         [ SERVER_DIR, FILE_MODE, %w[ gluon.ru ] ],
-        [ CGI_DIR,    EXEC_MODE, %w[ run.cgi ] ]
+        [ CGI_DIR,    EXEC_MODE, %w[ run.cgi ] ],
       ].each do |top_dir, mode, files|
         from_dir = File.join(RUNTIME, top_dir)
         to_dir = File.join(@install_dir, top_dir)
@@ -56,6 +56,11 @@ module Gluon
           FileUtils.install(from_path, to_dir, :mode => mode, :verbose => @verbose)
         end
       end
+
+      from_path = File.join(RUNTIME, 'Rakefile')
+      to_dir = @install_dir
+      FileUtils.install(from_path, to_dir, :mode => FILE_MODE, :verbose => @verbose)
+
       nil
     end
 
