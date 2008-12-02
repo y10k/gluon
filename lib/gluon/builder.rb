@@ -78,6 +78,46 @@ module Gluon
       nil
     end
 
+    class SessionConfig
+      def initialize
+        @options = {}
+      end
+
+      attr_reader :options
+
+      def default_key(value)
+        @options[:default_key] = value
+      end
+
+      def default_domain(value)
+        @options[:default_domain] = value
+      end
+
+      def default_path(value)
+        @options[:default_path] = value
+      end
+
+      def id_max_length(value)
+        @options[:id_max_length] = value
+      end
+
+      def time_to_live(value)
+        @options[:time_to_live] = value
+      end
+
+      def auto_expire(value)
+        @options[:auto_expire] = value
+      end
+
+      def digest(value)
+        @options[:digest] = value
+      end
+
+      def store(value)
+        @options[:store] = value
+      end
+    end
+
     def initialize(options={})
       if (options.key? :lib_dir) then
         Builder.require_path(options[:lib_dir])
@@ -98,6 +138,7 @@ module Gluon
       @plugin_maker = PluginMaker.new
       @backend_service_man = BackendServiceManager.new
       @finalizer = proc{}
+      @rack_builder = Rack::Builder.new
     end
 
     attr_reader :base_dir
@@ -170,58 +211,9 @@ module Gluon
       nil
     end
 
-    class SessionConfig
-      def initialize
-        @options = {}
-      end
-
-      attr_reader :options
-
-      def default_key(value)
-        @options[:default_key] = value
-      end
-
-      def default_domain(value)
-        @options[:default_domain] = value
-      end
-
-      def default_path(value)
-        @options[:default_path] = value
-      end
-
-      def id_max_length(value)
-        @options[:id_max_length] = value
-      end
-
-      def time_to_live(value)
-        @options[:time_to_live] = value
-      end
-
-      def auto_expire(value)
-        @options[:auto_expire] = value
-      end
-
-      def digest(value)
-        @options[:digest] = value
-      end
-
-      def store(value)
-        @options[:store] = value
-      end
-    end
-
-    def initial(&block)
-      InitialContext.new(self).instance_eval(&block)
+    def rackup_use(middleware, *args, &block)
+      @rack_builder.use(middleware, *args, &block)
       nil
-    end
-
-    def final(&block)
-      @finalizer = block
-      nil
-    end
-
-    def session(&block)
-      SessionContext.new(self).instance_eval(&block)
     end
 
     class Context
@@ -250,6 +242,7 @@ module Gluon
       def_delegator :@builder, :final
       def_delegator :@builder, :session
       def_delegator :@builder, :backend_service
+      def_delegator :@builder, :rackup
     end
 
     class InitialContext < Context
@@ -269,6 +262,30 @@ module Gluon
       def_delegator '@builder.session_conf', :auto_expire
       def_delegator '@builder.session_conf', :digest
       def_delegator '@builder.session_conf', :store
+    end
+
+    class RackupContext < Context
+      def_delegator :@builder, :rackup_use, :use
+    end
+
+    def initial(&block)
+      InitialContext.new(self).instance_eval(&block)
+      nil
+    end
+
+    def final(&block)
+      @finalizer = block
+      nil
+    end
+
+    def session(&block)
+      SessionContext.new(self).instance_eval(&block)
+      nil
+    end
+
+    def rackup(&block)
+      RackupContext.new(self).instance_eval(&block)
+      nil
     end
 
     def context_binding(_)
@@ -334,22 +351,21 @@ module Gluon
           @logger.info("#{@backend_service_man}.setup()")
           @backend_service_man.setup
 
-          rack_builder = Rack::Builder.new
-          rack_builder.use(Rack::ShowExceptions)
+          @rack_builder.use(Rack::ShowExceptions)
 
           if (@access_log) then
             @logger.debug("open access log -> #{@access_log}") if @logger.debug?
             @access_logger = File.open(@access_log, 'a')
             @access_logger.binmode
             @access_logger.sync = true
-            rack_builder.use(Rack::CommonLogger, @access_logger)
+            @rack_builder.use(Rack::CommonLogger, @access_logger)
           else
-            rack_builder.use(Rack::CommonLogger)
+            @rack_builder.use(Rack::CommonLogger)
           end
 
           @logger.debug("auto_reload -> #{@auto_reload}") if @logger.debug?
           if (@auto_reload) then
-            rack_builder.use(AutoReloader)
+            @rack_builder.use(AutoReloader)
           end
 
           @logger.info("new #{Application}")
@@ -365,8 +381,8 @@ module Gluon
           app.page_cache = @page_cache
           app.default_handler = @default_handler
           @logger.debug("#{app}.default_handler = #{@default_handler}") if @logger.debug?
-          rack_builder.run(app)
-          @app = rack_builder.to_app
+          @rack_builder.run(app)
+          @app = @rack_builder.to_app
 
           @logger.info("#{self}.build() - end")
 

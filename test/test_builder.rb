@@ -209,6 +209,14 @@ module Gluon::Test
       assert_equal({ :store => :DummyStore },
                    @builder.session_conf.options)
     end
+
+    def test_config_rackup_use
+      @builder.eval_conf %q{
+        rackup do
+          use Rack::Deflater
+        end
+      }
+    end
   end
 end
 

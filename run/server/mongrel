@@ -17,8 +17,9 @@ options = {
 
 builder = Gluon::Builder.new(options)
 builder.load_conf
-builder.build{|options|
-  builder.run(Rack::Handler::Mongrel, :Port => options[:port])
+builder.build{
+  builder.run(Rack::Handler::Mongrel,
+              :Port => builder.port)
 }
 
 # Local Variables:

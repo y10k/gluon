@@ -1,3 +1,7 @@
+2008-12-03  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/builder.rb: rackup block in config.rb.
+
 2008-12-02  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* run/cgi-bin/gluon.cgi: configuration file of CGI local

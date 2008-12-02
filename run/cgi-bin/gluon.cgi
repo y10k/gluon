@@ -21,7 +21,7 @@ options = {
 
 builder = Gluon::Builder.new(options)
 builder.load_conf
-builder.build{|options|
+builder.build{
   builder.run(Rack::Handler::CGI)
 }
 
