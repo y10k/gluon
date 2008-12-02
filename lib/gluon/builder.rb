@@ -334,38 +334,43 @@ module Gluon
           @logger.info("#{@backend_service_man}.setup()")
           @backend_service_man.setup
 
-          @logger.info("new #{Application}")
-          @app = Application.new
-          @app.logger = @logger
-          @app.url_map = @url_map
-          @app.error_map = @error_map
-          @app.renderer = @renderer
-          @app.session_man = @session_man
-          @app.plugin_maker = @plugin_maker
-          @app.backend_service_man = @backend_service_man
-          @logger.debug("#{@app}.page_cache = #{@page_cache}") if @logger.debug?
-          @app.page_cache = @page_cache
-          @app.default_handler = @default_handler
-          @logger.debug("#{@app}.default_handler = #{@default_handler}") if @logger.debug?
-
-          @logger.debug("auto_reload -> #{@auto_reload}") if @logger.debug?
-          if (@auto_reload) then
-            @app = AutoReloader.new(@app)
-          end
+          rack_builder = Rack::Builder.new
+          rack_builder.use(Rack::ShowExceptions)
 
           if (@access_log) then
             @logger.debug("open access log -> #{@access_log}") if @logger.debug?
             @access_logger = File.open(@access_log, 'a')
             @access_logger.binmode
             @access_logger.sync = true
-            @app = Rack::CommonLogger.new(@app, @access_logger)
+            rack_builder.use(Rack::CommonLogger, @access_logger)
           else
-            @app = Rack::CommonLogger.new(@app)
+            rack_builder.use(Rack::CommonLogger)
           end
 
-          @app = Rack::ShowExceptions.new(@app)
+          @logger.debug("auto_reload -> #{@auto_reload}") if @logger.debug?
+          if (@auto_reload) then
+            rack_builder.use(AutoReloader)
+          end
+
+          @logger.info("new #{Application}")
+          app = Application.new
+          app.logger = @logger
+          app.url_map = @url_map
+          app.error_map = @error_map
+          app.renderer = @renderer
+          app.session_man = @session_man
+          app.plugin_maker = @plugin_maker
+          app.backend_service_man = @backend_service_man
+          @logger.debug("#{app}.page_cache = #{@page_cache}") if @logger.debug?
+          app.page_cache = @page_cache
+          app.default_handler = @default_handler
+          @logger.debug("#{app}.default_handler = #{@default_handler}") if @logger.debug?
+          rack_builder.run(app)
+          @app = rack_builder.to_app
+
           @logger.info("#{self}.build() - end")
-          yield(:application => @app, :port => @port)
+
+          yield
         }
       ensure
         if (@access_logger) then
