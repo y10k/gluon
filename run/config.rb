@@ -13,13 +13,17 @@ if ENV.key? 'DEBUG' then
 else
   page_cache true
   auto_reload false
-  log_level Logger::INFO
+  if ENV.key? 'GATEWAY_INTERFACE' then
+    log_level Logger::WARN      # suppress logging for CGI
+  else
+    log_level Logger::INFO
+  end
   error_handler StandardError, Gluon::Web::InternalServerErrorPage
 end
 
 session do
   store Gluon::FileStore.new("#{base_dir}/session")
-  default_path '/' # should be replaced by application context path
+  default_path '/'    # should be replaced by application context path
 end
 
 ## :example:start
