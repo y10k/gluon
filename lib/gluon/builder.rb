@@ -413,7 +413,7 @@ module Gluon
       nil
     end
 
-    def run(handler, options)
+    def run(handler, options={})
       @logger.info("#{self}.run() - start")
       if (@logger.debug?) then
         @logger.debug("#{self}.run(): handler -> #{handler}")
