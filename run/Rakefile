@@ -21,9 +21,9 @@ task :run do
   run_server
 end
 
-desc 'start cgi server. (not implemented)'
+desc 'start CGI server.'
 task :cgi do
-  raise 'not implemented CGI server task.'
+  ruby "#{THIS_DIR}/server/webrick_cgi"
 end
 
 desc 'unit-test. (not implemented)'

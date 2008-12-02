@@ -14,6 +14,17 @@ def cd_v(dir)
   }
 end
 
+def runtime
+  cd_v(RUNTIME_DIR) {
+    if (ENV.key? 'RUBYLIB') then
+      ENV['RUBYLIB'] += ":../#{LIB_DIR}"
+    else
+      ENV['RUBYLIB'] = "../#{LIB_DIR}"
+    end
+    yield
+  }
+end
+
 task :default => [ :package ]
 
 desc 'unit-test.'
@@ -30,15 +41,24 @@ task :rdoc do
   }
 end
 
-desc 'start example for debug.'
+desc 'start example.'
 task :example do
-  cd_v(RUNTIME_DIR) {
-    if (ENV.key? 'RUBYLIB') then
-      ENV['RUBYLIB'] += ":../#{LIB_DIR}"
-    else
-      ENV['RUBYLIB'] = "../#{LIB_DIR}"
-    end
-    sh 'rake'
+  runtime{
+    sh 'rake', 'run'
+  }
+end
+
+desc 'start example for debug.'
+task :debug do
+  runtime{
+    sh 'rake', 'debug'
+  }
+end
+
+desc 'start example as CGI.'
+task :cgi do
+  runtime{
+    sh 'rake', 'cgi'
   }
 end
 

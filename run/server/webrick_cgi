@@ -3,14 +3,11 @@
 # for ident(1)
 CVS_ID = '$Id$'
 
-LOCAL_ENV = File.expand_path(File.join(File.dirname(__FILE__), '.env'))
-
-load(LOCAL_ENV) if (File.exist? LOCAL_ENV)
-
 require 'gluon'
-require 'rack'
+require 'webrick'
 
 base_dir = File.join(File.dirname($0), '..')
+cgi_script = File.join(File.dirname($0), '..', 'cgi-bin', 'gluon.cgi')
 
 options = {
   :base_dir => base_dir,
@@ -21,9 +18,16 @@ options = {
 
 builder = Gluon::Builder.new(options)
 builder.load_conf
-builder.build{|options|
-  builder.run(Rack::Handler::CGI)
-}
+
+server = WEBrick::HTTPServer.new(:Port => builder.port,
+                                 :CGIInterpreter => 'ruby')
+
+server.mount('/',
+             WEBrick::HTTPServlet::CGIHandler,
+             File.expand_path(cgi_script))
+
+trap('INT') { server.shutdown }
+server.start
 
 # Local Variables:
 # mode: Ruby
