@@ -30,7 +30,7 @@ task :rdoc do
   }
 end
 
-desc 'start example for debug.l'
+desc 'start example for debug.'
 task :example do
   cd_v(RUNTIME_DIR) {
     if (ENV.key? 'RUBYLIB') then
