@@ -55,13 +55,6 @@ task :debug do
   }
 end
 
-desc 'start example as CGI.'
-task :cgi do
-  runtime{
-    sh 'rake', 'cgi'
-  }
-end
-
 require 'rake/gempackagetask'
 require 'lib/gluon/version'
 spec = Gem::Specification.new{|s|
