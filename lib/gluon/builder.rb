@@ -357,8 +357,6 @@ module Gluon
           @logger.info("#{@backend_service_man}.setup()")
           @backend_service_man.setup
 
-          @rack_builder.use(Rack::ShowExceptions)
-
           if (@access_log) then
             @logger.debug("open access log -> #{@access_log}") if @logger.debug?
             @access_logger = File.open(@access_log, 'a')

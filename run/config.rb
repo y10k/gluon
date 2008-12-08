@@ -10,6 +10,9 @@ if ENV.key? 'DEBUG' then
   page_cache false
   auto_reload true
   log_level Logger::DEBUG
+  rackup do
+    use Rack::ShowExceptions
+  end
 else
   page_cache true
   auto_reload false
