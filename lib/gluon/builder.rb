@@ -216,6 +216,11 @@ module Gluon
       nil
     end
 
+    def rackup_map(path, &block)
+      @rack_builder.map(path, &block)
+      nil
+    end
+
     class Context
       extend Forwardable
 
@@ -266,6 +271,7 @@ module Gluon
 
     class RackupContext < Context
       def_delegator :@builder, :rackup_use, :use
+      def_delegator :@builder, :rackup_map, :map
     end
 
     def initial(&block)
@@ -381,7 +387,7 @@ module Gluon
           app.page_cache = @page_cache
           app.default_handler = @default_handler
           @logger.debug("#{app}.default_handler = #{@default_handler}") if @logger.debug?
-          @rack_builder.run(app)
+          @rack_builder.map('/') { run(app) }
           @app = @rack_builder.to_app
 
           @logger.info("#{self}.build() - end")

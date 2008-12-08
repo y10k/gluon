@@ -1,3 +1,7 @@
+2008-12-09  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/builder.rb: rackup map.
+
 2008-12-03  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* run/server/gluon.ru: obsolete.
