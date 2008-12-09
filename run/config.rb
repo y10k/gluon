@@ -3,30 +3,28 @@
 port 9202
 log_file "#{base_dir}/gluon.log"
 access_log "#{base_dir}/access.log"
-
 default_handler Gluon::Web::NotFoundErrorPage
 
 if ENV.key? 'DEBUG' then
   page_cache false
-  auto_reload true
   log_level Logger::DEBUG
   rackup do
     use Rack::ShowExceptions
+    use Rack::Reloader
   end
 else
   page_cache true
-  auto_reload false
+  error_handler StandardError, Gluon::Web::InternalServerErrorPage
   if ENV.key? 'GATEWAY_INTERFACE' then
     log_level Logger::WARN      # suppress logging for CGI
   else
     log_level Logger::INFO
   end
-  error_handler StandardError, Gluon::Web::InternalServerErrorPage
 end
 
 session do
   store Gluon::FileStore.new("#{base_dir}/session")
-  default_path '/'    # should be replaced by application context path
+  default_path '/'    # should be replaced to application context path
 end
 
 ## :example:start

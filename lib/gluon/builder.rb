@@ -23,50 +23,6 @@ require 'rack'
 require 'thread'
 
 module Gluon
-  # = auto-reload decorator for Rack application
-  class AutoReloader
-    # for ident(1)
-    CVS_ID = '$Id$'
-
-    def initialize(app)
-      @app = app
-      @lock = Mutex.new
-      @loaded = {}
-    end
-
-    def search_library(name)
-      for lib_dir in $:
-        lib_path = File.join(lib_dir, name)
-        next unless (File.file? lib_path)
-        return lib_path
-      end
-    end
-    private :search_library
-
-    def reload
-      for lib_name in $"
-        next unless (lib_name =~ /\.rb$/)
-        lib_path = search_library(lib_name) or raise "not found a loaded library: #{lib_name}"
-        mtime = File.stat(lib_path).mtime
-        if (@loaded.key? lib_path) then
-          if (@loaded[lib_path] != mtime) then
-            load(lib_name)
-          end
-        end
-        @loaded[lib_path] = mtime
-      end
-      nil
-    end
-    private :reload
-
-    def call(env)
-      @lock.synchronize{
-        reload
-        @app.call(env)
-      }
-    end
-  end
-
   class Builder
     # for ident(1)
     CVS_ID = '$Id$'
@@ -131,7 +87,6 @@ module Gluon
       @access_log = File.join(@base_dir, 'access.log')
       @port = 9202
       @page_cache = false
-      @auto_reload = false
       @default_handler = nil
       @error_map = ErrorMap.new
       @url_map = URLMap.new
@@ -152,7 +107,6 @@ module Gluon
     attr_accessor :access_log
     attr_accessor :port
     attr_accessor :page_cache
-    attr_accessor :auto_reload
 
     attr_accessor :default_handler
 
@@ -239,7 +193,6 @@ module Gluon
       def_delegator :@builder, :access_log=, :access_log
       def_delegator :@builder, :port=, :port
       def_delegator :@builder, :page_cache=, :page_cache
-      def_delegator :@builder, :auto_reload=, :auto_reload
       def_delegator :@builder, :default_handler=, :default_handler
       def_delegator :@builder, :error_handler
       def_delegator :@builder, :mount
@@ -365,11 +318,6 @@ module Gluon
             @rack_builder.use(Rack::CommonLogger, @access_logger)
           else
             @rack_builder.use(Rack::CommonLogger)
-          end
-
-          @logger.debug("auto_reload -> #{@auto_reload}") if @logger.debug?
-          if (@auto_reload) then
-            @rack_builder.use(AutoReloader)
           end
 
           @logger.info("new #{Application}")
