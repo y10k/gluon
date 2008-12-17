@@ -8,9 +8,9 @@
 #   :include:../LICENSE
 #
 
-require 'gluon/nolog'
 require 'digest'
 require 'forwardable'
+require 'gluon/nolog'
 require 'thread'
 
 module Gluon

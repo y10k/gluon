@@ -10,6 +10,7 @@
 
 require 'erb'
 require 'thread'
+require 'forwardable'
 
 module Gluon
   module ERBView
