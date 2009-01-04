@@ -19,6 +19,7 @@ module Gluon::Test
     end
 
     class Baz
+      gluon_path_filter %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$"
     end
 
     def setup
@@ -29,7 +30,7 @@ module Gluon::Test
       @url_map.mount(Root, '/')
       @url_map.mount(Foo, '/foo')
       @url_map.mount(Bar, '/bar')
-      @url_map.mount(Baz, '/bar', %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$")
+      @url_map.mount(Baz, '/bar')
       @url_map.setup
 
       assert_equal([ Root, '/', [] ], @url_map.lookup('/'))
@@ -43,7 +44,7 @@ module Gluon::Test
       @url_map.mount(Root, '/')
       @url_map.mount(Foo, '/foo')
       @url_map.mount(Bar, '/bar')
-      @url_map.mount(Baz, '/bar', %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$")
+      @url_map.mount(Baz, '/bar')
       @url_map.setup
 
       assert_nil(@url_map.lookup('/baz'))
@@ -55,7 +56,7 @@ module Gluon::Test
       @url_map.mount(Root, '/')
       @url_map.mount(Foo, '/foo')
       @url_map.mount(Bar, '/bar')
-      @url_map.mount(Baz, '/bar', %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$")
+      @url_map.mount(Baz, '/bar')
       @url_map.setup
 
       assert_equal('/', @url_map.class2path(Root))
@@ -72,27 +73,31 @@ module Gluon::Test
     end
 
     def test_class2path_path_info
-      @url_map.mount(Root, '/', %r"^/[A-Z][a-z]+$")
-      @url_map.mount(Foo, '/foo', %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$")
+      @url_map.mount(Baz, '/baz')
       @url_map.setup
 
-      assert_equal('/Alice', @url_map.class2path(Root, '/Alice'))
-      assert_equal('/foo/1975-11-19', @url_map.class2path(Foo, '/1975-11-19'))
+      assert_equal('/baz/1975-11-19', @url_map.class2path(Baz, '/1975-11-19'))
+    end
+
+    def test_class2path_path_info_root
+      @url_map.mount(Baz, '/')
+      @url_map.setup
+
+      assert_equal('/1975-11-19', @url_map.class2path(Baz, '/1975-11-19'))
     end
 
     def test_class2path_path_info_no_match
-      @url_map.mount(Root, '/', %r"^/[A-Z][a-z]+$")
-      @url_map.mount(Foo, '/foo', %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$")
+      @url_map.mount(Baz, '/baz')
       @url_map.setup
 
       assert_raise(ArgumentError) {
-        @url_map.class2path(Root)
+        @url_map.class2path(Baz)
       }
       assert_raise(ArgumentError) {
-        @url_map.class2path(Root, '/alice')
+        @url_map.class2path(Baz, '/alice')
       }
       assert_raise(ArgumentError) {
-        @url_map.class2path(Foo, '/2000')
+        @url_map.class2path(Baz, '/2000')
       }
     end
 

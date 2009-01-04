@@ -25,16 +25,12 @@ module Gluon
       @class2path = {}
     end
 
-    def mount(page_type, location, path_filter=nil)
+    def mount(page_type, location)
       if (location == '/') then
         location = ''
-        unless (path_filter) then
-          path_filter = URLMap.find_path_filter(page_type) || %r"^/$"
-        end
+        path_filter = URLMap.find_path_filter(page_type) || %r"^/$"
       else
-        unless (path_filter) then
-          path_filter = URLMap.find_path_filter(page_type)
-        end
+        path_filter = URLMap.find_path_filter(page_type)
       end
 
       @mapping << [

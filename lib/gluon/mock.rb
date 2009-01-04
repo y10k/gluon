@@ -40,8 +40,8 @@ module Gluon
 
     def initialize(options={})
       @url_map = URLMap.new
-      (options[:url_map] || []).each do |page_type, location, path_filter|
-	@url_map.mount(page_type, location, path_filter)
+      (options[:url_map] || []).each do |page_type, location|
+	@url_map.mount(page_type, location)
       end
       @url_map.setup
       @session_man = MockSessionManager.new
