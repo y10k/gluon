@@ -303,7 +303,14 @@ module Gluon
     def expand_path(name, options)
       case (name)
       when Class
-        @c.class2path(name, options[:path_info]) or raise "not mounted: #{name}"
+        if (options.key? :path_args) then
+          path_args = options[:path_args]
+        elsif (options.key? :path_info) then
+          path_args = [ options[:path_info] ]
+        else
+          path_args = []
+        end
+        @c.class2path(name, *path_args) or raise "not mounted: #{name}"
       else
         name
       end

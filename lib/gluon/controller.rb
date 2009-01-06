@@ -27,8 +27,11 @@ module Gluon
 
     # = controller syntax
     module Syntax
-      def gluon_path_filter(path_filter)
-        PATH_FILTER[self] = path_filter
+      def gluon_path_filter(path_filter, &block)
+        PATH_FILTER[self] = {
+          :filter => path_filter,
+          :block => block
+        }
         nil
       end
       private :gluon_path_filter
@@ -109,8 +112,17 @@ module Gluon
     class << self
       def find_path_filter(page_type)
         for page_type in page_type.ancestors
-          if (path_filter = PATH_FILTER[page_type]) then
-            return path_filter
+          if (entry = PATH_FILTER[page_type]) then
+            return entry[:filter]
+          end
+        end
+        nil
+      end
+
+      def find_path_filter_block(page_type)
+        for page_type in page_type.ancestors
+          if (entry = PATH_FILTER[page_type]) then
+            return entry[:block]
           end
         end
         nil

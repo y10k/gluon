@@ -16,10 +16,6 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    def self.find_path_filter(*args)
-      Controller.find_path_filter(*args)
-    end
-
     def initialize
       @mapping = []
       @class2path = {}
@@ -28,9 +24,9 @@ module Gluon
     def mount(page_type, location)
       if (location == '/') then
         location = ''
-        path_filter = URLMap.find_path_filter(page_type) || %r"^/$"
+        path_filter = Controller.find_path_filter(page_type) || %r"^/$"
       else
-        path_filter = URLMap.find_path_filter(page_type)
+        path_filter = Controller.find_path_filter(page_type)
       end
 
       @mapping << [
@@ -42,7 +38,8 @@ module Gluon
       unless (@class2path.key? page_type) then
         @class2path[page_type] = {
           :location => location,
-          :path_filter => path_filter
+          :path_filter => path_filter,
+          :path_filter_block => Controller.find_path_filter_block(page_type)
         }
       end
 
@@ -82,25 +79,29 @@ module Gluon
       nil
     end
 
-    def class2path(page_type, path_info=nil)
+    def class2path(page_type, *path_args)
       if (mount_point = @class2path[page_type]) then
         path = mount_point[:location]
 
-        if (path.empty? && ! path_info) then
-          path_info = '/'
+        if (path.empty? && path_args.empty?) then
+          path_args = [ '/' ]
         end
 
         if (path_filter = mount_point[:path_filter]) then
-          if (path_info) then
-            if (path_info !~ mount_point[:path_filter]) then
-              raise ArgumentError, "`#{path_info}' of path_info is no match to `#{mount_point[:path_filter]}' of path_filter for `#{page_type}'"
-            end
-            path += path_info
+          if (block = mount_point[:path_filter_block]) then
+            path_info = block.call(*path_args)
+          elsif (path_args.length == 1) then
+            path_info = path_args[0]
           else
-            raise ArgumentError, "need for path_info for `#{page_type}'"
+            raise ArgumentError, "invalid path_info for `#{page_type}'"
           end
+
+          if (path_info !~ mount_point[:path_filter]) then
+            raise ArgumentError, "`#{path_info}' of path_info is no match to `#{mount_point[:path_filter]}' of path_filter for `#{page_type}'"
+          end
+          path += path_info
         else
-          if (path_info) then
+          unless (path_args.empty?) then
             raise ArgumentError, "no need for path_info for `#{page_type}'"
           end
         end

@@ -296,8 +296,8 @@ module Gluon
 
     def_delegator :@url_map, :lookup
 
-    def class2path(page_type, path_info=nil)
-      if (location = @url_map.class2path(page_type, path_info)) then
+    def class2path(page_type, *path_args)
+      if (location = @url_map.class2path(page_type, *path_args)) then
         @req.script_name + location
       end
     end

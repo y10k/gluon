@@ -29,6 +29,29 @@ module Gluon::Test
       assert_nil(Gluon::Controller.find_path_filter(Plain))
     end
 
+    class PathFilterBlock
+      gluon_path_filter %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$" do |year, mon, day|
+        format("/%04d-%02d-%02d", year, mon, day)
+      end
+    end
+
+    class PathFilterBlockSubclass < PathFilterBlock
+    end
+
+    def test_gluon_path_filter_block
+      block = Gluon::Controller.find_path_filter_block(PathFilterBlock)
+      assert_equal('/1975-11-19', block.call(1975, 11, 19))
+    end
+
+    def test_gluon_path_filter_block_subclass
+      block = Gluon::Controller.find_path_filter_block(PathFilterBlockSubclass)
+      assert_equal('/1975-11-19', block.call(1975, 11, 19))
+    end
+
+    def test_gluon_path_filter_block_not_defined
+      assert_nil(Gluon::Controller.find_path_filter_block(PathFilter))
+    end
+
     class Advice
       def adviced
       end

@@ -22,6 +22,12 @@ module Gluon::Test
       gluon_path_filter %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$"
     end
 
+    class Quux
+      gluon_path_filter %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$" do |year, mon, day|
+        format('/%04d-%02d-%02d', year, mon, day)
+      end
+    end
+
     def setup
       @url_map = Gluon::URLMap.new
     end
@@ -56,13 +62,11 @@ module Gluon::Test
       @url_map.mount(Root, '/')
       @url_map.mount(Foo, '/foo')
       @url_map.mount(Bar, '/bar')
-      @url_map.mount(Baz, '/bar')
       @url_map.setup
 
       assert_equal('/', @url_map.class2path(Root))
       assert_equal('/foo', @url_map.class2path(Foo))
       assert_equal('/bar', @url_map.class2path(Bar))
-      assert_equal('/bar/1975-11-19', @url_map.class2path(Baz, '/1975-11-19'))
     end
 
     def test_class2path_not_found
@@ -74,9 +78,11 @@ module Gluon::Test
 
     def test_class2path_path_info
       @url_map.mount(Baz, '/baz')
+      @url_map.mount(Quux, '/quux')
       @url_map.setup
 
       assert_equal('/baz/1975-11-19', @url_map.class2path(Baz, '/1975-11-19'))
+      assert_equal('/quux/1975-11-19', @url_map.class2path(Quux, 1975, 11, 19))
     end
 
     def test_class2path_path_info_root
@@ -84,6 +90,13 @@ module Gluon::Test
       @url_map.setup
 
       assert_equal('/1975-11-19', @url_map.class2path(Baz, '/1975-11-19'))
+    end
+
+    def test_class2path_path_info_root2
+      @url_map.mount(Quux, '/')
+      @url_map.setup
+
+      assert_equal('/1975-11-19', @url_map.class2path(Quux, 1975, 11, 19))
     end
 
     def test_class2path_path_info_no_match
@@ -99,43 +112,6 @@ module Gluon::Test
       assert_raise(ArgumentError) {
         @url_map.class2path(Baz, '/2000')
       }
-    end
-
-    class PathFilterRoot
-      gluon_path_filter %r"^/root$"
-    end
-
-    class PathFilterFoo < PathFilterRoot
-      gluon_path_filter %r"^/foo$"
-    end
-
-    class PathFilterBar < PathFilterRoot
-    end
-
-    class PathFilterBaz
-    end
-
-    def test_find_path_filter
-      assert_equal(%r"^/root$", Gluon::URLMap.find_path_filter(PathFilterRoot))
-      assert_equal(%r"^/foo$", Gluon::URLMap.find_path_filter(PathFilterFoo))
-      assert_equal(%r"^/root$", Gluon::URLMap.find_path_filter(PathFilterBar))
-      assert_equal(nil, Gluon::URLMap.find_path_filter(PathFilterBaz))
-    end
-
-    def test_lookup_with_default_path_filter
-      @url_map.mount(PathFilterRoot, '/')
-      @url_map.mount(PathFilterFoo, '/test')
-      @url_map.mount(PathFilterBar, '/test')
-      @url_map.mount(PathFilterBaz, '/test')
-      @url_map.setup
-
-      assert_equal([ PathFilterRoot, '/root', [] ], @url_map.lookup('/root'))
-      assert_equal(nil, @url_map.lookup('/'))
-
-      assert_equal([ PathFilterFoo, '/foo', [] ], @url_map.lookup('/test/foo'))
-      assert_equal([ PathFilterBar, '/root', [] ], @url_map.lookup('/test/root'))
-      assert_equal([ PathFilterBaz, nil, [] ], @url_map.lookup('/test'))
-      assert_equal(nil, @url_map.lookup('/test/no_mount'))
     end
   end
 end

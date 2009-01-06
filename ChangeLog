@@ -1,3 +1,8 @@
+2009-01-06  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/controller.rb, lib/gluon/po.rb, lib/gluon/rs.rb,
+	lib/gluon/urlmap.rb: path filter block for class2path `path_args'.
+
 2009-01-04  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/urlmap.rb: obsolete `path_filter' of mount.
