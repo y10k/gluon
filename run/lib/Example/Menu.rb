@@ -10,9 +10,9 @@ class Example
 
         class << key
           def example
-            return Example::ExamplePanel,
-              :path_info => "/#{self}",
-              :text => Example::DispatchController::EXAMPLES[self][:title]
+            ex = DispatchController::EXAMPLES[self]
+            return ExamplePanel,
+              :path_args => [ ex[:class] ], :text => ex[:title]
           end
         end
 

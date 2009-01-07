@@ -83,7 +83,7 @@ class Example
     end
 
     def action_path
-      @c.class2path(Table, @c.path_info)
+      @c.class2path(ExamplePanel, Table)
     end
 
     attr_reader :auto_table

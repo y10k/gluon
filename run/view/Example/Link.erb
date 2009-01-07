@@ -15,7 +15,7 @@
 
 <p><%= link Example::ExamplePanel,
        :query => { 'example.foo()' => nil },
-       :path_info => '/action',
+       :path_args => [ Example::Action ],
        :text => 'foo action at action example page.' %></p>
 
 <h2>5. link URI</h2>

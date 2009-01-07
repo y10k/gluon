@@ -294,12 +294,15 @@ module Gluon
     def_delegator :@session, :default_domain, :session_default_domain
     def_delegator :@session, :default_path, :session_default_path
 
-    def_delegator :@url_map, :lookup
+    def lookup(path)
+      @url_map.lookup(path) or
+        raise ArgumentError, "not mounted path `#{path}'"
+    end
 
     def class2path(page_type, *path_args)
-      if (location = @url_map.class2path(page_type, *path_args)) then
-        @req.script_name + location
-      end
+      location = @url_map.class2path(page_type, *path_args) or
+        raise ArgumentError, "not mounted page type `#{page_type}'"
+      @req.script_name + location
     end
 
     def version

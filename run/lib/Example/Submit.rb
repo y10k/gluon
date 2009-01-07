@@ -14,7 +14,7 @@ class Example
     end
 
     def action_path
-      @c.class2path(Submit, @c.path_info)
+      @c.class2path(ExamplePanel, Submit)
     end
 
     def foo

@@ -12,7 +12,7 @@ class Example
     end
 
     def action_path
-      @c.class2path(Textarea, @c.path_info)
+      @c.class2path(ExamplePanel, Textarea)
     end
 
     def ok

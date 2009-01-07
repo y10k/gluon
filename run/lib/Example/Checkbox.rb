@@ -20,7 +20,7 @@ class Example
     end
 
     def action_path
-      @c.class2path(Checkbox, @c.path_info)
+      @c.class2path(ExamplePanel, Checkbox)
     end
 
     def ok

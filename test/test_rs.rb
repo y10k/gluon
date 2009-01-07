@@ -301,15 +301,21 @@ module Gluon::Test
     end
 
     def test_lookup
-      assert_equal(nil, @c.lookup('/'))
       assert_equal([ Foo, nil, [] ], @c.lookup('/foo'))
-      assert_equal(nil, @c.lookup('/foo/'))
-      assert_equal(nil, @c.lookup('/foo/bar'))
+    end
+
+    def test_lookup_not_found
+      assert_raise(ArgumentError) { @c.lookup('/') }
+      assert_raise(ArgumentError) { @c.lookup('/foo/') }
+      assert_raise(ArgumentError) { @c.lookup('/foo/bar') }
     end
 
     def test_class2path
       assert_equal('/bar.cgi/foo', @c.class2path(Foo))
-      assert_equal(nil, @c.class2path(Bar))
+    end
+
+    def test_class2path_not_found
+      assert_raise(ArgumentError) { @c.class2path(Bar) }
     end
 
     def test_version

@@ -24,7 +24,7 @@ class Example
     end
 
     def action_path
-      @c.class2path(Select, @c.path_info)
+      @c.class2path(ExamplePanel, Select)
     end
 
     def bar_join

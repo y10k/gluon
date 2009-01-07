@@ -26,23 +26,34 @@ class Example
       %w[ table Table ]
     ]
 
-    EXAMPLE_KEYS = example_alist.map{|k, n| k }
     EXAMPLES = {}
+    EXAMPLE_KEYS = example_alist.map{|k, n| k }
+    EXAMPLE_KEY_MAP = {}
+
     for key, name, title in example_alist
+      example_type = Example.const_get(name)
       EXAMPLES[key] = {
-	:class => Example.const_get(name),
+	:class => example_type,
 	:code => File.join(BASE_DIR, 'lib', 'Example', "#{name}.rb"),
 	:view => File.join(BASE_DIR, 'view', 'Example', "#{name}#{Gluon::ERBView::SUFFIX}"),
         :title => title || key
       }
+      EXAMPLE_KEY_MAP[example_type] = key
     end
 
-    gluon_path_filter \
-      %r"^/(#{EXAMPLE_KEYS.map{|k| Regexp.quote(k) }.join('|')})$"
+    regexp_example_keys =
+      EXAMPLE_KEYS.map{|k| Regexp.quote(k) }.join('|')
+
+    gluon_path_filter %r"^/(#{regexp_example_keys})$" do |example|
+      key = EXAMPLE_KEY_MAP[example] or
+        raise "not a example page type `#{example}'"
+      "/#{key}"
+    end
 
     def page_start(key)
       @key = key
       ex = EXAMPLES[@key] or raise "not found a example: #{key.inspect}"
+      @header = Header.new(ex[:class])
       @class = ex[:class]
       @code = ex[:code]
       @view = ex[:view]
@@ -52,6 +63,7 @@ class Example
     def page_get
     end
 
+    attr_reader :header
     attr_reader :key
     attr_reader :title
   end

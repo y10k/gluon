@@ -47,7 +47,7 @@ class Example
     end
 
     def action_path
-      @c.class2path(PageCache, @c.path_info)
+      @c.class2path(PageCache)
     end
 
     attr_reader :created_time

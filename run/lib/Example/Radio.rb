@@ -18,7 +18,7 @@ class Example
     end
 
     def action_path
-      @c.class2path(Radio, @c.path_info)
+      @c.class2path(ExamplePanel, Radio)
     end
 
     def ok

@@ -21,7 +21,7 @@ class Example
     end
 
     def action_path
-      @c.class2path(Session, @c.path_info)
+      @c.class2path(ExamplePanel, Session)
     end
 
     def new_session
@@ -41,7 +41,7 @@ class Example
     gluon_export :clear_session
 
     def reload
-      return ExamplePanel, :path_info => @c.path_info
+      return ExamplePanel, :path_args => [ Session ]
     end
 
     def has_session?

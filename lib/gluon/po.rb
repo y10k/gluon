@@ -310,7 +310,7 @@ module Gluon
         else
           path_args = []
         end
-        @c.class2path(name, *path_args) or raise "not mounted: #{name}"
+        @c.class2path(name, *path_args)
       else
         name
       end

@@ -12,7 +12,9 @@ class Example
   end
 
   def panel
-    return Example::ExamplePanel, :path_info => '/value'
+    key = DispatchController::EXAMPLE_KEYS[0]
+    example = DispatchController::EXAMPLES[key][:class]
+    return ExamplePanel, :path_args => [ example ]
   end
 
   autoload :Action, 'Example/Action'

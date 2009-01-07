@@ -284,7 +284,7 @@ module Gluon::Test
       assert_raise(TypeError) {
         render_page('<%= link "foo", :text => 123 %>')
       }
-      assert_raise(RuntimeError) {
+      assert_raise(ArgumentError) {
         render_page("<%= link #{NotMountedPage} %>")
       }
     end

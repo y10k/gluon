@@ -3,6 +3,10 @@ class Example
     include Gluon::Controller
     include Gluon::ERBView
 
+    def initialize(example)
+      @example = example
+    end
+
     def page_import
     end
 
@@ -11,7 +15,7 @@ class Example
     end
 
     def example
-      return ExamplePanel, :path_info => @c.path_info
+      return ExamplePanel, :path_args => [ @example ]
     end
 
     def code?
@@ -19,7 +23,7 @@ class Example
     end
 
     def code
-      return CodePanel, :path_info => @c.path_info
+      return CodePanel, :path_args => [ @example ]
     end
 
     def view?
@@ -27,7 +31,7 @@ class Example
     end
 
     def view
-      return ViewPanel, :path_info => @c.path_info
+      return ViewPanel, :path_args => [ @example ]
     end
   end
 end
