@@ -64,9 +64,11 @@ spec = Gem::Specification.new{|s|
   s.author = 'TOKI Yoshinori'
   s.email = 'toki@freedom.ne.jp'
   s.executables << 'gluon_setup' << 'gluon_example'
-  s.files = Dir['{lib,run,test}/**/*.{rb,rhtml,erb,cgi}'] +
-    Dir['**/{Rakefile,LICENSE,ChangeLog}'] +
-    %w[ gluon.ru webrick mongrel ].map{|i| "run/server/#{i}" }
+  s.files =
+    %w[ ChangeLog Rakefile lib/LICENSE ] +
+    Dir['{lib,run,test}/**/Rakefile'] +
+    Dir['{lib,run,test}/**/*.{rb,rhtml,erb,cgi}'] +
+    Dir['run/server/{mongrel,webrick,webrick_cgi}']
   s.test_files = [ 'test/run.rb' ]
   s.has_rdoc = true
   s.rdoc_options = RDOC_OPTS
@@ -84,6 +86,9 @@ end
 desc 'clean up work files.'
 task :clean => [ :clobber_package ] do
   rm_rf RDOC_DIR
+  cd_v('test') {
+    sh 'rake', 'clean'
+  }
 end
 
 desc 'clean up all work files.'
