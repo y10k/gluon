@@ -79,7 +79,7 @@ Rake::GemPackageTask.new(spec) do |pkg|
 end
 
 desc 'install.'
-task :gem_install => [ :gem ] do
+task :gem_install => [ :clean, :gem ] do
   sh 'gem', 'install', "pkg/gluon-#{Gluon::VERSION}.gem"
 end
 
