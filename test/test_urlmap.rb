@@ -28,6 +28,10 @@ module Gluon::Test
       end
     end
 
+    class PlainPathInfo
+      gluon_path_filter %r"^/\d+$"
+    end
+
     class RootId
       gluon_path_filter %r"^/$|^/(\d+)$" do |*args|
         id = args.shift
@@ -45,6 +49,7 @@ module Gluon::Test
       @url_map.mount(Foo, '/foo')
       @url_map.mount(Bar, '/bar')
       @url_map.mount(Baz, '/bar')
+      @url_map.mount(PlainPathInfo, '/plain_path_info')
       @url_map.setup
 
       assert_equal([ Root, '/', [] ], @url_map.lookup('/'))
@@ -52,6 +57,8 @@ module Gluon::Test
       assert_equal([ Bar, nil, [] ], @url_map.lookup('/bar'))
       assert_equal([ Baz, '/1975-11-19', %w[ 1975 11 19 ] ],
                    @url_map.lookup('/bar/1975-11-19'))
+      assert_equal([ PlainPathInfo, '/123', [] ],
+                   @url_map.lookup('/plain_path_info/123'))
     end
 
     def test_lookup_not_found
@@ -59,11 +66,13 @@ module Gluon::Test
       @url_map.mount(Foo, '/foo')
       @url_map.mount(Bar, '/bar')
       @url_map.mount(Baz, '/bar')
+      @url_map.mount(PlainPathInfo, '/plain_path_info')
       @url_map.setup
 
       assert_nil(@url_map.lookup('/baz'))
       assert_nil(@url_map.lookup('/foo/bar'))
       assert_nil(@url_map.lookup('/bar/1975-11-19/halo'))
+      assert_nil(@url_map.lookup('/plain_path_info'))
     end
 
     def test_class2path

@@ -65,7 +65,7 @@ module Gluon
                 args.shift
                 return page_type, path_info, args
               else
-                return page_type, path_info, []
+                raise TypeError, "not a #{Regexp} path filter for `#{location}:#{path_filter.type}'"
               end
             end
           end
