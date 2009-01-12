@@ -28,6 +28,14 @@ module Gluon::Test
       end
     end
 
+    class RootId
+      gluon_path_filter %r"^/$|^/(\d+)$" do |*args|
+        id = args.shift
+        args.empty? or raise ArgumentError, "too many arguments #{args.length} for 1"
+        (id) ? format('/%d', id) : '/'
+      end
+    end
+
     def setup
       @url_map = Gluon::URLMap.new
     end
@@ -97,6 +105,14 @@ module Gluon::Test
       @url_map.setup
 
       assert_equal('/1975-11-19', @url_map.class2path(Quux, 1975, 11, 19))
+    end
+
+    def test_class2path_path_info_root_id
+      @url_map.mount(RootId, '/')
+      @url_map.setup
+
+      assert_equal('/', @url_map.class2path(RootId))
+      assert_equal('/123', @url_map.class2path(RootId, 123))
     end
 
     def test_class2path_path_info_no_match

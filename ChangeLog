@@ -1,3 +1,7 @@
+2009-01-13  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/urlmap.rb: fixed a root-id bug of class2path.
+
 2009-01-08  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/version.rb: version 0.0.3.

@@ -83,24 +83,24 @@ module Gluon
       if (mount_point = @class2path[page_type]) then
         path = mount_point[:location]
 
-        if (path.empty? && path_args.empty?) then
-          path_args = [ '/' ]
-        end
-
         if (path_filter = mount_point[:path_filter]) then
           if (block = mount_point[:path_filter_block]) then
             path_info = block.call(*path_args)
           elsif (path_args.length == 1) then
             path_info = path_args[0]
+          elsif (path.empty? && path_args.empty?) then
+            path_info = '/'
           else
             raise ArgumentError, "invalid path_info for `#{page_type}'"
           end
-
           if (path_info !~ mount_point[:path_filter]) then
             raise ArgumentError, "`#{path_info}' of path_info is no match to `#{mount_point[:path_filter]}' of path_filter for `#{page_type}'"
           end
           path += path_info
         else
+          if (path.empty? && path_args.empty?) then
+            path_args = %w[ / ]
+          end
           unless (path_args.empty?) then
             raise ArgumentError, "no need for path_info for `#{page_type}'"
           end
