@@ -1,9 +1,5 @@
+# -*- coding: utf-8 -*-
 # = gluon - simple web application framework
-#
-# Author:: $Author$
-# Date:: $Date$
-# Revision:: $Revision$
-#
 # == license
 #   :include:LICENSE
 #
@@ -12,7 +8,6 @@ require 'gluon/version'
 require 'gluon/controller'      # to define gluon controller syntax
 
 # = gluon - simple web application framework
-#
 # == license
 #
 # BSD style license.
