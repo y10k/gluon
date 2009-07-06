@@ -40,8 +40,17 @@ module Gluon
         nil
       end
 
+      def __gluon_view_export__(name, type, options)
+        __gluon_export__(VIEW_EXPORT, name, type, options)
+      end
+
+      def __gluon_form_export__(name, type, options)
+        __gluon_export__(VIEW_EXPORT, name, type, options)
+        __gluon_export__(FORM_EXPORT, name, type, options)
+      end
+
       def gluon_value(name, options={})
-        __gluon_export__(VIEW_EXPORT, name, :value, options)
+        __gluon_view_export__(name, :value, options)
       end
 
       def gluon_value_reader(name, options={})
@@ -50,7 +59,7 @@ module Gluon
       end
 
       def gluon_cond(name, options={})
-        __gluon_export__(VIEW_EXPORT, name, :cond, options)
+        __gluon_view_export__(name, :cond, options)
       end
 
       def gluon_cond_reader(name, options={})
@@ -59,8 +68,7 @@ module Gluon
       end
 
       def gluon_foreach(name, options={})
-        __gluon_export__(VIEW_EXPORT, name, :foreach, options)
-        __gluon_export__(FORM_EXPORT, name, :foreach, options)
+        __gluon_form_export__(name, :foreach, options)
       end
 
       def gluon_foreach_reader(name, options={})
@@ -69,7 +77,7 @@ module Gluon
       end
 
       def gluon_link(name, options={})
-        __gluon_export__(VIEW_EXPORT, name, :link, options)
+        __gluon_view_export__(name, :link, options)
       end
 
       def gluon_link_reader(name, options={})
@@ -78,7 +86,7 @@ module Gluon
       end
 
       def gluon_action(name, options={})
-        __gluon_export__(VIEW_EXPORT, name, :action, options)
+        __gluon_view_export__(name, :action, options)
       end
 
       def gluon_action_reader(name, options={})
@@ -87,7 +95,7 @@ module Gluon
       end
 
       def gluon_frame(name, options={})
-        __gluon_export__(VIEW_EXPORT, name, :frame, options)
+        __gluon_view_export__(name, :frame, options)
       end
 
       def gluon_frame_reader(name, options={})
@@ -97,8 +105,7 @@ module Gluon
 
       def gluon_import(name, options={}, &block)
         options = { :block => block }.merge(options)
-        __gluon_export__(VIEW_EXPORT, name, :import, options)
-        __gluon_export__(FORM_EXPORT, name, :import, options)
+        __gluon_form_export__(name, :import, options)
       end
 
       def gluon_import_reader(name, options={}, &block)
@@ -107,7 +114,7 @@ module Gluon
       end
 
       def gluon_text(name, options={})
-        __gluon_export__(FORM_EXPORT, name, :text, options)
+        __gluon_form_export__(name, :text, options)
       end
 
       def gluon_text_accessor(name, options={})
@@ -116,7 +123,7 @@ module Gluon
       end
 
       def gluon_passwd(name, options={})
-        __gluon_export__(FORM_EXPORT, name, :passwd, options)
+        __gluon_form_export__(name, :passwd, options)
       end
 
       def gluon_passwd_accessor(name, options={})
@@ -125,11 +132,11 @@ module Gluon
       end
 
       def gluon_submit(name, options={})
-        __gluon_export__(FORM_EXPORT, name, :submit, options)
+        __gluon_form_export__(name, :submit, options)
       end
 
       def gluon_hidden(name, options={})
-        __gluon_export__(FORM_EXPORT, name, :hidden, options)
+        __gluon_form_export__(name, :hidden, options)
       end
 
       def gluon_hidden_accessor(name, options={})
@@ -138,7 +145,7 @@ module Gluon
       end
 
       def gluon_checkbox(name, options={})
-        __gluon_export__(FORM_EXPORT, name, :checkbox, options)
+        __gluon_form_export__(name, :checkbox, options)
       end
 
       def gluon_checkbox_accessor(name, options={})
@@ -148,7 +155,7 @@ module Gluon
 
       def gluon_radio(name, list, options={})
         options = { :list => list }.merge(options)
-        __gluon_export__(FORM_EXPORT, name, :radio, options)
+        __gluon_form_export__(name, :radio, options)
       end
 
       def gluon_radio_accessor(name, list, options={})
@@ -158,7 +165,7 @@ module Gluon
 
       def gluon_select(name, list, options={})
         options = { :list => list }.merge(options)
-        __gluon_export__(FORM_EXPORT, name, :select, options)
+        __gluon_form_export__(name, :select, options)
       end
 
       def gluon_select_accessor(name, list, options={})
@@ -167,7 +174,7 @@ module Gluon
       end
 
       def gluon_textarea(name, options={})
-        __gluon_export__(FORM_EXPORT, name, :textarea, options)
+        __gluon_form_export__(name, :textarea, options)
       end
 
       def gluon_textarea_accessor(name, options={})
