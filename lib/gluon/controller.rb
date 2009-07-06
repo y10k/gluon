@@ -78,8 +78,8 @@ module Gluon
       end
     end
 
-    def append_features(module_or_class)
-      module_or_class.extend(Controller)
+    def self.included(module_or_class)
+      module_or_class.extend(Syntax)
       super
     end
   end
