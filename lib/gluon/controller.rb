@@ -11,22 +11,19 @@
 module Gluon
   # = controller and meta-data
   # these methods may be explicitly defined at included class.
-  # * page_get
-  # * page_head
-  # * page_post
-  # * __if_modified__(cache_tag)
-  # 
+  #
   module Controller
     # for ident(1)
     CVS_ID = '$Id$'
 
     # :stopdoc:
     PATH_FILTER = {}
-    ADVICES = {}
     # :startdoc:
 
     # = controller syntax
     module Syntax
+      private
+
       def gluon_path_filter(path_filter, &block)
         PATH_FILTER[self] = {
           :filter => path_filter,
@@ -34,164 +31,58 @@ module Gluon
         }
         nil
       end
-      private :gluon_path_filter
 
-      def gluon_advice(name, advices={})
-        if (private_method_defined? name) then
-          raise NameError, "not advice private method `#{name}' of `#{self}'"
-        end
-        if (protected_method_defined? name) then
-          raise NameError, "not advice protected method `#{name}' of `#{self}'"
-        end
-        unless (method_defined? name) then
-          raise NoMethodError, "not advice undefined method `#{name}' of `#{self}'"
-        end
-
-        page_type = self
-        ADVICES[page_type] = {} unless (ADVICES.key? page_type)
-
-        name = name.to_s if (name.is_a? Symbol)
-        ADVICES[page_type][name] = {} unless (ADVICES[page_type].key? name)
-        ADVICES[page_type][name].update(advices)
-
-        nil
-      end
-      private :gluon_advice
-
-      def gluon_accessor(name, advices={})
-        attr_accessor name
-        gluon_advice name, advices.dup.update(:accessor => true)
-        gluon_advice "#{name}=", :accessor => true # optional advices defined only for reader
-        nil
-      end
-      private :gluon_accessor
-
-      def gluon_reader(name, advices={})
-        attr_reader name
-        gluon_advice name, advices.dup.update(:accessor => true)
-        nil
-      end
-      private :gluon_reader
-
-      def gluon_writer(name, advices={})
-        attr_writer name
-        gluon_advice "#{name}=", advices.dup.update(:accessor => true)
-        nil
-      end
-      private :gluon_writer
-
-      def gluon_export(name, advices={})
-        gluon_advice name, advices.dup.update(:export => true)
-        nil
-      end
-      private :gluon_export
-
-      def gluon_export_accessor(name, advices={})
-        gluon_accessor name, advices
-        gluon_export name
-        gluon_export "#{name}="
-        nil
-      end
-      private :gluon_export_accessor
-
-      def gluon_export_reader(name, advices={})
-        gluon_reader name, advices
-        gluon_export name
-        nil
-      end
-      private :gluon_export_reader
-
-      def gluon_export_writer(name, advices={})
-        gluon_writer name, advices
-        gluon_export "#{name}="
-        nil
-      end
-      private :gluon_export_writer
-    end
-
-    class << self
-      def find_path_filter(page_type)
-        for page_type in page_type.ancestors
-          if (entry = PATH_FILTER[page_type]) then
-            return entry[:filter]
-          end
-        end
-        nil
+      def gluon_value(name, options={})
       end
 
-      def find_path_filter_block(page_type)
-        for page_type in page_type.ancestors
-          if (entry = PATH_FILTER[page_type]) then
-            return entry[:block]
-          end
-        end
-        nil
+      def gluon_cond(name, options={})
       end
 
-      def find_advice(page_type, method_name, advice_key, default=nil)
-        method_name = method_name.to_s if (method_name.is_a? Symbol)
-        for page_type in page_type.ancestors
-          if (advices_bundle = ADVICES[page_type]) then
-            if (advices = advices_bundle[method_name]) then
-              if (advices.key? advice_key) then
-                return advices[advice_key]
-              end
-            end
-          end
-        end
-
-        default
+      def gluon_foreach(name, options={})
       end
 
-      def find_method_advices(page_type, method_name)
-        method_name = method_name.to_s if (method_name.is_a? Symbol)
-        method_advices = {}
-        page_type.ancestors.reverse_each do |page_type|
-          if (advices_bundle = ADVICES[page_type]) then
-            if (advices = advices_bundle[method_name]) then
-              method_advices.update(advices)
-            end
-          end
-        end
-        method_advices
+      def gluon_link(name, options={})
       end
 
-      def find_exported_method(page_type, name)
-        advices = find_method_advices(page_type, name)
-        if (advices[:export]) then
-          return advices
-        end
-        nil
+      def gluon_action(name, options={})
+      end
+
+      def gluon_frame(name, options={})
+      end
+
+      def gluon_import(name, options={}, &block)
+      end
+
+      def gluon_text(name, options={})
+      end
+
+      def gluon_passwd(name, options={})
+      end
+
+      def gluon_submit(name, options={})
+      end
+
+      def gluon_hidden(name, options={})
+      end
+
+      def gluon_checkbox(name, options={})
+      end
+
+      def gluon_radio(name, list, options={})
+      end
+
+      def gluon_select(name, list, options={})
+      end
+
+      def gluon_textarea(name, options={})
       end
     end
 
-    attr_writer :c
-
-    def page_around_hook
-      yield
+    def append_features(module_or_class)
+      module_or_class.extend(Controller)
+      super
     end
-
-    def page_start
-    end
-
-    ## define explicitly
-    # def page_get
-    # def page_head
-    # def page_post
-
-    def page_end
-    end
-
-    def __cache_key__
-    end
-
-    ## define explicitly
-    # def __if_modified__(cache_tag)
   end
-end
-
-class Module
-  include Gluon::Controller::Syntax
 end
 
 # Local Variables:
