@@ -154,8 +154,10 @@ module Gluon::Test
 
     def test_gluon_text
       @c.class_eval{ gluon_text_accessor :foo }
-      assert(entry = Gluon::Controller.find_form_export(@c))
-      assert_equal(:text, entry[:foo][:type])
+      assert(view_entry = Gluon::Controller.find_view_export(@c))
+      assert_equal(:text, view_entry[:foo][:type])
+      assert(form_entry = Gluon::Controller.find_form_export(@c))
+      assert_equal(:text, form_entry[:foo][:type])
       assert_equal(true, (@c.public_method_defined? :foo))
       assert_equal(true, (@c.public_method_defined? :foo=))
     end
@@ -163,8 +165,10 @@ module Gluon::Test
     def test_gluon_text_inherited
       @c.class_eval{ gluon_text_accessor :foo }
       subclass = Class.new(@c)
-      assert(entry = Gluon::Controller.find_form_export(subclass))
-      assert_equal(:text, entry[:foo][:type])
+      assert(view_entry = Gluon::Controller.find_view_export(subclass))
+      assert_equal(:text, view_entry[:foo][:type])
+      assert(form_entry = Gluon::Controller.find_form_export(subclass))
+      assert_equal(:text, form_entry[:foo][:type])
     end
   end
 end
