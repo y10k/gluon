@@ -83,6 +83,10 @@ module Gluon
       def find_path_filter(page_type)
         entry = PATH_FILTER[page_type] and return entry[:filter]
       end
+
+      def find_path_block(page_type)
+        entry = PATH_FILTER[page_type] and return entry[:block]
+      end
     end
   end
 end

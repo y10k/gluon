@@ -1,6 +1,7 @@
 2009-07-05  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/controller.rb: redefine gluon path filter.
+	redefine gluon path block.
 
 2009-07-04  TOKI Yoshinori  <toki@freedom.ne.jp>
 
