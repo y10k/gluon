@@ -170,6 +170,145 @@ module Gluon::Test
       assert(form_entry = Gluon::Controller.find_form_export(subclass))
       assert_equal(:text, form_entry[:foo][:type])
     end
+
+    def test_gluon_passwd
+      @c.class_eval{ gluon_passwd_accessor :foo }
+      assert(view_entry = Gluon::Controller.find_view_export(@c))
+      assert_equal(:passwd, view_entry[:foo][:type])
+      assert(form_entry = Gluon::Controller.find_form_export(@c))
+      assert_equal(:passwd, form_entry[:foo][:type])
+      assert_equal(true, (@c.public_method_defined? :foo))
+      assert_equal(true, (@c.public_method_defined? :foo=))
+    end
+
+    def test_gluon_passwd_inherited
+      @c.class_eval{ gluon_passwd_accessor :foo }
+      subclass = Class.new(@c)
+      assert(view_entry = Gluon::Controller.find_view_export(subclass))
+      assert_equal(:passwd, view_entry[:foo][:type])
+      assert(form_entry = Gluon::Controller.find_form_export(subclass))
+      assert_equal(:passwd, form_entry[:foo][:type])
+    end
+
+    def test_gluon_submit
+      @c.class_eval{
+        def foo
+        end
+        gluon_submit :foo
+      }
+      assert(view_entry = Gluon::Controller.find_view_export(@c))
+      assert_equal(:submit, view_entry[:foo][:type])
+      assert(form_entry = Gluon::Controller.find_form_export(@c))
+      assert_equal(:submit, form_entry[:foo][:type])
+    end
+
+    def test_gluon_submit_inherited
+      @c.class_eval{
+        def foo
+        end
+        gluon_submit :foo
+      }
+      subclass = Class.new(@c)
+      assert(view_entry = Gluon::Controller.find_view_export(subclass))
+      assert_equal(:submit, view_entry[:foo][:type])
+      assert(form_entry = Gluon::Controller.find_form_export(subclass))
+      assert_equal(:submit, form_entry[:foo][:type])
+    end
+
+    def test_gluon_hidden
+      @c.class_eval{ gluon_hidden_accessor :foo }
+      assert(view_entry = Gluon::Controller.find_view_export(@c))
+      assert_equal(:hidden, view_entry[:foo][:type])
+      assert(form_entry = Gluon::Controller.find_form_export(@c))
+      assert_equal(:hidden, form_entry[:foo][:type])
+      assert_equal(true, (@c.public_method_defined? :foo))
+      assert_equal(true, (@c.public_method_defined? :foo=))
+    end
+
+    def test_gluon_hidden_inherited
+      @c.class_eval{ gluon_hidden_accessor :foo }
+      subclass = Class.new(@c)
+      assert(view_entry = Gluon::Controller.find_view_export(subclass))
+      assert_equal(:hidden, view_entry[:foo][:type])
+      assert(form_entry = Gluon::Controller.find_form_export(subclass))
+      assert_equal(:hidden, form_entry[:foo][:type])
+    end
+
+    def test_gluon_checkbox
+      @c.class_eval{ gluon_checkbox_accessor :foo }
+      assert(view_entry = Gluon::Controller.find_view_export(@c))
+      assert_equal(:checkbox, view_entry[:foo][:type])
+      assert(form_entry = Gluon::Controller.find_form_export(@c))
+      assert_equal(:checkbox, form_entry[:foo][:type])
+      assert_equal(true, (@c.public_method_defined? :foo))
+      assert_equal(true, (@c.public_method_defined? :foo=))
+    end
+
+    def test_gluon_checkbox_inherited
+      @c.class_eval{ gluon_checkbox_accessor :foo }
+      subclass = Class.new(@c)
+      assert(view_entry = Gluon::Controller.find_view_export(subclass))
+      assert_equal(:checkbox, view_entry[:foo][:type])
+      assert(form_entry = Gluon::Controller.find_form_export(subclass))
+      assert_equal(:checkbox, form_entry[:foo][:type])
+    end
+
+    def test_gluon_radio
+      @c.class_eval{ gluon_radio_accessor :foo, %w[ apple banana orange ] }
+      assert(view_entry = Gluon::Controller.find_view_export(@c))
+      assert_equal(:radio, view_entry[:foo][:type])
+      assert(form_entry = Gluon::Controller.find_form_export(@c))
+      assert_equal(:radio, form_entry[:foo][:type])
+      assert_equal(true, (@c.public_method_defined? :foo))
+      assert_equal(true, (@c.public_method_defined? :foo=))
+    end
+
+    def test_gluon_radio_inherited
+      @c.class_eval{ gluon_radio_accessor :foo, %w[ apple banana orange ] }
+      subclass = Class.new(@c)
+      assert(view_entry = Gluon::Controller.find_view_export(subclass))
+      assert_equal(:radio, view_entry[:foo][:type])
+      assert(form_entry = Gluon::Controller.find_form_export(subclass))
+      assert_equal(:radio, form_entry[:foo][:type])
+    end
+
+    def test_gluon_select
+      @c.class_eval{ gluon_select_accessor :foo, %w[ apple banana orange ] }
+      assert(view_entry = Gluon::Controller.find_view_export(@c))
+      assert_equal(:select, view_entry[:foo][:type])
+      assert(form_entry = Gluon::Controller.find_form_export(@c))
+      assert_equal(:select, form_entry[:foo][:type])
+      assert_equal(true, (@c.public_method_defined? :foo))
+      assert_equal(true, (@c.public_method_defined? :foo=))
+    end
+
+    def test_gluon_select_inherited
+      @c.class_eval{ gluon_select_accessor :foo, %w[ apple banana orange ] }
+      subclass = Class.new(@c)
+      assert(view_entry = Gluon::Controller.find_view_export(subclass))
+      assert_equal(:select, view_entry[:foo][:type])
+      assert(form_entry = Gluon::Controller.find_form_export(subclass))
+      assert_equal(:select, form_entry[:foo][:type])
+    end
+
+    def test_gluon_textarea
+      @c.class_eval{ gluon_textarea_accessor :foo }
+      assert(view_entry = Gluon::Controller.find_view_export(@c))
+      assert_equal(:textarea, view_entry[:foo][:type])
+      assert(form_entry = Gluon::Controller.find_form_export(@c))
+      assert_equal(:textarea, form_entry[:foo][:type])
+      assert_equal(true, (@c.public_method_defined? :foo))
+      assert_equal(true, (@c.public_method_defined? :foo=))
+    end
+
+    def test_gluon_textarea_inherited
+      @c.class_eval{ gluon_textarea_accessor :foo }
+      subclass = Class.new(@c)
+      assert(view_entry = Gluon::Controller.find_view_export(subclass))
+      assert_equal(:textarea, view_entry[:foo][:type])
+      assert(form_entry = Gluon::Controller.find_form_export(subclass))
+      assert_equal(:textarea, form_entry[:foo][:type])
+    end
   end
 end
 
