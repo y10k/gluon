@@ -1,3 +1,7 @@
+2009-07-04  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* start to restructure gluon to ruby19.
+
 2009-01-13  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/urlmap.rb: fixed a root-id bug of class2path.
