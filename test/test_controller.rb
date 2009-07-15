@@ -172,6 +172,13 @@ module Gluon::Test
       assert_equal(:text, form_entry[:foo][:type])
     end
 
+    def test_gluon_text_form_params
+      @Controller.class_eval{ gluon_text_accessor :foo }
+      c = @Controller.new
+      Gluon::Controller.set_form_params(c, { 'foo' => 'Hello world.' })
+      assert_equal('Hello world.', c.foo)
+    end
+
     def test_gluon_passwd
       @Controller.class_eval{ gluon_passwd_accessor :foo }
       assert(view_entry = Gluon::Controller.find_view_export(@Controller))
@@ -190,6 +197,13 @@ module Gluon::Test
       assert_equal(:passwd, view_entry[:foo][:type])
       assert(form_entry = Gluon::Controller.find_form_export(subclass))
       assert_equal(:passwd, form_entry[:foo][:type])
+    end
+
+    def test_gluon_passwd_form_params
+      @Controller.class_eval{ gluon_passwd_accessor :foo }
+      c = @Controller.new
+      Gluon::Controller.set_form_params(c, { 'foo' => 'Hello world.' })
+      assert_equal('Hello world.', c.foo)
     end
 
     def test_gluon_submit
@@ -237,6 +251,13 @@ module Gluon::Test
       assert_equal(:hidden, form_entry[:foo][:type])
     end
 
+    def test_gluon_hidden_form_params
+      @Controller.class_eval{ gluon_hidden_accessor :foo }
+      c = @Controller.new
+      Gluon::Controller.set_form_params(c, { 'foo' => 'Hello world.' })
+      assert_equal('Hello world.', c.foo)
+    end
+
     def test_gluon_checkbox
       @Controller.class_eval{ gluon_checkbox_accessor :foo }
       assert(view_entry = Gluon::Controller.find_view_export(@Controller))
@@ -255,6 +276,20 @@ module Gluon::Test
       assert_equal(:checkbox, view_entry[:foo][:type])
       assert(form_entry = Gluon::Controller.find_form_export(subclass))
       assert_equal(:checkbox, form_entry[:foo][:type])
+    end
+
+    def test_gluon_checkbox_form_params_true
+      @Controller.class_eval{ gluon_checkbox_accessor :foo }
+      c = @Controller.new
+      Gluon::Controller.set_form_params(c, { 'foo:checkbox' => 'submit', 'foo' => '' })
+      assert_equal(true, c.foo)
+    end
+
+    def test_gluon_checkbox_form_params_false
+      @Controller.class_eval{ gluon_checkbox_accessor :foo }
+      c = @Controller.new
+      Gluon::Controller.set_form_params(c, { 'foo:checkbox' => 'submit' })
+      assert_equal(false, c.foo)
     end
 
     def test_gluon_radio
@@ -277,6 +312,13 @@ module Gluon::Test
       assert_equal(:radio, form_entry[:foo][:type])
     end
 
+    def test_gluon_radio_form_params
+      @Controller.class_eval{ gluon_radio_accessor :foo, %w[ apple banana orange ] }
+      c = @Controller.new
+      Gluon::Controller.set_form_params(c, { 'foo' => 'banana' })
+      assert_equal('banana', c.foo)
+    end
+
     def test_gluon_select
       @Controller.class_eval{ gluon_select_accessor :foo, %w[ apple banana orange ] }
       assert(view_entry = Gluon::Controller.find_view_export(@Controller))
@@ -297,6 +339,22 @@ module Gluon::Test
       assert_equal(:select, form_entry[:foo][:type])
     end
 
+    def test_gluon_select_form_params
+      @Controller.class_eval{ gluon_select_accessor :foo, %w[ apple banana orange ] }
+      c = @Controller.new
+      Gluon::Controller.set_form_params(c, { 'foo' => 'banana' })
+      assert_equal('banana', c.foo)
+    end
+
+    def test_gluon_select_form_params_multiple
+      @Controller.class_eval{
+        gluon_select_accessor :foo, %w[ apple banana orange ], :multiple => true
+      }
+      c = @Controller.new
+      Gluon::Controller.set_form_params(c, { 'foo' => %w[ apple orange ] })
+      assert_equal(%w[ apple orange ], c.foo)
+    end
+
     def test_gluon_textarea
       @Controller.class_eval{ gluon_textarea_accessor :foo }
       assert(view_entry = Gluon::Controller.find_view_export(@Controller))
@@ -315,6 +373,13 @@ module Gluon::Test
       assert_equal(:textarea, view_entry[:foo][:type])
       assert(form_entry = Gluon::Controller.find_form_export(subclass))
       assert_equal(:textarea, form_entry[:foo][:type])
+    end
+
+    def test_gluon_textarea_form_params
+      @Controller.class_eval{ gluon_textarea_accessor :foo }
+      c = @Controller.new
+      Gluon::Controller.set_form_params(c, { 'foo' => 'Hello world.' })
+      assert_equal('Hello world.', c.foo)
     end
   end
 end

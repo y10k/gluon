@@ -124,6 +124,10 @@ module Gluon
         gluon_import(name, options, &block)
       end
 
+      def gluon_submit(name, options={})
+        __gluon_form_export__(name, :submit, options)
+      end
+
       def gluon_text(name, options={})
         __gluon_form_export__(name, :text, options)
         __gluon_form_params__(name, :writer => "#{name}=".to_sym)
@@ -142,10 +146,6 @@ module Gluon
       def gluon_passwd_accessor(name, options={})
         class_eval{ attr_accessor(name) } # why is class_eval necessary?
         gluon_passwd(name, options)
-      end
-
-      def gluon_submit(name, options={})
-        __gluon_form_export__(name, :submit, options)
       end
 
       def gluon_hidden(name, options={})
@@ -233,6 +233,62 @@ module Gluon
 
       def find_form_export(page_type)
         find_export(FORM_EXPORT, page_type)
+      end
+
+      def set_form_params(controller, req, prefix='')
+        form_export = find_form_export(controller.class)
+        for name, form_entry in form_export
+          case (form_entry[:type])
+          when :foreach
+            controller.__send__(name).each_with_index do |c, i|
+              set_form_params(c, req, "#{prefix}#{name}[#{i}].")
+            end
+          when :import
+            set_form_params(controller.__send__(name), req, "#{prefix}#{name}.")
+          when :text, :passwd, :hidden, :textarea
+            if (value = req["#{prefix}#{name}"]) then
+              controller.__send__(form_entry[:writer], value)
+            end
+          when :checkbox
+            if (req["#{prefix}#{name}:checkbox"] == 'submit') then
+              if (req["#{prefix}#{name}"]) then
+                controller.__send__(form_entry[:writer], true)
+              else
+                controller.__send__(form_entry[:writer], false)
+              end
+            end
+          when :radio, :select
+            if (value = req["#{prefix}#{name}"]) then
+              case (value)
+              when Array
+                values = value
+              else
+                values = [ value ]
+              end
+
+              case (form_entry[:options][:list])
+              when Array
+                list = form_entry[:options][:list]
+              when Symbol
+                list = controller.__send__(form_entry[:options][:list])
+              else
+                raise "invalid list value: #{form_entry[:options][:list]}"
+              end
+
+              values.each do |i|
+                unless (list.include? i) then
+                  raise "unexpected value for #{prefix}#{name}: #{i}"
+                end
+              end
+
+              if (form_entry[:options][:multiple]) then
+                controller.__send__(form_entry[:writer], values)
+              else
+                controller.__send__(form_entry[:writer], value)
+              end
+            end
+          end
+        end
       end
     end
   end
