@@ -97,7 +97,7 @@ module Gluon
       end
 
       def gluon_action(name, options={})
-        __gluon_view_export__(name, :action, options)
+        __gluon_form_export__(name, :action, options)
       end
 
       def gluon_action_reader(name, options={})

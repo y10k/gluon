@@ -136,8 +136,10 @@ module Gluon::Test
 
     def test_gluon_action
       @Controller.class_eval{ gluon_action_reader :foo }
-      assert(entry = Gluon::Controller.find_view_export(@Controller))
-      assert_equal(:action, entry[:foo][:type])
+      assert(view_entry = Gluon::Controller.find_view_export(@Controller))
+      assert_equal(:action, view_entry[:foo][:type])
+      assert(form_entry = Gluon::Controller.find_form_export(@Controller))
+      assert_equal(:action, form_entry[:foo][:type])
       assert_equal(true, (@Controller.public_method_defined? :foo))
       assert_equal(false, (@Controller.public_method_defined? :foo=))
     end
