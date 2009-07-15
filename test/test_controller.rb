@@ -183,6 +183,25 @@ module Gluon::Test
       assert_equal(:import, form_entry[:foo][:type])
     end
 
+    def test_gluon_import_form_params
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_import_reader :foo
+      }
+
+      controller2 = Class.new
+      controller2.class_eval{
+        include Gluon::Controller
+        gluon_text_accessor :bar
+      }
+
+      c = @Controller.new
+      c.foo = controller2.new
+
+      Gluon::Controller.set_form_params(c, { 'foo.bar' => 'Hello world.' })
+      assert_equal('Hello world.', c.foo.bar)
+    end
+
     def test_gluon_text
       @Controller.class_eval{ gluon_text_accessor :foo }
       assert(view_entry = Gluon::Controller.find_view_export(@Controller))
