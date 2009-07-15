@@ -119,6 +119,47 @@ module Gluon::Test
       assert_equal('orange', c.foo[2].bar)
     end
 
+    def test_gluon_foreach_apply_first_action
+      @Controller.class_eval{
+        def initialize
+          @foo = Array.new(3)
+        end
+
+        gluon_foreach_reader :foo
+      }
+
+      controller2 = Class.new
+      controller2.class_eval{
+        include Gluon::Controller
+
+        def initialize
+          @count = 0
+        end
+
+        attr_reader :count
+
+        def bar
+          @count += 1
+        end
+        gluon_action :bar
+      }
+
+      c = @Controller.new
+      c.foo[0] = controller2.new
+      c.foo[1] = controller2.new
+      c.foo[2] = controller2.new
+
+      Gluon::Controller.apply_first_action(c, {
+                                             'foo[0].bar' => '',
+                                             'foo[1].bar' => '',
+                                             'foo[2].bar' => ''
+                                           })
+
+      assert_equal(1, c.foo[0].count)
+      assert_equal(0, c.foo[1].count)
+      assert_equal(0, c.foo[2].count)
+    end
+
     def test_gluon_link
       @Controller.class_eval{ gluon_link_reader :foo }
       assert(entry = Gluon::Controller.find_view_export(@Controller))
@@ -157,6 +198,24 @@ module Gluon::Test
       subclass = Class.new(@Controller)
       assert(entry = Gluon::Controller.find_view_export(subclass))
       assert_equal(:action, entry[:foo][:type])
+    end
+
+    def test_gluon_action_apply_first_action
+      @Controller.class_eval{
+        def initialize
+          @count = 0
+        end
+
+        attr_reader :count
+
+        def foo
+          @count += 1
+        end
+        gluon_action :foo
+      }
+      c = @Controller.new
+      Gluon::Controller.apply_first_action(c, { 'foo' => '' })
+      assert_equal(1, c.count)
     end
 
     def test_gluon_frame
@@ -210,6 +269,35 @@ module Gluon::Test
 
       Gluon::Controller.set_form_params(c, { 'foo.bar' => 'Hello world.' })
       assert_equal('Hello world.', c.foo.bar)
+    end
+
+    def test_gluon_import_apply_first_action
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_import_reader :foo
+      }
+
+      controller2 = Class.new
+      controller2.class_eval{
+        include Gluon::Controller
+
+        def initialize
+          @count = 0
+        end
+
+        attr_reader :count
+
+        def bar
+          @count += 1
+        end
+        gluon_action :bar
+      }
+
+      c = @Controller.new
+      c.foo = controller2.new
+
+      Gluon::Controller.apply_first_action(c, { 'foo.bar' => '' })
+      assert_equal(1, c.foo.count)
     end
 
     def test_gluon_text
@@ -289,6 +377,24 @@ module Gluon::Test
       assert_equal(:submit, view_entry[:foo][:type])
       assert(form_entry = Gluon::Controller.find_form_export(subclass))
       assert_equal(:submit, form_entry[:foo][:type])
+    end
+
+    def test_gluon_submit_apply_first_action
+      @Controller.class_eval{
+        def initialize
+          @count = 0
+        end
+
+        attr_reader :count
+
+        def foo
+          @count += 1
+        end
+        gluon_submit :foo
+      }
+      c = @Controller.new
+      Gluon::Controller.apply_first_action(c, { 'foo' => '' })
+      assert_equal(1, c.count)
     end
 
     def test_gluon_hidden

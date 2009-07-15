@@ -286,6 +286,28 @@ module Gluon
           end
         end
       end
+
+      def apply_first_action(controller, req, prefix='')
+        form_export = find_form_export(controller.class)
+        for name, form_entry in form_export
+          case (form_entry[:type])
+          when :action, :submit
+            if (req["#{prefix}#{name}"]) then
+              controller.__send__(name)
+              return true
+            end
+          when :foreach
+            controller.__send__(name).each_with_index do |c, i|
+              apply_first_action(c, req, "#{prefix}#{name}[#{i}].") and return true
+            end
+          when :import
+            c = controller.__send__(name)
+            apply_first_action(c, req, "#{prefix}#{name}.") and return true
+          end
+        end
+
+        false
+      end
     end
   end
 end
