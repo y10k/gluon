@@ -40,6 +40,12 @@ module Gluon
         nil
       end
 
+      def __gluon_export_params__(table, name, params={})
+        name = name.to_sym
+        table[self][name].update(params)
+        nil
+      end
+
       def __gluon_view_export__(name, type, options)
         __gluon_export__(VIEW_EXPORT, name, type, options)
       end
@@ -47,6 +53,11 @@ module Gluon
       def __gluon_form_export__(name, type, options)
         __gluon_export__(VIEW_EXPORT, name, type, options)
         __gluon_export__(FORM_EXPORT, name, type, options)
+      end
+
+      def __gluon_form_params__(name, params={})
+        __gluon_export_params__(VIEW_EXPORT, name, params)
+        __gluon_export_params__(FORM_EXPORT, name, params)
       end
 
       def gluon_value(name, options={})
@@ -115,6 +126,7 @@ module Gluon
 
       def gluon_text(name, options={})
         __gluon_form_export__(name, :text, options)
+        __gluon_form_params__(name, :writer => "#{name}=".to_sym)
       end
 
       def gluon_text_accessor(name, options={})
@@ -124,6 +136,7 @@ module Gluon
 
       def gluon_passwd(name, options={})
         __gluon_form_export__(name, :passwd, options)
+        __gluon_form_params__(name, :writer => "#{name}=".to_sym)
       end
 
       def gluon_passwd_accessor(name, options={})
@@ -137,6 +150,7 @@ module Gluon
 
       def gluon_hidden(name, options={})
         __gluon_form_export__(name, :hidden, options)
+        __gluon_form_params__(name, :writer => "#{name}=".to_sym)
       end
 
       def gluon_hidden_accessor(name, options={})
@@ -146,6 +160,7 @@ module Gluon
 
       def gluon_checkbox(name, options={})
         __gluon_form_export__(name, :checkbox, options)
+        __gluon_form_params__(name, :writer => "#{name}=".to_sym)
       end
 
       def gluon_checkbox_accessor(name, options={})
@@ -156,6 +171,7 @@ module Gluon
       def gluon_radio(name, list, options={})
         options = { :list => list }.merge(options)
         __gluon_form_export__(name, :radio, options)
+        __gluon_form_params__(name, :writer => "#{name}=".to_sym)
       end
 
       def gluon_radio_accessor(name, list, options={})
@@ -166,6 +182,7 @@ module Gluon
       def gluon_select(name, list, options={})
         options = { :list => list }.merge(options)
         __gluon_form_export__(name, :select, options)
+        __gluon_form_params__(name, :writer => "#{name}=".to_sym)
       end
 
       def gluon_select_accessor(name, list, options={})
@@ -175,6 +192,7 @@ module Gluon
 
       def gluon_textarea(name, options={})
         __gluon_form_export__(name, :textarea, options)
+        __gluon_form_params__(name, :writer => "#{name}=".to_sym)
       end
 
       def gluon_textarea_accessor(name, options={})

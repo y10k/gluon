@@ -158,6 +158,7 @@ module Gluon::Test
       assert_equal(:text, view_entry[:foo][:type])
       assert(form_entry = Gluon::Controller.find_form_export(@c))
       assert_equal(:text, form_entry[:foo][:type])
+      assert_equal(:foo=, form_entry[:foo][:writer])
       assert_equal(true, (@c.public_method_defined? :foo))
       assert_equal(true, (@c.public_method_defined? :foo=))
     end
@@ -177,6 +178,7 @@ module Gluon::Test
       assert_equal(:passwd, view_entry[:foo][:type])
       assert(form_entry = Gluon::Controller.find_form_export(@c))
       assert_equal(:passwd, form_entry[:foo][:type])
+      assert_equal(:foo=, form_entry[:foo][:writer])
       assert_equal(true, (@c.public_method_defined? :foo))
       assert_equal(true, (@c.public_method_defined? :foo=))
     end
@@ -221,6 +223,7 @@ module Gluon::Test
       assert_equal(:hidden, view_entry[:foo][:type])
       assert(form_entry = Gluon::Controller.find_form_export(@c))
       assert_equal(:hidden, form_entry[:foo][:type])
+      assert_equal(:foo=, form_entry[:foo][:writer])
       assert_equal(true, (@c.public_method_defined? :foo))
       assert_equal(true, (@c.public_method_defined? :foo=))
     end
@@ -240,6 +243,7 @@ module Gluon::Test
       assert_equal(:checkbox, view_entry[:foo][:type])
       assert(form_entry = Gluon::Controller.find_form_export(@c))
       assert_equal(:checkbox, form_entry[:foo][:type])
+      assert_equal(:foo=, form_entry[:foo][:writer])
       assert_equal(true, (@c.public_method_defined? :foo))
       assert_equal(true, (@c.public_method_defined? :foo=))
     end
@@ -259,6 +263,7 @@ module Gluon::Test
       assert_equal(:radio, view_entry[:foo][:type])
       assert(form_entry = Gluon::Controller.find_form_export(@c))
       assert_equal(:radio, form_entry[:foo][:type])
+      assert_equal(:foo=, form_entry[:foo][:writer])
       assert_equal(true, (@c.public_method_defined? :foo))
       assert_equal(true, (@c.public_method_defined? :foo=))
     end
@@ -278,6 +283,7 @@ module Gluon::Test
       assert_equal(:select, view_entry[:foo][:type])
       assert(form_entry = Gluon::Controller.find_form_export(@c))
       assert_equal(:select, form_entry[:foo][:type])
+      assert_equal(:foo=, form_entry[:foo][:writer])
       assert_equal(true, (@c.public_method_defined? :foo))
       assert_equal(true, (@c.public_method_defined? :foo=))
     end
@@ -297,6 +303,7 @@ module Gluon::Test
       assert_equal(:textarea, view_entry[:foo][:type])
       assert(form_entry = Gluon::Controller.find_form_export(@c))
       assert_equal(:textarea, form_entry[:foo][:type])
+      assert_equal(:foo=, form_entry[:foo][:writer])
       assert_equal(true, (@c.public_method_defined? :foo))
       assert_equal(true, (@c.public_method_defined? :foo=))
     end
