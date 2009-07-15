@@ -88,6 +88,37 @@ module Gluon::Test
       assert_equal(:foreach, form_entry[:foo][:type])
     end
 
+    def test_gluon_foreach_form_params
+      @Controller.class_eval{
+        def initialize
+          @foo = Array.new(3)
+        end
+
+        gluon_foreach_reader :foo
+      }
+
+      controller2 = Class.new
+      controller2.class_eval{
+        include Gluon::Controller
+        gluon_text_accessor :bar
+      }
+
+      c = @Controller.new
+      c.foo[0] = controller2.new
+      c.foo[1] = controller2.new
+      c.foo[2] = controller2.new
+
+      Gluon::Controller.set_form_params(c, {
+                                          'foo[0].bar' => 'apple',
+                                          'foo[1].bar' => 'banana',
+                                          'foo[2].bar' => 'orange'
+                                        })
+
+      assert_equal('apple', c.foo[0].bar)
+      assert_equal('banana', c.foo[1].bar)
+      assert_equal('orange', c.foo[2].bar)
+    end
+
     def test_gluon_link
       @Controller.class_eval{ gluon_link_reader :foo }
       assert(entry = Gluon::Controller.find_view_export(@Controller))
