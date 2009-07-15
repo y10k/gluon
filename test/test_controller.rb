@@ -97,16 +97,16 @@ module Gluon::Test
         gluon_foreach_reader :foo
       }
 
-      controller2 = Class.new
-      controller2.class_eval{
-        include Gluon::Controller
+      component = Class.new
+      component.class_eval{
+        include Gluon::Component
         gluon_text_accessor :bar
       }
 
       c = @Controller.new
-      c.foo[0] = controller2.new
-      c.foo[1] = controller2.new
-      c.foo[2] = controller2.new
+      c.foo[0] = component.new
+      c.foo[1] = component.new
+      c.foo[2] = component.new
 
       Gluon::Controller.set_form_params(c, {
                                           'foo[0].bar' => 'apple',
@@ -128,9 +128,9 @@ module Gluon::Test
         gluon_foreach_reader :foo
       }
 
-      controller2 = Class.new
-      controller2.class_eval{
-        include Gluon::Controller
+      component = Class.new
+      component.class_eval{
+        include Gluon::Component
 
         def initialize
           @count = 0
@@ -145,9 +145,9 @@ module Gluon::Test
       }
 
       c = @Controller.new
-      c.foo[0] = controller2.new
-      c.foo[1] = controller2.new
-      c.foo[2] = controller2.new
+      c.foo[0] = component.new
+      c.foo[1] = component.new
+      c.foo[2] = component.new
 
       Gluon::Controller.apply_first_action(c, {
                                              'foo[0].bar' => '',
@@ -258,14 +258,14 @@ module Gluon::Test
         gluon_import_reader :foo
       }
 
-      controller2 = Class.new
-      controller2.class_eval{
-        include Gluon::Controller
+      component = Class.new
+      component.class_eval{
+        include Gluon::Component
         gluon_text_accessor :bar
       }
 
       c = @Controller.new
-      c.foo = controller2.new
+      c.foo = component.new
 
       Gluon::Controller.set_form_params(c, { 'foo.bar' => 'Hello world.' })
       assert_equal('Hello world.', c.foo.bar)
@@ -277,9 +277,9 @@ module Gluon::Test
         gluon_import_reader :foo
       }
 
-      controller2 = Class.new
-      controller2.class_eval{
-        include Gluon::Controller
+      component = Class.new
+      component.class_eval{
+        include Gluon::Component
 
         def initialize
           @count = 0
@@ -294,7 +294,7 @@ module Gluon::Test
       }
 
       c = @Controller.new
-      c.foo = controller2.new
+      c.foo = component.new
 
       Gluon::Controller.apply_first_action(c, { 'foo.bar' => '' })
       assert_equal(1, c.foo.count)

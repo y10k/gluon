@@ -196,12 +196,12 @@ module Gluon
       end
     end
 
-    class << self
-      def included(module_or_class)
-        module_or_class.extend(Syntax)
-        super
-      end
+    def self.included(module_or_class)
+      module_or_class.extend(Syntax)
+      super
+    end
 
+    class << self
       def find_path_filter(page_type)
         entry = PATH_FILTER[page_type] and return entry[:filter]
       end
@@ -308,6 +308,14 @@ module Gluon
 
         false
       end
+    end
+  end
+
+  # = component controller
+  module Component
+    def self.included(module_or_class)
+      module_or_class.extend(Controller::Syntax)
+      super
     end
   end
 end
