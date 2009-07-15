@@ -239,7 +239,8 @@ module Gluon
               set_form_params(c, req, "#{prefix}#{name}[#{i}].")
             end
           when :import
-            set_form_params(controller.__send__(name), req, "#{prefix}#{name}.")
+            c = controller.__send__(name)
+            set_form_params(c, req, "#{prefix}#{name}.")
           when :text, :passwd, :hidden, :textarea
             if (value = req["#{prefix}#{name}"]) then
               controller.__send__(form_entry[:writer], value)
