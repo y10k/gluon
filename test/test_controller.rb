@@ -135,7 +135,11 @@ module Gluon::Test
     end
 
     def test_gluon_action
-      @Controller.class_eval{ gluon_action_reader :foo }
+      @Controller.class_eval{
+        def foo
+        end
+        gluon_action :foo
+      }
       assert(view_entry = Gluon::Controller.find_view_export(@Controller))
       assert_equal(:action, view_entry[:foo][:type])
       assert(form_entry = Gluon::Controller.find_form_export(@Controller))
@@ -145,7 +149,11 @@ module Gluon::Test
     end
 
     def test_gluon_action_inherited
-      @Controller.class_eval{ gluon_action_reader :foo }
+      @Controller.class_eval{
+        def foo
+        end
+        gluon_action :foo
+      }
       subclass = Class.new(@Controller)
       assert(entry = Gluon::Controller.find_view_export(subclass))
       assert_equal(:action, entry[:foo][:type])

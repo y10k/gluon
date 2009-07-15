@@ -100,11 +100,6 @@ module Gluon
         __gluon_form_export__(name, :action, options)
       end
 
-      def gluon_action_reader(name, options={})
-        class_eval{ attr_reader(name) } # why is class_eval necessary?
-        gluon_action(name, options)
-      end
-
       def gluon_frame(name, options={})
         __gluon_view_export__(name, :frame, options)
       end
