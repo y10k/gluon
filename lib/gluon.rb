@@ -23,6 +23,7 @@ module Gluon
   autoload :BackendServiceManagerTest, 'gluon/backend'
   autoload :Builder, 'gluon/builder'
   autoload :CKView, 'gluon/ckview'
+  autoload :ClassMap, 'gluon/cmap'
   autoload :ERBView, 'gluon/erbview'
   autoload :ErrorMap, 'gluon/errmap'
   autoload :FileStore, 'gluon/fstore'
