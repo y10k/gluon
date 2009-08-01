@@ -146,7 +146,7 @@ module Gluon::Test
       }
       @c.foo = '/halo'
       assert_equal('<a href="/halo" id="foo">Hello world.</a>',
-                   @po.gluon(:foo) {|v| v << "Hello world." })
+                   @po.gluon(:foo) {|v| v << 'Hello world.' })
     end
 
     def test_link_attrs_method
@@ -160,7 +160,7 @@ module Gluon::Test
       }
       @c.foo = '/halo'
       assert_equal('<a href="/halo" style="font-weight: bold">Hello world.</a>',
-                   @po.gluon(:foo) {|v| v << "Hello world." })
+                   @po.gluon(:foo) {|v| v << 'Hello world.' })
     end
   end
 end
