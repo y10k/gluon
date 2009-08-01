@@ -32,16 +32,16 @@ module Gluon
     end
 
     def content
-      v = ''
+      s = ''
       if (@parent_block) then
-        @parent_block.call(v)
+        @parent_block.call(s)
       elsif (block_given?) then
-        yield(v)
+        yield(s)
       else
         raise 'not defined content.'
       end
 
-      v
+      s
     end
 
     def find_controller(name)
@@ -102,32 +102,32 @@ module Gluon
       if (export_entry[:options].key? :escape) then
         escape = export_entry[:options][:escape]
       end
-      v = c.__send__(name)
-      v = ERB::Util.html_escape(v) if escape
+      s = c.__send__(name)
+      s = ERB::Util.html_escape(s) if escape
 
-      v
+      s
     end
     private :value
 
     def cond(c, name, export_entry)
-      v = ''
+      s = ''
       if (c.__send__(name)) then
-        yield(v)
+        yield(s)
       end
 
-      v
+      s
     end
     private :cond
 
     def foreach(c, name, export_entry)
-      v = ''
+      s = ''
       save_prefix = @prefix
       begin
         c.__send__(name).each_with_index do |child, i|
           @prefix = "#{save_prefix}#{name}[#{i}]."
           @c_stack.push(child)
           begin
-            yield(v)
+            yield(s)
           ensure
             @c_stack.pop
           end
@@ -136,7 +136,7 @@ module Gluon
         @prefix = save_prefix
       end
 
-      v
+      s
     end
     private :foreach
 
@@ -150,7 +150,7 @@ module Gluon
     private :mkpath
 
     def mkattrs(c, options)
-      v = ''
+      s = ''
       if (attrs = options[:attrs]) then
         for name, value in attrs
           if (value.is_a? Symbol) then
@@ -159,16 +159,16 @@ module Gluon
 
           case (value)
           when TrueClass
-            v << ' ' << name << '="' << name << '"'
+            s << ' ' << name << '="' << name << '"'
           when FalseClass
-            v << ''
+            s << ''
           else
-            v << ' ' << name << '="' << ERB::Util.html_escape(value) << '"'
+            s << ' ' << name << '="' << ERB::Util.html_escape(value) << '"'
           end
         end
       end
 
-      v
+      s
     end
     private :mkattrs
 
@@ -188,30 +188,30 @@ module Gluon
     private :anchor_content
 
     def link(c, name, export_entry, &block)
-      v = '<a'
-      v << ' href="' << mkpath(c, name) << '"'
-      v << mkattrs(c, export_entry[:options])
-      v << '>'
-      v << anchor_content(export_entry[:options], c, &block)
-      v << '</a>'
+      s = '<a'
+      s << ' href="' << mkpath(c, name) << '"'
+      s << mkattrs(c, export_entry[:options])
+      s << '>'
+      s << anchor_content(export_entry[:options], c, &block)
+      s << '</a>'
     end
     private :link
 
     def action(c, name, export_entry, &block)
-      v = '<a'
-      v << ' href="' << ERB::Util.html_escape("#{@r.equest.path}?#{@prefix}#{name}") << '"'
-      v << mkattrs(c, export_entry[:options])
-      v << '>'
-      v << anchor_content(export_entry[:options], c, &block)
-      v << '</a>'
+      s = '<a'
+      s << ' href="' << ERB::Util.html_escape("#{@r.equest.path}?#{@prefix}#{name}") << '"'
+      s << mkattrs(c, export_entry[:options])
+      s << '>'
+      s << anchor_content(export_entry[:options], c, &block)
+      s << '</a>'
     end
     private :action
 
     def frame(c, name, export_entry)
-      v = '<frame'
-      v << ' src="' << mkpath(c, name) << '"'
-      v << mkattrs(c, export_entry[:options])
-      v << ' />'
+      s = '<frame'
+      s << ' src="' << mkpath(c, name) << '"'
+      s << mkattrs(c, export_entry[:options])
+      s << ' />'
     end
     private :frame
 
@@ -223,13 +223,13 @@ module Gluon
     private :import
 
     def mkinput(c, type, name, value, checked, options)
-      v = '<input'
-      v << ' type="' << ERB::Util.html_escape(type) << '"'
-      v << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}") << '"'
-      v << ' value="' << ERB::Util.html_escape(value) << '"' if value
-      v << ' checked="checked"' if checked
-      v << mkattrs(c, options)
-      v << ' />'
+      s = '<input'
+      s << ' type="' << ERB::Util.html_escape(type) << '"'
+      s << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}") << '"'
+      s << ' value="' << ERB::Util.html_escape(value) << '"' if value
+      s << ' checked="checked"' if checked
+      s << mkattrs(c, options)
+      s << ' />'
     end
     private :mkinput
 
@@ -267,13 +267,13 @@ module Gluon
     private :hidden
 
     def checkbox(c, name, export_entry)
-      v = '<input type="hidden"'
-      v << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}:checkbox") << '"'
-      v << ' value="submit"'
-      v << ' style="display: none"'
-      v << ' />'
+      s = '<input type="hidden"'
+      s << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}:checkbox") << '"'
+      s << ' value="submit"'
+      s << ' style="display: none"'
+      s << ' />'
       value = getopt(:value, export_entry[:options], c)
-      v << mkinput(c, 'checkbox', name, value, c.__send__(name), export_entry[:options])
+      s << mkinput(c, 'checkbox', name, value, c.__send__(name), export_entry[:options])
     end
     private :checkbox
 
@@ -293,11 +293,11 @@ module Gluon
         raise "need for `list' option at `#{c.class}\##{name}'"
       multiple = getopt(:multiple, export_entry[:options], c, false)
 
-      v = '<select'
-      v << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}") << '"'
-      v << ' multiple="multiple"' if multiple
-      v << mkattrs(c, export_entry[:options])
-      v << '>'
+      s = '<select'
+      s << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}") << '"'
+      s << ' multiple="multiple"' if multiple
+      s << mkattrs(c, export_entry[:options])
+      s << '>'
 
       selected = {}
       item = c.__send__(name)
@@ -311,25 +311,25 @@ module Gluon
 
       for value, text in list
         text = value unless text
-        v << '<option'
-        v << ' value="' << ERB::Util.html_escape(value) << '"'
-        v << ' selected="selected"' if selected[value]
-        v << '>'
-        v << ERB::Util.html_escape(text)
-        v << '</option>'
+        s << '<option'
+        s << ' value="' << ERB::Util.html_escape(value) << '"'
+        s << ' selected="selected"' if selected[value]
+        s << '>'
+        s << ERB::Util.html_escape(text)
+        s << '</option>'
       end
 
-      v << '</select>'
+      s << '</select>'
     end
     private :select
 
     def textarea(c, name, export_entry)
-      v = '<textarea'
-      v << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}") << '"'
-      v << mkattrs(c, export_entry[:options])
-      v << '>'
-      v << ERB::Util.html_escape(c.__send__(name))
-      v << '</textarea>'
+      s = '<textarea'
+      s << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}") << '"'
+      s << mkattrs(c, export_entry[:options])
+      s << '>'
+      s << ERB::Util.html_escape(c.__send__(name))
+      s << '</textarea>'
     end
     private :textarea
   end
