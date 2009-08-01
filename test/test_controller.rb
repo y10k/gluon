@@ -512,7 +512,16 @@ module Gluon::Test
       assert_equal('banana', c.foo)
     end
 
-    def test_gluon_select_form_params_multiple
+    def test_gluon_select_form_params_multiple_1
+      @Controller.class_eval{
+        gluon_select_accessor :foo, %w[ apple banana orange ], :multiple => true
+      }
+      c = @Controller.new
+      Gluon::Controller.set_form_params(c, { 'foo' => 'banana' })
+      assert_equal(%w[ banana ], c.foo)
+    end
+
+    def test_gluon_select_form_params_multiple_2
       @Controller.class_eval{
         gluon_select_accessor :foo, %w[ apple banana orange ], :multiple => true
       }
