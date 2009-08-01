@@ -449,6 +449,45 @@ module Gluon::Test
       assert_match(/Pineapple/, ex.message)
       assert_match(/foo/, ex.message)
     end
+
+    def test_select
+      @Controller.class_eval{
+        gluon_select_accessor :foo, %w[ Apple Banana Orange ]
+      }
+      @c.foo = 'Banana'
+      assert_equal('<select name="foo">' +
+                   '<option value="Apple">Apple</option>' +
+                   '<option value="Banana" selected="selected">Banana</option>' +
+                   '<option value="Orange">Orange</option>' +
+                   '</select>',
+                   @po.gluon(:foo))
+    end
+
+    def test_select_multiple
+      @Controller.class_eval{
+        gluon_select_accessor :foo, %w[ Apple Banana Orange ], :multiple => true
+      }
+      @c.foo = %w[ Apple Orange ]
+      assert_equal('<select name="foo" multiple="multiple">' +
+                   '<option value="Apple" selected="selected">Apple</option>' +
+                   '<option value="Banana">Banana</option>' +
+                   '<option value="Orange" selected="selected">Orange</option>' +
+                   '</select>',
+                   @po.gluon(:foo))
+    end
+
+    def test_select_assoc_list
+      @Controller.class_eval{
+        gluon_select_accessor :foo, [ %w[ a Apple ], %w[ b Banana ], %w[ c Orange ] ]
+      }
+      @c.foo = 'b'
+      assert_equal('<select name="foo">' +
+                   '<option value="a">Apple</option>' +
+                   '<option value="b" selected="selected">Banana</option>' +
+                   '<option value="c">Orange</option>' +
+                   '</select>',
+                   @po.gluon(:foo))
+    end
   end
 end
 
