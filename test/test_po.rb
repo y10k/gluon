@@ -11,8 +11,7 @@ module Gluon::Test
     CVS_ID = '$Id$'
 
     def setup
-      @Controller = Class.new
-      @Controller.extend(Gluon::Component)
+      @Controller = Class.new{ extend Gluon::Component }
       @c = @Controller.new
       @env = Rack::MockRequest.env_for('http://www.foo.com/run.cgi')
       @env[:gluon_script_name] = @env['SCRIPT_NAME']
