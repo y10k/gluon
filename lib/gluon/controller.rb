@@ -51,13 +51,6 @@ module Gluon
       end
       private :gluon_export
 
-      def gluon_export_params(page_type, export_type, name, params={})
-        name = name.to_sym
-        page_type.gluon_metainfo[export_type][name].update(params)
-        nil
-      end
-      private :gluon_export_params
-
       def gluon_view_export(page_type, name, type, options)
         gluon_export(page_type, :view_export, name, type, options)
       end
@@ -68,8 +61,7 @@ module Gluon
       end
 
       def gluon_form_params(page_type, name, params={})
-        gluon_export_params(page_type, :view_export, name, params)
-        gluon_export_params(page_type, :form_export, name, params)
+        page_type.gluon_metainfo[:form_export][name].update(params)
       end
 
       def find_path_filter(page_type)
