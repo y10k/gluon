@@ -328,6 +328,42 @@ module Gluon::Test
       ex = assert_raise(RuntimeError) { @po.gluon(:foo) }
       assert_equal('not defined content.', ex.message)
     end
+
+    def test_submit
+      @Controller.class_eval{
+        def foo
+        end
+        gluon_submit :foo
+      }
+      assert_equal('<input type="submit" name="foo" />', @po.gluon(:foo))
+    end
+
+    def test_submit_value
+      @Controller.class_eval{
+        def foo
+        end
+        gluon_submit :foo, :value => 'HALO'
+      }
+      assert_equal('<input type="submit" name="foo" value="HALO" />', @po.gluon(:foo))
+    end
+
+    def test_submit_attrs_bool_true
+      @Controller.class_eval{
+        def foo
+        end
+        gluon_submit :foo, :attrs => { 'disabled' => true }
+      }
+      assert_equal('<input type="submit" name="foo" disabled="disabled" />', @po.gluon(:foo))
+    end
+
+    def test_submit_attrs_bool_false
+      @Controller.class_eval{
+        def foo
+        end
+        gluon_submit :foo, :attrs => { 'disabled' => false }
+      }
+      assert_equal('<input type="submit" name="foo" />', @po.gluon(:foo))
+    end
   end
 end
 
