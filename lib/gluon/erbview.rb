@@ -12,7 +12,7 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    class Engine < Gluon::TemplateEngine::Skeleton
+    class Engine < TemplateEngine::Skeleton
       def gluon(name, value=nil)
         if (block_given?) then
           @stdout << @po.gluon(name, value) {
