@@ -110,6 +110,29 @@ module Gluon::Test
       assert_equal('[Hello world.]',
                    template_render('<% gluon :foo do %>Hello world.<% end %>'))
     end
+
+    def test_gluon_content_block
+      component = Class.new{
+        extend Gluon::Component
+
+        def self.page_encoding
+          __ENCODING__
+        end
+
+        def self.page_template
+          File.join(File.dirname(__FILE__),
+                    File.basename(__FILE__, '.rb') + ".test_gluon_content_block.component.rhtml")
+        end
+      }
+
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_import_reader :foo
+      }
+      @c.foo = component.new
+
+      assert_equal('[Hello world.]', template_render('<% gluon :foo %>'))
+    end
   end
 end
 

@@ -27,7 +27,7 @@ module Gluon
       end
       private :gluon
 
-      def content
+      def content(&block)
         if (block_given?) then
           @stdout << @po.content{ _block_result(&block) }
         else
