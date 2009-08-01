@@ -46,6 +46,32 @@ module Gluon::Test
       @c.foo = '&<>'
       assert_equal('&<>', @po.gluon(:foo))
     end
+
+    def test_cond
+      @Controller.class_eval{
+        attr_writer :foo
+
+        def foo?
+          @foo
+        end
+        gluon_cond :foo?
+      }
+      @c.foo = true
+      assert_equal('HALO', @po.gluon(:foo?) {|v| v << 'HALO' })
+    end
+
+    def test_cond_not
+      @Controller.class_eval{
+        attr_writer :foo
+
+        def foo?
+          @foo
+        end
+        gluon_cond :foo?
+      }
+      @c.foo = false
+      assert_equal('', @po.gluon(:foo?) {|v| v << 'HALO' })
+    end
   end
 end
 
