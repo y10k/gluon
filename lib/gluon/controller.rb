@@ -385,12 +385,16 @@ module Gluon
       ERBView
     end
 
+    def page_encoding
+      Encoding.default_external
+    end
+
     def page_template
       nil
     end
 
-    def process_view(rs, po)
-      rs.view_render(po, page_view, page_template)
+    def process_view(po)
+      po.template_render(page_view, page_encoding, page_template)
     end
   end
 end

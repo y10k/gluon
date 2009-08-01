@@ -49,13 +49,6 @@ module Gluon
       location(class2path(page_type, *path_args))
     end
 
-    attr_accessor :template_engine
-
-    def view_render(po, view, template_path=nil)
-      template_path = @template_engine.default_template(po.controller.class) unless template_path
-      @template_engine.render(po, view, template_path)
-    end
-
     attr_accessor :backend_service
     alias svc backend_service
   end
