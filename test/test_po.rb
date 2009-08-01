@@ -388,6 +388,36 @@ module Gluon::Test
       @c.foo = 'Hello world.'
       assert_equal('<input type="hidden" name="foo" value="Hello world." />', @po.gluon(:foo))
     end
+
+    def test_checkbox_checked
+      @Controller.class_eval{
+        gluon_checkbox_accessor :foo
+      }
+      @c.foo = true
+      assert_equal('<input type="hidden" name="foo:checkbox" value="submit" style="display: none" />' +
+                   '<input type="checkbox" name="foo" checked="checked" />',
+                   @po.gluon(:foo))
+    end
+
+    def test_checkbox_not_checked
+      @Controller.class_eval{
+        gluon_checkbox_accessor :foo
+      }
+      @c.foo = false
+      assert_equal('<input type="hidden" name="foo:checkbox" value="submit" style="display: none" />' +
+                   '<input type="checkbox" name="foo" />',
+                   @po.gluon(:foo))
+    end
+
+    def test_checkbox_valule
+      @Controller.class_eval{
+        gluon_checkbox_accessor :foo, :value => 'HALO'
+      }
+      @c.foo = true
+      assert_equal('<input type="hidden" name="foo:checkbox" value="submit" style="display: none" />' +
+                   '<input type="checkbox" name="foo" value="HALO" checked="checked" />',
+                   @po.gluon(:foo))
+    end
   end
 end
 
