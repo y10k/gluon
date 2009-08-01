@@ -121,7 +121,7 @@ module Gluon
       begin
         c.__send__(name).each_with_index do |child, i|
           @prefix = "#{save_prefix}.#{name}[#{i}]"
-          @c_stack.push(c)
+          @c_stack.push(child)
           begin
             yield(v)
           ensure
