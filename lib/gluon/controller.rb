@@ -6,7 +6,10 @@
 
 module Gluon
   # = controller and meta-data
-  # these methods may be explicitly defined at included class.
+  # usage:
+  #   class YourController
+  #     include Gluon::Controller
+  #   end
   #
   module Controller
     # for ident(1)
@@ -203,6 +206,11 @@ module Gluon
 
   # = component
   # defined controller syntax.
+  #
+  # usage:
+  #   class YourComponent
+  #     extend Gluon::Component
+  #   end
   #
   module Component
     def gluon_path_filter(path_filter, &block)
