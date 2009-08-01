@@ -60,35 +60,35 @@ module Gluon
         export_entry = @export[c.class][name]
         case (export_entry[:type])
         when :value
-          value(c, name, export_entry, &block)
+          value(c, name, export_entry[:options], &block)
         when :cond
-          cond(c, name, export_entry, &block)
+          cond(c, name, export_entry[:options], &block)
         when :foreach
-          foreach(c, name, export_entry, &block)
+          foreach(c, name, export_entry[:options], &block)
         when :link
-          link(c, name, export_entry, &block)
+          link(c, name, export_entry[:options], &block)
         when :action
-          action(c, name, export_entry, &block)
+          action(c, name, export_entry[:options], &block)
         when :frame
-          frame(c, name, export_entry, &block)
+          frame(c, name, export_entry[:options], &block)
         when :import
-          import(c, name, export_entry, &block)
+          import(c, name, export_entry[:options], &block)
         when :submit
-          submit(c, name, export_entry, &block)
+          submit(c, name, export_entry[:options], &block)
         when :text
-          text(c, name, export_entry, &block)
+          text(c, name, export_entry[:options], &block)
         when :passwd
-          passwd(c, name, export_entry, &block)
+          passwd(c, name, export_entry[:options], &block)
         when :hidden
-          hidden(c, name, export_entry, &block)
+          hidden(c, name, export_entry[:options], &block)
         when :checkbox
-          checkbox(c, name, export_entry, &block)
+          checkbox(c, name, export_entry[:options], &block)
         when :radio
-          radio(c, name, value, export_entry, &block)
+          radio(c, name, value, export_entry[:options], &block)
         when :select
-          select(c, name, export_entry, &block)
+          select(c, name, export_entry[:options], &block)
         when :textarea
-          textarea(c, name, export_entry, &block)
+          textarea(c, name, export_entry[:options], &block)
         else
           raise "unknown view export type: #{name}"
         end
@@ -97,10 +97,10 @@ module Gluon
       end
     end
 
-    def value(c, name, export_entry)
+    def value(c, name, options)
       escape = true             # default
-      if (export_entry[:options].key? :escape) then
-        escape = export_entry[:options][:escape]
+      if (options.key? :escape) then
+        escape = options[:escape]
       end
       s = c.__send__(name)
       s = ERB::Util.html_escape(s) if escape
@@ -109,7 +109,7 @@ module Gluon
     end
     private :value
 
-    def cond(c, name, export_entry)
+    def cond(c, name, options)
       s = ''
       if (c.__send__(name)) then
         yield(s)
@@ -119,7 +119,7 @@ module Gluon
     end
     private :cond
 
-    def foreach(c, name, export_entry)
+    def foreach(c, name, options)
       s = ''
       save_prefix = @prefix
       begin
@@ -187,35 +187,35 @@ module Gluon
     end
     private :anchor_content
 
-    def link(c, name, export_entry, &block)
+    def link(c, name, options, &block)
       s = '<a'
       s << ' href="' << mkpath(c, name) << '"'
-      s << mkattrs(c, export_entry[:options])
+      s << mkattrs(c, options)
       s << '>'
-      s << anchor_content(export_entry[:options], c, &block)
+      s << anchor_content(options, c, &block)
       s << '</a>'
     end
     private :link
 
-    def action(c, name, export_entry, &block)
+    def action(c, name, options, &block)
       s = '<a'
       s << ' href="' << ERB::Util.html_escape("#{@r.equest.path}?#{@prefix}#{name}") << '"'
-      s << mkattrs(c, export_entry[:options])
+      s << mkattrs(c, options)
       s << '>'
-      s << anchor_content(export_entry[:options], c, &block)
+      s << anchor_content(options, c, &block)
       s << '</a>'
     end
     private :action
 
-    def frame(c, name, export_entry)
+    def frame(c, name, options)
       s = '<frame'
       s << ' src="' << mkpath(c, name) << '"'
-      s << mkattrs(c, export_entry[:options])
+      s << mkattrs(c, options)
       s << ' />'
     end
     private :frame
 
-    def import(c, name, export_entry, &block)
+    def import(c, name, options, &block)
       compo = c.__send__(name)
       po = PresentationObject.new(compo, @r, @template_engine, "#{@prefix}#{name}.", &block)
       compo.class.process_view(po)
@@ -245,58 +245,58 @@ module Gluon
     end
     private :getopt
 
-    def submit(c, name, export_entry)
-      value = getopt(:value, export_entry[:options], c)
-      mkinput(c, 'submit', name, value, false, export_entry[:options])
+    def submit(c, name, options)
+      value = getopt(:value, options, c)
+      mkinput(c, 'submit', name, value, false, options)
     end
     private :submit
 
-    def text(c, name, export_entry)
-      mkinput(c, 'text', name, c.__send__(name), false, export_entry[:options])
+    def text(c, name, options)
+      mkinput(c, 'text', name, c.__send__(name), false, options)
     end
     private :text
 
-    def passwd(c, name, export_entry)
-      mkinput(c, 'password', name, c.__send__(name), false, export_entry[:options])
+    def passwd(c, name, options)
+      mkinput(c, 'password', name, c.__send__(name), false, options)
     end
     private :passwd
 
-    def hidden(c, name, export_entry)
-      mkinput(c, 'hidden', name, c.__send__(name), false, export_entry[:options])
+    def hidden(c, name, options)
+      mkinput(c, 'hidden', name, c.__send__(name), false, options)
     end
     private :hidden
 
-    def checkbox(c, name, export_entry)
+    def checkbox(c, name, options)
       s = '<input type="hidden"'
       s << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}:checkbox") << '"'
       s << ' value="submit"'
       s << ' style="display: none"'
       s << ' />'
-      value = getopt(:value, export_entry[:options], c)
-      s << mkinput(c, 'checkbox', name, value, c.__send__(name), export_entry[:options])
+      value = getopt(:value, options, c)
+      s << mkinput(c, 'checkbox', name, value, c.__send__(name), options)
     end
     private :checkbox
 
-    def radio(c, name, value, export_entry)
-      list = getopt(:list, export_entry[:options], c) or
+    def radio(c, name, value, options)
+      list = getopt(:list, options, c) or
         raise "need for `list' option at `#{c.class}\##{name}'"
       unless (list.include? value) then
         raise ArgumentError, "unexpected value `#{value}' for `#{c.class}\##{name}'"
       end
       checked = c.__send__(name) == value
-      mkinput(c, 'radio', name, value, checked, export_entry[:options])
+      mkinput(c, 'radio', name, value, checked, options)
     end
     private :radio
 
-    def select(c, name, export_entry)
-      list = getopt(:list, export_entry[:options], c) or
+    def select(c, name, options)
+      list = getopt(:list, options, c) or
         raise "need for `list' option at `#{c.class}\##{name}'"
-      multiple = getopt(:multiple, export_entry[:options], c, false)
+      multiple = getopt(:multiple, options, c, false)
 
       s = '<select'
       s << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}") << '"'
       s << ' multiple="multiple"' if multiple
-      s << mkattrs(c, export_entry[:options])
+      s << mkattrs(c, options)
       s << '>'
 
       selected = {}
@@ -323,10 +323,10 @@ module Gluon
     end
     private :select
 
-    def textarea(c, name, export_entry)
+    def textarea(c, name, options)
       s = '<textarea'
       s << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}") << '"'
-      s << mkattrs(c, export_entry[:options])
+      s << mkattrs(c, options)
       s << '>'
       s << ERB::Util.html_escape(c.__send__(name))
       s << '</textarea>'
