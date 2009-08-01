@@ -153,6 +153,8 @@ module Gluon
             end
           end
         end
+
+        nil
       end
 
       def apply_first_action(controller, req, prefix='')
