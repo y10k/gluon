@@ -11,8 +11,7 @@ module Gluon::Test
 
     def setup
       @cmap = Gluon::ClassMap.new
-      @c = Class.new
-      @c.class_eval{ include Gluon::Controller }
+      @c = Class.new{ include Gluon::Controller }
     end
 
     def test_mount_root
