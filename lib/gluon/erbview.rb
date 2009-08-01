@@ -13,20 +13,23 @@ module Gluon
     CVS_ID = '$Id$'
 
     class Engine < TemplateEngine::Skeleton
-      def gluon(name, value=nil)
-        if (block_given?) then
-          @stdout << @po.gluon(name, value) {
-            stdout = ''
-            stdout_save = @stdout
-            begin
-              @stdout = stdout
-              yield
-            ensure
-              @stdout = stdout_save
-            end
+      def _block_result
+        stdout = ''
+        stdout_save = @stdout
+        begin
+          @stdout = stdout
+          yield
+        ensure
+          @stdout = stdout_save
+        end
 
-            stdout
-          }
+        stdout
+      end
+      private :_block_result
+
+      def gluon(name, value=nil, &block)
+        if (block_given?) then
+          @stdout << @po.gluon(name, value) { _block_result(&block) }
         else
           @stdout << @po.gluon(name, value)
         end
@@ -37,18 +40,7 @@ module Gluon
 
       def content
         if (block_given?) then
-          @stdout << @po.content{
-            stdout = ''
-            stdout_save = @stdout
-            begin
-              @stdout = stdout
-              yield
-            ensure
-              @stdout = stdout_save
-            end
-
-            stdout
-          }
+          @stdout << @po.content{ _block_result(&block) }
         else
           @stdout << @po.content
         end
