@@ -23,6 +23,10 @@ module Gluon
       }
     end
 
+    def controller
+      @c_stack[0]
+    end
+
     def template_render(view, encoding, template_path)
       @template_engine.render(self, @r, view, encoding, template_path)
     end
@@ -213,7 +217,7 @@ module Gluon
 
     def import(c, name, export_entry, &block)
       compo = c.__send__(name)
-      po = PresentationObject.new(compo, @template_engine, @r, "#{@prefix}#{name}.", &block)
+      po = PresentationObject.new(compo, @r, @template_engine, "#{@prefix}#{name}.", &block)
       compo.class.process_view(po)
     end
     private :import
