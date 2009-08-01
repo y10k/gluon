@@ -101,6 +101,38 @@ module Gluon::Test
                    @po.gluon(:foo) {|v| v << '[' << @po.gluon(:bar) << ']' })
     end
 
+    def test_foreach_action
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_foreach_reader :foo
+      }
+
+      component = Class.new{
+        extend Gluon::Component
+
+        def bar
+        end
+        gluon_action :bar
+
+        def baz
+        end
+        gluon_submit :baz
+      }
+
+      @c.foo = [
+        component.new,
+        component.new,
+        component.new
+      ]
+      assert_equal('<a href="/run.cgi?foo[0].bar"></a>' +
+                   '<input type="submit" name="foo[0].baz" />'+
+                   '<a href="/run.cgi?foo[1].bar"></a>' +
+                   '<input type="submit" name="foo[1].baz" />'+
+                   '<a href="/run.cgi?foo[2].bar"></a>' +
+                   '<input type="submit" name="foo[2].baz" />',
+                   @po.gluon(:foo) {|v| v << @po.gluon(:bar) << @po.gluon(:baz) })
+    end
+
     def test_link_class
       foo = Class.new{ include Gluon::Controller }
       @cmap.mount(foo, '/halo')
