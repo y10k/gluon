@@ -12,12 +12,10 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    extend Forwardable
-
-    def initialize(controller, template_engine, rs, prefix='', &block)
+    def initialize(controller, rs, template_engine, prefix='', &block)
       @c_stack = [ controller ]
-      @template_engine = template_engine
       @r = rs
+      @template_engine = template_engine
       @prefix = prefix
       @parent_block = block
       @export = Hash.new{|hash, page_type|
@@ -51,7 +49,7 @@ module Gluon
 
       nil
     end
-    private :find_view_export
+    private :find_controller
 
     def gluon(name, value=nil, &block)
       if (c = find_controller(name)) then

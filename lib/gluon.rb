@@ -5,7 +5,6 @@
 #
 
 require 'gluon/version'
-require 'gluon/controller'      # to define gluon controller syntax
 
 # = gluon - simple web application framework
 # == license
@@ -17,13 +16,14 @@ module Gluon
   # for ident(1)
   CVS_ID = '$Id$'
 
-  #autoload :Controller, 'gluon/controller'
   autoload :Action, 'gluon/action'
   autoload :BackendServiceAdaptor, 'gluon/backend'
   autoload :BackendServiceManagerTest, 'gluon/backend'
   autoload :Builder, 'gluon/builder'
   autoload :CKView, 'gluon/ckview'
   autoload :ClassMap, 'gluon/cmap'
+  autoload :Component, 'gluon/controller'
+  autoload :Controller, 'gluon/controller'
   autoload :ERBView, 'gluon/erbview'
   autoload :ErrorMap, 'gluon/errmap'
   autoload :FileStore, 'gluon/fstore'
@@ -37,6 +37,7 @@ module Gluon
   autoload :SessionHandler, 'gluon/rs'
   autoload :SessionManager, 'gluon/rs'
   autoload :Setup, 'gluon/setup'
+  autoload :TemplateEngine, 'gluon/template'
   autoload :URLMap, 'gluon/urlmap'
   autoload :Validation, 'gluon/validation'
   autoload :Validator, 'gluon/validation'

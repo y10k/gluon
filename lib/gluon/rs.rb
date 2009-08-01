@@ -4,7 +4,7 @@
 #   :include:../LICENSE
 #
 
-require 'nolog'
+require 'gluon/nolog'
 
 module Gluon
   class RequestResponseContext
