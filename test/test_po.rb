@@ -260,6 +260,39 @@ module Gluon::Test
       assert_equal('Hello world.', @po.gluon(:foo))
     end
 
+    def test_import_action
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_import_reader :foo
+      }
+
+      component = Class.new{
+        extend Gluon::Component
+
+        def self.page_encoding
+          Encoding::UTF_8
+        end
+
+        def self.page_template
+          File.join(File.dirname(__FILE__),
+                    File.basename(__FILE__, '.rb') + '.test_import_action.rhtml')
+        end
+
+        def bar
+        end
+        gluon_action :bar
+
+        def baz
+        end
+        gluon_submit :baz
+      }
+
+      @c.foo = component.new
+      assert_equal('<a href="/run.cgi?foo.bar"></a>' +
+                   '<input type="submit" name="foo.baz" />',
+                   @po.gluon(:foo))
+    end
+
     def test_content
       component = Class.new{
         extend Gluon::Component
