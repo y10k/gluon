@@ -41,7 +41,7 @@ module Gluon
     def location(path, status=302)
       @logger.debug("#{self}.location() -> #{path}") if @logger.debug?
       @res['Location'] = path
-      @res.status = 302
+      @res.status = status
       self
     end
 
