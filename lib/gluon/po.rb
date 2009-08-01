@@ -139,7 +139,7 @@ module Gluon
     def mkpath(c, name)
       path, *args = c.__send__(name)
       if (path.is_a? Class) then
-        path = @r.class2path(path, *pargs)
+        path = "#{@r.script_name}#{@r.class2path(path, *args)}"
       end
       ERB::Util.html_escape(path)
     end
@@ -179,7 +179,7 @@ module Gluon
         return ERB::Util.html_escape(content)
       end
 
-      nil
+      ''
     end
     private :anchor_content
 
@@ -187,13 +187,9 @@ module Gluon
       v = '<a'
       v << ' href="' << mkpath(c, name) << '"'
       v << mkattrs(c, export_entry[:options])
-      if (content = anchor_content(export_entry[:options], &block)) then
-        v << '>' << content << '</a>'
-      else
-        v << ' />'
-      end
-
-      v
+      v << '>'
+      v << anchor_content(export_entry[:options], &block)
+      v << '</a>'
     end
     private :link
 
@@ -201,13 +197,9 @@ module Gluon
       v = '<a'
       v << ' href="' << ERB::Util.html_escape("#{@r.equest.path}?#{@prefix}#{name}") << '"'
       v << mkattrs(c, export_entry[:options])
-      if (content = anchor_content(export_entry[:options], &block)) then
-        v << '>' << content << '</a>'
-      else
-        v << ' />'
-      end
-
-      v
+      v << '>'
+      v << anchor_content(export_entry[:options], &block)
+      v << '</a>'
     end
     private :action
 
