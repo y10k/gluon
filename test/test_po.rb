@@ -16,6 +16,7 @@ module Gluon::Test
       @c = @Controller.new
       @template_engine = Gluon::TemplateEngine.new
       @env = Rack::MockRequest.env_for('http://www.foo.com/run.cgi')
+      @env[:gluon_script_name] = @env['SCRIPT_NAME']
       @cmap = Gluon::ClassMap.new
       @r = Gluon::RequestResponseContext.new(Rack::Request.new(@env), Rack::Response.new)
       @r.cmap = @cmap
@@ -99,6 +100,67 @@ module Gluon::Test
       ]
       assert_equal('[Apple][Banana][Orange]',
                    @po.gluon(:foo) {|v| v << '[' << @po.gluon(:bar) << ']' })
+    end
+
+    def test_link_class
+      foo = Class.new
+      foo.class_eval{ include Gluon::Controller }
+      @cmap.mount(foo, '/halo')
+
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_link_reader :foo
+      }
+      @c.foo = foo
+
+      assert_equal('<a href="/halo">Hello world.</a>',
+                   @po.gluon(:foo) {|v| v << "Hello world." })
+    end
+
+    def test_link_url
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_link_reader :foo, :text => 'Hello world.'
+      }
+      @c.foo = '/halo'
+      assert_equal('<a href="/halo">Hello world.</a>', @po.gluon(:foo))
+    end
+
+    def test_link_text_method
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_link_reader :foo, :text => :bar
+
+        def bar
+          'Hello world.'
+        end
+      }
+      @c.foo = '/halo'
+      assert_equal('<a href="/halo">Hello world.</a>', @po.gluon(:foo))
+    end
+
+    def test_link_attrs
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_link_reader :foo, :attrs => { 'id' => 'foo' }
+      }
+      @c.foo = '/halo'
+      assert_equal('<a href="/halo" id="foo">Hello world.</a>',
+                   @po.gluon(:foo) {|v| v << "Hello world." })
+    end
+
+    def test_link_attrs_method
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_link_reader :foo, :attrs => { 'style' => :link_style }
+
+        def link_style
+          'font-weight: bold'
+        end
+      }
+      @c.foo = '/halo'
+      assert_equal('<a href="/halo" style="font-weight: bold">Hello world.</a>',
+                   @po.gluon(:foo) {|v| v << "Hello world." })
     end
   end
 end
