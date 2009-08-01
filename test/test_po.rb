@@ -59,7 +59,7 @@ module Gluon::Test
         gluon_cond :foo?
       }
       @c.foo = true
-      assert_equal('HALO', @po.gluon(:foo?) {|v| v << 'HALO' })
+      assert_equal('HALO', @po.gluon(:foo?) { 'HALO' })
     end
 
     def test_cond_not
@@ -72,7 +72,7 @@ module Gluon::Test
         gluon_cond :foo?
       }
       @c.foo = false
-      assert_equal('', @po.gluon(:foo?) {|v| v << 'HALO' })
+      assert_equal('', @po.gluon(:foo?) { 'HALO' })
     end
 
     def test_foreach
@@ -97,7 +97,7 @@ module Gluon::Test
         component.new('Orange')
       ]
       assert_equal('[Apple][Banana][Orange]',
-                   @po.gluon(:foo) {|v| v << '[' << @po.gluon(:bar) << ']' })
+                   @po.gluon(:foo) { '[' << @po.gluon(:bar) << ']' })
     end
 
     def test_foreach_action
@@ -129,7 +129,7 @@ module Gluon::Test
                    '<input type="submit" name="foo[1].baz" />'+
                    '<a href="/run.cgi?foo[2].bar"></a>' +
                    '<input type="submit" name="foo[2].baz" />',
-                   @po.gluon(:foo) {|v| v << @po.gluon(:bar) << @po.gluon(:baz) })
+                   @po.gluon(:foo) { @po.gluon(:bar) << @po.gluon(:baz) })
     end
 
     def test_link_class
@@ -143,7 +143,7 @@ module Gluon::Test
       @c.foo = foo
 
       assert_equal('<a href="/halo">Hello world.</a>',
-                   @po.gluon(:foo) {|v| v << "Hello world." })
+                   @po.gluon(:foo) { "Hello world." })
     end
 
     def test_link_class_args
@@ -162,7 +162,7 @@ module Gluon::Test
       @c.foo = foo, [ 1975, 11, 19 ]
 
       assert_equal('<a href="/halo/1975-11-19">Hello world.</a>',
-                   @po.gluon(:foo) {|v| v << "Hello world." })
+                   @po.gluon(:foo) { "Hello world." })
     end
 
     def test_link_url
@@ -194,7 +194,7 @@ module Gluon::Test
       }
       @c.foo = '/halo'
       assert_equal('<a href="/halo" id="foo">Hello world.</a>',
-                   @po.gluon(:foo) {|v| v << 'Hello world.' })
+                   @po.gluon(:foo) { 'Hello world.' })
     end
 
     def test_link_attrs_method
@@ -208,7 +208,7 @@ module Gluon::Test
       }
       @c.foo = '/halo'
       assert_equal('<a href="/halo" style="font-weight: bold">Hello world.</a>',
-                   @po.gluon(:foo) {|v| v << 'Hello world.' })
+                   @po.gluon(:foo) { 'Hello world.' })
     end
 
     def test_action
@@ -218,7 +218,7 @@ module Gluon::Test
         gluon_action :foo
       }
       assert_equal('<a href="/run.cgi?foo">Hello world.</a>',
-                   @po.gluon(:foo) {|v| v << 'Hello world.' })
+                   @po.gluon(:foo) { 'Hello world.' })
     end
 
     def test_frame
@@ -312,7 +312,7 @@ module Gluon::Test
       }
       @c.foo = component.new
 
-      assert_equal('Hello world.', @po.gluon(:foo) {|v| v << 'Hello world.' })
+      assert_equal('Hello world.', @po.gluon(:foo) { 'Hello world.' })
     end
 
     def test_content_block
@@ -358,7 +358,7 @@ module Gluon::Test
       }
       @c.foo = component.new
 
-      assert_equal('Hello world.', @po.gluon(:foo) {|v| v << 'Hello world.' })
+      assert_equal('Hello world.', @po.gluon(:foo) { 'Hello world.' })
     end
 
     def test_content_not_defined

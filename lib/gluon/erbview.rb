@@ -19,7 +19,8 @@ module Gluon
     class Engine < Gluon::TemplateEngine::Skeleton
       def gluon(name, value=nil)
         if (block_given?) then
-          @stdout << @po.gluon(name, value) {|stdout|
+          @stdout << @po.gluon(name, value) {
+            stdout = ''
             stdout_save = @stdout
             begin
               @stdout = stdout
@@ -27,6 +28,8 @@ module Gluon
             ensure
               @stdout = stdout_save
             end
+
+            stdout
           }
         else
           @stdout << @po.gluon(name, value)
@@ -38,7 +41,8 @@ module Gluon
 
       def content
         if (block_given?) then
-          @stdout << @po.content{|stdout|
+          @stdout << @po.content{
+            stdout = ''
             stdout_save = @stdout
             begin
               @stdout = stdout
@@ -46,6 +50,8 @@ module Gluon
             ensure
               @stdout = stdout_save
             end
+
+            stdout
           }
         else
           @stdout << @po.content

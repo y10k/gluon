@@ -32,16 +32,13 @@ module Gluon
     end
 
     def content
-      s = ''
       if (@parent_block) then
-        @parent_block.call(s)
+        @parent_block.call
       elsif (block_given?) then
-        yield(s)
+        yield
       else
         raise 'not defined content.'
       end
-
-      s
     end
 
     def find_controller(name)
@@ -110,12 +107,11 @@ module Gluon
     private :value
 
     def cond(c, name, options)
-      s = ''
       if (c.__send__(name)) then
-        yield(s)
+        yield
+      else
+        ''
       end
-
-      s
     end
     private :cond
 
@@ -127,7 +123,7 @@ module Gluon
           @prefix = "#{save_prefix}#{name}[#{i}]."
           @c_stack.push(child)
           begin
-            yield(s)
+            s << yield
           ensure
             @c_stack.pop
           end
@@ -174,16 +170,12 @@ module Gluon
 
     def anchor_content(options, c, &block)
       if (block_given?) then
-        content = ''
-        yield(content)
-        return content
+        yield
+      elsif (content = getopt(:text, options, c)) then
+        ERB::Util.html_escape(content)
+      else
+        ''
       end
-
-      if (content = getopt(:text, options, c)) then
-        return ERB::Util.html_escape(content)
-      end
-
-      ''
     end
     private :anchor_content
 
