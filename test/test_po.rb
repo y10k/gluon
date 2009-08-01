@@ -372,6 +372,14 @@ module Gluon::Test
       @c.foo = 'Hello world.'
       assert_equal('<input type="text" name="foo" value="Hello world." />', @po.gluon(:foo))
     end
+
+    def test_passwd
+      @Controller.class_eval{
+        gluon_passwd_accessor :foo
+      }
+      @c.foo = 'Hello world.'
+      assert_equal('<input type="password" name="foo" value="Hello world." />', @po.gluon(:foo))
+    end
   end
 end
 
