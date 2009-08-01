@@ -4,6 +4,8 @@
 #   :include:../LICENSE
 #
 
+require 'gluon/erbview'
+
 module Gluon
   # = controller and meta-data
   # usage:
