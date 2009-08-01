@@ -231,6 +231,103 @@ module Gluon::Test
 
       assert_equal('Hello world.', @po.gluon(:foo))
     end
+
+    def test_content
+      component = Class.new
+      component.class_eval{
+        extend Gluon::Component
+
+        def self.page_encoding
+          Encoding::UTF_8
+        end
+
+        def self.page_template
+          File.join(File.dirname(__FILE__),
+                    File.basename(__FILE__, '.rb') + '.test_content.rhtml')
+        end
+      }
+
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_import_reader :foo
+      }
+      @c.foo = component.new
+
+      assert_equal('Hello world.', @po.gluon(:foo) {|v| v << 'Hello world.' })
+    end
+
+    def test_content_block
+      component = Class.new
+      component.class_eval{
+        extend Gluon::Component
+
+        def self.page_encoding
+          Encoding::UTF_8
+        end
+
+        def self.page_template
+          File.join(File.dirname(__FILE__),
+                    File.basename(__FILE__, '.rb') + '.test_content_block.rhtml')
+        end
+      }
+
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_import_reader :foo
+      }
+      @c.foo = component.new
+
+      assert_equal('Hello world.', @po.gluon(:foo))
+    end
+
+    def test_content_block_ignored
+      component = Class.new
+      component.class_eval{
+        extend Gluon::Component
+
+        def self.page_encoding
+          Encoding::UTF_8
+        end
+
+        def self.page_template
+          File.join(File.dirname(__FILE__),
+                    File.basename(__FILE__, '.rb') + '.test_content_block_ignored.rhtml')
+        end
+      }
+
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_import_reader :foo
+      }
+      @c.foo = component.new
+
+      assert_equal('Hello world.', @po.gluon(:foo) {|v| v << 'Hello world.' })
+    end
+
+    def test_content_not_defined
+      component = Class.new
+      component.class_eval{
+        extend Gluon::Component
+
+        def self.page_encoding
+          Encoding::UTF_8
+        end
+
+        def self.page_template
+          File.join(File.dirname(__FILE__),
+                    File.basename(__FILE__, '.rb') + '.test_content_not_defined.rhtml')
+        end
+      }
+
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_import_reader :foo
+      }
+      @c.foo = component.new
+
+      ex = assert_raise(RuntimeError) { @po.gluon(:foo) }
+      assert_equal('not defined content.', ex.message)
+    end
   end
 end
 
