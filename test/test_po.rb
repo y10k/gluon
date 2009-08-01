@@ -72,6 +72,32 @@ module Gluon::Test
       @c.foo = false
       assert_equal('', @po.gluon(:foo?) {|v| v << 'HALO' })
     end
+
+    def test_foreach
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_foreach_reader :foo
+      }
+
+      component = Class.new
+      component.class_eval{
+        extend Gluon::Component
+
+        def initialize(text)
+          @bar = text
+        end
+
+        gluon_value_reader :bar
+      }
+
+      @c.foo = [
+        component.new('Apple'),
+        component.new('Banana'),
+        component.new('Orange')
+      ]
+      assert_equal('[Apple][Banana][Orange]',
+                   @po.gluon(:foo) {|v| v << '[' << @po.gluon(:bar) << ']' })
+    end
   end
 end
 
