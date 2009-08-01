@@ -94,9 +94,21 @@ module Gluon
       end
     end
 
+    def getopt(key, options, c)
+      if (value = options[key]) then
+        if (value.is_a? Symbol) then
+          value = c.__send__(value)
+        end
+        value
+      else
+        nil
+      end
+    end
+    private :getopt
+
     def value(c, name, options)
       s = c.__send__(name)
-      s = ERB::Util.html_escape(s) if options[:escape]
+      s = ERB::Util.html_escape(s) if getopt(:escape, options, c)
       s
     end
     private :value
@@ -142,7 +154,7 @@ module Gluon
 
     def mkattrs(c, options)
       s = ''
-      if (attrs = options[:attrs]) then
+      if (attrs = getopt(:attrs, options, c)) then
         for name, value in attrs
           if (value.is_a? Symbol) then
             value = c.__send__(value)
@@ -219,18 +231,6 @@ module Gluon
       s << ' />'
     end
     private :mkinput
-
-    def getopt(key, options, c)
-      if (value = options[key]) then
-        if (value.is_a? Symbol) then
-          value = c.__send__(value)
-        end
-        value
-      else
-        nil
-      end
-    end
-    private :getopt
 
     def submit(c, name, options)
       value = getopt(:value, options, c)
