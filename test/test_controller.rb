@@ -7,10 +7,7 @@ require 'test/unit'
 module Gluon::Test
   class ControllerTest < Test::Unit::TestCase
     def setup
-      @Controller = Class.new
-      @Controller.class_eval{
-        include Gluon::Controller
-      }
+      @Controller = Class.new{ include Gluon::Controller }
     end
 
     def test_gluon_path_filter
@@ -128,8 +125,7 @@ module Gluon::Test
         gluon_foreach_reader :foo
       }
 
-      component = Class.new
-      component.class_eval{
+      component = Class.new{
         extend Gluon::Component
 
         def initialize
@@ -277,8 +273,7 @@ module Gluon::Test
         gluon_import_reader :foo
       }
 
-      component = Class.new
-      component.class_eval{
+      component = Class.new{
         extend Gluon::Component
 
         def initialize
