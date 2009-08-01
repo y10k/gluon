@@ -364,6 +364,14 @@ module Gluon::Test
       }
       assert_equal('<input type="submit" name="foo" />', @po.gluon(:foo))
     end
+
+    def test_text
+      @Controller.class_eval{
+        gluon_text_accessor :foo
+      }
+      @c.foo = 'Hello world.'
+      assert_equal('<input type="text" name="foo" value="Hello world." />', @po.gluon(:foo))
+    end
   end
 end
 
