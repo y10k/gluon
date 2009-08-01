@@ -14,12 +14,12 @@ module Gluon::Test
       @Controller = Class.new
       @Controller.extend(Gluon::Component)
       @c = @Controller.new
-      @template_engine = Gluon::TemplateEngine.new
       @env = Rack::MockRequest.env_for('http://www.foo.com/run.cgi')
       @env[:gluon_script_name] = @env['SCRIPT_NAME']
       @cmap = Gluon::ClassMap.new
       @r = Gluon::RequestResponseContext.new(Rack::Request.new(@env), Rack::Response.new)
       @r.cmap = @cmap
+      @template_engine = Gluon::TemplateEngine.new
       @po = Gluon::PresentationObject.new(@c, @r, @template_engine)
     end
 
@@ -200,6 +200,36 @@ module Gluon::Test
       }
       @c.foo = '/halo'
       assert_equal('<frame src="/halo" />', @po.gluon(:foo))
+    end
+
+    def test_import
+      component = Class.new
+      component.class_eval{
+        extend Gluon::Component
+
+        def self.page_encoding
+          Encoding::UTF_8
+        end
+
+        def self.page_template
+          File.join(File.dirname(__FILE__),
+                    File.basename(__FILE__, '.rb') + '.test_import.rhtml')
+        end
+
+        def initialize(messg)
+          @bar = messg
+        end
+
+        gluon_value_reader :bar
+      }
+
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_import_reader :foo
+      }
+      @c.foo = component.new('Hello world.')
+
+      assert_equal('Hello world.', @po.gluon(:foo))
     end
   end
 end
