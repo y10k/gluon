@@ -197,10 +197,6 @@ module Gluon
       request_GET(*path_args)
     end
 
-    def page_view
-      @c.view_render(ERBView)
-    end
-
     def page_end
     end
   end
@@ -209,145 +205,184 @@ module Gluon
   # defined controller syntax.
   #
   module Component
-    private
-
     def gluon_path_filter(path_filter, &block)
       Controller.gluon_path_filter(self, path_filter, &block)
     end
+    private :gluon_path_filter
 
     def gluon_value(name, options={})
       Controller.gluon_view_export(self, name, :value, options)
     end
+    private :gluon_value
 
     def gluon_value_reader(name, options={})
       class_eval{ attr_reader(name) } # why is class_eval necessary?
       gluon_value(name, options)
     end
+    private :gluon_value_reader
 
     def gluon_cond(name, options={})
       Controller.gluon_view_export(self, name, :cond, options)
     end
+    private :gluon_cond
 
     def gluon_cond_reader(name, options={})
       class_eval{ attr_reader(name) } # why is class_eval necessary?
       gluon_cond(name, options)
     end
+    private :gluon_cond_reader
 
     def gluon_foreach(name, options={})
       Controller.gluon_form_export(self, name, :foreach, options)
     end
+    private :gluon_foreach
 
     def gluon_foreach_reader(name, options={})
       class_eval{ attr_reader(name) } # why is class_eval necessary?
       gluon_foreach(name, options)
     end
+    private :gluon_foreach_reader
 
     def gluon_link(name, options={})
       Controller.gluon_view_export(self, name, :link, options)
     end
+    private :gluon_link
 
     def gluon_link_reader(name, options={})
       class_eval{ attr_reader(name) } # why is class_eval necessary?
       gluon_link(name, options)
     end
+    private :gluon_link_reader
 
     def gluon_action(name, options={})
       Controller.gluon_form_export(self, name, :action, options)
     end
+    private :gluon_action
 
     def gluon_frame(name, options={})
       Controller.gluon_view_export(self, name, :frame, options)
     end
+    private :gluon_frame
 
     def gluon_frame_reader(name, options={})
       class_eval{ attr_reader(name) } # why is class_eval necessary?
       gluon_frame(name, options)
     end
+    private :gluon_frame_reader
 
     def gluon_import(name, options={}, &block)
       options = { :block => block }.merge(options)
       Controller.gluon_form_export(self, name, :import, options)
     end
+    private :gluon_import
 
     def gluon_import_reader(name, options={}, &block)
       class_eval{ attr_reader(name) } # why is class_eval necessary?
       gluon_import(name, options, &block)
     end
+    private :gluon_import_reader
 
     def gluon_submit(name, options={})
       Controller.gluon_form_export(self, name, :submit, options)
     end
+    private :gluon_submit
 
     def gluon_text(name, options={})
       Controller.gluon_form_export(self, name, :text, options)
       Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
+    private :gluon_text
 
     def gluon_text_accessor(name, options={})
       class_eval{ attr_accessor(name) } # why is class_eval necessary?
       gluon_text(name, options)
     end
+    private :gluon_text_accessor
 
     def gluon_passwd(name, options={})
       Controller.gluon_form_export(self, name, :passwd, options)
       Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
+    private :gluon_passwd
 
     def gluon_passwd_accessor(name, options={})
       class_eval{ attr_accessor(name) } # why is class_eval necessary?
       gluon_passwd(name, options)
     end
+    private :gluon_passwd_accessor
 
     def gluon_hidden(name, options={})
       Controller.gluon_form_export(self, name, :hidden, options)
       Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
+    private :gluon_hidden
 
     def gluon_hidden_accessor(name, options={})
       class_eval{ attr_accessor(name) } # why is class_eval necessary?
       gluon_hidden(name, options)
     end
+    private :gluon_hidden_accessor
 
     def gluon_checkbox(name, options={})
       Controller.gluon_form_export(self, name, :checkbox, options)
       Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
+    private :gluon_checkbox
 
     def gluon_checkbox_accessor(name, options={})
       class_eval{ attr_accessor(name) } # why is class_eval necessary?
       gluon_checkbox(name, options)
     end
+    private :gluon_checkbox_accessor
 
     def gluon_radio(name, list, options={})
       options = { :list => list }.merge(options)
       Controller.gluon_form_export(self, name, :radio, options)
       Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
+    private :gluon_radio
 
     def gluon_radio_accessor(name, list, options={})
       class_eval{ attr_accessor(name) } # why is class_eval necessary?
       gluon_radio(name, list, options)
     end
+    private :gluon_radio_accessor
 
     def gluon_select(name, list, options={})
       options = { :list => list }.merge(options)
       Controller.gluon_form_export(self, name, :select, options)
       Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
+    private :gluon_select
 
     def gluon_select_accessor(name, list, options={})
       class_eval{ attr_accessor(name) } # why is class_eval necessary?
       gluon_select(name, list, options)
     end
+    private :gluon_select_accessor
 
     def gluon_textarea(name, options={})
       Controller.gluon_form_export(self, name, :textarea, options)
       Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
+    private :gluon_textarea
 
     def gluon_textarea_accessor(name, options={})
       class_eval{ attr_accessor(name) } # why is class_eval necessary?
       gluon_textarea(name, options)
+    end
+    private :gluon_textarea_accessor
+
+    def page_view
+      ERBView
+    end
+
+    def page_template
+      nil
+    end
+
+    def process_view(rs, po)
+      rs.view_render(po, page_view, page_template)
     end
   end
 end

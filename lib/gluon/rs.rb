@@ -50,15 +50,10 @@ module Gluon
     end
 
     attr_accessor :template_engine
-    attr_accessor :presentation_object
-    alias po presentation_object
 
-    def view_render(view, template_path=nil)
-      unless (@presentation_object) then
-        raise "need for `@r.presentation_object'."
-      end
-      template_path = @template_engine.default_template(@presentation_object.controller.class) unless template_path
-      @template_engine.render(@presentation_object, view, template_path)
+    def view_render(po, view, template_path=nil)
+      template_path = @template_engine.default_template(po.controller.class) unless template_path
+      @template_engine.render(po, view, template_path)
     end
 
     attr_accessor :backend_service
