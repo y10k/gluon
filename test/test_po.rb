@@ -552,6 +552,12 @@ module Gluon::Test
       @c.foo = 'Hello world.'
       assert_equal('<textarea name="foo">Hello world.</textarea>', @po.gluon(:foo))
     end
+
+    def test_gluon_no_view_export
+      ex = assert_raise(ArgumentError) { @po.gluon(:foo) }
+      assert_match(/^no view export:/, ex.message)
+      assert_match(/foo/, ex.message)
+    end
   end
 end
 
