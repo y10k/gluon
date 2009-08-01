@@ -88,6 +88,8 @@ module Gluon::Test
       assert_equal(:foreach, view_entry[:foo][:type])
       assert(form_entry = Gluon::Controller.find_form_export(@Controller))
       assert_equal(:foreach, form_entry[:foo][:type])
+      assert(action_entry = Gluon::Controller.find_action_export(@Controller))
+      assert_equal(:foreach, action_entry[:foo][:type])
       assert_equal(true, (@Controller.public_method_defined? :foo))
       assert_equal(false, (@Controller.public_method_defined? :foo=))
     end
@@ -99,6 +101,8 @@ module Gluon::Test
       assert_equal(:foreach, view_entry[:foo][:type])
       assert(form_entry = Gluon::Controller.find_form_export(subclass))
       assert_equal(:foreach, form_entry[:foo][:type])
+      assert(action_entry = Gluon::Controller.find_action_export(subclass))
+      assert_equal(:foreach, action_entry[:foo][:type])
     end
 
     def test_gluon_foreach_form_params
@@ -195,8 +199,8 @@ module Gluon::Test
       }
       assert(view_entry = Gluon::Controller.find_view_export(@Controller))
       assert_equal(:action, view_entry[:foo][:type])
-      assert(form_entry = Gluon::Controller.find_form_export(@Controller))
-      assert_equal(:action, form_entry[:foo][:type])
+      assert(action_entry = Gluon::Controller.find_action_export(@Controller))
+      assert_equal(:action, action_entry[:foo][:type])
       assert_equal(true, (@Controller.public_method_defined? :foo))
       assert_equal(false, (@Controller.public_method_defined? :foo=))
     end
@@ -251,6 +255,8 @@ module Gluon::Test
       assert_equal(:import, view_entry[:foo][:type])
       assert(form_entry = Gluon::Controller.find_form_export(@Controller))
       assert_equal(:import, form_entry[:foo][:type])
+      assert(action_entry = Gluon::Controller.find_action_export(@Controller))
+      assert_equal(:import, action_entry[:foo][:type])
       assert_equal(true, (@Controller.public_method_defined? :foo))
       assert_equal(false, (@Controller.public_method_defined? :foo=))
     end
@@ -262,9 +268,11 @@ module Gluon::Test
       assert_equal(:import, view_entry[:foo][:type])
       assert(form_entry = Gluon::Controller.find_form_export(subclass))
       assert_equal(:import, form_entry[:foo][:type])
+      assert(action_entry = Gluon::Controller.find_action_export(subclass))
+      assert_equal(:import, action_entry[:foo][:type])
     end
 
-    def test_gluon_import_form_params
+    def test_gluon_import_action_params
       @Controller.class_eval{
         attr_writer :foo
         gluon_import_reader :foo
@@ -373,8 +381,8 @@ module Gluon::Test
       }
       assert(view_entry = Gluon::Controller.find_view_export(@Controller))
       assert_equal(:submit, view_entry[:foo][:type])
-      assert(form_entry = Gluon::Controller.find_form_export(@Controller))
-      assert_equal(:submit, form_entry[:foo][:type])
+      assert(action_entry = Gluon::Controller.find_action_export(@Controller))
+      assert_equal(:submit, action_entry[:foo][:type])
     end
 
     def test_gluon_submit_inherited
@@ -386,8 +394,8 @@ module Gluon::Test
       subclass = Class.new(@Controller)
       assert(view_entry = Gluon::Controller.find_view_export(subclass))
       assert_equal(:submit, view_entry[:foo][:type])
-      assert(form_entry = Gluon::Controller.find_form_export(subclass))
-      assert_equal(:submit, form_entry[:foo][:type])
+      assert(action_entry = Gluon::Controller.find_action_export(subclass))
+      assert_equal(:submit, action_entry[:foo][:type])
     end
 
     def test_gluon_submit_apply_first_action

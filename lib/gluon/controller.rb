@@ -11,7 +11,8 @@ class Module
     @gluon_metainfo ||= {
       :path_filter => nil,
       :view_export => {},
-      :form_export => {}
+      :form_export => {},
+      :action_export => {}
     }
   end
 end
@@ -60,6 +61,11 @@ module Gluon
         gluon_export(page_type, :form_export, name, type, options)
       end
 
+      # action is additional export.
+      def gluon_action_export(page_type, name, type, options)
+        gluon_export(page_type, :action_export, name, type, options)
+      end
+
       def gluon_form_params(page_type, name, params={})
         page_type.gluon_metainfo[:form_export][name].update(params)
       end
@@ -88,6 +94,10 @@ module Gluon
 
       def find_form_export(page_type)
         find_export(:form_export, page_type)
+      end
+
+      def find_action_export(page_type)
+        find_export(:action_export, page_type)
       end
 
       def set_form_params(controller, req, prefix='')
@@ -150,9 +160,9 @@ module Gluon
       end
 
       def apply_first_action(controller, req, prefix='')
-        form_export = find_form_export(controller.class)
-        for name, form_entry in form_export
-          case (form_entry[:type])
+        action_export = find_action_export(controller.class)
+        for name, action_entry in action_export
+          case (action_entry[:type])
           when :action, :submit
             if (req["#{prefix}#{name}"]) then
               controller.__send__(name)
@@ -239,6 +249,7 @@ module Gluon
 
     def gluon_foreach(name, options={})
       Controller.gluon_form_export(self, name, :foreach, options)
+      Controller.gluon_action_export(self, name, :foreach, options)
     end
     private :gluon_foreach
 
@@ -260,7 +271,8 @@ module Gluon
     private :gluon_link_reader
 
     def gluon_action(name, options={})
-      Controller.gluon_form_export(self, name, :action, options)
+      Controller.gluon_view_export(self, name, :action, options)
+      Controller.gluon_action_export(self, name, :action, options)
     end
     private :gluon_action
 
@@ -278,6 +290,7 @@ module Gluon
     def gluon_import(name, options={}, &block)
       options = { :block => block }.merge(options)
       Controller.gluon_form_export(self, name, :import, options)
+      Controller.gluon_action_export(self, name, :import, options)
     end
     private :gluon_import
 
@@ -288,7 +301,8 @@ module Gluon
     private :gluon_import_reader
 
     def gluon_submit(name, options={})
-      Controller.gluon_form_export(self, name, :submit, options)
+      Controller.gluon_view_export(self, name, :submit, options)
+      Controller.gluon_action_export(self, name, :submit, options)
     end
     private :gluon_submit
 
