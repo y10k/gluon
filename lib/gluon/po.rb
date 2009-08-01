@@ -124,7 +124,7 @@ module Gluon
       save_prefix = @prefix
       begin
         c.__send__(name).each_with_index do |child, i|
-          @prefix = "#{save_prefix}.#{name}[#{i}]"
+          @prefix = "#{save_prefix}#{name}[#{i}]."
           @c_stack.push(child)
           begin
             yield(v)
@@ -225,7 +225,7 @@ module Gluon
     def mkinput(c, type, name, value, checked, options)
       v = '<input'
       v << ' type="' << ERB::Util.html_escape(type) << '"'
-      v << ' name="' << ERB::Util.html_escape("#{@preifx}#{name}") << '"'
+      v << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}") << '"'
       v << ' value="' << ERB::Util.html_escape(value) << '"' if value
       v << ' checked="checked"' if checked
       v << mkattrs(c, options)
