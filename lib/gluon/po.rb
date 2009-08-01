@@ -95,13 +95,11 @@ module Gluon
     end
 
     def getopt(key, options, c)
-      if (value = options[key]) then
-        if (value.is_a? Symbol) then
-          value = c.__send__(value)
-        end
-        value
+      case (value = options[key])
+      when Symbol
+        c.__send__(value)
       else
-        nil
+        value
       end
     end
     private :getopt
