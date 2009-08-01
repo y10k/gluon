@@ -22,11 +22,29 @@ module Gluon::Test
 
     def test_value
       @Controller.class_eval{
-        gluon_value_reader :foo
         attr_writer :foo
+        gluon_value_reader :foo
       }
       @c.foo = 'Hello world.'
       assert_equal('Hello world.', @po.gluon(:foo))
+    end
+
+    def test_value_escape
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_value_reader :foo
+      }
+      @c.foo = '&<>'
+      assert_equal('&amp;&lt;&gt;', @po.gluon(:foo))
+    end
+
+    def test_value_no_escape
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_value_reader :foo, :escape => false
+      }
+      @c.foo = '&<>'
+      assert_equal('&<>', @po.gluon(:foo))
     end
   end
 end
