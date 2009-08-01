@@ -232,7 +232,7 @@ module Gluon
     def getopt(key, options, c, default=nil)
       if (value = options[key]) then
         if (value.is_a? Symbol) then
-          value = c.__send_(value)
+          value = c.__send__(value)
         end
         return value
       end
