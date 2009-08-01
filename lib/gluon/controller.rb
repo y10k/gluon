@@ -24,6 +24,46 @@ module Gluon
         super
       end
 
+      def gluon_path_filter(page_type, path_filter, &block)
+        PATH_FILTER[page_type] = {
+          :filter => path_filter,
+          :block => block
+        }
+        nil
+      end
+
+      def gluon_export(page_type, table, name, type, options)
+        name = name.to_sym
+        unless (page_type.public_method_defined? name) then
+          raise NoMethodError, "not defineid method `#{name}' of `#{page_type}'"
+        end
+        table[page_type] = {} unless (table.key? name)
+        table[page_type][name] = { :type => type, :options => options }
+        nil
+      end
+      private :gluon_export
+
+      def gluon_export_params(page_type, table, name, params={})
+        name = name.to_sym
+        table[page_type][name].update(params)
+        nil
+      end
+      private :gluon_export_params
+
+      def gluon_view_export(page_type, name, type, options)
+        gluon_export(page_type, VIEW_EXPORT, name, type, options)
+      end
+
+      def gluon_form_export(page_type, name, type, options)
+        gluon_export(page_type, VIEW_EXPORT, name, type, options)
+        gluon_export(page_type, FORM_EXPORT, name, type, options)
+      end
+
+      def gluon_form_params(page_type, name, params={})
+        gluon_export_params(page_type, VIEW_EXPORT, name, params)
+        gluon_export_params(page_type, FORM_EXPORT, name, params)
+      end
+
       def find_path_filter(page_type)
         entry = PATH_FILTER[page_type] and return entry[:filter]
       end
@@ -132,7 +172,6 @@ module Gluon
       end
     end
 
-
     attr_writer :r
 
     def page_around
@@ -173,45 +212,11 @@ module Gluon
     private
 
     def gluon_path_filter(path_filter, &block)
-      Controller::PATH_FILTER[self] = {
-        :filter => path_filter,
-        :block => block
-      }
-      nil
-    end
-
-    def __gluon_export__(table, name, type, options)
-      name = name.to_sym
-      unless (public_method_defined? name) then
-        raise NoMethodError, "not defineid method `#{name}' of `#{self}'"
-      end
-      table[self] = {} unless (table.key? name)
-      table[self][name] = { :type => type, :options => options }
-      nil
-    end
-
-    def __gluon_export_params__(table, name, params={})
-      name = name.to_sym
-      table[self][name].update(params)
-      nil
-    end
-
-    def __gluon_view_export__(name, type, options)
-      __gluon_export__(Controller::VIEW_EXPORT, name, type, options)
-    end
-
-    def __gluon_form_export__(name, type, options)
-      __gluon_export__(Controller::VIEW_EXPORT, name, type, options)
-      __gluon_export__(Controller::FORM_EXPORT, name, type, options)
-    end
-
-    def __gluon_form_params__(name, params={})
-      __gluon_export_params__(Controller::VIEW_EXPORT, name, params)
-      __gluon_export_params__(Controller::FORM_EXPORT, name, params)
+      Controller.gluon_path_filter(self, path_filter, &block)
     end
 
     def gluon_value(name, options={})
-      __gluon_view_export__(name, :value, options)
+      Controller.gluon_view_export(self, name, :value, options)
     end
 
     def gluon_value_reader(name, options={})
@@ -220,7 +225,7 @@ module Gluon
     end
 
     def gluon_cond(name, options={})
-      __gluon_view_export__(name, :cond, options)
+      Controller.gluon_view_export(self, name, :cond, options)
     end
 
     def gluon_cond_reader(name, options={})
@@ -229,7 +234,7 @@ module Gluon
     end
 
     def gluon_foreach(name, options={})
-      __gluon_form_export__(name, :foreach, options)
+      Controller.gluon_form_export(self, name, :foreach, options)
     end
 
     def gluon_foreach_reader(name, options={})
@@ -238,7 +243,7 @@ module Gluon
     end
 
     def gluon_link(name, options={})
-      __gluon_view_export__(name, :link, options)
+      Controller.gluon_view_export(self, name, :link, options)
     end
 
     def gluon_link_reader(name, options={})
@@ -247,11 +252,11 @@ module Gluon
     end
 
     def gluon_action(name, options={})
-      __gluon_form_export__(name, :action, options)
+      Controller.gluon_form_export(self, name, :action, options)
     end
 
     def gluon_frame(name, options={})
-      __gluon_view_export__(name, :frame, options)
+      Controller.gluon_view_export(self, name, :frame, options)
     end
 
     def gluon_frame_reader(name, options={})
@@ -261,7 +266,7 @@ module Gluon
 
     def gluon_import(name, options={}, &block)
       options = { :block => block }.merge(options)
-      __gluon_form_export__(name, :import, options)
+      Controller.gluon_form_export(self, name, :import, options)
     end
 
     def gluon_import_reader(name, options={}, &block)
@@ -270,12 +275,12 @@ module Gluon
     end
 
     def gluon_submit(name, options={})
-      __gluon_form_export__(name, :submit, options)
+      Controller.gluon_form_export(self, name, :submit, options)
     end
 
     def gluon_text(name, options={})
-      __gluon_form_export__(name, :text, options)
-      __gluon_form_params__(name, :writer => "#{name}=".to_sym)
+      Controller.gluon_form_export(self, name, :text, options)
+      Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
 
     def gluon_text_accessor(name, options={})
@@ -284,8 +289,8 @@ module Gluon
     end
 
     def gluon_passwd(name, options={})
-      __gluon_form_export__(name, :passwd, options)
-      __gluon_form_params__(name, :writer => "#{name}=".to_sym)
+      Controller.gluon_form_export(self, name, :passwd, options)
+      Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
 
     def gluon_passwd_accessor(name, options={})
@@ -294,8 +299,8 @@ module Gluon
     end
 
     def gluon_hidden(name, options={})
-      __gluon_form_export__(name, :hidden, options)
-      __gluon_form_params__(name, :writer => "#{name}=".to_sym)
+      Controller.gluon_form_export(self, name, :hidden, options)
+      Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
 
     def gluon_hidden_accessor(name, options={})
@@ -304,8 +309,8 @@ module Gluon
     end
 
     def gluon_checkbox(name, options={})
-      __gluon_form_export__(name, :checkbox, options)
-      __gluon_form_params__(name, :writer => "#{name}=".to_sym)
+      Controller.gluon_form_export(self, name, :checkbox, options)
+      Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
 
     def gluon_checkbox_accessor(name, options={})
@@ -315,8 +320,8 @@ module Gluon
 
     def gluon_radio(name, list, options={})
       options = { :list => list }.merge(options)
-      __gluon_form_export__(name, :radio, options)
-      __gluon_form_params__(name, :writer => "#{name}=".to_sym)
+      Controller.gluon_form_export(self, name, :radio, options)
+      Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
 
     def gluon_radio_accessor(name, list, options={})
@@ -326,8 +331,8 @@ module Gluon
 
     def gluon_select(name, list, options={})
       options = { :list => list }.merge(options)
-      __gluon_form_export__(name, :select, options)
-      __gluon_form_params__(name, :writer => "#{name}=".to_sym)
+      Controller.gluon_form_export(self, name, :select, options)
+      Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
 
     def gluon_select_accessor(name, list, options={})
@@ -336,8 +341,8 @@ module Gluon
     end
 
     def gluon_textarea(name, options={})
-      __gluon_form_export__(name, :textarea, options)
-      __gluon_form_params__(name, :writer => "#{name}=".to_sym)
+      Controller.gluon_form_export(self, name, :textarea, options)
+      Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
 
     def gluon_textarea_accessor(name, options={})
