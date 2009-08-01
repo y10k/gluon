@@ -82,8 +82,7 @@ module Gluon::Test
         gluon_foreach_reader :foo
       }
 
-      component = Class.new
-      component.class_eval{
+      component = Class.new{
         extend Gluon::Component
 
         def initialize(text)
@@ -103,8 +102,7 @@ module Gluon::Test
     end
 
     def test_link_class
-      foo = Class.new
-      foo.class_eval{ include Gluon::Controller }
+      foo = Class.new{ include Gluon::Controller }
       @cmap.mount(foo, '/halo')
 
       @Controller.class_eval{
@@ -118,8 +116,7 @@ module Gluon::Test
     end
 
     def test_link_class_args
-      foo = Class.new
-      foo.class_eval{
+      foo = Class.new{
         include Gluon::Controller
         gluon_path_filter %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$" do |year, mon, day|
           format('/%04d-%02d-%02d', year, mon, day)
@@ -203,8 +200,7 @@ module Gluon::Test
     end
 
     def test_import
-      component = Class.new
-      component.class_eval{
+      component = Class.new{
         extend Gluon::Component
 
         def self.page_encoding
@@ -233,8 +229,7 @@ module Gluon::Test
     end
 
     def test_content
-      component = Class.new
-      component.class_eval{
+      component = Class.new{
         extend Gluon::Component
 
         def self.page_encoding
@@ -257,8 +252,7 @@ module Gluon::Test
     end
 
     def test_content_block
-      component = Class.new
-      component.class_eval{
+      component = Class.new{
         extend Gluon::Component
 
         def self.page_encoding
@@ -281,8 +275,7 @@ module Gluon::Test
     end
 
     def test_content_block_ignored
-      component = Class.new
-      component.class_eval{
+      component = Class.new{
         extend Gluon::Component
 
         def self.page_encoding
@@ -305,8 +298,7 @@ module Gluon::Test
     end
 
     def test_content_not_defined
-      component = Class.new
-      component.class_eval{
+      component = Class.new{
         extend Gluon::Component
 
         def self.page_encoding
