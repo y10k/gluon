@@ -241,7 +241,7 @@ module Gluon::Test
         extend Gluon::Component
 
         def self.page_encoding
-          Encoding::UTF_8
+          __ENCODING__
         end
 
         def self.page_template
@@ -270,7 +270,7 @@ module Gluon::Test
         extend Gluon::Component
 
         def self.page_encoding
-          Encoding::UTF_8
+          __ENCODING__
         end
 
         def self.page_template
@@ -298,7 +298,7 @@ module Gluon::Test
         extend Gluon::Component
 
         def self.page_encoding
-          Encoding::UTF_8
+          __ENCODING__
         end
 
         def self.page_template
@@ -321,7 +321,7 @@ module Gluon::Test
         extend Gluon::Component
 
         def self.page_encoding
-          Encoding::UTF_8
+          __ENCODING__
         end
 
         def self.page_template
@@ -344,7 +344,7 @@ module Gluon::Test
         extend Gluon::Component
 
         def self.page_encoding
-          Encoding::UTF_8
+          __ENCODING__
         end
 
         def self.page_template
@@ -367,7 +367,7 @@ module Gluon::Test
         extend Gluon::Component
 
         def self.page_encoding
-          Encoding::UTF_8
+          __ENCODING__
         end
 
         def self.page_template
