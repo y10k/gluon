@@ -6,6 +6,16 @@
 
 require 'gluon/erbview'
 
+class Module
+  def gluon_metainfo
+    @gluon_metainfo ||= {
+      :path_filter => nil,
+      :view_export => {},
+      :form_export => {}
+    }
+  end
+end
+
 module Gluon
   # = controller and meta-data
   # usage:
@@ -17,12 +27,6 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    # :stopdoc:
-    PATH_FILTER = {}
-    VIEW_EXPORT = {}
-    FORM_EXPORT = {}
-    # :startdoc:
-
     class << self
       def included(module_or_class)
         module_or_class.extend(Component)
@@ -30,59 +34,56 @@ module Gluon
       end
 
       def gluon_path_filter(page_type, path_filter, &block)
-        PATH_FILTER[page_type] = {
+        page_type.gluon_metainfo[:path_filter] = {
           :filter => path_filter,
           :block => block
         }
         nil
       end
 
-      def gluon_export(page_type, table, name, type, options)
+      def gluon_export(page_type, export_type, name, type, options)
         name = name.to_sym
         unless (page_type.public_method_defined? name) then
           raise NoMethodError, "not defineid method `#{name}' of `#{page_type}'"
         end
-        table[page_type] = {} unless (table.key? page_type)
-        table[page_type][name] = { :type => type, :options => options }
+        page_type.gluon_metainfo[export_type][name] = { :type => type, :options => options }
         nil
       end
       private :gluon_export
 
-      def gluon_export_params(page_type, table, name, params={})
+      def gluon_export_params(page_type, export_type, name, params={})
         name = name.to_sym
-        table[page_type][name].update(params)
+        page_type.gluon_metainfo[export_type][name].update(params)
         nil
       end
       private :gluon_export_params
 
       def gluon_view_export(page_type, name, type, options)
-        gluon_export(page_type, VIEW_EXPORT, name, type, options)
+        gluon_export(page_type, :view_export, name, type, options)
       end
 
       def gluon_form_export(page_type, name, type, options)
-        gluon_export(page_type, VIEW_EXPORT, name, type, options)
-        gluon_export(page_type, FORM_EXPORT, name, type, options)
+        gluon_export(page_type, :view_export, name, type, options)
+        gluon_export(page_type, :form_export, name, type, options)
       end
 
       def gluon_form_params(page_type, name, params={})
-        gluon_export_params(page_type, VIEW_EXPORT, name, params)
-        gluon_export_params(page_type, FORM_EXPORT, name, params)
+        gluon_export_params(page_type, :view_export, name, params)
+        gluon_export_params(page_type, :form_export, name, params)
       end
 
       def find_path_filter(page_type)
-        entry = PATH_FILTER[page_type] and return entry[:filter]
+        entry = page_type.gluon_metainfo[:path_filter] and return entry[:filter]
       end
 
       def find_path_block(page_type)
-        entry = PATH_FILTER[page_type] and return entry[:block]
+        entry = page_type.gluon_metainfo[:path_filter] and return entry[:block]
       end
 
-      def find_export(table, page_type)
+      def find_export(export_type, page_type)
         export = {}
-        for module_or_class in page_type.ancestors
-          if (table.key? module_or_class) then
-            export.update(table[module_or_class])
-          end
+        page_type.ancestors.reverse_each do |module_or_class|
+          export.update(module_or_class.gluon_metainfo[export_type])
         end
 
         export
@@ -90,11 +91,11 @@ module Gluon
       private :find_export
 
       def find_view_export(page_type)
-        find_export(VIEW_EXPORT, page_type)
+        find_export(:view_export, page_type)
       end
 
       def find_form_export(page_type)
-        find_export(FORM_EXPORT, page_type)
+        find_export(:form_export, page_type)
       end
 
       def set_form_params(controller, req, prefix='')

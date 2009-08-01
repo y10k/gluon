@@ -1,5 +1,7 @@
 2009-08-02  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/controller.rb: gluon metainfo.
+
 	* lib/gluon.rb, lib/gluon/controller.rb, lib/gluon/erbview.rb,
 	lib/gluon/po.rb, lib/gluon/rs.rb, lib/gluon/template.rb: gluon
 	presentation method and template engine and erb view.
