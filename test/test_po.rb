@@ -192,6 +192,15 @@ module Gluon::Test
       assert_equal('<a href="/run.cgi?foo">Hello world.</a>',
                    @po.gluon(:foo) {|v| v << 'Hello world.' })
     end
+
+    def test_frame
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_frame_reader :foo
+      }
+      @c.foo = '/halo'
+      assert_equal('<frame src="/halo" />', @po.gluon(:foo))
+    end
   end
 end
 
