@@ -16,7 +16,9 @@ module Gluon::Test
       @c = @Controller.new
       @template_engine = Gluon::TemplateEngine.new
       @env = Rack::MockRequest.env_for('http://www.foo.com/run.cgi')
+      @cmap = Gluon::ClassMap.new
       @r = Gluon::RequestResponseContext.new(Rack::Request.new(@env), Rack::Response.new)
+      @r.cmap = @cmap
       @po = Gluon::PresentationObject.new(@c, @r, @template_engine)
     end
 
