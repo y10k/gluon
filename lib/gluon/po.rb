@@ -1,16 +1,10 @@
+# -*- coding: utf-8 -*-
 # = gluon - simple web application framework
-#
-# Author:: $Author$
-# Date:: $Date$
-# Revision:: $Revision$
-#
 # == license
 #   :include:../LICENSE
 #
 
 require 'erb'
-require 'forwardable'
-require 'gluon/action'
 require 'gluon/controller'
 
 module Gluon
@@ -20,648 +14,330 @@ module Gluon
 
     extend Forwardable
 
-    def initialize(controller, rs_context, action, &block)
-      @controller = controller
-      @c = rs_context
-      @action = action
+    def initialize(controller, template_engine, rs, prefix='', &block)
+      @c_stack = [ controller ]
+      @template_engine = template_engine
+      @r = rs
+      @prefix = prefix
       @parent_block = block
-      @stack = []
-    end
-
-    def_delegator :@controller, :class, :page_type
-
-    def self.query(params)
-      s = ''
-      sep = ''
-      for name, value_list in params
-        unless (value_list.is_a? Array) then
-          value_list = [ value_list ]
-        end
-        for value in value_list
-          s << sep
-          s << ERB::Util.url_encode(name)
-          s << '=' << ERB::Util.url_encode(value) if value
-          sep = '&'
-        end
-      end
-      s
-    end
-
-    def prefix
-      s = @action.prefix.dup
-      for prefix, child in @stack
-        s << prefix << '.'
-      end
-      s
-    end
-    private :prefix
-
-    def find_this(name)
-      unless (block_given?) then
-        @stack.reverse_each do |prefix, child|
-          if (child.respond_to? name) then
-            return child
-          end
-        end
-        @controller
-      else
-        stack_orig = @stack
-        @stack = @stack.dup
-        begin
-          until (@stack.empty?)
-            prefix, child = @stack[-1]
-            if (child.respond_to? name) then
-              return yield
-            end
-            @stack.pop
-          end
-
-          if (@controller.respond_to? name) then
-            return yield
-          end
-        ensure
-          @stack = stack_orig
-        end
-
-        raise NoMethodError, "undefined method `#{name}' for `#{@controller.class}'"
-      end
-    end
-    private :find_this
-
-    def funcall(name, *args)
-      find_this(name).__send__(name, *args)
-    end
-    private :funcall
-
-    def curr_this
-      if (@stack.empty?) then
-        @controller
-      else
-        prefix, child = @stack[-1]
-        child
-      end
-    end
-    private :curr_this
-
-    def curr_funcall(name)
-      curr_this.__send__(name)
-    end
-    private :curr_funcall
-
-    alias form_value curr_funcall; private :form_value
-
-    def getopt(key, options, method, search_stack, default=nil)
-      if (options.key? key) then
-        value = options[key]
-        value = funcall(value) if (value.is_a? Symbol)
-        value
-      elsif (method) then
-        if (search_stack) then
-          this = find_this(method)
-        else
-          this = curr_this
-        end
-        value = Controller.find_advice(this.class, method, key, default)
-        case (value)
-        when Proc, Method
-          value.call
-        when UnboundMethod
-          value.bind(this).call
-        else
-          value
-        end
-      else
-        default
-      end
-    end
-    private :getopt
-
-    def find_controller_method_type(method)
-      Controller.find_advice(find_this(method).class, method, :type)
-    end
-
-    def value(name=:to_s, options={})
-      escape = getopt(:escape, options, name, true, true)
-      s = funcall(name).to_s
-      s = ERB::Util.html_escape(s) if escape
-      s
-    end
-
-    class NegativeCondition
-      def initialize(operand)
-        @operand = operand
-      end
-
-      attr_reader :operand
-    end
-
-    def cond(name, options={})
-      if (name.is_a? NegativeCondition) then
-        name = name.operand
-        negate = true
-      else
-        negate = (options.key? :negate) ? options[:negate] : false
-      end
-      unless (negate) then
-        if (funcall(name)) then
-          yield
-        end
-      else
-        unless (funcall(name)) then
-          yield
-        end
-      end
-      nil
-    end
-
-    def foreach(name=:to_a, options={})
-      i = 0
-      curr_funcall(name).each do |child|
-        @stack.push [ "#{name}[#{i}]", child ]
-        begin
-          case (child)
-          when Array, Numeric, String, Struct, Symbol, Time
-            # skip action for ruby-primitives
-          else
-            next_prefix_list = @stack.map{|prefix, child| prefix }
-            @action.new_action(child, @c, next_prefix_list, prefix()).call_actions
-          end
-          yield(i)
-        ensure
-          @stack.pop
-          i += 1
-        end
-      end
-      nil
-    end
-
-    def mkattr(name, value, method, search_stack)
-      case (value)
-      when Symbol
-        if (search_stack) then
-          value = funcall(value)
-        else
-          value = curr_funcall(value)
-        end
-      when Proc, Method
-        value = value.call
-      when UnboundMethod
-        if (search_stack) then
-          this = find_this(method)
-        else
-          this = curr_this
-        end
-        value = value.bind(this).call
-      end
-
-      case (value)
-      when TrueClass
-        ' ' << ERB::Util.html_escape(name.to_s) <<
-          '="' << ERB::Util.html_escape(name.to_s) << '"'
-      when FalseClass
-        ''
-      else
-        ' ' << ERB::Util.html_escape(name.to_s) <<
-          '="' << ERB::Util.html_escape(value) << '"'
-      end
-    end
-    private :mkattr
-
-    def mkelem_start(name, reserved_attrs, options, method, search_stack)
-      elem = "<#{name}"
-      used_attr = {}
-      for n, v in getopt(:attrs, {}, method, search_stack, {})
-        m = n.downcase
-        next if (reserved_attrs.key? m)
-        elem << mkattr(n, v, method, search_stack)
-        used_attr[m] = true
-      end
-      for n, v in options
-        next unless (n.is_a? String)        
-        m = n.downcase
-        next if (reserved_attrs.key? m)
-        next if (used_attr.key? m)
-        elem << mkattr(n, v, method, search_stack)
-      end
-      elem
-    end
-    private :mkelem_start
-
-    def mkpath(path, options)
-      if (path.empty?) then
-        path = '/' 
-      else
-        path = ERB::Util.html_escape(path)
-      end
-      path << '?' << PresentationObject.query(options[:query]) if (options.key? :query)
-      path << '#' << ERB::Util.html_escape(options[:fragment]) if (options.key? :fragment)
-      path
-    end
-    private :mkpath
-
-    # :stopdoc:
-    MKLINK_RESERVED_ATTRS = {
-      'href' => true
-    }.freeze
-    # :startdoc:
-
-    def mklink(href, options, method)
-      elem = mkelem_start('a', MKLINK_RESERVED_ATTRS, options, method, true)
-      elem << ' href="' << ERB::Util.html_escape(mkpath(href, options)) << '"'
-      elem << '>'
-      if (block_given?) then
-        out = ''
-        yield(out)
-        elem << out
-      elsif (options.key? :text) then
-        text = getopt(:text, options, method, true)
-        unless (text.is_a? String) then
-          raise TypeError, "unknown link text type: #{text.class}"
-        end
-        elem << ERB::Util.html_escape(text)
-      else
-        elem << ERB::Util.html_escape(href)
-      end
-      elem << '</a>'
-    end
-    private :mklink
-
-    def expand_link_name(name, options)
-      if (name.is_a? Symbol) then
-        method = name
-        name, controller_options = funcall(method)
-        if (controller_options) then
-          options = controller_options.dup.update(options)
-        end
-        return name, options, method
-      else
-        return name, options
-      end
-    end
-    private :expand_link_name
-
-    def expand_path(name, options)
-      case (name)
-      when Class
-        if (options.key? :path_args) then
-          path_args = options[:path_args]
-        elsif (options.key? :path_info) then
-          path_args = [ options[:path_info] ]
-        else
-          path_args = []
-        end
-        @c.class2path(name, *path_args)
-      else
-        name
-      end
-    end
-    private :expand_path
-
-    def link(name, options={}, &block)
-      name, options, method = expand_link_name(name, options)
-      path = expand_path(name, options)
-      unless (path.is_a? String) then
-        raise TypeError, "unknown link name type: #{name.class}"
-      end
-      mklink(path, options, method, &block)
-    end
-
-    def action(name, options={}, &block)
-      find_this(name) {
-        query = getopt(:query, options, name, true, {}).dup
-        query["#{prefix}#{name}()"] = nil
-        text = getopt(:text, options, name, true, name.to_s)
-        options = options.dup.update(:query => query, :text => text)
-        if (page = options[:page]) then
-          path = expand_path(page, options)
-          unless (path.is_a? String) then
-            raise TypeError, "unknown action page type: #{path.class}"
-          end
-        else
-          path = @c.req.script_name + @c.req.env['PATH_INFO']
-        end
-        mklink(path, options, name, &block)
+      @export = Hash.new{|hash, page_type|
+        hash[page_type] = Controller.find_view_export(page_type)
       }
     end
 
-    # :stopdoc:
-    MKFRAME_RESERVED_ATTRS = {
-      'src' => true
-    }.freeze
-    # :startdoc:
-
-    def mkframe(src, options, method)
-      elem = mkelem_start('frame', MKFRAME_RESERVED_ATTRS, options, method, true)
-      elem << ' src="' << ERB::Util.html_escape(mkpath(src, options)) << '"'
-      elem << ' />'
-    end
-    private :mkframe
-
-    def frame(name, options={})
-      name, options, method = expand_link_name(name, options)
-      src = expand_path(name, options)
-      unless (src.is_a? String) then
-        raise TypeError, "unknown frame src type: #{name.class}"
-      end
-      mkframe(src, options, method)
-    end
-
-    def import(name, options={}, &block)
-      case (name)
-      when Symbol
-        value = funcall(name)
-      else
-        value = name
-      end
-
-      case (value)
-      when Class
-        controller = value.new
-      else
-        controller = value
-      end
-
-      case (name)
-      when Symbol
-        curr_prefix = name.to_s
-      else
-        curr_prefix = controller.class.to_s
-      end
-
-      prefix = prefix() + curr_prefix + '.'
-      next_prefix_list = @stack.map{|_prefix, child| _prefix } + [ curr_prefix ]
-
-      action = @action.new_action(controller, @c, next_prefix_list, prefix)
-      action.setup.apply([], :import) {
-        action.view_render(&block)
-      }
+    def template_render(view, encoding, template_path)
+      @template_engine.render(self, @r, view, encoding, template_path)
     end
 
     def content
+      v = ''
       if (@parent_block) then
-        out = ''
-        @parent_block.call(out)
-        out
+        @parent_block.call(v)
       elsif (block_given?) then
-        out = ''
-        yield(out)
-        out
+        yield(v)
       else
-        raise "not defined content at parent controller of `#{@controller}'."
+        raise 'not defined content.'
+      end
+
+      v
+    end
+
+    def find_controller(name)
+      @c_stack.reverse_each do |c|
+        if (@export[c.class].key? name) then
+          return c
+        end
+      end
+
+      nil
+    end
+    private :find_view_export
+
+    def gluon(name, value=nil, &block)
+      if (c = find_controller(name)) then
+        export_entry = @export[c.class][name]
+        case (export_entry[:type])
+        when :value
+          value(c, name, export_entry, &block)
+        when :cond
+          cond(c, name, export_entry, &block)
+        when :foreach
+          foreach(c, name, export_entry, &block)
+        when :link
+          link(c, name, export_entry, &block)
+        when :action
+          action(c, name, export_entry, &block)
+        when :frame
+          frame(c, name, export_entry, &block)
+        when :import
+          import(c, name, export_entry, &block)
+        when :submit
+          submit(c, name, export_entry, &block)
+        when :text
+          text(c, name, export_entry, &block)
+        when :passwd
+          passwd(c, name, export_entry, &block)
+        when :hidden
+          hidden(c, name, export_entry, &block)
+        when :checkbox
+          checkbox(c, name, export_entry, &block)
+        when :radio
+          radio(c, name, value, export_entry, &block)
+        when :select
+          select(c, name, export_entry, &block)
+        when :textarea
+          textarea(c, name, export_entry, &block)
+        else
+          raise "unknown view export type: #{name}"
+        end
+      else
+        raise ArgumentError, "no view export: #{name}"
       end
     end
 
-    def make_controller_name(name, options)
-      if (options[:direct]) then
-        name
-      else
-        "#{prefix}#{name}"
+    def value(c, name, export_entry)
+      escape = true             # default
+      if (export_entry[:options].key? :escape) then
+        escape = export_entry[:options][:escape]
       end
+      v = c.__send__(name)
+      v = ERB::Util.html_escape(v) if escape
+
+      v
     end
-    private :make_controller_name
+    private :value
 
-    def make_hidden_type(name, type, options)
-      %Q'<input type="hidden" name="#{ERB::Util.html_escape(make_controller_name(name, options))}@type" value="#{ERB::Util.html_escape(type)}" />'
+    def cond(c, name, export_entry)
+      v = ''
+      if (c.__send__(name)) then
+        yield(v)
+      end
+
+      v
     end
-    private :make_hidden_type
+    private :cond
 
-    def mkattr_controller_name(name, options)
-      %Q' name="#{ERB::Util.html_escape(make_controller_name(name, options))}"'
+    def foreach(c, name, export_entry)
+      v = ''
+      save_prefix = @prefix
+      begin
+        c.__send__(name).each_with_index do |child, i|
+          @prefix = "#{save_prefix}.#{name}[#{i}]"
+          @c_stack.push(c)
+          begin
+            yield(v)
+          ensure
+            @c_stack.pop
+          end
+        end
+      ensure
+        @prefix = save_prefix
+      end
+
+      v
     end
-    private :mkattr_controller_name
+    private :foreach
 
-    # :stopdoc:
-    MKINPUT_RESERVED_ATTRS = {
-      'type' => true,
-      'name' => true,
-      'value' => true,
-      'checked' => true
-    }.freeze
-    # :startdoc:
+    def mkpath(c, name)
+      path, *args = c.__send__(name)
+      if (path.is_a? Class) then
+        path = @r.class2path(path, *pargs)
+      end
+      ERB::Util.html_escape(path)
+    end
+    private :mkpath
 
-    # :stopdoc:
-    NoValue = Object.new.freeze
-    # :startdoc:
+    def mkattrs(c, options)
+      v = ''
+      if (attrs = options[:attrs]) then
+        for name, value in attrs
+          if (value.is_a? Symbol) then
+            value = c.__send__(value)
+          end
 
-    def mkinput(type, name, options, method)
-      elem = mkelem_start('input', MKINPUT_RESERVED_ATTRS, options, method, false)
-      elem << ' type="' << ERB::Util.html_escape(type) << '"'
-      elem << mkattr_controller_name(name, options)
-      value = getopt(:value, options, method, false, NoValue)
-      elem << ' value="' << ERB::Util.html_escape(value) << '"' if (value != NoValue)
-      elem << ' checked="checked"' if options[:checked]
-      elem << ' />'
+          case (value)
+          when TrueClass
+            v << ' ' << name << '="' << name << '"'
+          when FalseClass
+            v << ''
+          else
+            v << ' ' << name << '="' << ERB::Util.html_escape(value) << '"'
+          end
+        end
+      end
+
+      v
+    end
+    private :mkattrs
+
+    def anchor_content(options, &block)
+      if (block_given?) then
+        content = ''
+        yield(content)
+        return content
+      end
+
+      if (content = options[:text]) then
+        return ERB::Util.html_escape(content)
+      end
+
+      nil
+    end
+    private :anchor_content
+
+    def link(c, name, export_entry, &block)
+      v = '<a'
+      v << ' href="' << mkpath(c, name) << '"'
+      v << mkattrs(c, export_entry[:options])
+      if (content = anchor_content(export_entry[:options], &block)) then
+        v << '>' << content << '</a>'
+      else
+        v << ' />'
+      end
+
+      v
+    end
+    private :link
+
+    def action(c, name, export_entry, &block)
+      v = '<a'
+      v << ' href="' << ERB::Util.html_escape("#{@r.equest.path}?#{@prefix}#{name}") << '"'
+      v << mkattrs(c, export_entry[:options])
+      if (content = anchor_content(export_entry[:options], &block)) then
+        v << '>' << content << '</a>'
+      else
+        v << ' />'
+      end
+
+      v
+    end
+    private :action
+
+    def frame(c, name, export_entry)
+      v = '<frame'
+      v << ' src="' << mkpath(c, name) << '"'
+      v << mkattrs(c, export_entry[:options])
+      v << ' />'
+    end
+    private :frame
+
+    def import(c, name, export_entry, &block)
+      compo = c.__send__(name)
+      po = PresentationObject.new(compo, @template_engine, @r, "#{@prefix}#{name}.", &block)
+      compo.class.process_view(po)
+    end
+    private :import
+
+    def mkinput(c, type, name, value, checked, options)
+      v = '<input'
+      v << ' type="' << ERB::Util.html_escape(type) << '"'
+      v << ' name="' << ERB::Util.html_escape("#{@preifx}#{name}") << '"'
+      v << ' value="' << ERB::Util.html_escape(value) << '"' if value
+      v << ' checked="checked"' if checked
+      v << mkattrs(c, options)
+      v << ' />'
     end
     private :mkinput
 
-    def text(name, options={})
-      options = options.dup.update(:value => form_value(name))
-      mkinput('text', name, options, name)
-    end
-
-    def password(name, options={})
-      options = options.dup.update(:value => form_value(name))
-      mkinput('password', name, options, name)
-    end
-
-    def submit(name, options={})
-      unless (curr_this.respond_to? name) then
-        raise NoMethodError, "undefined method `#{name}' for `#{curr_this.class}'"
-      end
-      mkinput('submit', "#{name}()", options, name)
-    end
-
-    def hidden(name, options={})
-      options = options.dup.update(:value => form_value(name))
-      mkinput('hidden', name, options, name)
-    end
-
-    def checkbox(name, options={})
-      options = options.dup
-      options[:value] = 'true' unless (options.key? :value)
-      options[:checked] = form_value(name) ? true : false
-      make_hidden_type(name, 'bool', options) << mkinput('checkbox', name, options, name)
-    end
-
-    def radio(name, value, options={})
-      if (list = getopt(:list, {}, name, false)) then
-        unless (list.include? value) then
-          raise ArgumentError, "unexpected value `#{value}' for `#{curr_this.class}\##{name}'"
+    def getopt(key, options, c, default=nil)
+      if (value = options[key]) then
+        if (value.is_a? Symbol) then
+          value = c.__send_(value)
         end
+        return value
       end
-      unless (value) then
-        raise ArgumentError, "not defined value: #{value.inspect}"
-      end
-      options = options.dup
-      options[:value] = value
-      options[:checked] = value == form_value(name)
-      mkinput('radio', name, options, name)
+
+      default
     end
+    private :getopt
 
-    # :stopdoc:
-    SELECT_RESERVED_ATTRS = {
-      'name' => true,
-      'multiple' => true
-    }.freeze
-    # :startdoc:
+    def submit(c, name, export_entry)
+      value = getopt(:value, export_entry[:options], c)
+      mkinput(c, 'submit', name, value, false, export_entry[:options])
+    end
+    private :submit
 
-    def select(name, options={})
-      unless (curr_this.respond_to? name) then
-        raise NoMethodError, "undefined method `#{name}' for `#{curr_this.class}'"
+    def text(c, name, export_entry)
+      mkinput(c, 'text', name, c.__send__(name), false, export_entry[:options])
+    end
+    private :text
+
+    def passwd(c, name, export_entry)
+      mkinput(c, 'password', name, c.__send__(name), false, export_entry[:options])
+    end
+    private :passwd
+
+    def hidden(c, name, export_entry)
+      mkinput(c, 'hidden', name, c.__send__(name), false, export_entry[:options])
+    end
+    private :hidden
+
+    def checkbox(c, name, export_entry)
+      v = '<input type="hidden"'
+      v << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}:checkbox") << '"'
+      v << ' value="submit"'
+      v << ' style="display: none"'
+      v << ' />'
+      value = getopt(:value, export_entry[:options], c)
+      v << mkinput(c, 'checkbox', name, value, c.__send__(name), export_entry[:options])
+    end
+    private :checkbox
+
+    def radio(c, name, value, export_entry)
+      list = getopt(:list, export_entry[:options], c) or
+        raise "need for `list' option at `#{c.class}\##{name}'"
+      unless (list.include? value) then
+        raise ArgumentError, "unexpected value `#{value}' for `#{c.class}\##{name}'"
       end
+      checked = c.__send__(name) == value
+      mkinput(c, 'radio', name, value, checked, export_entry[:options])
+    end
+    private :radio
 
-      list = getopt(:list, options, name, false) or
-        raise ArgumentError, "need for list parameter for `#{curr_this.class}\##{name}'"
-      multiple = getopt(:multiple, options, name, false, false)
+    def select(c, name, export_entry)
+      list = getopt(:list, export_entry[:options], c) or
+        raise "need for `list' option at `#{c.class}\##{name}'"
+      multiple = getopt(:multiple, export_entry[:options], c, false)
 
-      if (multiple) then
-        elem = make_hidden_type(name, 'list', options)
-      else
-        elem = ''
-      end
-      elem << mkelem_start('select', SELECT_RESERVED_ATTRS, options, name, false)
-      elem << mkattr_controller_name(name, options)
-      elem << ' multiple="multiple"' if multiple
-      elem << '>'
+      v = '<select'
+      v << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}") << '"'
+      v << ' multiple="multiple"' if multiple
+      v << mkattrs(c, export_entry[:options])
+      v << '>'
 
-      selects = form_value(name)
-      selects = [ selects ] unless (selects.is_a? Array)
       selected = {}
-      for value in selects
-        selected[value] = true
+      item = c.__send__(name)
+      if (item.is_a? Array) then
+        for i in item
+          selected[i] = true
+        end
+      else
+        selected[item] = true
       end
 
       for value, text in list
         text = value unless text
-        elem << '<option value="' << ERB::Util.html_escape(value) << '"'
-        elem << ' selected="selected"' if selected[value]
-        elem << '>'
-        elem << ERB::Util.html_escape(text)
-        elem << '</option>'
+        v << '<option'
+        v << ' value="' << ERB::Util.html_escape(value) << '"'
+        v << ' selected="selected"' if selected[value]
+        v << '>'
+        v << ERB::Util.html_escape(text)
+        v << '</option>'
       end
 
-      elem << '</select>'
+      v << '</select>'
     end
+    private :select
 
-    # :stopdoc:
-    TEXTAREA_RESERVED_ATTRS = {
-      'name' => true
-    }.freeze
-    # :startdoc:
-
-    def textarea(name, options={})
-      elem = mkelem_start('textarea', TEXTAREA_RESERVED_ATTRS, options, name, false)
-      elem << mkattr_controller_name(name, options)
-      elem << '>'
-      elem << ERB::Util.html_escape(form_value(name))
-      elem << '</textarea>'
+    def textarea(c, name, export_entry)
+      v = '<textarea'
+      v << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}") << '"'
+      v << mkattrs(c, export_entry[:options])
+      v << '>'
+      v << ERB::Util.html_escape(c.__send__(name))
+      v << '</textarea>'
     end
-
-    def parse_gluon(name)
-      case (name)
-      when /^\s*g\s*:/
-        command = $'.strip
-        return :command, command
-      else
-        name, value = name.split(/=/, 2)
-        name = name.to_sym
-        unless (type = find_controller_method_type(name)) then
-          case (name)
-          when :to_s
-            type = :value
-          when :to_a
-            type = :foreach
-          else
-            raise NameError, "not defined controller method type for `#{page_type}\##{name}'"
-          end
-        end
-        return type, name, value
-      end
-    end
-
-    def gluon(type, name, value, options={})
-      case (type)
-      when :command
-        case (name)
-        when '_'
-          raise NotImplemented, "not implemented view command: `_'"
-        when 'content'
-          if (block_given?) then
-            content{|out|
-              out << block_result{ yield }
-            }
-          else
-            content
-          end
-        when 'lt'
-          '<'
-        when 'gt'
-          '>'
-        when 'amp'
-          '&'
-        when 'quot'
-          '"'
-        else
-          raise NameError, "`#{name}' of unknown view command."
-        end
-      when :value
-        value(name)
-      when :cond
-        cond(name) {
-          yield
-        }
-        ''
-      when :foreach
-        foreach(name) {
-          yield
-        }
-        ''
-      when :link
-        if (block_given?) then
-          link(name, options) {|out|
-            yield(out)
-          }
-        else
-          link(name, options)
-        end
-      when :action
-        if (block_given?) then
-          action(name, options) {|out|
-            yield(out)
-          }
-        else
-          action(name, options)
-        end
-      when :frame
-        frame(name, options)
-      when :import
-        if (block_given?) then
-          import(name, options) {|out|
-            yield(out)
-          }
-        else
-          import(name, options)
-        end
-      when :text
-        text(name, options)
-      when :password
-        password(name, options)
-      when :submit
-        submit(name, options)
-      when :hidden
-        hidden(name, options)
-      when :checkbox
-        checkbox(name, options)
-      when :radio
-        radio(name, value, options)
-      when :select
-        select(name, options)
-      when :textarea
-        textarea(name, options)
-      else
-        raise NameError, "not defined controller method type for `#{page_type}\##{name}'"
-      end
-    end
+    private :textarea
   end
 end
 
