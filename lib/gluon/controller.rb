@@ -226,6 +226,7 @@ module Gluon
     private :gluon_path_filter
 
     def gluon_value(name, options={})
+      options = options.merge(:escape => true) unless (options.key? :escape)
       Controller.gluon_view_export(self, name, :value, options)
     end
     private :gluon_value
@@ -288,7 +289,7 @@ module Gluon
     private :gluon_frame_reader
 
     def gluon_import(name, options={}, &block)
-      options = { :block => block }.merge(options)
+      options = options.merge(:block => block)
       Controller.gluon_form_export(self, name, :import, options)
       Controller.gluon_action_export(self, name, :import, options)
     end
@@ -355,7 +356,7 @@ module Gluon
     private :gluon_checkbox_accessor
 
     def gluon_radio(name, list, options={})
-      options = { :list => list }.merge(options)
+      options = options.merge(:list => list)
       Controller.gluon_form_export(self, name, :radio, options)
       Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
@@ -368,7 +369,8 @@ module Gluon
     private :gluon_radio_accessor
 
     def gluon_select(name, list, options={})
-      options = { :list => list }.merge(options)
+      options = options.merge(:list => list)
+      options = options.merge(:multiple => false) unless (options.key? :multiple)
       Controller.gluon_form_export(self, name, :select, options)
       Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end

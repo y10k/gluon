@@ -95,13 +95,8 @@ module Gluon
     end
 
     def value(c, name, options)
-      escape = true             # default
-      if (options.key? :escape) then
-        escape = options[:escape]
-      end
       s = c.__send__(name)
-      s = ERB::Util.html_escape(s) if escape
-
+      s = ERB::Util.html_escape(s) if options[:escape]
       s
     end
     private :value
@@ -225,15 +220,15 @@ module Gluon
     end
     private :mkinput
 
-    def getopt(key, options, c, default=nil)
+    def getopt(key, options, c)
       if (value = options[key]) then
         if (value.is_a? Symbol) then
           value = c.__send__(value)
         end
-        return value
+        value
+      else
+        nil
       end
-
-      default
     end
     private :getopt
 
@@ -283,7 +278,7 @@ module Gluon
     def select(c, name, options)
       list = getopt(:list, options, c) or
         raise "need for `list' option at `#{c.class}\##{name}'"
-      multiple = getopt(:multiple, options, c, false)
+      multiple = getopt(:multiple, options, c)
 
       s = '<select'
       s << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}") << '"'
