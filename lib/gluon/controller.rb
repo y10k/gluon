@@ -42,7 +42,7 @@ module Gluon
         unless (page_type.public_method_defined? name) then
           raise NoMethodError, "not defineid method `#{name}' of `#{page_type}'"
         end
-        table[page_type] = {} unless (table.key? name)
+        table[page_type] = {} unless (table.key? page_type)
         table[page_type][name] = { :type => type, :options => options }
         nil
       end

@@ -44,6 +44,22 @@ module Gluon::Test
       assert_equal(false, (@Controller.public_method_defined? :foo=))
     end
 
+    def test_gluon_value2
+      @Controller.class_eval{
+        gluon_value_reader :foo
+        gluon_value_reader :bar
+      }
+      assert(entry = Gluon::Controller.find_view_export(@Controller))
+
+      assert_equal(:value, entry[:foo][:type])
+      assert_equal(true, (@Controller.public_method_defined? :foo))
+      assert_equal(false, (@Controller.public_method_defined? :foo=))
+
+      assert_equal(:value, entry[:bar][:type])
+      assert_equal(true, (@Controller.public_method_defined? :bar))
+      assert_equal(false, (@Controller.public_method_defined? :bar=))
+    end
+
     def test_gluon_value_inherited
       @Controller.class_eval{ gluon_value_reader :foo }
       subclass = Class.new(@Controller)
