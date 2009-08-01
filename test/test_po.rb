@@ -488,6 +488,14 @@ module Gluon::Test
                    '</select>',
                    @po.gluon(:foo))
     end
+
+    def test_textarea
+      @Controller.class_eval{
+        gluon_textarea_accessor :foo
+      }
+      @c.foo = 'Hello world.'
+      assert_equal('<textarea name="foo">Hello world.</textarea>', @po.gluon(:foo))
+    end
   end
 end
 
