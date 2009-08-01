@@ -28,7 +28,7 @@ module Gluon
     end
 
     attr_accessor :logger
-    attr_accessor :cmap
+    attr_writer :cmap
 
     def script_name
       @req.env[:gluon_script_name]
