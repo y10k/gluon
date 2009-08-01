@@ -200,6 +200,11 @@ module Gluon::Test
     end
 
     def test_import
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_import_reader :foo
+      }
+
       component = Class.new{
         extend Gluon::Component
 
@@ -219,12 +224,7 @@ module Gluon::Test
         gluon_value_reader :bar
       }
 
-      @Controller.class_eval{
-        attr_writer :foo
-        gluon_import_reader :foo
-      }
       @c.foo = component.new('Hello world.')
-
       assert_equal('Hello world.', @po.gluon(:foo))
     end
 
