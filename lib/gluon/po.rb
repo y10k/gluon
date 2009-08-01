@@ -168,14 +168,14 @@ module Gluon
     end
     private :mkattrs
 
-    def anchor_content(options, &block)
+    def anchor_content(options, c, &block)
       if (block_given?) then
         content = ''
         yield(content)
         return content
       end
 
-      if (content = options[:text]) then
+      if (content = getopt(:text, options, c)) then
         return ERB::Util.html_escape(content)
       end
 
@@ -188,7 +188,7 @@ module Gluon
       v << ' href="' << mkpath(c, name) << '"'
       v << mkattrs(c, export_entry[:options])
       v << '>'
-      v << anchor_content(export_entry[:options], &block)
+      v << anchor_content(export_entry[:options], c, &block)
       v << '</a>'
     end
     private :link
@@ -198,7 +198,7 @@ module Gluon
       v << ' href="' << ERB::Util.html_escape("#{@r.equest.path}?#{@prefix}#{name}") << '"'
       v << mkattrs(c, export_entry[:options])
       v << '>'
-      v << anchor_content(export_entry[:options], &block)
+      v << anchor_content(export_entry[:options], c, &block)
       v << '</a>'
     end
     private :action
