@@ -162,6 +162,16 @@ module Gluon::Test
       assert_equal('<a href="/halo" style="font-weight: bold">Hello world.</a>',
                    @po.gluon(:foo) {|v| v << 'Hello world.' })
     end
+
+    def test_action
+      @Controller.class_eval{
+        def foo
+        end
+        gluon_action :foo
+      }
+      assert_equal('<a href="/run.cgi?foo">Hello world.</a>',
+                   @po.gluon(:foo) {|v| v << 'Hello world.' })
+    end
   end
 end
 
