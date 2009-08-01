@@ -153,6 +153,8 @@ module Gluon
                 controller.__send__(form_entry[:writer], value)
               end
             end
+          else
+            raise "unknown form export type at `#{name}': #{form_entry[:type]}"
           end
         end
 
@@ -175,6 +177,8 @@ module Gluon
           when :import
             c = controller.__send__(name)
             apply_first_action(c, req, "#{prefix}#{name}.") and return true
+          else
+            raise "unknown action export type at `#{name}': #{action_entry[:type]}"
           end
         end
 
