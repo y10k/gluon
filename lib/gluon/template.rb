@@ -16,6 +16,20 @@ module Gluon
 	@c = @po.controller
 	@stdout = ''
       end
+
+      def block_result
+        stdout = ''
+        stdout_save = @stdout
+        begin
+          @stdout = stdout
+          yield
+        ensure
+          @stdout = stdout_save
+        end
+
+        stdout
+      end
+      private :block_result
     end
 
     def default_template(page_type)

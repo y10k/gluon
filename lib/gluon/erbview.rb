@@ -13,19 +13,8 @@ module Gluon
     CVS_ID = '$Id$'
 
     class Engine < TemplateEngine::Skeleton
-      def _block_result
-        stdout = ''
-        stdout_save = @stdout
-        begin
-          @stdout = stdout
-          yield
-        ensure
-          @stdout = stdout_save
-        end
-
-        stdout
-      end
-      private :_block_result
+      alias _block_result block_result
+      undef block_result
 
       def gluon(name, value=nil, &block)
         if (block_given?) then
