@@ -117,6 +117,26 @@ module Gluon::Test
                    @po.gluon(:foo) {|v| v << "Hello world." })
     end
 
+    def test_link_class_args
+      foo = Class.new
+      foo.class_eval{
+        include Gluon::Controller
+        gluon_path_filter %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$" do |year, mon, day|
+          format('/%04d-%02d-%02d', year, mon, day)
+        end
+      }
+      @cmap.mount(foo, '/halo')
+
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_link_reader :foo
+      }
+      @c.foo = foo, [ 1975, 11, 19 ]
+
+      assert_equal('<a href="/halo/1975-11-19">Hello world.</a>',
+                   @po.gluon(:foo) {|v| v << "Hello world." })
+    end
+
     def test_link_url
       @Controller.class_eval{
         attr_writer :foo
