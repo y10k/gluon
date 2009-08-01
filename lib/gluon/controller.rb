@@ -309,6 +309,39 @@ module Gluon
         false
       end
     end
+
+
+    attr_writer :r
+
+    def page_around
+      yield
+    end
+
+    def page_start
+    end
+
+    def page_request(*path_args)
+      if (@r.equest.get?) then
+        request_GET(*path_args)
+      elsif (@r.equest.head?) then
+        request_HEAD(*path_args)
+      elsif (@r.equest.post?) then
+        request_POST(*path_args)
+      else
+        __send__('request_' + @r.equest.request_method, *path_args)
+      end
+    end
+
+    def request_HEAD(*path_args)
+      request_GET(*path_args)
+    end
+
+    def page_view
+      @c.view_render(ERBView)
+    end
+
+    def page_end
+    end
   end
 
   # = component controller
@@ -316,6 +349,12 @@ module Gluon
     def self.included(module_or_class)
       module_or_class.extend(Controller::Syntax)
       super
+    end
+
+    attr_writer :r
+
+    def page_view
+      @c.view_render(ERBView)
     end
   end
 end
