@@ -99,7 +99,7 @@ module Gluon::Test
 
       component = Class.new
       component.class_eval{
-        include Gluon::Component
+        extend Gluon::Component
         gluon_text_accessor :bar
       }
 
@@ -130,7 +130,7 @@ module Gluon::Test
 
       component = Class.new
       component.class_eval{
-        include Gluon::Component
+        extend Gluon::Component
 
         def initialize
           @count = 0
@@ -260,7 +260,7 @@ module Gluon::Test
 
       component = Class.new
       component.class_eval{
-        include Gluon::Component
+        extend Gluon::Component
         gluon_text_accessor :bar
       }
 
@@ -279,7 +279,7 @@ module Gluon::Test
 
       component = Class.new
       component.class_eval{
-        include Gluon::Component
+        extend Gluon::Component
 
         def initialize
           @count = 0

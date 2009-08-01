@@ -1,5 +1,8 @@
 2009-07-26  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/controller.rb: controller syntax is defined at
+	component.
+
 	* lib/gluon/controller.rb, lib/gluon/rs.rb: request-response
 	context and controller hooks.
 
