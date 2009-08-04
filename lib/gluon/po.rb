@@ -144,7 +144,7 @@ module Gluon
     def mkpath(c, name)
       path, *args = c.__send__(name)
       if (path.is_a? Class) then
-        path = "#{@r.script_name}#{@r.class2path(path, *args)}"
+        path = @r.class2path(path, *args)
       end
       ERB::Util.html_escape(path)
     end
