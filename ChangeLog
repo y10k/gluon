@@ -1,3 +1,7 @@
+2009-08-03  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/rs.rb: script_name -> root_script_name.
+
 2009-08-02  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/controller.rb: gluon metainfo.

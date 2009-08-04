@@ -30,12 +30,14 @@ module Gluon
     attr_accessor :logger
     attr_writer :cmap
 
-    def script_name
-      @req.env[:gluon_script_name]
+    # usage: @r.oot_script_name
+    def oot_script_name
+      @req.env[:gluon_root_script_name]
     end
 
     def class2path(page_type, *path_args)
-      script_name + @cmap.class2path(page_type, *path_args)
+      r = self
+      r.oot_script_name + @cmap.class2path(page_type, *path_args)
     end
 
     def location(path, status=302)

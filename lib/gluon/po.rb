@@ -12,9 +12,9 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    def initialize(controller, rs, template_engine, prefix='', &block)
+    def initialize(controller, req_res, template_engine, prefix='', &block)
       @c_stack = [ controller ]
-      @r = rs
+      @r = req_res
       @template_engine = template_engine
       @prefix = prefix
       @parent_block = block

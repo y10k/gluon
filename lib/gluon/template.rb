@@ -10,9 +10,9 @@ module Gluon
     CVS_ID = '$Id$'
 
     class Skeleton
-      def initialize(po, rs)
+      def initialize(po, r)
 	@po = po
-	@r = rs
+	@r = r
 	@c = @po.controller
 	@stdout = ''
       end
@@ -64,13 +64,13 @@ module Gluon
       engine
     end
 
-    def render(po, rs, view, encoding, template_path, inline_template=nil)
+    def render(po, r, view, encoding, template_path, inline_template=nil)
       unless (template_path) then
 	template_path = default_template(po.class)
       end
       script = compile(view, encoding, template_path, inline_template)
       engine = create_engine(view, template_path, script)
-      v = engine.new(po, rs)
+      v = engine.new(po, r)
       v.call
     end
   end
