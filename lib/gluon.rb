@@ -30,7 +30,7 @@ module Gluon
   autoload :HTMLEmbeddedView, 'gluon/htmlview'
   autoload :MemoryStore, 'gluon/rs'
   autoload :Mock, 'gluon/mock'
-  autoload :NoLogger, 'gluon/nolog'
+  autoload :NoLogger, 'gluon/rs'
   autoload :PluginMaker, 'gluon/plugin'
   autoload :PresentationObject, 'gluon/po'
   autoload :RequestResponseContext, 'gluon/rs'

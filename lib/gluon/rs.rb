@@ -7,6 +7,33 @@
 require 'gluon/nolog'
 
 module Gluon
+  # = fake logger
+  class NoLogger
+    include Singleton
+
+    def debug?
+      false
+    end
+
+    def debug(messg)
+    end
+
+    def info(messg)
+    end
+
+    def warn(messg)
+    end
+
+    def error(messg)
+    end
+
+    def fatal(messg)
+    end
+
+    def close
+    end
+  end
+
   class RequestResponseContext
     # for idnet(1)
     CVS_ID = '$Id$'
