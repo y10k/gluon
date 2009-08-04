@@ -44,6 +44,12 @@ module Gluon
       @logger = NoLogger.instance
     end
 
+    # alias for self
+    def r
+      self
+    end
+    private :r
+
     # usage: @r.equest
     def equest
       @req
@@ -63,7 +69,6 @@ module Gluon
     end
 
     def class2path(page_type, *path_args)
-      r = self
       r.oot_script_name + @cmap.class2path(page_type, *path_args)
     end
 
