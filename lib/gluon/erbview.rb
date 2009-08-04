@@ -48,6 +48,11 @@ module Gluon
       ERB.new(template, nil, nil, '@stdout').src
     end
     module_function :compile
+
+    def suffix
+      '.erb'
+    end
+    module_function :suffix
   end
 end
 

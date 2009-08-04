@@ -18,7 +18,8 @@ module Gluon::Test
       @cmap = Gluon::ClassMap.new
       @r = Gluon::RequestResponseContext.new(Rack::Request.new(@env), Rack::Response.new)
       @r.cmap = @cmap
-      @template_engine = Gluon::TemplateEngine.new
+      @template_dir = 'test_erbview.template_dir'
+      @template_engine = Gluon::TemplateEngine.new(@template_dir)
       @po = Gluon::PresentationObject.new(@c, @r, @template_engine)
     end
 

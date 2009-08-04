@@ -32,8 +32,14 @@ module Gluon
       private :block_result
     end
 
+    def initialize(template_dir)
+      @template_dir = template_dir
+    end
+
     def default_template(page_type)
-      raise NotImplementedError, 'not implemented.'
+      classpath = page_type.name or raise ArgumentError, "anonymous class has no classpath: #{page_type}"
+      classpath.gsub!(/::/, '/')
+      File.join(@template_dir, classpath + page_type.page_view.suffix)
     end
 
     def compile(view, encoding, template_path, inline_template=nil)

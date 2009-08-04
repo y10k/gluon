@@ -1,3 +1,8 @@
+2009-08-04  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/erbview.rb, lib/gluon/template.rb: default template
+	search.
+
 2009-08-03  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/rs.rb: script_name -> root_script_name.
