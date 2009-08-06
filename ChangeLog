@@ -1,3 +1,9 @@
+2009-08-07  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/application.rb, lib/gluon/builder.rb,
+	lib/gluon/template.rb, run/config.rb, run/config.ru,
+	run/view/Welcom.erb: application builder and minimum example.
+
 2009-08-04  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/erbview.rb, lib/gluon/template.rb: default template

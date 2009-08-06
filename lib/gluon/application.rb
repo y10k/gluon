@@ -4,158 +4,96 @@
 #   :include:../LICENSE
 #
 
-require 'gluon/action'
+require 'gluon/controller'
+require 'gluon/po'
 require 'gluon/rs'
 require 'rack'
 
 module Gluon
+  class Root
+    def initialize(app)
+      @app = app
+    end
+
+    def call(env)
+      env[:gluon_root_script_name] = env['SCRIPT_NAME']
+      @app.call(env)
+    end
+  end
+
   # = application for Rack
   class Application
     # for ident(1)
     CVS_ID = '$Id$'
 
-    def initialize
-      @cache = {}
-      @c_lock = Mutex.new
-
-      @default_cache_key = Object.new
-      class << @default_cache_key
-        def inspect
-          super + '(default_cache_key)'
-        end
-      end
-      @default_cache_key.freeze
+    def initialize(logger, cmap, template_engine)
+      @logger = logger
+      @cmap = cmap
+      @template_engine = template_engine
+      @page_list = []
+      @default_app = nil
     end
 
-    attr_writer :logger
-    attr_writer :url_map
-    attr_writer :error_map
-    attr_writer :renderer
-    attr_writer :session_man
-    attr_writer :plugin_maker
-    attr_writer :backend_service_man
-    attr_writer :page_cache
-    attr_writer :default_handler
+    def mount(page_type, *init_args)
+      @page_list.push [
+        Controller.find_path_filter(page_type) || %r"^/?$",
+        page_type,
+        init_args
+      ]
+      nil
+    end
+
+    def run(app)
+      @default_app = app
+      nil
+    end
+
+    def find_page(path_info)
+      for path_filter, page_type, init_args in @page_list
+        if (path_info =~ path_filter) then
+          path_args = $~.to_a
+          path_args.shift
+          return page_type, init_args, path_args
+        end
+      end
+
+      nil
+    end
 
     def call(env)
-      @logger.debug("#{self}.call() - start") if @logger.debug?
-      req = Rack::Request.new(env)
-      res = Rack::Response.new
-      params, funcs = Action.parse(req.params)
-      if (@logger.debug?) then
-        @logger.debug("request path: #{req.path_info}")
-        @logger.debug("request parameters: #{params.inspect}")
-        @logger.debug("request functions: #{funcs.inspect}")
-      end
-      page_type, gluon_path_info, gluon_path_args = @url_map.lookup(req.path_info)
-      if (! page_type && @default_handler) then
-        page_type = @default_handler
-        gluon_path_args = []
-      end
-      if (page_type) then
-        begin
-          apply(req, res, params, funcs,
-                page_type, gluon_path_info, gluon_path_args)
-        rescue
-          if (err_page_type = @error_map.lookup($!.class)) then
-            apply(req, res, Action::EMPTY_PARAMS, Action::EMPTY_FUNCS,
-                  err_page_type, gluon_path_info, gluon_path_args, [ $! ])
-          else
-            raise
-          end
-        end
-      else
-        [ 404,
-          { 'Content-Type' => 'text/plain' },
-          [ "404 Not Found: #{req.env['REQUEST_URI']}" ]
-        ]
-      end
-    end
+      r = RequestResponseContext.new(Rack::Request.new(env), Rack::Response.new)
+      r.logger = @logger
+      r.cmap = @cmap
 
-    def apply(req, res, params, funcs, page_type, gluon_path_info, gluon_path_args, page_init_args=[])
-      begin
-        @session_man.transaction(req, res) {|session|
-          begin
-            case (page_type)
-            when Class
-              controller = page_type.new(*page_init_args)
-            when Module
-              raise "#{page_type} module is not a page-type."
-            else
-              controller = page_type
-              page_type = controller.class
-            end
-            req.env['gluon.version'] = VERSION
-            req.env['gluon.curr_page'] = page_type
-            req.env['gluon.path_info'] = gluon_path_info
-            req.env['gluon.path_args'] = gluon_path_args
-            req.env['gluon.page_cache'] = @page_cache
-            rs_context = RequestResponseContext.new(req, res, session, @url_map, @renderer)
-            rs_context.logger = @logger
-            rs_context.plugin = @plugin_maker.call
-            rs_context.backend_services = @backend_service_man.call
-            rs_context.cache_tag = nil
-            action = Action.new(controller, rs_context, params, funcs).setup
-            action.logger = @logger
-            page_type = RequestResponseContext.switch_from{
-              cache_key = action.cache_key || @default_cache_key
-              c_key = [ req.path_info, page_type, cache_key ]
-              if (c_entry = @c_lock.synchronize{ @cache[c_key] }) then
-                modified = nil
-                cache_result = nil
-                c_entry[:lock].synchronize{
-                  modified = (action.modified? c_entry[:cache_tag])
-                  cache_result = c_entry[:result]
-                }
-                if (modified) then
-                  @logger.debug("modified page -> #{c_key.inspect}") if @logger.debug?
-                  result = action.apply(gluon_path_args) {
-                    action.view_render
-                  }
-                  if (modified != :no_cache) then
-                    @logger.debug("update page cache -> #{c_key.inspect}") if @logger.debug?
-                    c_entry[:lock].synchronize{
-                      c_entry[:cache_tag] = rs_context.cache_tag
-                      c_entry[:result] = result
-                    }
-                  else
-                    @logger.debug("no cache of #{c_key.inspect}") if @logger.debug?
-                  end
-                  res.write(result)
-                else
-                  @logger.debug("use page cache -> #{c_key.inspect}") if @logger.debug?
-                  res.write(cache_result)
-                end
-              else
-                result = action.apply(gluon_path_args) {
-                  action.view_render
-                }
-                if (@page_cache && rs_context.cache_tag) then
-                  @logger.debug("create page cache -> #{c_key.inspect}") if @logger.debug?
-                  @c_lock.synchronize{
-                    c_entry = @cache[c_key] || { :lock => Mutex.new }
-                    c_entry[:lock].synchronize{
-                      c_entry[:cache_tag] = rs_context.cache_tag
-                      c_entry[:result] = result
-                    }
-                    @cache[c_key] = c_entry
-                  }
-                end
-                res.write(result)
-              end
-            }
-          end while (page_type)
-        }
-        @logger.debug("used request parameters: #{params.inspect}")
-        @logger.debug("#{self}.call() - end") if @logger.debug?
-        res.finish
-      rescue
-        @logger.error('internal application error')
-        @logger.error($!)
-        raise
+      page_type, init_args, path_args = find_page(r.equest.path_info)
+      unless (page_type) then
+        if (@default_app) then
+          return @default_app.call(env)
+        else
+          raise "not found an application for `#{r.equest.url}'"
+        end
       end
+
+      c = page_type.new(*init_args)
+      c.r = r
+      po = PresentationObject.new(c, r, @template_engine)
+      page_result = nil
+
+      c.page_around{
+        c.page_start
+        begin
+          Controller.set_form_params(c, r.equest)
+          c.page_request(*path_args)
+          Controller.apply_first_action(c, r.equest)
+          page_result = c.class.process_view(po)
+        ensure
+          c.page_end
+        end
+      }
+
+      r.esponse.write(page_result)
+      r.esponse.finish
     end
-    private :apply
   end
 end
 

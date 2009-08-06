@@ -2,14 +2,14 @@
 
 class Welcom
   include Gluon::Controller
-  include Gluon::ERBView
 
-  def page_get
+  def request_GET
   end
 
   def title
     'Welcom to Gluon'
   end
+  gluon_value :title
 end
 
 # Local Variables:

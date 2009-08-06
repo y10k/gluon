@@ -72,7 +72,7 @@ module Gluon
 
     def render(po, r, view, encoding, template_path, inline_template=nil)
       unless (template_path) then
-	template_path = default_template(po.class)
+	template_path = default_template(po.controller.class)
       end
       script = compile(view, encoding, template_path, inline_template)
       engine = create_engine(view, template_path, script)
