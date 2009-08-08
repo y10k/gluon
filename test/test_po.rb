@@ -246,7 +246,7 @@ module Gluon::Test
 
         def self.page_template
           File.join(File.dirname(__FILE__),
-                    File.basename(__FILE__, '.rb') + '.test_import.rhtml')
+                    File.basename(__FILE__, '.rb') + '.test_import.erb')
         end
 
         def initialize(messg)
@@ -275,7 +275,7 @@ module Gluon::Test
 
         def self.page_template
           File.join(File.dirname(__FILE__),
-                    File.basename(__FILE__, '.rb') + '.test_import_action.rhtml')
+                    File.basename(__FILE__, '.rb') + '.test_import_action.erb')
         end
 
         def bar
@@ -303,7 +303,7 @@ module Gluon::Test
 
         def self.page_template
           File.join(File.dirname(__FILE__),
-                    File.basename(__FILE__, '.rb') + '.test_content.rhtml')
+                    File.basename(__FILE__, '.rb') + '.test_content.erb')
         end
       }
 
@@ -326,7 +326,7 @@ module Gluon::Test
 
         def self.page_template
           File.join(File.dirname(__FILE__),
-                    File.basename(__FILE__, '.rb') + '.test_content_block.rhtml')
+                    File.basename(__FILE__, '.rb') + '.test_content_block.erb')
         end
       }
 
@@ -349,7 +349,7 @@ module Gluon::Test
 
         def self.page_template
           File.join(File.dirname(__FILE__),
-                    File.basename(__FILE__, '.rb') + '.test_content_block_ignored.rhtml')
+                    File.basename(__FILE__, '.rb') + '.test_content_block_ignored.erb')
         end
       }
 
@@ -372,7 +372,7 @@ module Gluon::Test
 
         def self.page_template
           File.join(File.dirname(__FILE__),
-                    File.basename(__FILE__, '.rb') + '.test_content_not_defined.rhtml')
+                    File.basename(__FILE__, '.rb') + '.test_content_not_defined.erb')
         end
       }
 

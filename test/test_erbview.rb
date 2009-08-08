@@ -24,7 +24,7 @@ module Gluon::Test
     end
 
     def mkpath(name)
-      File.join(File.dirname(__FILE__), File.basename(__FILE__, '.rb') + ".#{name}.rhtml")
+      File.join(File.dirname(__FILE__), File.basename(__FILE__, '.rb') + ".#{name}.erb")
     end
     private :mkpath
 
@@ -98,7 +98,7 @@ module Gluon::Test
 
         def self.page_template
           File.join(File.dirname(__FILE__),
-                    File.basename(__FILE__, '.rb') + ".test_gluon_content.component.rhtml")
+                    File.basename(__FILE__, '.rb') + ".test_gluon_content.component.erb")
         end
       }
 
@@ -122,7 +122,7 @@ module Gluon::Test
 
         def self.page_template
           File.join(File.dirname(__FILE__),
-                    File.basename(__FILE__, '.rb') + ".test_gluon_content_block.component.rhtml")
+                    File.basename(__FILE__, '.rb') + ".test_gluon_content_block.component.erb")
         end
       }
 

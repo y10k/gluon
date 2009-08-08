@@ -17,6 +17,12 @@ task :test do
   ruby *cmds
 end
 
+task :clean do
+  for erbc in Dir['*.erbc']
+    rm_f erbc
+  end
+end
+
 # Local Variables:
 # mode: Ruby
 # indent-tabs-mode: nil
