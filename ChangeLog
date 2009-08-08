@@ -1,5 +1,7 @@
 2009-08-08  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* bin/gluon_local: utility for project local RubyGems environemnt.
+
 	* lib/gluon/controller.rb: easy memoization.
 
 2009-08-07  TOKI Yoshinori  <toki@freedom.ne.jp>

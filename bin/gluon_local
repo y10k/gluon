@@ -1,0 +1,38 @@
+#!/usr/local/bin/ruby
+# -*- coding: utf-8 -*-
+
+require 'optparse'
+
+# for ident(1)
+CVS_ID = '$Id$'
+
+proj_dir = nil
+
+opts = OptionParser.new
+opts.banner += ' COMMAND_LINE'
+opts.on('-d', '--project=PROJECT_DIR') {|value|
+  proj_dir = value
+}
+opts.order!
+
+unless (proj_dir) then
+  puts 'error: need for --project option!'
+  puts opts
+  exit 1
+end
+
+if (ARGV.empty?) then
+  puts 'error: need for command!'
+  puts opts
+  exit 1
+end
+
+ENV['GEM_HOME'] = File.join(proj_dir, 'gems')
+ENV['PATH'] = [ File.join(ENV['GEM_HOME'], 'bin'), ENV['PATH'] ].join(File::PATH_SEPARATOR)
+
+exec *ARGV
+
+# Local Variables:
+# mode: Ruby
+# indent-tabs-mode: nil
+# End:
