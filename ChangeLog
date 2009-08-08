@@ -1,3 +1,7 @@
+2009-08-08  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/controller.rb: easy memoization.
+
 2009-08-07  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/application.rb, run/lib/Welcom.rb: page-encoding is

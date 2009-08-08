@@ -28,6 +28,7 @@ module Gluon
   autoload :ErrorMap, 'gluon/errmap'
   autoload :FileStore, 'gluon/fstore'
   autoload :HTMLEmbeddedView, 'gluon/htmlview'
+  autoload :Memoization, 'gluon/controller'
   autoload :Mock, 'gluon/mock'
   autoload :NoLogger, 'gluon/rs'
   autoload :PluginMaker, 'gluon/plugin'

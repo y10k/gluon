@@ -18,6 +18,25 @@ class Module
 end
 
 module Gluon
+  # = easy memoization
+  module Memoization
+    def memoize(name, cache={})
+      cache_var = "@_memoize_cache_#{name}"
+      instance_variable_set(cache_var, cache)
+      instance_eval(<<-EOF, "#{__FILE__}:memoize(#{name})", __LINE__ + 1)
+        def self.#{name}(*args)
+          if (#{cache_var}.key? args) then
+            #{cache_var}[args]
+          else
+            #{cache_var}[args] = super
+          end
+        end
+      EOF
+
+      nil
+    end
+  end
+
   # = controller and meta-data
   # usage:
   #   class YourController
@@ -29,6 +48,8 @@ module Gluon
     CVS_ID = '$Id$'
 
     class << self
+      extend Memoization
+
       def included(module_or_class)
         module_or_class.extend(Component)
         super
