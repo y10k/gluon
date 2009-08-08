@@ -4,8 +4,6 @@
 #   :include:../LICENSE
 #
 
-require 'gluon/nolog'
-
 module Gluon
   # = fake logger
   class NoLogger
