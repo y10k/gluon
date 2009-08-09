@@ -95,12 +95,23 @@ module Gluon
         page_type.gluon_metainfo[:form_export][name].update(params)
       end
 
+      def find_path_filter_entry(page_type)
+        page_type.ancestors.each do |module_or_class|
+          if (entry = module_or_class.gluon_metainfo[:path_filter]) then
+            return entry
+          end
+        end
+
+        nil
+      end
+      private :find_path_filter_entry
+
       def find_path_filter(page_type)
-        entry = page_type.gluon_metainfo[:path_filter] and return entry[:filter]
+        entry = find_path_filter_entry(page_type) and return entry[:filter]
       end
 
       def find_path_block(page_type)
-        entry = page_type.gluon_metainfo[:path_filter] and return entry[:block]
+        entry = find_path_filter_entry(page_type) and return entry[:block]
       end
 
       def find_export(export_type, page_type)

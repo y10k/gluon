@@ -1,5 +1,7 @@
 2009-08-09  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/controller.rb: inheritance of gluon path-filter.
+
 	* lib/gluon/controller.rb: memoization for class method.
 
 	* lib/gluon/controller.rb: syntax sugar of negative condition for

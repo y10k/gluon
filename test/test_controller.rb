@@ -16,10 +16,11 @@ module Gluon::Test
                    Gluon::Controller.find_path_filter(@Controller))
     end
 
-    def test_gluon_path_filter_not_inherited
+    def test_gluon_path_filter_inherited
       @Controller.class_eval{ gluon_path_filter %r"^/foo/([^/]+)$" }
       subclass = Class.new(@Controller)
-      assert_nil(Gluon::Controller.find_path_filter(subclass))
+      assert_equal(%r"^/foo/([^/]+)$",
+                   Gluon::Controller.find_path_filter(subclass))
     end
 
     def test_gluon_path_block
@@ -32,14 +33,15 @@ module Gluon::Test
       assert_equal('/1975-11-19', block.call(1975, 11, 19))
     end
 
-    def test_gluon_path_block_not_inherited
+    def test_gluon_path_block_inherited
       @Controller.class_eval{
         gluon_path_filter %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$" do |year, mon, day|
           format("/%04d-%02d-%02d", year, mon, day)
         end
       }
       subclass = Class.new(@Controller)
-      assert_nil(Gluon::Controller.find_path_block(subclass))
+      block = Gluon::Controller.find_path_block(subclass)
+      assert_equal('/1975-11-19', block.call(1975, 11, 19))
     end
 
     def test_gluon_value
