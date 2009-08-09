@@ -21,14 +21,18 @@ module Gluon
   # = easy memoization
   module Memoization
     def memoize(name, cache={})
-      cache_var = "@_memoize_cache_#{name}"
+      cache_var = "@__memoize_cache_#{name}"
       instance_variable_set(cache_var, cache)
       instance_eval(<<-EOF, "#{__FILE__}:memoize(#{name})", __LINE__ + 1)
-        def self.#{name}(*args)
-          if (#{cache_var}.key? args) then
-            #{cache_var}[args]
-          else
-            #{cache_var}[args] = super
+        class << self
+          alias __no_memoize_#{name} #{name}
+
+          def #{name}(*args, &block)
+            if (#{cache_var}.key? args) then
+              #{cache_var}[args]
+            else
+              #{cache_var}[args] = __no_memoize_#{name}(*args, &block)
+            end
           end
         end
       EOF
@@ -47,9 +51,9 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    class << self
-      extend Memoization
+    extend Memoization
 
+    class << self
       def included(module_or_class)
         module_or_class.extend(Component)
         super
