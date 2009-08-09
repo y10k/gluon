@@ -61,6 +61,7 @@ module Gluon
     end
 
     attr_accessor :logger
+    attr_accessor :controller
     attr_writer :cmap
 
     # usage: @r.oot_script_name

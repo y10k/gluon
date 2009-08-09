@@ -76,6 +76,7 @@ module Gluon
 
       r.esponse['Content-Type'] = "text/html; charset=#{page_type.page_encoding}"
       c = page_type.new(*init_args)
+      r.controller = c
       c.r = r
       po = PresentationObject.new(c, r, @template_engine)
       page_result = nil
