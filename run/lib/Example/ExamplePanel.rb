@@ -13,7 +13,7 @@ class Example
     end
 
     def request_GET(key)
-      @example_type = Menu::Items[key].example_type or raise "not found an example: #{key}"
+      @example_type = Menu::Items[key].example_type
       @example = @example_type.new
     end
 
