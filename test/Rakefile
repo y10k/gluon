@@ -10,6 +10,7 @@ base_dir = File.join(File.dirname(__FILE__), '..')
 
 task :default => [ :test ]
 
+desc 'run unit-test. optional parameters: TEST_OPTS, TEST_CASE'
 task :test do
   cmds = [ "#{base_dir}/bin/gluon_local", '-d', base_dir, CONFIG['RUBY_INSTALL_NAME'], 'run.rb' ]
   cmds << ENV['TEST_OPTS'] if (ENV.key? 'TEST_OPTS')
@@ -17,8 +18,9 @@ task :test do
   ruby *cmds
 end
 
+desc 'clean garbage files'
 task :clean do
-  for erbc in Dir['*.erbc']
+  for erbc in Dir['*.erbc'] + Dir['*~']
     rm_f erbc
   end
 end
