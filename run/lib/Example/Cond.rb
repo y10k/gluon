@@ -1,19 +1,29 @@
+# -*- coding: utf-8 -*-
+
 class Example
   class Cond
-    include Gluon::Controller
-    include Gluon::ERBView
+    extend Gluon::Component
 
-    #def page_get
-    def page_import
+    def self.page_encoding
+      __ENCODING__
     end
 
-    def true_test
+    # for Example::Menu and Example::Panel
+    def self.description
+      'cond'
+    end
+
+    def foo?
       true
     end
+    gluon_cond :foo?
+    gluon_cond_not :foo?
 
-    def false_test
+    def bar?
       false
     end
+    gluon_cond :bar?
+    gluon_cond_not :bar?
   end
 end
 

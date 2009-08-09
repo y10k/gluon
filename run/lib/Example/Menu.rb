@@ -36,7 +36,7 @@ class Example
     end
 
     Items = {}
-    for example in [ Value ]
+    for example in [ Value, Cond ]
       Items[Item.key(example)] = Item.new(example)
     end
 
