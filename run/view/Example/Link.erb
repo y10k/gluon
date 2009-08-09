@@ -1,31 +1,11 @@
-<h2>1. link by class</h2>
+<h2>1. path link</h2>
+<p><% gluon :root do %>return to top page.<% end %></p>
 
-<p><%= link Welcom, 'target' => '_top', :text => 'return to welcom page.' %></p>
+<h2>2. class link</h2>
+<p><% gluon :welcom do %>return to welcom page.<% end %></p>
 
-<h2>2. link by path</h2>
-
-<p><%= link '/', 'target' => '_top', :text => 'return to welcom page.' %></p>
-
-<h2>3. link by object method</h2>
-
-<!-- call welcom and description methods -->
-<p><%= link :welcom, 'target' => '_top', :text => :description %></p>
-
-<h2>4. link with query</h2>
-
-<p><%= link Example::ExamplePanel,
-       :query => { 'example.foo()' => nil },
-       :path_args => [ Example::Action ],
-       :text => 'foo action at action example page.' %></p>
-
-<h2>5. link URI</h2>
-
-<p><%= link 'http://www.ruby-lang.org/', 'target' => '_blank' %></p>
-
-<h2>6. link URI by object method</h2>
-
-<!-- call ruby_home method -->
-<p><%= link :ruby_home, 'target' => '_blank' %></p>
+<h2>3. link with text</h2>
+<p><% gluon :ruby_home %></p>
 
 <%#
   Local Variables:
