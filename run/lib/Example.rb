@@ -25,6 +25,7 @@ class Example
   autoload :ExamplePanel, 'Example/ExamplePanel'
   autoload :Menu, 'Example/Menu'
   autoload :Value, 'Example/Value'
+  autoload :ViewPanel, 'Example/ViewPanel'
 end
 
 # Local Variables:

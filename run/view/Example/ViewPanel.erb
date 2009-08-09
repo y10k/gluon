@@ -1,14 +1,13 @@
 <html>
 <head>
-<title>example</title>
+<title>view of <% gluon :title %> example</title>
 </head>
 <body>
 
-<%= import :header %>
-<h1>view of <%= value :title %> example</h1>
-<p>view filename is `<code><%= value :filename %></code>'.</p>
+<h1>view of <% gluon :title %> example</h1>
+<p>view filename is `<code><% gluon :filename %></code>'.</p>
 <hr />
-<pre><%= value :view %></pre>
+<pre><% gluon :view_code %></pre>
 <hr />
 
 <address>
