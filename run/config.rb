@@ -23,6 +23,10 @@ map '/example/ex_panel' do |entry|
   entry.mount Example::ExamplePanel
 end
 
+map '/example/code_panel' do |entry|
+  entry.mount Example::CodePanel
+end
+
 # Local Variables:
 # mode: Ruby
 # indent-tabs-mode: nil

@@ -1,14 +1,13 @@
 <html>
 <head>
-<title>example</title>
+<title>source code of <% gluon :title %> example</title>
 </head>
 <body>
 
-<%= import :header %>
-<h1>code of <%= value :title %> example</h1>
-<p>code filename is `<code><%= value :filename %></code>'.</p>
+<h1>source code of <% gluon :title %> example</h1>
+<p>filename is `<code><% gluon :filename %></code>'.</p>
 <hr />
-<pre><%= value :code %></pre>
+<pre><% gluon :source_code %></pre>
 <hr />
 
 <address>
