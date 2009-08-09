@@ -1,35 +1,41 @@
+# -*- coding: utf-8 -*-
+
 class Example
   class Foreach
-    include Gluon::Controller
-    include Gluon::ERBView
+    extend Gluon::Component
 
-    class User
+    def self.page_encoding
+      __ENCODING__
+    end
+
+    # for Example::Menu and Example::Panel
+    def self.description
+      'foreach'
+    end
+
+    class Person
+      extend Gluon::Component
+
       def initialize(name, age)
         @name = name
         @age = age
       end
 
-      attr_reader :name
-      attr_reader :age
+      gluon_value_reader :name
+      gluon_value_reader :age
     end
 
-    def page_start
-      @fruits = %w[ apple banana orange ]
-      @users = [
-        User.new('Taro', 21),
-        User.new('Hanako', 23),
-        User.new('Tanaka', 18)
+    def initialize
+      @persons = [
+        Person.new('Taro', 21),
+        Person.new('Hanako', 23),
+        Person.new('Tanaka', 18)
       ]
       @country = 'Japanese'
     end
 
-    #def page_get
-    def page_import
-    end
-
-    attr_reader :fruits
-    attr_reader :users
-    attr_reader :country
+    gluon_foreach_reader :persons
+    gluon_value_reader :country
   end
 end
 

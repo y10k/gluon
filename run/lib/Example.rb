@@ -24,6 +24,7 @@ class Example
   autoload :CodePanel, 'Example/CodePanel'
   autoload :Cond, 'Example/Cond'
   autoload :ExamplePanel, 'Example/ExamplePanel'
+  autoload :Foreach, 'Example/Foreach'
   autoload :Header, 'Example/Header'
   autoload :Menu, 'Example/Menu'
   autoload :Value, 'Example/Value'
