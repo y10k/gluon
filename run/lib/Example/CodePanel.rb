@@ -1,32 +1,20 @@
 # -*- coding: utf-8 -*-
 
-class Example
-  class CodePanel
-    include Gluon::Controller
+require 'Example/Panel'
 
+class Example
+  class CodePanel < Panel
     def self.page_encoding
       __ENCODING__
-    end
-
-    gluon_path_filter %r"^/([A-Za-z]+)$" do |example|
-      '/' + Menu::Item.key(example)
     end
 
     LIB_DIR = File.join(File.dirname(__FILE__), '..')
 
     def request_GET(key)
-      @example_type = Menu::Items[key].example_type
-      @header = Header.new(@r, @example_type)
+      super
       @source_path = File.join(LIB_DIR,
                                @example_type.name.gsub(/::/, '/') + '.rb')
     end
-
-    gluon_import_reader :header
-
-    def title
-      @example_type.description
-    end
-    gluon_value :title
 
     def filename
       File.basename(@source_path)

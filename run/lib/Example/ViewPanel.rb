@@ -1,33 +1,21 @@
 # -*- coding: utf-8 -*-
 
-class Example
-  class ViewPanel
-    include Gluon::Controller
+require 'Example/Panel'
 
+class Example
+  class ViewPanel < Panel
     def self.page_encoding
       __ENCODING__
-    end
-
-    gluon_path_filter %r"^/([A-Za-z]+)$" do |example|
-      '/' + Menu::Item.key(example)
     end
 
     VIEW_DIR = File.join(File.dirname(__FILE__), '..', '..', 'view')
 
     def request_GET(key)
-      @example_type = Menu::Items[key].example_type
-      @header = Header.new(@r, @example_type)
+      super
       @view_path = File.join(VIEW_DIR,
                              @example_type.name.gsub(/::/, '/') +
                              Gluon::ERBView.suffix)
     end
-
-    gluon_import_reader :header
-
-    def title
-      @example_type.description
-    end
-    gluon_value :title
 
     def filename
       File.basename(@view_path)

@@ -1,30 +1,19 @@
 # -*- coding: utf-8 -*-
 
-class Example
-  class ExamplePanel
-    include Gluon::Controller
+require 'Example/Panel'
 
+class Example
+  class ExamplePanel < Panel
     def self.page_encoding
       __ENCODING__
     end
 
-    gluon_path_filter %r"^/([A-Za-z]+)$" do |example|
-      '/' + Menu::Item.key(example)
-    end
-
     def request_GET(key)
-      @example_type = Menu::Items[key].example_type
-      @header = Header.new(@r, @example_type)
+      super
       @example = @example_type.new
     end
 
-    gluon_import_reader :header
     gluon_import_reader :example
-
-    def title
-      @example_type.description
-    end
-    gluon_value :title
   end
 end
 
