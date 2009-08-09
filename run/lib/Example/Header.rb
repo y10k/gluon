@@ -17,11 +17,7 @@ class Example
       @r.controller.is_a? ExamplePanel
     end
     gluon_cond :example?
-
-    def not_example?
-      ! example?
-    end
-    gluon_cond :not_example?
+    gluon_cond_not :example?
 
     def example
       return ExamplePanel, @example_type
@@ -32,11 +28,7 @@ class Example
       @r.controller.is_a? CodePanel
     end
     gluon_cond :code?
-
-    def not_code?
-      ! code?
-    end
-    gluon_cond :not_code?
+    gluon_cond_not :code?
 
     def code
       return CodePanel, @example_type
@@ -47,11 +39,7 @@ class Example
       @r.controller.is_a? ViewPanel
     end
     gluon_cond :view?
-
-    def not_view?
-      ! view?
-    end
-    gluon_cond :not_view?
+    gluon_cond_not :view?
 
     def view
       return ViewPanel, @example_type
