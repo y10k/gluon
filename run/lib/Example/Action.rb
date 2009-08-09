@@ -1,32 +1,39 @@
+# -*- conding: utf-8 -*-
+
 class Example
   class Action
-    include Gluon::Controller
-    include Gluon::ERBView
+    extend Gluon::Component
 
-    def page_start
-      @results = ''
+    def self.page_encoding
+      __ENCODING__
     end
 
-    #def page_get
-    def page_import
-      @c.validation = true
+    # for Example::Menu and Example::Panel
+    def self.description
+      'action'
+    end
+
+    def initialize
+      @results = ''
     end
 
     def foo
       @results << 'foo is called.'
     end
-    gluon_export :foo
+    gluon_action :foo, :attrs => { 'target' => 'main' }
 
     def bar
       @results << 'bar is called.'
     end
-    gluon_export :bar
+    gluon_action :bar, :attrs => { 'target' => 'main' }
 
-    def no_action?
-      @results.empty?
+    def action?
+      ! @results.empty?
     end
+    gluon_cond :action?
+    gluon_cond_not :action?
 
-    attr_reader :results
+    gluon_value_reader :results
   end
 end
 

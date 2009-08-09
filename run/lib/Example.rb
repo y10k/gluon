@@ -21,6 +21,7 @@ class Example
   end
   gluon_frame :panel, :attrs => { 'name' => 'main' }
 
+  autoload :Action, 'Example/Action'
   autoload :CodePanel, 'Example/CodePanel'
   autoload :Cond, 'Example/Cond'
   autoload :ExamplePanel, 'Example/ExamplePanel'

@@ -1,15 +1,15 @@
 <h2>1. actions</h2>
 
-<p><%= action :foo %></p> <!-- call foo method -->
-<p><%= action :bar %></p> <!-- call bar method -->
+<p><% gluon :foo do %>foo<% end %></p>
+<p><% gluon :bar do %>bar<% end %></p>
 
 <h2>2. results</h2>
 
-<% cond :no_action? do %>
-  <p><em>no action.</em></p>
+<% gluon :action? do %>
+  <p><% gluon :results %></p>
 <% end %>
-<% cond neg(:no_action?) do %>
-  <p><%= value :results %></p>
+<% gluon :not_action? do %>
+  <p><em>no action.</em></p>
 <% end %>
 
 <%#
