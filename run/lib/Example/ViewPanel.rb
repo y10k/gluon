@@ -16,10 +16,13 @@ class Example
 
     def request_GET(key)
       @example_type = Menu::Items[key].example_type
+      @header = Header.new(@r, @example_type)
       @view_path = File.join(VIEW_DIR,
                              @example_type.name.gsub(/::/, '/') +
                              Gluon::ERBView.suffix)
     end
+
+    gluon_import_reader :header
 
     def title
       @example_type.description

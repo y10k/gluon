@@ -23,6 +23,7 @@ class Example
 
   autoload :CodePanel, 'Example/CodePanel'
   autoload :ExamplePanel, 'Example/ExamplePanel'
+  autoload :Header, 'Example/Header'
   autoload :Menu, 'Example/Menu'
   autoload :Value, 'Example/Value'
   autoload :ViewPanel, 'Example/ViewPanel'

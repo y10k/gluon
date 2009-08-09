@@ -14,9 +14,11 @@ class Example
 
     def request_GET(key)
       @example_type = Menu::Items[key].example_type
+      @header = Header.new(@r, @example_type)
       @example = @example_type.new
     end
 
+    gluon_import_reader :header
     gluon_import_reader :example
 
     def title

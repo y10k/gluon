@@ -1,38 +1,62 @@
+# -*- coding: utf-8 -*-
+
 class Example
   class Header
-    include Gluon::Controller
-    include Gluon::ERBView
+    extend Gluon::Component
 
-    def initialize(example)
-      @example = example
+    def self.page_encoding
+      __ENCODING__
     end
 
-    def page_import
+    def initialize(req_res, example_type)
+      @r = req_res
+      @example_type = example_type
     end
 
     def example?
-      @c.curr_page == ExamplePanel
+      @r.controller.is_a? ExamplePanel
     end
+    gluon_cond :example?
+
+    def not_example?
+      ! example?
+    end
+    gluon_cond :not_example?
 
     def example
-      return ExamplePanel, :path_args => [ @example ]
+      return ExamplePanel, @example_type
     end
+    gluon_link :example, :attrs => { 'target' => 'main' }
 
     def code?
-      @c.curr_page == CodePanel
+      @r.controller.is_a? CodePanel
     end
+    gluon_cond :code?
+
+    def not_code?
+      ! code?
+    end
+    gluon_cond :not_code?
 
     def code
-      return CodePanel, :path_args => [ @example ]
+      return CodePanel, @example_type
     end
+    gluon_link :code, :attrs => { 'target' => 'main' }
 
     def view?
-      @c.curr_page == ViewPanel
+      @r.controller.is_a? ViewPanel
     end
+    gluon_cond :view?
+
+    def not_view?
+      ! view?
+    end
+    gluon_cond :not_view?
 
     def view
-      return ViewPanel, :path_args => [ @example ]
+      return ViewPanel, @example_type
     end
+    gluon_link :view, :attrs => { 'target' => 'main' }
   end
 end
 

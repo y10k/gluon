@@ -1,12 +1,12 @@
 <p>
-  <% cond :example? do %><em>example</em><% end %>
-  <% cond neg(:example?) do %><%= link :example, 'target' => 'main', :text => 'example' %><% end %>
+  <% gluon :example? do %><em>example</em><% end %>
+  <% gluon :not_example? do %><% gluon :example do %>example<% end %><% end %>
 
-  <% cond :code? do %><em>code</em><% end %>
-  <% cond neg(:code?) do %><%= link :code, 'target' => 'main', :text => 'code' %><% end %>
+  <% gluon :code? do %><em>code</em><% end %>
+  <% gluon :not_code? do %><% gluon :code do %>code<% end %><% end %>
 
-  <% cond :view? do %><em>view</em><% end %>
-  <% cond neg(:view?) do %><%= link :view, 'target' => 'main', :text => 'view' %><% end %>
+  <% gluon :view? do %><em>view</em><% end %>
+  <% gluon :not_view? do %><% gluon :view do %>view<% end %><% end %>
 </p>
 
 <%#

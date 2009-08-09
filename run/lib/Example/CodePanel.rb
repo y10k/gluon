@@ -16,9 +16,12 @@ class Example
 
     def request_GET(key)
       @example_type = Menu::Items[key].example_type
+      @header = Header.new(@r, @example_type)
       @source_path = File.join(LIB_DIR,
                                @example_type.name.gsub(/::/, '/') + '.rb')
     end
+
+    gluon_import_reader :header
 
     def title
       @example_type.description
