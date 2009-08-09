@@ -8,7 +8,7 @@ class Example
       __ENCODING__
     end
 
-    # for Example::Menu and Example::ExamplePanel
+    # for Example::Menu and Example::Panel
     def self.description
       'value'
     end
