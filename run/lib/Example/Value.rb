@@ -1,19 +1,33 @@
+# -*- codint: utf-8 -*-
+
 class Example
   class Value
-    include Gluon::Controller
-    include Gluon::ERBView
+    extend Gluon::Component
 
-    #def page_get
-    def page_import
+    def self.page_encoding
+      __ENCODING__
     end
 
-    def hello
-      'Hello world.'
+    # for Example::Menu and Example::ExamplePanel
+    def self.description
+      'value'
     end
 
-    def emphasis_hello
-      '<em>Hello world.</em>'
+    def initialize
+      @hello = 'Hello world.'
     end
+
+    gluon_value_reader :hello
+
+    def escaped_string
+      "<em>#{@hello}</em>"
+    end
+    gluon_value :escaped_string
+
+    def no_escaped_string
+      "<em>#{@hello}</em>"
+    end
+    gluon_value :no_escaped_string, :escape => false
   end
 end
 

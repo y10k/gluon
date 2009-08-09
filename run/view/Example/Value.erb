@@ -1,14 +1,14 @@
 <h2>1. simple value</h2>
 
-<p><%= value :hello %></p>
+<p><% gluon :hello %></p>
 
 <h2>2. escape</h2>
 
-<p><%= value :emphasis_hello, :escape => true %></p>
+<p><% gluon :escaped_string %></p>
 
 <h2>3. no escape</h2>
 
-<p><%= value :emphasis_hello, :escape => false %></p>
+<p><% gluon :no_escaped_string %></p>
 
 <%#
   Local Variables:

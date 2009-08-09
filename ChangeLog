@@ -1,3 +1,7 @@
+2009-08-09  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* run/lib/Example.rb: new example.
+
 2009-08-08  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* bin/gluon_local: utility for project local RubyGems environemnt.

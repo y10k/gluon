@@ -1,29 +1,54 @@
+# -*- coding: utf-8 -*-
+
 class Example
   class Menu
     include Gluon::Controller
-    include Gluon::ERBView
 
-    def page_start
-      @examples = []
-      for key in DispatchController::EXAMPLE_KEYS
-        key = key.dup
+    def self.page_encoding
+      __ENCODING__
+    end
 
-        class << key
-          def example
-            ex = DispatchController::EXAMPLES[self]
-            return ExamplePanel,
-              :path_args => [ ex[:class] ], :text => ex[:title]
-          end
-        end
+    def request_GET
+    end
 
-        @examples << key
+    class Item
+      extend Gluon::Component
+
+      def self.key(example_type)
+        example_type.name.sub(/^Example::/, '')
       end
+
+      def initialize(example_type)
+        @example_type = example_type
+      end
+
+      attr_reader :example_type
+
+      def example
+        return ExamplePanel, @example_type
+      end
+      gluon_link :example, :attrs => { 'target' => 'main' }
+
+      def description
+        @example_type.description
+      end
+      gluon_value :description
     end
 
-    attr_reader :examples
-
-    def page_get
+    Items = {}
+    for example in [ Value ]
+      Items[Item.key(example)] = Item.new(example)
     end
+
+    def examples
+      Items.values
+    end
+    gluon_foreach :examples
+
+    def welcom
+      return Welcom
+    end
+    gluon_link :welcom, :attrs => { 'target' => '_top' }
   end
 end
 

@@ -5,10 +5,10 @@
 <body>
 <h2>examples</h2>
 
-<p><%= link Welcom, 'target' => '_top', :text => 'return to top.' %></p>
+<p><% gluon :welcom %></p>
 <ul>
-  <% foreach :examples do %>
-    <li><%= link :example, 'target' => 'main' %></li>
+  <% gluon :examples do %>
+    <li><% gluon :example do %><% gluon :description %><% end  %></li>
   <% end %>
 </ul>
 
