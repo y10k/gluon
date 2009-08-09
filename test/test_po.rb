@@ -59,8 +59,12 @@ module Gluon::Test
         end
         gluon_cond :foo?
       }
+
       @c.foo = true
       assert_equal('HALO', @po.gluon(:foo?) { 'HALO' })
+
+      @c.foo = false
+      assert_equal('', @po.gluon(:foo?) { 'HALO' })
     end
 
     def test_cond_not
@@ -70,10 +74,14 @@ module Gluon::Test
         def foo?
           @foo
         end
-        gluon_cond :foo?
+        gluon_cond_not :foo?
       }
+
+      @c.foo = true
+      assert_equal('', @po.gluon(:not_foo?) { 'HALO' })
+
       @c.foo = false
-      assert_equal('', @po.gluon(:foo?) { 'HALO' })
+      assert_equal('HALO', @po.gluon(:not_foo?) { 'HALO' })
     end
 
     def test_foreach

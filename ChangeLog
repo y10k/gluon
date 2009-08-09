@@ -1,5 +1,8 @@
 2009-08-09  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/controller.rb: syntax sugar of negative condition for
+	gluon-cond.
+
 	* lib/gluon/rs.rb: reference to controller.
 
 	* run/lib/Example.rb: new example.

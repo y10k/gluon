@@ -273,6 +273,19 @@ module Gluon
     end
     private :gluon_cond_reader
 
+    def gluon_cond_not(name, options={})
+      unless (public_method_defined? name) then
+        raise NoMethodError, "not defineid method `#{name}' of `#{self}'"
+      end
+      class_eval(<<-EOF, "#{__FILE__}:gluon_cond_not(#{name})", __LINE__ + 1)
+        def not_#{name}
+          ! #{name}
+        end
+      EOF
+      gluon_cond("not_#{name}", options)
+    end
+    private :gluon_cond_not
+
     def gluon_foreach(name, options={})
       Controller.gluon_form_export(self, name, :foreach, options)
       Controller.gluon_action_export(self, name, :foreach, options)

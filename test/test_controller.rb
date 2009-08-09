@@ -82,6 +82,17 @@ module Gluon::Test
       assert_equal(:cond, entry[:foo][:type])
     end
 
+    def test_gloun_cond_not
+      @Controller.class_eval{
+        attr_reader :foo
+        gluon_cond_not :foo
+      }
+      assert(entry = Gluon::Controller.find_view_export(@Controller))
+      assert_equal(:cond, entry[:not_foo][:type])
+      assert_equal(true, (@Controller.public_method_defined? :not_foo))
+      assert_equal(false, (@Controller.public_method_defined? :not_foo=))
+    end
+
     def test_gluon_foreach
       @Controller.class_eval{ gluon_foreach_reader :foo }
       assert(view_entry = Gluon::Controller.find_view_export(@Controller))
