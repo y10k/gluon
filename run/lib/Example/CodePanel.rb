@@ -22,7 +22,7 @@ class Example
     gluon_value :filename
 
     def source_code
-      File.open(@source_path, "r:#{__ENCODING__}") {|f| f.read }
+      File.open(@source_path, "r:#{@example_type.page_encoding}") {|f| f.read }
     end
     gluon_value :source_code
   end

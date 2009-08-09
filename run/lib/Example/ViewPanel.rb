@@ -23,7 +23,7 @@ class Example
     gluon_value :filename
 
     def view_code
-      File.open(@view_path, "r:#{__ENCODING__}") {|f| f.read }
+      File.open(@view_path, "r:#{@example_type.page_encoding}") {|f| f.read }
     end
     gluon_value :view_code
   end
