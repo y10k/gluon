@@ -185,9 +185,9 @@ module Gluon::Test
       c.foo[2] = component.new
 
       Gluon::Controller.apply_first_action(c, {
-                                             'foo[0].bar' => '',
-                                             'foo[1].bar' => '',
-                                             'foo[2].bar' => ''
+                                             'foo[0].bar' => nil,
+                                             'foo[1].bar' => nil,
+                                             'foo[2].bar' => nil
                                            })
 
       assert_equal(1, c.foo[0].count)
@@ -249,7 +249,7 @@ module Gluon::Test
         gluon_action :foo
       }
       c = @Controller.new
-      Gluon::Controller.apply_first_action(c, { 'foo' => '' })
+      Gluon::Controller.apply_first_action(c, { 'foo' => nil })
       assert_equal(1, c.count)
     end
 
@@ -334,7 +334,7 @@ module Gluon::Test
       c = @Controller.new
       c.foo = component.new
 
-      Gluon::Controller.apply_first_action(c, { 'foo.bar' => '' })
+      Gluon::Controller.apply_first_action(c, { 'foo.bar' => nil })
       assert_equal(1, c.foo.count)
     end
 
@@ -431,7 +431,7 @@ module Gluon::Test
         gluon_submit :foo
       }
       c = @Controller.new
-      Gluon::Controller.apply_first_action(c, { 'foo' => '' })
+      Gluon::Controller.apply_first_action(c, { 'foo' => nil })
       assert_equal(1, c.count)
     end
 

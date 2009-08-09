@@ -136,31 +136,31 @@ module Gluon
         find_export(:action_export, page_type)
       end
 
-      def set_form_params(controller, req, prefix='')
+      def set_form_params(controller, req_params, prefix='')
         form_export = find_form_export(controller.class)
         for name, form_entry in form_export
           case (form_entry[:type])
           when :foreach
             controller.__send__(name).each_with_index do |c, i|
-              set_form_params(c, req, "#{prefix}#{name}[#{i}].")
+              set_form_params(c, req_params, "#{prefix}#{name}[#{i}].")
             end
           when :import
             c = controller.__send__(name)
-            set_form_params(c, req, "#{prefix}#{name}.")
+            set_form_params(c, req_params, "#{prefix}#{name}.")
           when :text, :passwd, :hidden, :textarea
-            if (value = req["#{prefix}#{name}"]) then
+            if (value = req_params["#{prefix}#{name}"]) then
               controller.__send__(form_entry[:writer], value)
             end
           when :checkbox
-            if (req["#{prefix}#{name}:checkbox"] == 'submit') then
-              if (req["#{prefix}#{name}"]) then
+            if (req_params["#{prefix}#{name}:checkbox"] == 'submit') then
+              if (req_params.key? "#{prefix}#{name}") then
                 controller.__send__(form_entry[:writer], true)
               else
                 controller.__send__(form_entry[:writer], false)
               end
             end
           when :radio, :select
-            if (value = req["#{prefix}#{name}"]) then
+            if (value = req_params["#{prefix}#{name}"]) then
               case (value)
               when Array
                 values = value
@@ -197,22 +197,22 @@ module Gluon
         nil
       end
 
-      def apply_first_action(controller, req, prefix='')
+      def apply_first_action(controller, req_params, prefix='')
         action_export = find_action_export(controller.class)
         for name, action_entry in action_export
           case (action_entry[:type])
           when :action, :submit
-            if (req["#{prefix}#{name}"]) then
+            if (req_params.key? "#{prefix}#{name}") then
               controller.__send__(name)
               return true
             end
           when :foreach
             controller.__send__(name).each_with_index do |c, i|
-              apply_first_action(c, req, "#{prefix}#{name}[#{i}].") and return true
+              apply_first_action(c, req_params, "#{prefix}#{name}[#{i}].") and return true
             end
           when :import
             c = controller.__send__(name)
-            apply_first_action(c, req, "#{prefix}#{name}.") and return true
+            apply_first_action(c, req_params, "#{prefix}#{name}.") and return true
           else
             raise "unknown action export type at `#{name}': #{action_entry[:type]}"
           end

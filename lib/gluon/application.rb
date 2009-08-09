@@ -84,9 +84,9 @@ module Gluon
       c.page_around{
         c.page_start
         begin
-          Controller.set_form_params(c, r.equest)
+          Controller.set_form_params(c, r.equest.params)
           c.page_request(*path_args)
-          Controller.apply_first_action(c, r.equest)
+          Controller.apply_first_action(c, r.equest.params)
           page_result = c.class.process_view(po)
         ensure
           c.page_end
