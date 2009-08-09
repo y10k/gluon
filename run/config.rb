@@ -1,5 +1,9 @@
 # gluon configuration
 
+# for debug
+use Rack::ShowExceptions
+use Rack::Reloader
+
 require 'Example'
 require 'Welcom'
 
