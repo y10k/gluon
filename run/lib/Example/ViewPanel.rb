@@ -14,7 +14,7 @@ class Example
       super
       @view_path = File.join(VIEW_DIR,
                              @example_type.name.gsub(/::/, '/') +
-                             Gluon::ERBView.suffix)
+                             @example_type.page_view.suffix)
     end
 
     def filename
