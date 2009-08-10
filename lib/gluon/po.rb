@@ -166,7 +166,7 @@ module Gluon
           case (value)
           when TrueClass
             s << ' ' << name << '="' << name << '"'
-          when FalseClass
+          when FalseClass, NilClass
             s << ''
           else
             s << ' ' << name << '="' << ERB::Util.html_escape(value) << '"'

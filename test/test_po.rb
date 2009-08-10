@@ -206,6 +206,16 @@ module Gluon::Test
                    @po.gluon(:foo) { 'Hello world.' })
     end
 
+    def test_link_attrs_ignore_nil
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_link_reader :foo, :attrs => { 'id' => nil }
+      }
+      @c.foo = '/halo'
+      assert_equal('<a href="/halo">Hello world.</a>',
+                   @po.gluon(:foo) { 'Hello world.' })
+    end
+
     def test_link_attrs_method
       @Controller.class_eval{
         attr_writer :foo
