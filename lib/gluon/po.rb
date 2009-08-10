@@ -14,6 +14,7 @@ module Gluon
 
     def initialize(controller, req_res, template_engine, prefix='', &block)
       @c_stack = [ controller ]
+      @radio_stack = []
       @r = req_res
       @template_engine = template_engine
       @prefix = prefix
@@ -82,6 +83,10 @@ module Gluon
           checkbox(c, name, export_entry[:options], &block)
         when :radio
           radio(c, name, value, export_entry[:options], &block)
+        when :radio_group
+          radio_group(c, name, export_entry[:options], &block)
+        when :radio_button
+          radio_button(c, name, export_entry[:options], &block)
         when :select
           select(c, name, export_entry[:options], &block)
         when :textarea
@@ -272,6 +277,49 @@ module Gluon
       mkinput(c, 'radio', name, value, checked, options)
     end
     private :radio
+
+    def radio_group(c, name, options)
+      list = getopt(:list, options, c) or
+        raise "need for `list' option at `#{c.class}\##{name}'"
+
+      entry = {
+        :group => name,
+        :name => "#{@prefix}#{name}",
+        :value => c.__send__(name),
+        :list => list
+      }
+
+      @radio_stack.push(entry)
+      begin
+        s = yield
+      ensure
+        @radio_stack.pop
+      end
+
+      s
+    end
+    private :radio_group
+
+    def radio_button(c, name, options)
+      group = options[:group] or
+        raise "need for `group' option at `#{c.class}\##{name}'"
+      entry = @radio_stack.reverse.find{|entry| entry[:group] == group } or
+        raise "not found a radio group of `#{group}' for radio button of `#{c.class}\##{name}'"
+
+      value = c.__send__(name)
+      unless (entry[:list].include? value) then
+        raise "unexpected radio button value of `#{value}' at `#{c.class}\##{name}' for radio group of `#{entry[:group]}'"
+      end
+
+      s = '<input'
+      s << ' type="radio"'
+      s << ' name="' << ERB::Util.html_escape(entry[:name]) << '"'
+      s << ' value="' << ERB::Util.html_escape(value) << '"' if value
+      s << ' checked="checked"' if (value == entry[:value])
+      s << mkattrs(c, options)
+      s << ' />'
+    end
+    private :radio_button
 
     def select(c, name, options)
       list = getopt(:list, options, c) or

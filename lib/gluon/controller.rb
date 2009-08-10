@@ -159,7 +159,7 @@ module Gluon
                 controller.__send__(form_entry[:writer], false)
               end
             end
-          when :radio, :select
+          when :radio, :radio_group, :select
             if (value = req_params["#{prefix}#{name}"]) then
               case (value)
               when Array
@@ -183,7 +183,7 @@ module Gluon
                 end
               end
 
-              if (form_entry[:options][:multiple]) then
+              if (form_entry[:type] == :select && form_entry[:options][:multiple]) then
                 controller.__send__(form_entry[:writer], values)
               else
                 controller.__send__(form_entry[:writer], value)
@@ -420,6 +420,31 @@ module Gluon
       gluon_radio(name, list, options)
     end
     private :gluon_radio_accessor
+
+    def gluon_radio_group(name, list, options={})
+      options = options.merge(:list => list)
+      Controller.gluon_form_export(self, name, :radio_group, options)
+      Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
+    end
+    private :gluon_radio_group
+
+    def gluon_radio_group_accessor(name, list, options={})
+      class_eval{ attr_accessor(name) } # why is class_eval necessary?
+      gluon_radio_group(name, list, options)
+    end
+    private :gluon_radio_group_accessor
+
+    def gluon_radio_button(name, group, options={})
+      options = options.merge(:group => group.to_sym)
+      Controller.gluon_view_export(self, name, :radio_button, options)
+    end
+    private :gluon_radio_button
+
+    def gluon_radio_button_reader(name, group, options={})
+      class_eval{ attr_reader(name) } # why is class_eval necessary?
+      gluon_radio_button(name, group, options)
+    end
+    private :gluon_radio_button_reader
 
     def gluon_select(name, list, options={})
       options = options.merge(:list => list)

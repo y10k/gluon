@@ -515,6 +515,126 @@ module Gluon::Test
       assert_match(/foo/, ex.message)
     end
 
+    def test_radio_group_button
+      @Controller.class_eval{
+        gluon_radio_group_accessor :foo, %w[ Apple Banana Orange ]
+
+        def apple
+          'Apple'
+        end
+        gluon_radio_button :apple, :foo
+
+        def banana
+          'Banana'
+        end
+        gluon_radio_button :banana, :foo
+
+        def orange
+          'Orange'
+        end
+        gluon_radio_button :orange, :foo
+      }
+      @c.foo = 'Banana'
+      assert_equal('<input type="radio" name="foo" value="Apple" />',
+                   @po.gluon(:foo) { @po.gluon(:apple) })
+      assert_equal('<input type="radio" name="foo" value="Banana" checked="checked" />',
+                   @po.gluon(:foo) { @po.gluon(:banana) })
+      assert_equal('<input type="radio" name="foo" value="Orange" />',
+                   @po.gluon(:foo) { @po.gluon(:orange) })
+    end
+
+    def test_radio_group_button_foreach
+      @Controller.class_eval{
+        gluon_radio_group_accessor :foo, %w[ Apple Banana Orange ]
+        attr_writer :buttons
+        gluon_foreach_reader :buttons
+      }
+
+      component = Class.new{
+        extend Gluon::Component
+
+        def initialize(value)
+          @bar = value
+        end
+
+        gluon_radio_button_reader :bar, :foo
+      }
+
+      @c.foo = 'Banana'
+      @c.buttons = [
+        component.new('Apple'),
+        component.new('Banana'),
+        component.new('Orange')
+      ]
+
+      assert_equal('<input type="radio" name="foo" value="Apple" />' +
+                   '<input type="radio" name="foo" value="Banana" checked="checked" />' +
+                   '<input type="radio" name="foo" value="Orange" />',
+                   @po.gluon(:foo) {
+                     @po.gluon(:buttons) { @po.gluon(:bar) }
+                   })
+    end
+
+    def test_radio_group_button_not_checked
+      @Controller.class_eval{
+        gluon_radio_group_accessor :foo, %w[ Apple Banana Orange ]
+
+        def apple
+          'Apple'
+        end
+        gluon_radio_button :apple, :foo
+
+        def banana
+          'Banana'
+        end
+        gluon_radio_button :banana, :foo
+
+        def orange
+          'Orange'
+        end
+        gluon_radio_button :orange, :foo
+      }
+      @c.foo = nil
+      assert_equal('<input type="radio" name="foo" value="Apple" />',
+                   @po.gluon(:foo) { @po.gluon(:apple) })
+      assert_equal('<input type="radio" name="foo" value="Banana" />',
+                   @po.gluon(:foo) { @po.gluon(:banana) })
+      assert_equal('<input type="radio" name="foo" value="Orange" />',
+                   @po.gluon(:foo) { @po.gluon(:orange) })
+    end
+
+    def test_radio_button_not_in_radio_group
+      @Controller.class_eval{
+        def bar
+          'Bar'
+        end
+        gluon_radio_button :bar, :foo
+      }
+      ex = assert_raise(RuntimeError) { @po.gluon(:bar) }
+      assert_match(/not found a radio group/, ex.message)
+      assert_match(/foo/, ex.message)
+      assert_match(/radio button/, ex.message)
+      assert_match(/bar/, ex.message)
+    end
+
+    def test_radio_group_button_unexpected_value
+      @Controller.class_eval{
+        gluon_radio_group_accessor :foo, %w[ Apple Banana Orange ]
+
+        def bar
+          'Bar'
+        end
+        gluon_radio_button :bar, :foo
+      }
+      @c.foo = nil
+      ex = assert_raise(RuntimeError) { @po.gluon(:foo) { @po.gluon(:bar) } }
+      assert_match(/unexpected radio button value/, ex.message)
+      assert_match(/Bar/, ex.message)
+      assert_match(/bar/, ex.message)
+      assert_match(/for radio group/, ex.message)
+      assert_match(/foo/, ex.message)
+    end
+
     def test_select
       @Controller.class_eval{
         gluon_select_accessor :foo, %w[ Apple Banana Orange ]

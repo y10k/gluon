@@ -523,6 +523,50 @@ module Gluon::Test
       assert_equal('banana', c.foo)
     end
 
+    def test_gluon_radio_group
+      @Controller.class_eval{ gluon_radio_group_accessor :foo, %w[ apple banana orange ] }
+      assert(view_entry = Gluon::Controller.find_view_export(@Controller))
+      assert_equal(:radio_group, view_entry[:foo][:type])
+      assert(form_entry = Gluon::Controller.find_form_export(@Controller))
+      assert_equal(:radio_group, form_entry[:foo][:type])
+      assert_equal(:foo=, form_entry[:foo][:writer])
+      assert_equal(true, (@Controller.public_method_defined? :foo))
+      assert_equal(true, (@Controller.public_method_defined? :foo=))
+    end
+
+    def test_gluon_radio_group_inherited
+      @Controller.class_eval{ gluon_radio_group_accessor :foo, %w[ apple banana orange ] }
+      subclass = Class.new(@Controller)
+      assert(view_entry = Gluon::Controller.find_view_export(subclass))
+      assert_equal(:radio_group, view_entry[:foo][:type])
+      assert(form_entry = Gluon::Controller.find_form_export(subclass))
+      assert_equal(:radio_group, form_entry[:foo][:type])
+    end
+
+    def test_gluon_radio_group_form_params
+      @Controller.class_eval{ gluon_radio_group_accessor :foo, %w[ apple banana orange ] }
+      c = @Controller.new
+      Gluon::Controller.set_form_params(c, { 'foo' => 'banana' })
+      assert_equal('banana', c.foo)
+    end
+
+    def test_gluon_radio_button
+      @Controller.class_eval{ gluon_radio_button_reader :foo, :bar }
+      assert(view_entry = Gluon::Controller.find_view_export(@Controller))
+      assert_equal(:radio_button, view_entry[:foo][:type])
+      assert_equal(true, (@Controller.public_method_defined? :foo))
+      assert_equal(false, (@Controller.public_method_defined? :foo=))
+    end
+
+    def test_gluon_radio_button_inherited
+      @Controller.class_eval{ gluon_radio_button_reader :foo, :bar }
+      subclass = Class.new(@Controller)
+      assert(view_entry = Gluon::Controller.find_view_export(subclass))
+      assert_equal(:radio_button, view_entry[:foo][:type])
+      assert_equal(true, (@Controller.public_method_defined? :foo))
+      assert_equal(false, (@Controller.public_method_defined? :foo=))
+    end
+
     def test_gluon_select
       @Controller.class_eval{ gluon_select_accessor :foo, %w[ apple banana orange ] }
       assert(view_entry = Gluon::Controller.find_view_export(@Controller))

@@ -1,5 +1,8 @@
 2009-08-09  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/controller.rb, lib/gluon/po.rb: gluon-radio-group and
+	gluon-radio-button.
+
 	* lib/gluon/controller.rb: assumed that request parameters is Hash
 	object, not Rack::Request object.
 
