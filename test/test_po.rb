@@ -474,7 +474,7 @@ module Gluon::Test
                    @po.gluon(:foo))
     end
 
-    def test_checkbox_valule
+    def test_checkbox_value
       @Controller.class_eval{
         gluon_checkbox_accessor :foo, :value => 'HALO'
       }
