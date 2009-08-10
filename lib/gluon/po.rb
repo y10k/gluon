@@ -262,7 +262,7 @@ module Gluon
       s << ' value="submit"'
       s << ' style="display: none"'
       s << ' />'
-      value = getopt(:value, options, c)
+      value = getopt(:value, options, c) || ''
       s << mkinput(c, 'checkbox', name, value, c.__send__(name), options)
     end
     private :checkbox

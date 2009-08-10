@@ -485,7 +485,7 @@ module Gluon::Test
       }
       @c.foo = true
       assert_equal('<input type="hidden" name="foo:checkbox" value="submit" style="display: none" />' +
-                   '<input type="checkbox" name="foo" checked="checked" />',
+                   '<input type="checkbox" name="foo" value="" checked="checked" />',
                    @po.gluon(:foo))
     end
 
@@ -495,7 +495,7 @@ module Gluon::Test
       }
       @c.foo = false
       assert_equal('<input type="hidden" name="foo:checkbox" value="submit" style="display: none" />' +
-                   '<input type="checkbox" name="foo" />',
+                   '<input type="checkbox" name="foo" value="" />',
                    @po.gluon(:foo))
     end
 
