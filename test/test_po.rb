@@ -230,6 +230,21 @@ module Gluon::Test
                    @po.gluon(:foo) { 'Hello world.' })
     end
 
+    def test_link_attrs_method2
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_link_reader :foo, :attrs => :attributes
+
+
+        def attributes
+          { 'id' => 'foo', 'style' => 'font-weight: bold' }
+        end
+      }
+      @c.foo = '/halo'
+      assert_equal('<a href="/halo" id="foo" style="font-weight: bold">Hello world.</a>',
+                   @po.gluon(:foo) { 'Hello world.' })
+    end
+
     def test_action
       @Controller.class_eval{
         def foo
