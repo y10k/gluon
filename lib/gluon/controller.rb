@@ -141,12 +141,15 @@ module Gluon
         for name, form_entry in form_export
           case (form_entry[:type])
           when :foreach
-            controller.__send__(name).each_with_index do |c, i|
-              set_form_params(c, req_params, "#{prefix}#{name}[#{i}].")
+            if (list = controller.__send__(name)) then
+              list.each_with_index do |c, i|
+                set_form_params(c, req_params, "#{prefix}#{name}[#{i}].")
+              end
             end
           when :import
-            c = controller.__send__(name)
-            set_form_params(c, req_params, "#{prefix}#{name}.")
+            if (c = controller.__send__(name)) then
+              set_form_params(c, req_params, "#{prefix}#{name}.")
+            end
           when :text, :passwd, :hidden, :textarea
             if (value = req_params["#{prefix}#{name}"]) then
               controller.__send__(form_entry[:writer], value)
@@ -207,12 +210,15 @@ module Gluon
               return true
             end
           when :foreach
-            controller.__send__(name).each_with_index do |c, i|
-              apply_first_action(c, req_params, "#{prefix}#{name}[#{i}].") and return true
+            if (list = controller.__send__(name)) then
+              list.each_with_index do |c, i|
+                apply_first_action(c, req_params, "#{prefix}#{name}[#{i}].") and return true
+              end
             end
           when :import
-            c = controller.__send__(name)
-            apply_first_action(c, req_params, "#{prefix}#{name}.") and return true
+            if (c = controller.__send__(name)) then
+              apply_first_action(c, req_params, "#{prefix}#{name}.") and return true
+            end
           else
             raise "unknown action export type at `#{name}': #{action_entry[:type]}"
           end

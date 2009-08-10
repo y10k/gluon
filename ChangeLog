@@ -1,3 +1,8 @@
+2009-08-11  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/controller.rb: skip uninitialized child components for
+	form-parameters and apply-first-action.
+
 2009-08-09  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/controller.rb, lib/gluon/po.rb: gluon-radio-group and
