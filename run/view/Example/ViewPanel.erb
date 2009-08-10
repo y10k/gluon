@@ -6,10 +6,11 @@
 
 <% gluon :header %>
 <h1>view of <% gluon :title %> example</h1>
-<p>view filename is `<code><% gluon :filename %></code>'.</p>
-<hr />
-<pre><% gluon :view_code %></pre>
-<hr />
+<% gluon :view_code_list do %>
+  <p>view filename is `<code><% gluon :filename %></code>'.</p>
+  <pre><% gluon :view_code %></pre>
+  <hr />
+<% end %>
 
 <address>
 Author: <a href="mailto:toki@freedom.ne.jp">TOKI Yoshinori &lt;toki@freedom.ne.jp&gt;</a>

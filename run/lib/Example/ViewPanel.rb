@@ -10,22 +10,54 @@ class Example
 
     VIEW_DIR = File.join(File.dirname(__FILE__), '..', '..', 'view')
 
+    class ViewCode
+      extend Gluon::Component
+
+      def initialize(example_type, view_path)
+        @example_type = example_type
+        @view_path = view_path
+      end
+
+      def filename
+        File.basename(@view_path)
+      end
+      gluon_value :filename
+
+      def view_code
+        File.open(@view_path, "r:#{@example_type.page_encoding}") {|f| f.read }
+      end
+      gluon_value :view_code
+    end
+
+    def search_child_components(c)
+      export = Gluon::Controller.find_view_export(c.class)
+      for name, entry in export
+        if (entry[:type] == :import) then
+          child = c.__send__(name)
+          @component_type[child.class] = true
+          search_child_components(child)
+        end
+      end
+
+      nil
+    end
+    private :search_child_components
+
     def request_GET(key)
       super
-      @view_path = File.join(VIEW_DIR,
-                             @example_type.name.gsub(/::/, '/') +
-                             @example_type.page_view.suffix)
+      @component_type = { @example_type => true }
+      search_child_components(@example_type.new)
+
+      @view_code_list = []
+      @component_type.each_key do |example_type|
+        @view_code_list.push ViewCode.new(example_type,
+                                          File.join(VIEW_DIR,
+                                                    example_type.name.gsub(/::/, '/') +
+                                                    example_type.page_view.suffix))
+      end
     end
 
-    def filename
-      File.basename(@view_path)
-    end
-    gluon_value :filename
-
-    def view_code
-      File.open(@view_path, "r:#{@example_type.page_encoding}") {|f| f.read }
-    end
-    gluon_value :view_code
+    gluon_foreach_reader :view_code_list
   end
 end
 
