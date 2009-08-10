@@ -1,14 +1,14 @@
-<h2>1. import by class</h2>
-<p>[ <%= import :subpage_by_class %> ]</p>
-<p>[ <%= import Example::Subpage %> ]</p>
+<h2>1. import</h2>
+<p><% gluon :foo %></p>
 
-<h2>2. import by object</h2>
-<p>[ <%= import :subpage_by_object %> ]</p>
-<p>[ <%= import Example::Subpage.new %> ]</p>
+<h2>2. content</h2>
+<p><% gluon :bar do %>This message is defined at parent component.<% end %></p>
 
-<h2>2. import with parameters</h2>
-<p>[ <%= import :subpage_with_params  %> ]</p>
-<p>[ <%= import Example::Subpage.new('bar') %> ]</p>
+<h2>3. content block defined at parent component</h2>
+<p><% gluon :baz1 do %>This message is defined at parent component.<% end %></p>
+
+<h2>4. content block defined at child component</h2>
+<p><% gluon :baz2 %></p>
 
 <%#
   Local Variables:

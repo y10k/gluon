@@ -27,6 +27,7 @@ class Example
   autoload :ExamplePanel, 'Example/ExamplePanel'
   autoload :Foreach, 'Example/Foreach'
   autoload :Header, 'Example/Header'
+  autoload :Import, 'Example/Import'
   autoload :Link, 'Example/Link'
   autoload :Menu, 'Example/Menu'
   autoload :Value, 'Example/Value'
