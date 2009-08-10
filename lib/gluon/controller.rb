@@ -266,7 +266,7 @@ module Gluon
     private :gluon_path_filter
 
     def gluon_value(name, options={})
-      options = options.merge(:escape => true) unless (options.key? :escape)
+      options = { :escape => true }.merge(options)
       Controller.gluon_view_export(self, name, :value, options)
     end
     private :gluon_value
@@ -423,7 +423,7 @@ module Gluon
 
     def gluon_select(name, list, options={})
       options = options.merge(:list => list)
-      options = options.merge(:multiple => false) unless (options.key? :multiple)
+      options = { :multiple => false }.merge(options)
       Controller.gluon_form_export(self, name, :select, options)
       Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
