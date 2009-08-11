@@ -1,16 +1,16 @@
 <h2>1. checkbox</h2>
 
-<form action="<%= value :action_path %>" target="main">
-<p><%= checkbox :foo, 'id' => 'foo' %> <label for="foo">foo</label>,
-   <%= checkbox :bar, 'id' => 'bar' %> <label for="bar">bar</label>,
-   <%= checkbox :baz, 'id' => 'baz' %> <label for="baz">baz</label></p>
-<p><%= submit :ok, :value => 'OK' %></p>
+<form target="main">
+<p><% gluon :foo %> <label for="foo">foo</label>,
+   <% gluon :bar %> <label for="bar">bar</label>,
+   <% gluon :baz %> <label for="baz">baz</label></p>
+<p><% gluon :ok %></p>
 </form>
 
 <h2>2. results</h2>
 
-<% foreach :result_list do %>
-  <p><%= value %></p>
+<% gluon :result_list do %>
+  <p><% gluon :message %></p>
 <% end %>
 
 <%#

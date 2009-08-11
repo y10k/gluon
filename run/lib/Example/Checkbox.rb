@@ -1,40 +1,51 @@
+# -*- coding: utf-8 -*-
+
 class Example
   class Checkbox
-    include Gluon::Controller
-    include Gluon::ERBView
+    extend Gluon::Component
 
-    def page_start
+    def self.page_encoding
+      __ENCODING__
+    end
+
+    # for Example::Menu and Example::Panel
+    def self.description
+      'checkbox'
+    end
+
+    def initialize
       @foo = false
       @bar = false
       @baz = true
     end
 
-    gluon_export_accessor :foo
-    gluon_export_accessor :bar
-    gluon_export_accessor :baz
-
-    #def page_get
-    #def page_post
-    def page_import
-      @c.validation = true
-    end
-
-    def action_path
-      @c.class2path(ExamplePanel, Checkbox)
-    end
+    gluon_checkbox_accessor :foo, :attrs => { 'id' => 'foo' }
+    gluon_checkbox_accessor :bar, :attrs => { 'id' => 'bar' }
+    gluon_checkbox_accessor :baz, :attrs => { 'id' => 'baz' }
 
     def ok
       # nothing to do.
     end
-    gluon_export :ok
+    gluon_submit :ok
+
+    class Result
+      extend Gluon::Component
+
+      def initialize(message)
+        @message = message
+      end
+
+      gluon_value_reader :message
+    end
 
     def result_list
       results = []
-      results << 'foo is checked.' if @foo
-      results << 'bar is checked.' if @bar
-      results << 'baz is checked.' if @baz
+      results << Result.new('foo is checked.') if @foo
+      results << Result.new('bar is checked.') if @bar
+      results << Result.new('baz is checked.') if @baz
       results
     end
+    gluon_foreach :result_list
   end
 end
 

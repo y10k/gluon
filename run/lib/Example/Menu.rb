@@ -36,7 +36,8 @@ class Example
     end
 
     Items = {}
-    for example in [ Value, Cond, Foreach, Link, Action, Import, Submit, Text, Passwd ]
+    for example in [ Value, Cond, Foreach, Link, Action, Import,
+        Submit, Text, Passwd, Checkbox ]
       Items[Item.key(example)] = Item.new(example)
     end
 
