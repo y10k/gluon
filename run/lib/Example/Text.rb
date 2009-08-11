@@ -1,24 +1,37 @@
+# -*- coding: utf-8 -*-
+
 class Example
   class Text
-    include Gluon::Controller
-    include Gluon::ERBView
+    extend Gluon::Component
 
-    gluon_export_accessor :foo
-
-    #def page_get
-    #def page_post
-    def page_import
-      @c.validation = true
+    def self.page_encoding
+      __ENCODING__
     end
 
-    def action_path
-      @c.class2path(ExamplePanel, Text)
+    # for Example::Menu and Example::Panel
+    def self.description
+      'text'
     end
+
+    def initialize
+      @foo = nil
+    end
+
+    gluon_text_accessor :foo, :attrs => { 'id' => 'foo' }
+
+    alias form_value foo
+    gluon_value :form_value
+
+    def form_value?
+      @foo != nil
+    end
+    gluon_cond :form_value?
+    gluon_cond_not :form_value?
 
     def ok
       # nothing to do.
     end
-    gluon_export :ok
+    gluon_submit :ok
   end
 end
 

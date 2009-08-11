@@ -1,14 +1,17 @@
 <h2>1. text</h2>
 
-<form action="<%= value :action_path %>" target="main">
-<p><label for="foo">input:</label>
-   <%= text :foo, 'id' => 'foo' %>
-</p>
-<p><%= submit :ok, :value => 'OK' %></p>
+<form target="main">
+<p><label for="foo">input:</label> <% gluon :foo %></p>
+<p><% gluon :ok %></p>
 </form>
 
 <h2>2. form value</h2>
-<p><%= value :foo %></p>
+<% gluon :form_value? do %>
+  <p><% gluon :form_value %></p>
+<% end %>
+<% gluon :not_form_value? do %>
+  <p><em>no value.</em></p>
+<% end %>
 
 <%#
   Local Variables:
