@@ -1,37 +1,39 @@
+# -*- coding: utf-8 -*-
+
 class Example
   class Submit
-    include Gluon::Controller
-    include Gluon::ERBView
+    extend Gluon::Component
 
-    def page_start
+    def self.page_encoding
+      __ENCODING__
+    end
+
+    # for Example::Menu and Example::Panel
+    def self.description
+      'submit'
+    end
+
+    def initialize
       @results = ''
     end
 
-    #def page_get
-    #def page_post
-    def page_import
-      @c.validation = true
-    end
+    gluon_value_reader :results
 
-    def action_path
-      @c.class2path(ExamplePanel, Submit)
+    def action?
+      ! @results.empty?
     end
+    gluon_cond :action?
+    gluon_cond_not :action?
 
     def foo
       @results << 'foo is called.'
     end
-    gluon_export :foo
+    gluon_submit :foo, :value => 'foo'
 
     def bar
       @results << 'bar is called.'
     end
-    gluon_export :bar
-
-    def no_action?
-      @results.empty?
-    end
-
-    attr_reader :results
+    gluon_submit :bar, :value => 'bar'
   end
 end
 

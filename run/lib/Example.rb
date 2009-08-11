@@ -30,6 +30,7 @@ class Example
   autoload :Import, 'Example/Import'
   autoload :Link, 'Example/Link'
   autoload :Menu, 'Example/Menu'
+  autoload :Submit, 'Example/Submit'
   autoload :Value, 'Example/Value'
   autoload :ViewPanel, 'Example/ViewPanel'
 end
