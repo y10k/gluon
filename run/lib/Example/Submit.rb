@@ -14,24 +14,24 @@ class Example
     end
 
     def initialize
-      @results = ''
+      @result = nil
     end
 
-    gluon_value_reader :results
+    gluon_value_reader :result
 
     def action?
-      ! @results.empty?
+      @result != nil
     end
     gluon_cond :action?
     gluon_cond_not :action?
 
     def foo
-      @results << 'foo is called.'
+      @result = 'foo is called.'
     end
     gluon_submit :foo, :value => 'foo'
 
     def bar
-      @results << 'bar is called.'
+      @result = 'bar is called.'
     end
     gluon_submit :bar, :value => 'bar'
   end
