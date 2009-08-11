@@ -162,7 +162,7 @@ module Gluon
                 controller.__send__(form_entry[:writer], false)
               end
             end
-          when :radio, :radio_group, :select
+          when :radio_group, :select
             if (value = req_params["#{prefix}#{name}"]) then
               case (value)
               when Array
@@ -413,19 +413,6 @@ module Gluon
       gluon_checkbox(name, options)
     end
     private :gluon_checkbox_accessor
-
-    def gluon_radio(name, list, options={})
-      options = options.merge(:list => list)
-      Controller.gluon_form_export(self, name, :radio, options)
-      Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
-    end
-    private :gluon_radio
-
-    def gluon_radio_accessor(name, list, options={})
-      class_eval{ attr_accessor(name) } # why is class_eval necessary?
-      gluon_radio(name, list, options)
-    end
-    private :gluon_radio_accessor
 
     def gluon_radio_group(name, list, options={})
       options = options.merge(:list => list)

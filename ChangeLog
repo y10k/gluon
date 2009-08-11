@@ -1,3 +1,8 @@
+2009-08-12  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/controller.rb, lib/gluon/po.rb: obsolete gluon-radio.
+	gluon radio-group and radio-button should be used.
+
 2009-08-11  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/application.rb, lib/gluon/rs.rb: path_args attribute

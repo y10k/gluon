@@ -53,7 +53,7 @@ module Gluon
     end
     private :find_controller
 
-    def gluon(name, value=nil, &block)
+    def gluon(name, &block)
       if (c = find_controller(name)) then
         export_entry = @export[c.class][name]
         case (export_entry[:type])
@@ -81,8 +81,6 @@ module Gluon
           hidden(c, name, export_entry[:options], &block)
         when :checkbox
           checkbox(c, name, export_entry[:options], &block)
-        when :radio
-          radio(c, name, value, export_entry[:options], &block)
         when :radio_group
           radio_group(c, name, export_entry[:options], &block)
         when :radio_button
@@ -266,17 +264,6 @@ module Gluon
       s << mkinput(c, 'checkbox', name, value, c.__send__(name), options)
     end
     private :checkbox
-
-    def radio(c, name, value, options)
-      list = getopt(:list, options, c) or
-        raise "need for `list' option at `#{c.class}\##{name}'"
-      unless (list.include? value) then
-        raise ArgumentError, "unexpected value `#{value}' for `#{c.class}\##{name}'"
-      end
-      checked = c.__send__(name) == value
-      mkinput(c, 'radio', name, value, checked, options)
-    end
-    private :radio
 
     def radio_group(c, name, options)
       list = getopt(:list, options, c) or

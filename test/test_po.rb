@@ -509,37 +509,6 @@ module Gluon::Test
                    @po.gluon(:foo))
     end
 
-    def test_radio
-      @Controller.class_eval{
-        gluon_radio_accessor :foo, %w[ Apple Banana Orange ]
-      }
-      @c.foo = 'Banana'
-      assert_equal('<input type="radio" name="foo" value="Apple" />', @po.gluon(:foo, 'Apple'))
-      assert_equal('<input type="radio" name="foo" value="Banana" checked="checked" />', @po.gluon(:foo, 'Banana'))
-      assert_equal('<input type="radio" name="foo" value="Orange" />', @po.gluon(:foo, 'Orange'))
-    end
-
-    def test_radio_not_checked
-      @Controller.class_eval{
-        gluon_radio_accessor :foo, %w[ Apple Banana Orange ]
-      }
-      @c.foo = nil
-      assert_equal('<input type="radio" name="foo" value="Apple" />', @po.gluon(:foo, 'Apple'))
-      assert_equal('<input type="radio" name="foo" value="Banana" />', @po.gluon(:foo, 'Banana'))
-      assert_equal('<input type="radio" name="foo" value="Orange" />', @po.gluon(:foo, 'Orange'))
-    end
-
-    def test_radio_unexpected_value
-      @Controller.class_eval{
-        gluon_radio_accessor :foo, %w[ Apple Banana Orange ]
-      }
-      @c.foo = 'Banana'
-      ex = assert_raise(ArgumentError) { @po.gluon(:foo, 'Pineapple') }
-      assert_match(/^unexpected value/, ex.message)
-      assert_match(/Pineapple/, ex.message)
-      assert_match(/foo/, ex.message)
-    end
-
     def test_radio_group_button
       @Controller.class_eval{
         gluon_radio_group_accessor :foo, %w[ Apple Banana Orange ]

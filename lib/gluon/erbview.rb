@@ -16,11 +16,11 @@ module Gluon
       alias _block_result block_result
       undef block_result
 
-      def gluon(name, value=nil, &block)
+      def gluon(name, &block)
         if (block_given?) then
-          @stdout << @po.gluon(name, value) { _block_result(&block) }
+          @stdout << @po.gluon(name) { _block_result(&block) }
         else
-          @stdout << @po.gluon(name, value)
+          @stdout << @po.gluon(name)
         end
 
         nil

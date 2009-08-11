@@ -62,19 +62,6 @@ module Gluon::Test
       assert_equal('Hello world.', template_render('<% gluon :foo %>'))
     end
 
-    def test_gluon_value
-      @Controller.class_eval{
-        gluon_radio_accessor :foo, %w[ Apple Banana Orange ]
-      }
-      @c.foo = 'Banana'
-      assert_equal('<input type="radio" name="foo" value="Apple" />',
-                   template_render('<% gluon :foo, "Apple" %>'))
-      assert_equal('<input type="radio" name="foo" value="Banana" checked="checked" />',
-                   template_render('<% gluon :foo, "Banana" %>'))
-      assert_equal('<input type="radio" name="foo" value="Orange" />',
-                   template_render('<% gluon :foo, "Orange" %>'))
-    end
-
     def test_gluon_nested
       @Controller.class_eval{
         attr_writer :foo

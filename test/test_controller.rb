@@ -496,33 +496,6 @@ module Gluon::Test
       assert_equal(false, c.foo)
     end
 
-    def test_gluon_radio
-      @Controller.class_eval{ gluon_radio_accessor :foo, %w[ apple banana orange ] }
-      assert(view_entry = Gluon::Controller.find_view_export(@Controller))
-      assert_equal(:radio, view_entry[:foo][:type])
-      assert(form_entry = Gluon::Controller.find_form_export(@Controller))
-      assert_equal(:radio, form_entry[:foo][:type])
-      assert_equal(:foo=, form_entry[:foo][:writer])
-      assert_equal(true, (@Controller.public_method_defined? :foo))
-      assert_equal(true, (@Controller.public_method_defined? :foo=))
-    end
-
-    def test_gluon_radio_inherited
-      @Controller.class_eval{ gluon_radio_accessor :foo, %w[ apple banana orange ] }
-      subclass = Class.new(@Controller)
-      assert(view_entry = Gluon::Controller.find_view_export(subclass))
-      assert_equal(:radio, view_entry[:foo][:type])
-      assert(form_entry = Gluon::Controller.find_form_export(subclass))
-      assert_equal(:radio, form_entry[:foo][:type])
-    end
-
-    def test_gluon_radio_form_params
-      @Controller.class_eval{ gluon_radio_accessor :foo, %w[ apple banana orange ] }
-      c = @Controller.new
-      Gluon::Controller.set_form_params(c, { 'foo' => 'banana' })
-      assert_equal('banana', c.foo)
-    end
-
     def test_gluon_radio_group
       @Controller.class_eval{ gluon_radio_group_accessor :foo, %w[ apple banana orange ] }
       assert(view_entry = Gluon::Controller.find_view_export(@Controller))
