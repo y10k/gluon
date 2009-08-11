@@ -1,24 +1,29 @@
-<h2>1. radio</h2>
+<form target="main">
 
-<form action="<%= value :action_path %>" target="main">
-<h3>radio buttons of foo</h3>
-<p><%= radio :foo, 'apple', 'id' => 'apple' %> <label for="apple">apple</label>,
-   <%= radio :foo, 'banana', 'id' => 'banana' %> <label for="banana">banana</label>,
-   <%= radio :foo, 'orange', 'id' => 'orange' %> <label for="orange">orange</label>
-</p>
+<h2>1. radio group and buttons</h2>
+<% gluon :foo do %>
+  <p>
+    <% gluon :apple %> <label for="apple">Apple</label>,
+    <% gluon :banana %> <label for="banana">Banana</label>,
+    <% gluon :orange %> <label for="orange">Orange</label>
+  </p>
+<% end %>
+<p><% gluon :ok %></p>
+<p>result: <% gluon :foo_value %></p>
 
-<h3>radio buttons of bar</h3>
-<p><%= radio :bar, 'Alice', 'id' => 'alice' %> <label for="alice">Alice</label>,
-   <%= radio :bar, 'Bob', 'id' => 'bob' %> <label for="bob">Bob</label>,
-   <%= radio :bar, 'Kate', 'id' => 'kate' %> <label for="kate">Kate</label>
-</p>
+<h2>2. radio group and button list</h2>
+<% gluon :bar do %>
+  <p>
+    <% gluon :person_list do %>
+      <% gluon :person %>
+      <label for="<% gluon :person_id %>"><% gluon :person_name %></label>
+    <% end %>
+  </p>
+<% end %>
+<p><% gluon :ok %></p>
+<p>result: <% gluon :bar_value %></p>
 
-<p><%= submit :ok, :value => 'OK' %></p>
 </form>
-
-<h2>2. results</h2>
-<p>foo: <%= value :foo %></p>
-<p>bar: <%= value :bar %></p>
 
 <%#
   Local Variables:
