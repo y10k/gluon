@@ -1,0 +1,21 @@
+<h2>1. password</h2>
+
+<form target="main">
+<p><label for="foo">input:</label> <%= gluon :foo %></p>
+<p><%= gluon :ok %></p>
+</form>
+
+<h2>2. form value</h2>
+<% gluon :form_value? do %>
+  <p><% gluon :form_value %></p>
+<% end %>
+<% gluon :not_form_value? do %>
+  <p><em>no value.</em></p>
+<% end %>
+
+<%#
+  Local Variables:
+  mode: HTML
+  indent-tabs-mode: nil
+  End:
+%>
