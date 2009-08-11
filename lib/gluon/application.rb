@@ -65,7 +65,7 @@ module Gluon
       r.logger = @logger
       r.cmap = @cmap
 
-      page_type, init_args, path_args = find_page(r.equest.path_info)
+      page_type, init_args, r.path_args = find_page(r.equest.path_info)
       unless (page_type) then
         if (@default_app) then
           return @default_app.call(env)
@@ -85,7 +85,7 @@ module Gluon
         c.page_start
         begin
           Controller.set_form_params(c, r.equest.params)
-          c.page_request(*path_args)
+          c.page_request(*r.path_args)
           Controller.apply_first_action(c, r.equest.params)
           page_result = c.class.process_view(po)
         ensure

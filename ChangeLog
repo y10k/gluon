@@ -1,5 +1,8 @@
 2009-08-11  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/application.rb, lib/gluon/rs.rb: path_args attribute
+	for request-response context.
+
 	* lib/gluon/controller.rb: skip uninitialized child components for
 	form-parameters and apply-first-action.
 
