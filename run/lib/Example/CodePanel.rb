@@ -10,7 +10,7 @@ class Example
 
     LIB_DIR = File.join(File.dirname(__FILE__), '..')
 
-    def request_GET(key)
+    def page_start
       super
       @source_path = File.join(LIB_DIR,
                                @example_type.name.gsub(/::/, '/') + '.rb')

@@ -8,7 +8,7 @@ class Example
       __ENCODING__
     end
 
-    def request_GET(key)
+    def page_start
       super
       @example = @example_type.new
     end
