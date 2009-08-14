@@ -33,6 +33,7 @@ class Example
   autoload :Menu, 'Example/Menu'
   autoload :Passwd, 'Example/Passwd'
   autoload :Radio, 'Example/Radio'
+  autoload :Select, 'Example/Select'
   autoload :Submit, 'Example/Submit'
   autoload :Text, 'Example/Text'
   autoload :Value, 'Example/Value'

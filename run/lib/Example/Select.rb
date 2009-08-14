@@ -1,40 +1,40 @@
+# -*- coding utf-8 -*-
+
 class Example
   class Select
-    include Gluon::Controller
-    include Gluon::ERBView
+    extend Gluon::Component
 
-    FRUIT_LIST = %w[ apple banana orange ]
-    PLANET_LIST = %w[ Mercury Venus Earth Mars Jupiter Saturn Uranus Neptune ]
+    def self.page_encoding
+      __ENCODING__
+    end
 
-    def page_start
-      @foo = 'apple'
+    # for Example::Menu and Example::Panel
+    def self.description
+      'select'
+    end
+
+    def initialize
+      @foo = 'Apple'
       @bar = %w[ Earth Jupiter ]
     end
 
-    gluon_export_accessor :foo, :list => FRUIT_LIST
-    gluon_export_accessor :bar,
-      :list => PLANET_LIST,
-      :multiple => true,
-      :size => 5
+    gluon_select_accessor :foo, %w[ Apple Banana Orange ], :attrs => { 'id' => 'foo' }
+    gluon_select_accessor :bar,
+      %w[ Mercury Venus Earth Mars Jupiter Saturn Uranus Neptune ],
+      :multiple => true, :attrs => { 'id' => 'bar', 'size' => 5 }
 
-    #def page_get
-    #def page_post
-    def page_import
-      @c.validation = true
-    end
+    alias foo_value foo
+    gluon_value :foo_value
 
-    def action_path
-      @c.class2path(ExamplePanel, Select)
-    end
-
-    def bar_join
+    def bar_values
       @bar.join(', ')
     end
+    gluon_value :bar_values
 
     def ok
       # nothing to do.
     end
-    gluon_export :ok
+    gluon_submit :ok
   end
 end
 
