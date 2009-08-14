@@ -1,0 +1,31 @@
+<form target="main">
+
+<h2>1. form control in foreach</h2>
+<ul>
+  <% gluon :foo_list do %>
+    <li><label for="<% gluon :foo_id %>">foo(<% gluon :count %>):</label> <% gluon :value %></li>
+  <% end %>
+</ul>
+<p><% gluon :ok %></p>
+
+<h2>2. form control at import</h2>
+<% gluon :bar %>
+<p><% gluon :ok %></p>
+
+</form>
+
+
+<h2>3. results</h2>
+<ul>
+  <% gluon :foo_list do %>
+    <li>foo(<% gluon :count %>): <% gluon :form_value %></li>
+  <% end %>
+</ul>
+<p>person: <% gluon :person %></p>
+
+<%#
+  Local Variables:
+  mode: HTML
+  indent-tabs-mode: nil
+  End:
+%>

@@ -24,6 +24,7 @@ class Example
   autoload :Action, 'Example/Action'
   autoload :Checkbox, 'Example/Checkbox'
   autoload :CodePanel, 'Example/CodePanel'
+  autoload :CompositeForm, 'Example/CompositeForm'
   autoload :Cond, 'Example/Cond'
   autoload :ExamplePanel, 'Example/ExamplePanel'
   autoload :Foreach, 'Example/Foreach'
