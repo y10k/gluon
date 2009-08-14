@@ -132,12 +132,12 @@ module Gluon::Test
         component.new,
         component.new
       ]
-      assert_equal('<a href="/run.cgi?foo[0].bar"></a>' +
-                   '<input type="submit" name="foo[0].baz" />'+
-                   '<a href="/run.cgi?foo[1].bar"></a>' +
-                   '<input type="submit" name="foo[1].baz" />'+
-                   '<a href="/run.cgi?foo[2].bar"></a>' +
-                   '<input type="submit" name="foo[2].baz" />',
+      assert_equal('<a href="/run.cgi?foo(0).bar"></a>' +
+                   '<input type="submit" name="foo(0).baz" />'+
+                   '<a href="/run.cgi?foo(1).bar"></a>' +
+                   '<input type="submit" name="foo(1).baz" />'+
+                   '<a href="/run.cgi?foo(2).bar"></a>' +
+                   '<input type="submit" name="foo(2).baz" />',
                    @po.gluon(:foo) { @po.gluon(:bar) << @po.gluon(:baz) })
     end
 
@@ -647,7 +647,7 @@ module Gluon::Test
         gluon_select_accessor :foo, %w[ Apple Banana Orange ], :multiple => true
       }
       @c.foo = %w[ Apple Orange ]
-      assert_equal('<select name="foo" multiple="multiple">' +
+      assert_equal('<select name="foo[]" multiple="multiple">' +
                    '<option value="Apple" selected="selected">Apple</option>' +
                    '<option value="Banana">Banana</option>' +
                    '<option value="Orange" selected="selected">Orange</option>' +

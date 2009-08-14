@@ -128,7 +128,7 @@ module Gluon
       save_prefix = @prefix
       begin
         c.__send__(name).each_with_index do |child, i|
-          @prefix = "#{save_prefix}#{name}[#{i}]."
+          @prefix = "#{save_prefix}#{name}(#{i})."
           @c_stack.push(child)
           begin
             s << yield
@@ -314,8 +314,12 @@ module Gluon
       multiple = getopt(:multiple, options, c)
 
       s = '<select'
-      s << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}") << '"'
-      s << ' multiple="multiple"' if multiple
+      if (multiple) then
+        s << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}[]") << '"'
+        s << ' multiple="multiple"'
+      else
+        s << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}") << '"'
+      end
       s << mkattrs(c, options)
       s << '>'
 

@@ -1,3 +1,9 @@
+2009-08-14  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/controller.rb, lib/gluon/po.rb: form control name
+	notation changed. the reason to change is to avoid confliction to
+	notation of Rack request parameters for `Ruby on Rails'.
+
 2009-08-12  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/controller.rb, lib/gluon/po.rb: obsolete gluon-radio.

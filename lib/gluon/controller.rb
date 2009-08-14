@@ -143,7 +143,7 @@ module Gluon
           when :foreach
             if (list = controller.__send__(name)) then
               list.each_with_index do |c, i|
-                set_form_params(c, req_params, "#{prefix}#{name}[#{i}].")
+                set_form_params(c, req_params, "#{prefix}#{name}(#{i}).")
               end
             end
           when :import
@@ -212,7 +212,7 @@ module Gluon
           when :foreach
             if (list = controller.__send__(name)) then
               list.each_with_index do |c, i|
-                apply_first_action(c, req_params, "#{prefix}#{name}[#{i}].") and return true
+                apply_first_action(c, req_params, "#{prefix}#{name}(#{i}).") and return true
               end
             end
           when :import

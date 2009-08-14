@@ -145,9 +145,9 @@ module Gluon::Test
       c.foo[2] = component.new
 
       Gluon::Controller.set_form_params(c, {
-                                          'foo[0].bar' => 'apple',
-                                          'foo[1].bar' => 'banana',
-                                          'foo[2].bar' => 'orange'
+                                          'foo(0).bar' => 'apple',
+                                          'foo(1).bar' => 'banana',
+                                          'foo(2).bar' => 'orange'
                                         })
 
       assert_equal('apple', c.foo[0].bar)
@@ -185,9 +185,9 @@ module Gluon::Test
       c.foo[2] = component.new
 
       Gluon::Controller.apply_first_action(c, {
-                                             'foo[0].bar' => nil,
-                                             'foo[1].bar' => nil,
-                                             'foo[2].bar' => nil
+                                             'foo(0).bar' => nil,
+                                             'foo(1).bar' => nil,
+                                             'foo(2).bar' => nil
                                            })
 
       assert_equal(1, c.foo[0].count)
