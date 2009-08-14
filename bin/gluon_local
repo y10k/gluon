@@ -27,10 +27,11 @@ if (ARGV.empty?) then
   exit 1
 end
 
+ENV['RUBYOPT'] = 'rubygems'
 ENV['GEM_HOME'] = File.join(proj_dir, 'gems')
 ENV['PATH'] = [ File.join(ENV['GEM_HOME'], 'bin'), ENV['PATH'] ].join(File::PATH_SEPARATOR)
 
-exec *ARGV
+exec(*ARGV)
 
 # Local Variables:
 # mode: Ruby
