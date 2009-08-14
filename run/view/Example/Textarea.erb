@@ -1,14 +1,20 @@
 <h2>1. textarea</h2>
 
-<form action="<%= value :action_path %>" target="main">
-<p><label for="foo">foo:</label><br />
-   <%= textarea :foo, 'id' => 'foo' %>
+<form target="main">
+<p>
+  <label for="foo">foo:</label><br />
+  <% gluon :foo %>
 </p>
-<p><%= submit :ok, :value => 'OK' %></p>
+<p><% gluon :ok %></p>
 </form>
 
-<h2>2. result</h2>
-<pre><%= value :foo %></pre>
+<h2>2. form value</h2>
+<% gluon :form_value? do %>
+  <pre><% gluon :form_value %></pre>
+<% end %>
+<% gluon :not_form_value? do %>
+  <p><em>no value.</em></p>
+<% end %>
 
 <%#
   Local Variables:
