@@ -15,6 +15,11 @@ class Welcom
     'Welcom to Gluon'
   end
   gluon_value :title
+
+  def example
+    Example
+  end
+  gluon_link :example
 end
 
 # Local Variables:

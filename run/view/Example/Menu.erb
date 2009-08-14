@@ -5,7 +5,7 @@
 <body>
 <h2>examples</h2>
 
-<p><% gluon :welcom %></p>
+<p><% gluon :welcom do %>return to top.<% end %></p>
 <ul>
   <% gluon :examples do %>
     <li><% gluon :example do %><% gluon :description %><% end  %></li>
