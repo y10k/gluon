@@ -22,11 +22,11 @@ end
 desc 'unit-test.'
 task :test do
   cd "#{base_dir}/test", :verbose => true do
-    ruby 'run.rb'
+    sh "#{prefix}rake#{suffix}"
   end
 end
 
-desc 'project local RubyGems.'
+desc 'project local RubyGems (optional parameters: GEM_ARGS).'
 task :local_gem do
   ruby *gluon_local, "#{prefix}gem#{suffix} #{ENV['GEM_ARGS']}"
 end
