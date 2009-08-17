@@ -11,8 +11,8 @@ prefix = $1
 suffix = $2
 
 base_dir = File.join(File.dirname(__FILE__))
-example = [ 'rackup', '-I', "#{base_dir}/lib", "#{base_dir}/run/config.ru" ]
 gluon_local = [ "#{base_dir}/bin/gluon_local", '-d', base_dir ]
+example = [ 'rackup', '-I', "#{base_dir}/lib", "#{base_dir}/run/config.ru" ]
 
 desc 'start example.'
 task :example do
