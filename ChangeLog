@@ -1,3 +1,7 @@
+2009-08-17  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/backend.rb: backend service for application.
+
 2009-08-14  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/controller.rb, lib/gluon/po.rb: form control name

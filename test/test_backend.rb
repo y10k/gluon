@@ -13,135 +13,52 @@ module Gluon::Test
       @service_man = Gluon::BackendServiceManager.new
     end
 
+    def test_no_service
+      @service_man.setup
+      svc = @service_man.new_services
+      assert_equal([ :__no_service__ ], svc.members)
+      assert_equal([ nil ], svc.values)
+      @service_man.shutdown
+    end
+
     class Foo
-    end
-
-    class FooServiceAdaptor
-      include Gluon::BackendServiceAdaptor
-
-      def gluon_service_key
-        :foo
-      end
-
-      def gluon_service_get
-        Foo.new
-      end
-    end
-
-    class Bar
-      attr_accessor :around_hook_start
-      attr_accessor :around_hook_end
-      attr_accessor :start
-      attr_accessor :end
-    end
-
-    class BarServiceAdaptor
-      include Gluon::BackendServiceAdaptor
-
       def initialize
-        @bar = Bar.new
-        @count = 0
+	@finalized = false
       end
 
-      def count_up
-        c = @count
-        @count += 1
-        c
-      end
-      private :count_up
-
-      def gluon_service_key
-        :bar
+      def finalized?
+	@finalized
       end
 
-      def gluon_service_around_hook
-        @bar.around_hook_start = count_up
-        begin
-          yield
-        ensure
-          @bar.around_hook_end = count_up
-        end
-      end
-
-      def gluon_service_start
-        @bar.start = count_up
-      end
-
-      def gluon_service_get
-        @bar
-      end
-
-      def gluon_service_end
-        @bar.end = count_up
+      def finalize
+	if (@finalized) then
+	  raise 'duplicated finalize call.'
+	end
+	@finalized = true
+	nil
       end
     end
 
-    def test_new_services
-      count = 0
-      bar = nil
+    def test_service
+      foo = Foo.new
+      assert_equal(false, foo.finalized?)
 
-      @service_man.register(FooServiceAdaptor.new)
-      @service_man.register(BarServiceAdaptor.new)
-      @service_man.apply_around_hook{
-        @service_man.setup
-        bs = @service_man.new_services
-
-        assert_instance_of(Foo, bs.foo)
-        assert_instance_of(Foo, bs[:foo])
-        assert_instance_of(Bar, bs.bar)
-        assert_instance_of(Bar, bs[:bar])
-
-        assert_equal(0, bs.bar.around_hook_start)
-        assert_equal(1, bs.bar.start)
-        assert_equal(nil, bs.bar.end)
-        assert_equal(nil, bs.bar.around_hook_end)
-
-        @service_man.shutdown
-
-        count += 1
-        bar = bs.bar
+      @service_man.add(:foo, foo) {|f|
+	f.finalize
       }
+      assert_equal(false, foo.finalized?)
 
-      assert_equal(1, count)
+      @service_man.setup
+      assert_equal(false, foo.finalized?)
 
-      assert_equal(0, bar.around_hook_start)
-      assert_equal(1, bar.start)
-      assert_equal(2, bar.end)
-      assert_equal(3, bar.around_hook_end)
-    end
+      svc = @service_man.new_services
+      assert_equal(false, foo.finalized?)
+      assert_equal([ :foo ], svc.members)
+      assert_equal([ foo ], svc.values)
+      assert_equal(foo, svc.foo)
 
-    def test_no_services
-      count = 0
-      @service_man.apply_around_hook{
-        @service_man.setup
-        bs = @service_man.new_services
-        assert_raise(NoMethodError) { bs.foo }
-        assert_raise(NameError) { bs[:foo] }
-        @service_man.shutdown
-        count += 1
-      }
-      assert_equal(1, count)
-    end
-
-    FROZEN_ERROR = case (RUBY_VERSION)
-                   when /^1\.8\./
-                     TypeError
-                   when /^1\.9\./
-                     RuntimeError
-                   else
-                     raise "unkonwn ruby version: #{RUBY_VERSION}"
-                   end
-
-    def test_freeze
-      count = 0
-      @service_man.apply_around_hook{
-        @service_man.setup
-        assert_raise(FROZEN_ERROR) {
-          @service_man.register(FooServiceAdaptor.new)
-        }
-        count += 1
-      }
-      assert_equal(1, count)
+      @service_man.shutdown
+      assert_equal(true, foo.finalized?)
     end
   end
 end

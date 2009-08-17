@@ -17,8 +17,7 @@ module Gluon
   CVS_ID = '$Id$'
 
   autoload :Action, 'gluon/action'
-  autoload :BackendServiceAdaptor, 'gluon/backend'
-  autoload :BackendServiceManagerTest, 'gluon/backend'
+  autoload :BackendServiceManager, 'gluon/backend'
   autoload :Builder, 'gluon/builder'
   autoload :CKView, 'gluon/ckview'
   autoload :ClassMap, 'gluon/cmap'
