@@ -33,9 +33,10 @@ class Example
       export = Gluon::Controller.find_view_export(c.class)
       for name, entry in export
         if (entry[:type] == :import) then
-          child = c.__send__(name)
-          @component_type[child.class] = true
-          search_child_components(child)
+          if (child = c.__send__(name)) then
+            @component_type[child.class] = true
+            search_child_components(child)
+          end
         end
       end
 
