@@ -31,6 +31,20 @@ map '/example/view_panel' do |entry|
   entry.mount Example::ViewPanel
 end
 
+map '/example/ex_panel/BackendService' do |entry|
+  entry.mount Example::BackendService
+end
+
+backend_service :bbs_db do |service|
+  require 'pstore'
+  service.start do
+    PStore.new("#{base_dir}/bbs_data.pstore")
+  end
+  service.stop do |bbs_db|
+    # nothing to do.
+  end
+end
+
 # Local Variables:
 # mode: Ruby
 # indent-tabs-mode: nil

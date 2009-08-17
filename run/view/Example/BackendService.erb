@@ -1,0 +1,43 @@
+<html>
+<head>
+<title><% gluon :title %> example</title>
+</head>
+<body>
+
+<% gluon :header %>
+<h1><% gluon :title %> example</h1>
+
+<h2>BBS</h2>
+
+<form target="main" method="post">
+<p>
+  <label for="comment">Comment:</label><br />
+  <% gluon :comment %>
+</p>
+<p>
+  <label for="name">Name:</label> <% gluon :name %>
+  <% gluon :post_comment %>
+  <% gluon :clear_on_post %><label for="clear-on-post">clear comment on post.</label>
+</p>
+</form>
+
+<% gluon :posted_comments do %>
+  <hr />
+  <p><% gluon :timestamp %> <% gluon :posted_name %></p>
+  <pre><% gluon :posted_comment %></pre>
+<% end %>
+
+<hr />
+
+<address>
+Author: <a href="mailto:toki@freedom.ne.jp">TOKI Yoshinori &lt;toki@freedom.ne.jp&gt;</a>
+</address>
+</body>
+</html>
+
+<%#
+  Local Variables:
+  mode: HTML
+  indent-tabs-mode: nil
+  End:
+%>
