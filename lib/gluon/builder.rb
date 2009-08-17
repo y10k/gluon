@@ -6,6 +6,7 @@
 
 require 'forwardable'
 require 'gluon/application'
+require 'gluon/backend'
 require 'gluon/cmap'
 require 'gluon/rs'
 require 'gluon/template'
@@ -35,6 +36,7 @@ module Gluon
       @template_engine = TemplateEngine.new(@view_dir)
       @builder = Rack::Builder.new
       @builder.use(Root)
+      @service_man = BackendServiceManager.new
     end
 
     def enable_local_library
@@ -76,17 +78,47 @@ module Gluon
         nil
       end
 
-      def to_app
+      def _to_app
         @builder.run(@app)
         @builder.to_app
       end
     end
 
     def map(location)
-      app = Application.new(@logger, @cmap, @template_engine)
+      app = Application.new(@logger, @cmap, @template_engine, @service_man)
       entry = MapEntry.new(@logger, @cmap, app, location)
       yield(entry)
-      @builder.map(location) { run(entry.to_app) }
+      @builder.map(location) { run(entry._to_app) }
+      nil
+    end
+
+    class ServiceEntry
+      def initialize(logger, service_man, name)
+        @logger = logger
+        @service_man = service_man
+        @name = name
+      end
+
+      def start
+        @value = yield
+        nil
+      end
+
+      def stop(&block)
+        @finalizer = block
+        nil
+      end
+
+      def _add_service
+        @service_man.add(@name, @value, &@finalizer)
+        nil
+      end
+    end
+
+    def backend_service(name)
+      entry = ServiceEntry.new(@logger, @service_man, name)
+      yield(entry)
+      entry._add_service
       nil
     end
 
@@ -103,6 +135,7 @@ module Gluon
       def_delegator :@builder, :config_rb
       def_delegator :@builder, :use
       def_delegator :@builder, :map
+      def_delegator :@builder, :backend_service
     end
 
     def dsl_binding
@@ -113,6 +146,7 @@ module Gluon
 
     def eval_conf(expr, *args)
       eval(expr, dsl_binding, *args)
+      @service_man.setup
       nil
     end
 

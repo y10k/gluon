@@ -26,10 +26,11 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    def initialize(logger, cmap, template_engine)
+    def initialize(logger, cmap, template_engine, service_man)
       @logger = logger
       @cmap = cmap
       @template_engine = template_engine
+      @service_man = service_man
       @page_list = []
       @default_app = nil
     end
@@ -64,6 +65,7 @@ module Gluon
       r = RequestResponseContext.new(Rack::Request.new(env), Rack::Response.new)
       r.logger = @logger
       r.cmap = @cmap
+      r.backend_service = @service_man.new_services
 
       page_type, init_args, r.path_args = find_page(r.equest.path_info)
       unless (page_type) then
