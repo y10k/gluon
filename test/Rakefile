@@ -7,15 +7,21 @@ require 'rbconfig'
 include RbConfig
 
 base_dir = File.join(File.dirname(__FILE__), '..')
+gluon_local = [ "#{base_dir}/bin/gluon_local", '-d', base_dir ]
+unit_test = [ 'run.rb' ]
+unit_test << ENV['TEST_OPTS'] if (ENV.key? 'TEST_OPTS')
+unit_test << ENV['TEST_CASE'] if (ENV.key? 'TEST_CASE')
 
 task :default => [ :test ]
 
-desc 'run unit-test. optional parameters: TEST_OPTS, TEST_CASE'
+desc 'run unit-test (optional parameters: TEST_OPTS, TEST_CASE).'
 task :test do
-  cmds = [ "#{base_dir}/bin/gluon_local", '-d', base_dir, CONFIG['RUBY_INSTALL_NAME'], 'run.rb' ]
-  cmds << ENV['TEST_OPTS'] if (ENV.key? 'TEST_OPTS')
-  cmds << ENV['TEST_CASE'] if (ENV.key? 'TEST_CASE')
-  ruby *cmds
+  ruby *unit_test
+end
+
+desc 'run unit-test (project local RubyGems environemnt).'
+task :local_test do
+  sh *gluon_local, CONFIG['RUBY_INSTALL_NAME'], *unit_test
 end
 
 desc 'clean garbage files'
