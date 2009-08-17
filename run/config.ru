@@ -9,6 +9,8 @@ builder.load_conf
 
 run builder.to_app
 
+END { builder.shutdown }
+
 # Local Variables:
 # mode: Ruby
 # indent-tabs-mode: nil

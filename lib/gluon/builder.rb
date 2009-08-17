@@ -158,6 +158,11 @@ module Gluon
     def to_app
       @builder.to_app
     end
+
+    def shutdown
+      @service_man.shutdown
+      nil
+    end
   end
 end
 
