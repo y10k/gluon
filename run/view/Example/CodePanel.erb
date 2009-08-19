@@ -4,15 +4,13 @@
 </head>
 <body>
 
-<% gluon :header %>
-<h1>source code of <% gluon :title %> example</h1>
-<p>filename is `<code><% gluon :filename %></code>'.</p>
-<pre><% gluon :source_code %></pre>
-<hr />
+<% gluon :header_footer do %>
+  <h1>source code of <% gluon :title %> example</h1>
+  <p>filename is `<code><% gluon :filename %></code>'.</p>
+  <pre><% gluon :source_code %></pre>
+  <hr />
+<% end %>
 
-<address>
-Author: <a href="mailto:toki@freedom.ne.jp">TOKI Yoshinori &lt;toki@freedom.ne.jp&gt;</a>
-</address>
 </body>
 </html>
 

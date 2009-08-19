@@ -11,13 +11,13 @@ class Example
     def page_start
       key = @r.path_args[0]
       @example_type = Menu::Items[key].example_type
-      @header = Header.new(@r, @example_type)
+      @header_footer = HeaderFooter.new(@r, @example_type)
     end
 
     def request_GET(key)
     end
 
-    gluon_import_reader :header
+    gluon_import_reader :header_footer
 
     def title
       @example_type.description

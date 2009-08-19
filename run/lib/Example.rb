@@ -29,7 +29,7 @@ class Example
   autoload :Cond, 'Example/Cond'
   autoload :ExamplePanel, 'Example/ExamplePanel'
   autoload :Foreach, 'Example/Foreach'
-  autoload :Header, 'Example/Header'
+  autoload :HeaderFooter, 'Example/HeaderFooter'
   autoload :Import, 'Example/Import'
   autoload :Link, 'Example/Link'
   autoload :Menu, 'Example/Menu'

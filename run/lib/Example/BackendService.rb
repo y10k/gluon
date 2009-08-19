@@ -27,7 +27,7 @@ class Example
     end
 
     def page_start
-      @header = Header.new(@r, self.class)
+      @header_footer = HeaderFooter.new(@r, self.class)
       @comment = nil
       @name = nil
       @clear_on_post = true
@@ -43,7 +43,7 @@ class Example
       @name.valid_encoding? or raise "not UTF-8 string: @comment => #{@comment.inspect}"
     end
 
-    gluon_import_reader :header
+    gluon_import_reader :header_footer
 
     def title
       self.class.description

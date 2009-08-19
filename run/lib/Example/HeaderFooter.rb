@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 class Example
-  class Header
+  class HeaderFooter
     extend Gluon::Component
 
     def self.page_encoding

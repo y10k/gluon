@@ -4,14 +4,12 @@
 </head>
 <body>
 
-<% gluon :header %>
-<h1><% gluon :title %> example</h1>
-<% gluon :example %>
-<hr />
+<% gluon :header_footer do %>
+  <h1><% gluon :title %> example</h1>
+  <% gluon :example %>
+  <hr />
+<% end %>
 
-<address>
-Author: <a href="mailto:toki@freedom.ne.jp">TOKI Yoshinori &lt;toki@freedom.ne.jp&gt;</a>
-</address>
 </body>
 </html>
 
