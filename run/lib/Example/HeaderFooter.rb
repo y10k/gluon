@@ -14,7 +14,7 @@ class Example
     end
 
     def example?
-      @r.controller.is_a? ExamplePanel
+      (@r.controller.is_a? ExamplePanel) || ! (@r.controller.is_a? Panel)
     end
     gluon_cond :example?
     gluon_cond_not :example?
