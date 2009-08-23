@@ -70,6 +70,52 @@ module Gluon::Test
       assert_equal([ 'test error-2.' ], @errors)
     end
 
+    def test_multiple_validation_OK
+      @c.validation(@errors) do |v|
+        v.validate 'test error-1.' do
+          true
+        end
+      end
+
+      @c.validation(@errors) do |v|
+        v.validate 'test error-2.' do
+          true
+        end
+      end
+
+      @c.validation(@errors) do |v|
+        v.validate 'test error-3.' do
+          true
+        end
+      end
+
+      assert_equal(true, @r.validation)
+      assert_equal([], @errors)
+    end
+
+    def test_multiple_validation_NG
+      @c.validation(@errors) do |v|
+        v.validate 'test error-1.' do
+          false
+        end
+      end
+
+      @c.validation(@errors) do |v|
+        v.validate 'test error-2.' do
+          true
+        end
+      end
+
+      @c.validation(@errors) do |v|
+        v.validate 'test error-3.' do
+          false
+        end
+      end
+
+      assert_equal(false, @r.validation)
+      assert_equal([ 'test error-1.', 'test error-3.' ], @errors)
+    end
+
     def test_foreach_validate_OK
       @Controller.class_eval{
         attr_writer :foo

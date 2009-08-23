@@ -167,7 +167,15 @@ module Gluon
     def validation(errors)
       v = Validator.new(self, errors, '')
       yield(v)
-      @r.validation = v.validated?
+
+      if (@r.validation.nil?) then
+        @r.validation = v.validated?
+      else
+        if (@r.validation) then
+          @r.validation = v.validated?
+        end
+      end
+
       self
     end
   end
