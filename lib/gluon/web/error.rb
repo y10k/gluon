@@ -1,25 +1,27 @@
+# -*- coding: utf-8 -*-
 # = gluon - simple web application framework
-#
-# Author:: $Author$
-# Date:: $Date$
-# Revision:: $Revision$
-#
 # == license
 #   :include:../../LICENSE
 #
 
 require 'gluon/controller'
-require 'gluon/erbview'
 
 module Gluon
   module Web
-    # = error messages utility
+    # = error message board component
     class ErrorMessages
-      extend Forwardable
-      include Controller
+      extend Component
 
       # for ident(1)
       CVS_ID = '$Id$'
+
+      def self.page_encoding
+        __ENCODING__
+      end
+
+      def self.page_template
+        File.join(File.dirname(__FILE__), File.basename(__FILE__, '.rb') + '.erb')
+      end
 
       def initialize(options={})
         @title = (options.key? :title) ? options[:title] : 'ERROR(s)'
@@ -28,37 +30,43 @@ module Gluon
         @messages = []
       end
 
+      class Message
+        extend Component
+
+        def initialize(message)
+          @error_message = message
+        end
+
+        gluon_value_reader :error_message
+      end
+
       def add(message)
-        @messages << message
+        @messages << Message.new(message)
         self
       end
 
       alias << add
 
-      def page_import
-      end
+      gluon_value_reader :title
+      gluon_value_reader :head_level
+      gluon_value_reader :css_class
+      gluon_foreach_reader :messages
 
-      def page_render(po)
-        template = File.join(File.dirname(__FILE__), 'error.rhtml')
-        @c.view_render(ERBView, template, po)
-      end
-
-      attr_reader :title
-      attr_reader :head_level
-      attr_reader :css_class
-      attr_reader :messages
-
-      def has_messages?
+      def exist_messages?
         ! @messages.empty?
       end
+      gluon_cond :exist_messages?
 
-      def has_title?
+      def exist_title?
         @title ? true : false
       end
+      gluon_cond :exist_title?
 
-      def has_class?
+      def exist_css_class?
         @css_class ? true : false
       end
+      gluon_cond :exist_css_class?
+      gluon_cond_not :exist_css_class?
     end
   end
 end

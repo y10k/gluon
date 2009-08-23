@@ -1,0 +1,25 @@
+<% gluon :exist_messages? do %>
+  <div
+    <% gluon :exist_css_class? do %>
+      class="<% gluon :css_class %>"
+    <% end %>
+    <% gluon :not_exist_css_class? do %>
+      style="border-style: solid; margin: 1em 0ex; padding: 1ex 2ex; color: red"
+    <% end %>
+  >
+    <% gluon :exist_title? do %>
+      <h<% gluon :head_level %>><% gluon :title %></h<% gluon :head_level %>>
+    <% end %>
+    <ul>
+      <% gluon :messages do %>
+        <li><% gluon :error_message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+<%#
+  Local Variables:
+  mode: HTML
+  indent-tabs-mode: nil
+  End:
+%>

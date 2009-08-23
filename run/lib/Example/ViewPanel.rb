@@ -51,10 +51,14 @@ class Example
 
       @view_code_list = []
       @component_type.each_key do |example_type|
-        @view_code_list.push ViewCode.new(example_type,
-                                          File.join(VIEW_DIR,
-                                                    example_type.name.gsub(/::/, '/') +
-                                                    example_type.page_view.suffix))
+        if (view_code_path = example_type.page_template) then
+          @view_code_list.push ViewCode.new(example_type, view_code_path)
+        else
+          @view_code_list.push ViewCode.new(example_type,
+                                            File.join(VIEW_DIR,
+                                                      example_type.name.gsub(/::/, '/') +
+                                                      example_type.page_view.suffix))
+        end
       end
     end
 

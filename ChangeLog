@@ -1,5 +1,7 @@
 2009-08-23  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/web/error.rb: error message board component.
+
 	* lib/gluon/controller.rb: explicit page encoding.
 
 	* lib/gluon/action.rb, lib/gluon/errmap.rb, lib/gluon/fstore.rb,

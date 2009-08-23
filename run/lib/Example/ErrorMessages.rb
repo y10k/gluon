@@ -1,11 +1,19 @@
+# -*- coding: utf-8 -*-
+
 class Example
   class ErrorMessages
-    include Gluon::Controller
-    include Gluon::ERBView
+    extend Gluon::Component
 
-    CVS_ID = '$Id$'
+    def self.page_encoding
+      __ENCODING__
+    end
 
-    def page_start
+    # for Example::Menu and Example::Panel
+    def self.description
+      'error messages'
+    end
+
+    def initialize
       @default = Gluon::Web::ErrorMessages.new
       @default << 'foo'
       @default << 'bar'
@@ -29,15 +37,16 @@ class Example
       @no_messages = Gluon::Web::ErrorMessages.new
     end
 
-    #def page_get
-    def page_import
-    end
-
-    attr_reader :default
-    attr_reader :title
-    attr_reader :no_title
-    attr_reader :head_level
-    attr_reader :css_class
-    attr_reader :no_messages
+    gluon_import_reader :default
+    gluon_import_reader :title
+    gluon_import_reader :no_title
+    gluon_import_reader :head_level
+    gluon_import_reader :css_class
+    gluon_import_reader :no_messages
   end
 end
+
+# Local Variables:
+# mode: Ruby
+# indent-tabs-mode: nil
+# End:

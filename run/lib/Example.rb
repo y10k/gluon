@@ -27,6 +27,7 @@ class Example
   autoload :CodePanel, 'Example/CodePanel'
   autoload :CompositeForm, 'Example/CompositeForm'
   autoload :Cond, 'Example/Cond'
+  autoload :ErrorMessages, 'Example/ErrorMessages'
   autoload :ExamplePanel, 'Example/ExamplePanel'
   autoload :Foreach, 'Example/Foreach'
   autoload :HeaderFooter, 'Example/HeaderFooter'
