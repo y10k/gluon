@@ -41,7 +41,7 @@ module Gluon
     def initialize(request, response)
       @req = request
       @res = response
-      @logger = NoLogger.instance
+      @req.env[:gluon_logger] = NoLogger.instance
     end
 
     # alias for self
@@ -50,28 +50,51 @@ module Gluon
     end
     private :r
 
-    # usage: @r.equest
+    # usage: r.equest, @r.equest
     def equest
       @req
     end
 
-    # usage: @r.esponse
+    # usage: r.esponse, @r.esponse
     def esponse
       @res
     end
 
-    attr_accessor :logger
-    attr_accessor :controller
-    attr_accessor :path_args
-    attr_writer :cmap
+    def logger
+      @req.env[:gluon_logger]
+    end
 
-    # usage: @r.oot_script_name
+    def logger=(logger)
+      @req.env[:gluon_logger] = logger
+    end
+
+    def controller
+      @req.env[:gluon_controller]
+    end
+
+    def controller=(controller)
+      @req.env[:gluon_controller] = controller
+    end
+
+    def path_args
+      @req.env[:gluon_path_args]
+    end
+
+    def path_args=(path_args)
+      @req.env[:gluon_path_args] = path_args
+    end
+
+    def cmap=(cmap)
+      @req.env[:gluon_class_map] = cmap
+    end
+
+    # usage: r.oot_script_name, @r.oot_script_name
     def oot_script_name
       @req.env[:gluon_root_script_name]
     end
 
     def class2path(page_type, *path_args)
-      r.oot_script_name + @cmap.class2path(page_type, *path_args)
+      r.oot_script_name + @req.env[:gluon_class_map].class2path(page_type, *path_args)
     end
 
     def location(path, status=302)

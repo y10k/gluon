@@ -1,5 +1,8 @@
 2009-08-23  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/rs.rb: gluon's request attributes are stored to Rack
+	request hash.
+
 	* lib/gluon/web/error.rb: error message board component.
 
 	* lib/gluon/controller.rb: explicit page encoding.
