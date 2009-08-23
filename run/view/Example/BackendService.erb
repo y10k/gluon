@@ -9,6 +9,8 @@
 
   <h2>BBS</h2>
 
+  <% gluon :errors %>
+
   <form target="main" method="post">
   <p>
     <label for="comment">Comment:</label><br />
@@ -26,6 +28,8 @@
     <p><% gluon :timestamp %> <% gluon :posted_name %></p>
      <pre><% gluon :posted_comment %></pre>
   <% end %>
+
+  <hr />
 <% end %>
 
 </body>

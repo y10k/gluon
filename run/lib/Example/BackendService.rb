@@ -3,6 +3,7 @@
 class Example
   class BackendService
     include Gluon::Controller
+    include Gluon::Validation
 
     def self.page_encoding
       __ENCODING__
@@ -31,18 +32,22 @@ class Example
       @comment = nil
       @name = nil
       @clear_on_post = true
+      @errors = Gluon::Web::ErrorMessages.new(:head_level => 3)
     end
 
     def request_GET
     end
 
     def request_POST
-      @comment.force_encoding(__ENCODING__)
-      @comment.valid_encoding? or raise "not UTF-8 string: @comment => #{@comment.inspect}"
-      @name.force_encoding(__ENCODING__)
-      @name.valid_encoding? or raise "not UTF-8 string: @comment => #{@comment.inspect}"
+      validation(@errors) do |v|
+        v.encoding :comment
+        v.not_blank :comment
+        v.encoding :name
+        v.not_blank :name
+      end
     end
 
+    gluon_import_reader :errors
     gluon_import_reader :header_footer
 
     def title
