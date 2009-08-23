@@ -77,6 +77,72 @@ module Gluon
 
       self
     end
+
+    def nonnil(name, options={})
+      error_message = options[:error] || "`#{@prefix}#{name}' should not be nil."
+      value = @c.__send__(name)
+      validate error_message do
+        ! value.nil?
+      end
+
+      self
+    end
+
+    def not_empty(name, options={})
+      error_message = options[:error] || "`#{@prefix}#{name}' should not be empty."
+      value = @c.__send__(name)
+      validate error_message do
+        (! value.nil?) && (! value.empty?)
+      end
+
+      self
+    end
+
+    def not_blank(name, options={})
+      error_message = options[:error] || "`#{@prefix}#{name}' should not be blank."
+      value = @c.__send__(name)
+      validate error_message do
+        (! value.nil?) && (! value.strip.empty?)
+      end
+
+      self
+    end
+
+    def encoding(name, options={})
+      expected_encoding = options[:expected_encoding] || @c.class.page_encoding
+      error_message = options[:error] || "encoding of `#{@prefix}#{name}' is not #{expected_encoding}."
+      value = @c.__send__(name)
+      validate error_message do
+        unless (value.nil?) then
+          value.force_encoding(expected_encoding)
+          value.valid_encoding?
+        else
+          false
+        end
+      end
+
+      self
+    end
+
+    def match(name, regexp, options={})
+      error_message = options[:error] || "`#{@prefix}#{name}' should do match to #{regexp}."
+      value = @c.__send__(name)
+      validate error_message do
+        (! value.nil?) && (value.is_a? String) && (value =~ regexp)
+      end
+
+      self
+    end
+
+    def not_match(name, regexp, options={})
+      error_message = options[:error] || "`#{@prefix}#{name}' should not do match to #{regexp}."
+      value = @c.__send__(name)
+      validate error_message do
+        (! value.nil?) && (value.is_a? String) && (value !~ regexp)
+      end
+
+      self
+    end
   end
 
   module Validation
