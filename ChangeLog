@@ -1,5 +1,9 @@
 2009-08-23  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/application.rb, lib/gluon/controller.rb,
+	lib/gluon/rs.rb, lib/gluon/validation.rb: validation framework and
+	validation utility.
+
 	* lib/gluon/application.rb, lib/gluon/controller.rb:
 	apply-first-action is obsolete and replaced by find-first-action.
 
