@@ -89,6 +89,10 @@ module Gluon
       end
     end
 
+    def page_validation_preprocess
+      @r.validation = nil
+    end
+
     def validation(errors)
       v = Validator.new(self, errors, '')
       yield(v)

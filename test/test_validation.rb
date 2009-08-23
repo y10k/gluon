@@ -22,6 +22,11 @@ module Gluon::Test
       @errors = []
     end
 
+    def test_page_validation_preprocess
+      @c.page_validation_preprocess
+      assert_nil(@r.validation)
+    end
+
     def test_validate_OK
       @c.validation(@errors) do |v|
         v.validate 'test error.' do
