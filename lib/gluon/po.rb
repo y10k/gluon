@@ -144,6 +144,11 @@ module Gluon
     end
     private :foreach
 
+    def prefix(name)
+      "#{@prefix}#{name}"
+    end
+    private :prefix
+
     def mkpath(c, name)
       path, *args = c.__send__(name)
       if (path.is_a? Class) then
@@ -199,7 +204,7 @@ module Gluon
 
     def action(c, name, options, &block)
       s = '<a'
-      s << ' href="' << ERB::Util.html_escape("#{@r.equest.path}?#{@prefix}#{name}") << '"'
+      s << ' href="' << ERB::Util.html_escape("#{@r.equest.path}?#{prefix(name)}") << '"'
       s << mkattrs(c, options)
       s << '>'
       s << anchor_content(options, c, &block)
@@ -217,7 +222,7 @@ module Gluon
 
     def import(c, name, options, &block)
       compo = c.__send__(name)
-      po = PresentationObject.new(compo, @r, @template_engine, "#{@prefix}#{name}.", &block)
+      po = PresentationObject.new(compo, @r, @template_engine, "#{prefix(name)}.", &block)
       compo.class.process_view(po)
     end
     private :import
@@ -225,7 +230,7 @@ module Gluon
     def mkinput(c, type, name, value, checked, options)
       s = '<input'
       s << ' type="' << ERB::Util.html_escape(type) << '"'
-      s << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}") << '"'
+      s << ' name="' << ERB::Util.html_escape("#{prefix(name)}") << '"'
       s << ' value="' << ERB::Util.html_escape(value) << '"' if value
       s << ' checked="checked"' if checked
       s << mkattrs(c, options)
@@ -256,7 +261,7 @@ module Gluon
 
     def checkbox(c, name, options)
       s = '<input type="hidden"'
-      s << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}:checkbox") << '"'
+      s << ' name="' << ERB::Util.html_escape("#{prefix(name)}:checkbox") << '"'
       s << ' value="submit"'
       s << ' style="display: none"'
       s << ' />'
@@ -271,7 +276,7 @@ module Gluon
 
       entry = {
         :group => name,
-        :name => "#{@prefix}#{name}",
+        :name => "#{prefix(name)}",
         :value => c.__send__(name),
         :list => list
       }
@@ -315,10 +320,10 @@ module Gluon
 
       s = '<select'
       if (multiple) then
-        s << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}[]") << '"'
+        s << ' name="' << ERB::Util.html_escape("#{prefix(name)}[]") << '"'
         s << ' multiple="multiple"'
       else
-        s << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}") << '"'
+        s << ' name="' << ERB::Util.html_escape("#{prefix(name)}") << '"'
       end
       s << mkattrs(c, options)
       s << '>'
@@ -349,7 +354,7 @@ module Gluon
 
     def textarea(c, name, options)
       s = '<textarea'
-      s << ' name="' << ERB::Util.html_escape("#{@prefix}#{name}") << '"'
+      s << ' name="' << ERB::Util.html_escape("#{prefix(name)}") << '"'
       s << mkattrs(c, options)
       s << '>'
       s << ERB::Util.html_escape(c.__send__(name))
