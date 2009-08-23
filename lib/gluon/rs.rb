@@ -60,6 +60,15 @@ module Gluon
       @res
     end
 
+    # usage: r.oot_script_name, @r.oot_script_name
+    #
+    # request attribute of <tt>:gluon_root_script_name</tt> is set by
+    # rack-middleware of Rack::Root.
+    #
+    def oot_script_name
+      @req.env[:gluon_root_script_name]
+    end
+
     def logger
       @req.env[:gluon_logger]
     end
@@ -86,11 +95,6 @@ module Gluon
 
     def cmap=(cmap)
       @req.env[:gluon_class_map] = cmap
-    end
-
-    # usage: r.oot_script_name, @r.oot_script_name
-    def oot_script_name
-      @req.env[:gluon_root_script_name]
     end
 
     def class2path(page_type, *path_args)
