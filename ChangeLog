@@ -1,3 +1,10 @@
+2009-08-23  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/action.rb, lib/gluon/errmap.rb, lib/gluon/fstore.rb,
+	lib/gluon/mock.rb, lib/gluon/plugin.rb, lib/gluon/renderer.rb,
+	lib/gluon/urlmap.rb: obsolete files for restructured gluon for
+	ruby19.
+
 2009-08-17  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/backend.rb: backend service for application.
