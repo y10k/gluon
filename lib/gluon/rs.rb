@@ -112,7 +112,14 @@ module Gluon
       location(class2path(page_type, *path_args))
     end
 
-    attr_accessor :backend_service
+    def backend_service
+      @req.env[:gluon_backend_service]
+    end
+
+    def backend_service=(backend_service)
+      @req.env[:gluon_backend_service] = backend_service
+    end
+
     alias svc backend_service
   end
 end
