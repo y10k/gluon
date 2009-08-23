@@ -200,31 +200,34 @@ module Gluon
         nil
       end
 
-      def apply_first_action(controller, req_params, prefix='')
+      def find_first_action(controller, req_params, prefix='')
         action_export = find_action_export(controller.class)
         for name, action_entry in action_export
           case (action_entry[:type])
           when :action, :submit
             if (req_params.key? "#{prefix}#{name}") then
-              controller.__send__(name)
-              return true
+              return controller.method(name)
             end
           when :foreach
             if (list = controller.__send__(name)) then
               list.each_with_index do |c, i|
-                apply_first_action(c, req_params, "#{prefix}#{name}(#{i}).") and return true
+                if (action = find_first_action(c, req_params, "#{prefix}#{name}(#{i}).")) then
+                  return action
+                end
               end
             end
           when :import
             if (c = controller.__send__(name)) then
-              apply_first_action(c, req_params, "#{prefix}#{name}.") and return true
+              if (action = find_first_action(c, req_params, "#{prefix}#{name}.")) then
+                return action
+              end
             end
           else
             raise "unknown action export type at `#{name}': #{action_entry[:type]}"
           end
         end
 
-        false
+        nil
       end
     end
 

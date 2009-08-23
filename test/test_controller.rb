@@ -155,7 +155,7 @@ module Gluon::Test
       assert_equal('orange', c.foo[2].bar)
     end
 
-    def test_gluon_foreach_apply_first_action
+    def test_gluon_foreach_find_first_action
       @Controller.class_eval{
         def initialize
           @foo = Array.new(3)
@@ -184,15 +184,50 @@ module Gluon::Test
       c.foo[1] = component.new
       c.foo[2] = component.new
 
-      Gluon::Controller.apply_first_action(c, {
-                                             'foo(0).bar' => nil,
-                                             'foo(1).bar' => nil,
-                                             'foo(2).bar' => nil
-                                           })
+      action = Gluon::Controller.find_first_action(c, {
+                                                     'foo(0).bar' => nil,
+                                                     'foo(1).bar' => nil,
+                                                     'foo(2).bar' => nil
+                                                   })
+      assert_equal(:bar, action.name)
+      assert_equal(c.foo[0], action.receiver)
 
+      action.call
       assert_equal(1, c.foo[0].count)
       assert_equal(0, c.foo[1].count)
       assert_equal(0, c.foo[2].count)
+    end
+
+    def test_gluon_foreach_find_first_action_not_found
+      @Controller.class_eval{
+        def initialize
+          @foo = Array.new(3)
+        end
+
+        gluon_foreach_reader :foo
+      }
+
+      component = Class.new{
+        extend Gluon::Component
+
+        def initialize
+          @count = 0
+        end
+
+        attr_reader :count
+
+        def bar
+          @count += 1
+        end
+        gluon_action :bar
+      }
+
+      c = @Controller.new
+      c.foo[0] = component.new
+      c.foo[1] = component.new
+      c.foo[2] = component.new
+
+      assert_nil(Gluon::Controller.find_first_action(c, {}))
     end
 
     def test_gluon_link
@@ -235,7 +270,7 @@ module Gluon::Test
       assert_equal(:action, entry[:foo][:type])
     end
 
-    def test_gluon_action_apply_first_action
+    def test_gluon_action_find_first_action
       @Controller.class_eval{
         def initialize
           @count = 0
@@ -249,8 +284,31 @@ module Gluon::Test
         gluon_action :foo
       }
       c = @Controller.new
-      Gluon::Controller.apply_first_action(c, { 'foo' => nil })
+
+      action = Gluon::Controller.find_first_action(c, { 'foo' => nil })
+      assert_equal(:foo, action.name)
+      assert_equal(c, action.receiver)
+
+      action.call
       assert_equal(1, c.count)
+    end
+
+    def test_gluon_action_find_first_action_not_found
+      @Controller.class_eval{
+        def initialize
+          @count = 0
+        end
+
+        attr_reader :count
+
+        def foo
+          @count += 1
+        end
+        gluon_action :foo
+      }
+      c = @Controller.new
+
+      assert_nil(Gluon::Controller.find_first_action(c, {}))
     end
 
     def test_gluon_frame
@@ -310,7 +368,7 @@ module Gluon::Test
       assert_equal('Hello world.', c.foo.bar)
     end
 
-    def test_gluon_import_apply_first_action
+    def test_gluon_import_find_first_action
       @Controller.class_eval{
         attr_writer :foo
         gluon_import_reader :foo
@@ -334,8 +392,39 @@ module Gluon::Test
       c = @Controller.new
       c.foo = component.new
 
-      Gluon::Controller.apply_first_action(c, { 'foo.bar' => nil })
+      action = Gluon::Controller.find_first_action(c, { 'foo.bar' => nil })
+      assert_equal(:bar, action.name)
+      assert_equal(c.foo, action.receiver)
+
+      action.call
       assert_equal(1, c.foo.count)
+    end
+
+    def test_gluon_import_find_first_action_not_found
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_import_reader :foo
+      }
+
+      component = Class.new{
+        extend Gluon::Component
+
+        def initialize
+          @count = 0
+        end
+
+        attr_reader :count
+
+        def bar
+          @count += 1
+        end
+        gluon_action :bar
+      }
+
+      c = @Controller.new
+      c.foo = component.new
+
+      assert_nil(Gluon::Controller.find_first_action(c, {}))
     end
 
     def test_gluon_text
@@ -417,7 +506,7 @@ module Gluon::Test
       assert_equal(:submit, action_entry[:foo][:type])
     end
 
-    def test_gluon_submit_apply_first_action
+    def test_gluon_submit_find_first_action
       @Controller.class_eval{
         def initialize
           @count = 0
@@ -431,8 +520,31 @@ module Gluon::Test
         gluon_submit :foo
       }
       c = @Controller.new
-      Gluon::Controller.apply_first_action(c, { 'foo' => nil })
+
+      action = Gluon::Controller.find_first_action(c, { 'foo' => nil })
+      assert_equal(:foo, action.name)
+      assert_equal(c, action.receiver)
+
+      action.call
       assert_equal(1, c.count)
+    end
+
+    def test_gluon_submit_find_first_action_not_found
+      @Controller.class_eval{
+        def initialize
+          @count = 0
+        end
+
+        attr_reader :count
+
+        def foo
+          @count += 1
+        end
+        gluon_submit :foo
+      }
+      c = @Controller.new
+
+      assert_nil(Gluon::Controller.find_first_action(c, {}))
     end
 
     def test_gluon_hidden

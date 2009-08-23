@@ -88,7 +88,9 @@ module Gluon
         begin
           Controller.set_form_params(c, r.equest.params)
           c.page_request(*r.path_args)
-          Controller.apply_first_action(c, r.equest.params)
+          if (action = Controller.find_first_action(c, r.equest.params)) then
+            action.call
+          end
           page_result = c.class.process_view(po)
         ensure
           c.page_end
