@@ -470,7 +470,7 @@ module Gluon
     end
 
     def page_encoding
-      Encoding.default_external
+      raise "not defined page encoding for component of `#{self}'"
     end
 
     def page_template
