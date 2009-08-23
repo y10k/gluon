@@ -16,6 +16,7 @@ module Gluon
   # for ident(1)
   CVS_ID = '$Id$'
 
+  autoload :Application, 'gluon/application'
   autoload :BackendServiceManager, 'gluon/backend'
   autoload :Builder, 'gluon/builder'
   autoload :CKView, 'gluon/ckview'
@@ -29,6 +30,7 @@ module Gluon
   autoload :NoLogger, 'gluon/rs'
   autoload :PresentationObject, 'gluon/po'
   autoload :RequestResponseContext, 'gluon/rs'
+  autoload :Root, 'gluon/application'
   autoload :Setup, 'gluon/setup'
   autoload :TemplateEngine, 'gluon/template'
   autoload :Validation, 'gluon/validation'
