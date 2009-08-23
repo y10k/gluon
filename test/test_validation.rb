@@ -181,6 +181,39 @@ module Gluon::Test
       assert_equal([ 'test error: a', 'test error: b', 'test error: c' ], @errors)
     end
 
+    def test_foreach_validate_NG_prefix
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_foreach_reader :foo
+      }
+
+      component = Class.new{
+        def initialize(bar)
+          @bar = bar
+        end
+
+        attr_accessor :bar
+      }
+
+      @c.foo = [
+        component.new(nil),
+        component.new(nil),
+        component.new(nil)
+      ]
+
+      @c.validation(@errors) do |v|
+        v.foreach :foo do |v|
+          v.nonnil :bar
+        end
+      end
+
+      assert_equal(false, @r.validation)
+      assert_equal([ "`foo(0).bar' should not be nil.",
+                     "`foo(1).bar' should not be nil.",
+                     "`foo(2).bar' should not be nil."
+                   ], @errors)
+    end
+
     def test_import_validate_OK
       @Controller.class_eval{
         attr_writer :foo
@@ -219,6 +252,31 @@ module Gluon::Test
 
       assert_equal(false, @r.validation)
       assert_equal([ 'test error.' ], @errors)
+    end
+
+    def test_import_validate_NG_prefix
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_import_reader :foo
+      }
+
+      component = Class.new{
+        def initialize(bar)
+          @bar = bar
+        end
+
+        attr_accessor :bar
+      }
+      @c.foo = component.new(nil)
+
+      @c.validation(@errors) do |v|
+        v.import :foo do |v|
+          v.nonnil :bar
+        end
+      end
+
+      assert_equal(false, @r.validation)
+      assert_equal([ "`foo.bar' should not be nil." ], @errors)
     end
 
     def test_nonnil_OK

@@ -36,12 +36,17 @@ module Gluon
       @fail_count == 0
     end
 
+    def prefix(name)
+      "#{@prefix}#{name}"
+    end
+    private :prefix
+
     def foreach(name)
       if (form_entry = @form_export[name]) then
         if (:foreach == form_entry[:type]) then
           if (list = @c.__send__(name)) then
             list.each_with_index do |c, i|
-              v = Validator.new(c, @errors, "#{@prefix}#{name}(#{i}).")
+              v = Validator.new(c, @errors, "#{prefix(name)}(#{i}).")
               yield(v)
               unless (v.validated?) then
                 @fail_count += 1
@@ -62,7 +67,7 @@ module Gluon
       if (form_entry = @form_export[name]) then
         if (:import == form_entry[:type]) then
           if (c = @c.__send__(name)) then
-            v = Validator.new(c, @errors, "#{@prefix}#{name}.")
+            v = Validator.new(c, @errors, "#{prefix(name)}.")
             yield(v)
             unless (v.validated?) then
               @fail_count += 1
@@ -79,7 +84,7 @@ module Gluon
     end
 
     def nonnil(name, options={})
-      error_message = options[:error] || "`#{@prefix}#{name}' should not be nil."
+      error_message = options[:error] || "`#{prefix(name)}' should not be nil."
       value = @c.__send__(name)
       validate error_message do
         ! value.nil?
@@ -89,7 +94,7 @@ module Gluon
     end
 
     def not_empty(name, options={})
-      error_message = options[:error] || "`#{@prefix}#{name}' should not be empty."
+      error_message = options[:error] || "`#{prefix(name)}' should not be empty."
       value = @c.__send__(name)
       validate error_message do
         (! value.nil?) && (! value.empty?)
@@ -99,7 +104,7 @@ module Gluon
     end
 
     def not_blank(name, options={})
-      error_message = options[:error] || "`#{@prefix}#{name}' should not be blank."
+      error_message = options[:error] || "`#{prefix(name)}' should not be blank."
       value = @c.__send__(name)
       validate error_message do
         (! value.nil?) && (! value.strip.empty?)
@@ -110,7 +115,7 @@ module Gluon
 
     def encoding(name, options={})
       expected_encoding = options[:expected_encoding] || @c.class.page_encoding
-      error_message = options[:error] || "encoding of `#{@prefix}#{name}' is not #{expected_encoding}."
+      error_message = options[:error] || "encoding of `#{prefix(name)}' is not #{expected_encoding}."
       value = @c.__send__(name)
       validate error_message do
         unless (value.nil?) then
@@ -125,7 +130,7 @@ module Gluon
     end
 
     def match(name, regexp, options={})
-      error_message = options[:error] || "`#{@prefix}#{name}' should do match to #{regexp}."
+      error_message = options[:error] || "`#{prefix(name)}' should do match to #{regexp}."
       value = @c.__send__(name)
       validate error_message do
         (! value.nil?) && (value.is_a? String) && (value =~ regexp)
@@ -135,7 +140,7 @@ module Gluon
     end
 
     def not_match(name, regexp, options={})
-      error_message = options[:error] || "`#{@prefix}#{name}' should not do match to #{regexp}."
+      error_message = options[:error] || "`#{prefix(name)}' should not do match to #{regexp}."
       value = @c.__send__(name)
       validate error_message do
         (! value.nil?) && (value.is_a? String) && (value !~ regexp)
