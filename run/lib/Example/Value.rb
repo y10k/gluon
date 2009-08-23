@@ -1,4 +1,4 @@
-# -*- codint: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 class Example
   class Value
