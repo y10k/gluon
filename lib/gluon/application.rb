@@ -86,10 +86,17 @@ module Gluon
       c.page_around{
         c.page_start
         begin
+          c.page_validation_preprocess
           Controller.set_form_params(c, r.equest.params)
           c.page_request(*r.path_args)
           if (action = Controller.find_first_action(c, r.equest.params)) then
-            action.call
+            if (r.validation) then
+              action.call
+            else
+              if (r.validation.nil?) then
+                raise "not validated page of `#{c}'"
+              end
+            end
           end
           page_result = c.class.process_view(po)
         ensure

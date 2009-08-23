@@ -240,6 +240,10 @@ module Gluon
     def page_start
     end
 
+    def page_validation_preprocess
+      @r.validation = true
+    end
+
     def page_request(*path_args)
       if (@r.equest.get?) then
         request_GET(*path_args)

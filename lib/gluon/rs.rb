@@ -93,6 +93,14 @@ module Gluon
       @req.env[:gluon_path_args] = path_args
     end
 
+    def validation
+      @req.env[:gluon_validation]
+    end
+
+    def validation=(validation)
+      @req.env[:gluon_validation] = validation
+    end
+
     def cmap=(cmap)
       @req.env[:gluon_class_map] = cmap
     end
