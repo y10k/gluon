@@ -18,6 +18,11 @@ class Example
         @view_path = view_path
       end
 
+      def example_type
+        @example_type.name
+      end
+      gluon_value :example_type
+
       def filename
         File.basename(@view_path)
       end

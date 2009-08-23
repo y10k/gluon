@@ -7,7 +7,7 @@
 <% gluon :header_footer do %>
   <h1>view of <% gluon :title %> example</h1>
   <% gluon :view_code_list do %>
-    <p>view filename is `<code><% gluon :filename %></code>'.</p>
+    <p>view filename is `<code><% gluon :filename %></code>' for <% gluon :example_type %> class.</p>
     <pre><% gluon :view_code %></pre>
     <hr />
   <% end %>
