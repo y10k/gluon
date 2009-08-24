@@ -14,17 +14,17 @@ class Example
       'backend service'
     end
 
+    def title
+      self.class.description
+    end
+    gluon_value :title
+
     def page_around
+      read_only = ! @r.equest.post?
       @bbs_db = @r.svc.bbs_db
-      if (@r.equest.post?) then
-        @bbs_db.transaction do
-          yield
-        end
-      else
-        @bbs_db.transaction(true) do
-          yield
-        end
-      end
+      @bbs_db.transaction(read_only) {
+        yield
+      }
     end
 
     def page_start
@@ -49,11 +49,6 @@ class Example
 
     gluon_import_reader :errors
     gluon_import_reader :header_footer
-
-    def title
-      self.class.description
-    end
-    gluon_value :title
 
     gluon_textarea_accessor :comment,
       :attrs => { 'id' => 'comment', 'cols' => 80, 'rows' => 8 }
