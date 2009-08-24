@@ -12,22 +12,22 @@
   <% gluon :errors %>
 
   <form target="main" method="post">
-  <% gluon :one_time_token %>
-  <p>
-    <label for="comment">Comment:</label><br />
-    <% gluon :comment %>
-  </p>
-  <p>
-    <label for="name">Name:</label> <% gluon :name %>
-    <% gluon :post_comment %>
-    <% gluon :clear_on_post %><label for="clear-on-post">clear comment on post.</label>
-  </p>
+    <% gluon :one_time_token %>
+    <p>
+      <label for="comment">Comment:</label><br />
+      <% gluon :comment %>
+    </p>
+    <p>
+      <label for="name">Name:</label> <% gluon :name %>
+      <% gluon :post_comment %>
+      <% gluon :clear_on_post %><label for="clear-on-post">clear comment on post.</label>
+    </p>
   </form>
 
   <% gluon :posted_comments do %>
     <hr />
     <p><% gluon :timestamp %> <% gluon :posted_name %></p>
-     <pre><% gluon :posted_comment %></pre>
+    <pre><% gluon :posted_comment %></pre>
   <% end %>
 
   <hr />
