@@ -12,6 +12,7 @@
   <% gluon :errors %>
 
   <form target="main" method="post">
+  <% gluon :one_time_token %>
   <p>
     <label for="comment">Comment:</label><br />
     <% gluon :comment %>

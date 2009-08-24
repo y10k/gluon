@@ -29,10 +29,11 @@ class Example
 
     def page_start
       @header_footer = HeaderFooter.new(@r, self.class)
+      @errors = Gluon::Web::ErrorMessages.new(:head_level => 3)
+      @one_time_token = Gluon::Web::OneTimeToken.new(@r)
       @comment = nil
       @name = nil
       @clear_on_post = true
-      @errors = Gluon::Web::ErrorMessages.new(:head_level => 3)
     end
 
     def request_GET
@@ -40,6 +41,7 @@ class Example
 
     def request_POST
       validation(@errors) do |v|
+        v.one_time_token
         v.encoding :comment
         v.not_blank :comment
         v.encoding :name
@@ -47,8 +49,13 @@ class Example
       end
     end
 
-    gluon_import_reader :errors
+    def page_end
+      @one_time_token.next_token
+    end
+
     gluon_import_reader :header_footer
+    gluon_import_reader :errors
+    gluon_import_reader :one_time_token
 
     gluon_textarea_accessor :comment,
       :attrs => { 'id' => 'comment', 'cols' => 80, 'rows' => 8 }
