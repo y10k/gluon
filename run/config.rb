@@ -1,8 +1,8 @@
 # gluon configuration
 
-# for debug
-use Rack::ShowExceptions
-use Rack::Reloader
+use Rack::ShowExceptions        # for debug
+use Rack::Reloader              # for debug
+use Rack::Session::Cookie, :secret => 'change_me'
 
 require 'Example'
 require 'Welcom'
@@ -29,6 +29,10 @@ end
 
 map '/example/view_panel' do |entry|
   entry.mount Example::ViewPanel
+end
+
+map '/example/ex_panel/OneTimeToken' do |entry|
+  entry.mount Example::OneTimeToken
 end
 
 map '/example/ex_panel/BackendService' do |entry|
