@@ -7,6 +7,8 @@
 <% gluon :header_footer do %>
   <h1><% gluon :title %> example</h1>
 
+  <p>This form is guarded by defense of form reload.</p>
+
   <% gluon :errors %>
   <form target="main" method="post">
     <% gluon :one_time_token %>
