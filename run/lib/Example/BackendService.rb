@@ -42,9 +42,8 @@ class Example
     def request_POST
       validation(@errors) do |v|
         v.one_time_token
-        v.encoding :comment
+        v.encoding_everything
         v.not_blank :comment
-        v.encoding :name
         v.not_blank :name
       end
     end
