@@ -118,11 +118,11 @@ module Gluon
       error_message = options[:error] || "encoding of `#{prefix(name)}' is not #{expected_encoding}."
       value = @c.__send__(name)
       validate error_message do
-        unless (value.nil?) then
+        if (value) then
           value.force_encoding(expected_encoding)
           value.valid_encoding?
         else
-          false
+          true                  # ignored nil.
         end
       end
 

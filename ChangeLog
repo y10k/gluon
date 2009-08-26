@@ -1,3 +1,7 @@
+2009-08-27  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/validation.rb: ignored nil at encoding validation.
+
 2009-08-25  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/web/token.rb: one time token for defense of form

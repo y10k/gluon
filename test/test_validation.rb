@@ -526,7 +526,7 @@ module Gluon::Test
       assert_equal(Encoding::EUC_JP, @c.foo.encoding)
     end
 
-    def test_encoding_NG_nil
+    def test_encoding_ignored_nil
       @Controller.class_eval{
         attr_accessor :foo
       }
@@ -536,8 +536,8 @@ module Gluon::Test
         v.encoding :foo
       end
 
-      assert_equal(false, @r.validation)
-      assert_equal([ "encoding of `foo' is not UTF-8." ], @errors)
+      assert_equal(true, @r.validation)
+      assert_equal([], @errors)
     end
 
     def test_match_OK
