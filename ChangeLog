@@ -1,6 +1,7 @@
 2009-08-27  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/validation.rb: ignored nil at encoding validation.
+	encoding validation for list value.
 
 2009-08-25  TOKI Yoshinori  <toki@freedom.ne.jp>
 

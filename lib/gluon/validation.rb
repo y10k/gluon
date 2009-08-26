@@ -119,8 +119,17 @@ module Gluon
       value = @c.__send__(name)
       validate error_message do
         if (value) then
-          value.force_encoding(expected_encoding)
-          value.valid_encoding?
+          if (value.is_a? Array) then
+            fail_count = 0
+            for v in value
+              v.force_encoding(expected_encoding)
+              v.valid_encoding? or fail_count += 1
+            end
+            fail_count == 0
+          else
+            value.force_encoding(expected_encoding)
+            value.valid_encoding?
+          end
         else
           true                  # ignored nil.
         end
