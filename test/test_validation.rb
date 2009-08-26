@@ -584,6 +584,182 @@ module Gluon::Test
       assert_equal([], @errors)
     end
 
+    def test_encoding_everything_OK
+      @Controller.class_eval{
+        gluon_text_accessor :alpha
+        gluon_passwd_accessor :beta
+        gluon_hidden_accessor :gamma
+        gluon_textarea_accessor :delta
+        gluon_checkbox_accessor :epsilon
+        gluon_radio_group_accessor :zeta, %w[ イ ロ ハ ]
+        gluon_select_accessor :eta, %w[ ホ ヘ ト ]
+
+        attr_writer :foo
+        gluon_foreach_reader :foo
+
+        attr_writer :bar
+        gluon_import_reader :bar
+      }
+
+      compo_foo = Class.new{
+        extend Gluon::Component
+
+        def initialize(value)
+          @theta = value
+        end
+
+        gluon_text_accessor :theta
+      }
+
+      compo_bar = Class.new{
+        extend Gluon::Component
+
+        def self.page_encoding
+          __ENCODING__
+        end
+
+        def initialize(value)
+          @iota = value
+        end
+
+        gluon_text_accessor :iota
+      }
+
+      @c.alpha = 'あ'.force_encoding(Encoding::ASCII_8BIT)
+      @c.beta = 'い'.force_encoding(Encoding::ASCII_8BIT)
+      @c.gamma = 'う'.force_encoding(Encoding::ASCII_8BIT)
+      @c.delta = 'え'.force_encoding(Encoding::ASCII_8BIT)
+      @c.epsilon = true
+      @c.zeta = 'イ'.force_encoding(Encoding::ASCII_8BIT)
+      @c.eta = 'ヘ'.force_encoding(Encoding::ASCII_8BIT)
+      @c.foo = [
+        compo_foo.new('か'.force_encoding(Encoding::ASCII_8BIT)),
+        compo_foo.new('き'.force_encoding(Encoding::ASCII_8BIT)),
+        compo_foo.new('く'.force_encoding(Encoding::ASCII_8BIT))
+      ]
+      @c.bar = compo_bar.new('け'.force_encoding(Encoding::ASCII_8BIT))
+
+      @c.validation(@errors) do |v|
+        v.encoding_everything
+      end
+
+      assert_equal(true, @r.validation)
+      assert_equal([], @errors)
+
+      assert_equal(Encoding::UTF_8, @c.alpha.encoding)
+      assert_equal(Encoding::UTF_8, @c.beta.encoding)
+      assert_equal(Encoding::UTF_8, @c.gamma.encoding)
+      assert_equal(Encoding::UTF_8, @c.delta.encoding)
+      assert_equal(Encoding::UTF_8, @c.zeta.encoding)
+      assert_equal(Encoding::UTF_8, @c.eta.encoding)
+      assert_equal(Encoding::UTF_8, @c.foo[0].theta.encoding)
+      assert_equal(Encoding::UTF_8, @c.foo[1].theta.encoding)
+      assert_equal(Encoding::UTF_8, @c.foo[2].theta.encoding)
+      assert_equal(Encoding::UTF_8, @c.bar.iota.encoding)
+
+      assert_equal('あ', @c.alpha)
+      assert_equal('い', @c.beta)
+      assert_equal('う', @c.gamma)
+      assert_equal('え', @c.delta)
+      assert_equal('イ', @c.zeta)
+      assert_equal('ヘ', @c.eta)
+      assert_equal('か', @c.foo[0].theta)
+      assert_equal('き', @c.foo[1].theta)
+      assert_equal('く', @c.foo[2].theta)
+      assert_equal('け', @c.bar.iota)
+
+      assert_equal(true, @c.epsilon, 'should be ignored by encoding validation.')
+    end
+
+    def test_encoding_everything_NG
+      @Controller.class_eval{
+        gluon_text_accessor :alpha
+        gluon_passwd_accessor :beta
+        gluon_hidden_accessor :gamma
+        gluon_textarea_accessor :delta
+        gluon_checkbox_accessor :epsilon
+        gluon_radio_group_accessor :zeta, %w[ イ ロ ハ ]
+        gluon_select_accessor :eta, %w[ ホ ヘ ト ]
+
+        attr_writer :foo
+        gluon_foreach_reader :foo
+
+        attr_writer :bar
+        gluon_import_reader :bar
+      }
+
+      compo_foo = Class.new{
+        extend Gluon::Component
+
+        def initialize(value)
+          @theta = value
+        end
+
+        gluon_text_accessor :theta
+      }
+
+      compo_bar = Class.new{
+        extend Gluon::Component
+
+        def self.page_encoding
+          __ENCODING__
+        end
+
+        def initialize(value)
+          @iota = value
+        end
+
+        gluon_text_accessor :iota
+      }
+
+      @c.alpha = 'あ'.force_encoding(Encoding::ASCII_8BIT)
+      @c.beta = 'い'.force_encoding(Encoding::ASCII_8BIT)
+      @c.gamma = 'う'.encode(Encoding::EUC_JP).force_encoding(Encoding::ASCII_8BIT)
+      @c.delta = 'え'.force_encoding(Encoding::ASCII_8BIT)
+      @c.epsilon = true
+      @c.zeta = 'イ'.force_encoding(Encoding::ASCII_8BIT)
+      @c.eta = 'ヘ'.force_encoding(Encoding::ASCII_8BIT)
+      @c.foo = [
+        compo_foo.new('か'.force_encoding(Encoding::ASCII_8BIT)),
+        compo_foo.new('き'.encode(Encoding::EUC_JP).force_encoding(Encoding::ASCII_8BIT)),
+        compo_foo.new('く'.force_encoding(Encoding::ASCII_8BIT))
+      ]
+      @c.bar = compo_bar.new('け'.force_encoding(Encoding::ASCII_8BIT))
+
+      @c.validation(@errors) do |v|
+        v.encoding_everything
+      end
+
+      assert_equal(false, @r.validation)
+      assert_equal([ "encoding of `gamma' is not UTF-8.",
+                     "encoding of `foo(1).theta' is not UTF-8."
+                   ], @errors)
+
+      assert_equal(Encoding::UTF_8, @c.alpha.encoding)
+      assert_equal(Encoding::UTF_8, @c.beta.encoding)
+      assert_equal(Encoding::UTF_8, @c.gamma.encoding)
+      assert_equal(Encoding::UTF_8, @c.delta.encoding)
+      assert_equal(Encoding::UTF_8, @c.zeta.encoding)
+      assert_equal(Encoding::UTF_8, @c.eta.encoding)
+      assert_equal(Encoding::UTF_8, @c.foo[0].theta.encoding)
+      assert_equal(Encoding::UTF_8, @c.foo[1].theta.encoding)
+      assert_equal(Encoding::UTF_8, @c.foo[2].theta.encoding)
+      assert_equal(Encoding::UTF_8, @c.bar.iota.encoding)
+
+      assert_equal('あ', @c.alpha)
+      assert_equal('い', @c.beta)
+      assert_not_equal('う', @c.gamma)
+      assert_equal('え', @c.delta)
+      assert_equal('イ', @c.zeta)
+      assert_equal('ヘ', @c.eta)
+      assert_equal('か', @c.foo[0].theta)
+      assert_not_equal('き', @c.foo[1].theta)
+      assert_equal('く', @c.foo[2].theta)
+      assert_equal('け', @c.bar.iota)
+
+      assert_equal(true, @c.epsilon, 'should be ignored by encoding validation.')
+    end
+
     def test_match_OK
       @Controller.class_eval{
         attr_accessor :foo

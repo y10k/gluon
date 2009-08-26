@@ -138,6 +138,34 @@ module Gluon
       self
     end
 
+    def encoding_everything(options={})
+      for name, form_entry in @form_export
+        case (form_entry[:type])
+        when :foreach
+          if (options.key? :expected_encoding) then
+            opts = options
+          else
+            opts = options.merge(:expected_encoding => @c.class.page_encoding)
+          end
+          foreach name do |v|
+            v.encoding_everything(opts)
+          end
+        when :import
+          import name do |v|
+            v.encoding_everything(options)
+          end
+        when :text, :passwd, :hidden, :textarea, :radio_group, :select
+          encoding(name, options)
+        when :checkbox
+          # ignored not-string values.
+        else
+          raise "unknown form export type at `#{name}': #{form_entry[:type]}"
+        end
+      end
+
+      self
+    end
+
     def match(name, regexp, options={})
       error_message = options[:error] || "`#{prefix(name)}' should do match to #{regexp}."
       value = @c.__send__(name)
