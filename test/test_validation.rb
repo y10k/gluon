@@ -496,6 +496,38 @@ module Gluon::Test
       assert_equal('あいうえお', @c.foo)
     end
 
+    def test_encoding_NG
+      @Controller.class_eval{
+        attr_accessor :foo
+      }
+      @c.foo = 'あいうえお'.force_encoding(Encoding::ASCII_8BIT)
+
+      @c.validation(@errors) do |v|
+        v.encoding :foo, :expected_encoding => Encoding::EUC_JP
+      end
+
+      assert_equal(false, @r.validation)
+      assert_equal([ "encoding of `foo' is not EUC-JP." ], @errors)
+      assert_equal(Encoding::EUC_JP, @c.foo.encoding)
+      assert_not_equal('あいうえお'.encode(Encoding::EUC_JP), @c.foo)
+    end
+
+    def test_encoding_NG_error_message
+      @Controller.class_eval{
+        attr_accessor :foo
+      }
+      @c.foo = 'あいうえお'.force_encoding(Encoding::ASCII_8BIT)
+
+      @c.validation(@errors) do |v|
+        v.encoding :foo, :expected_encoding => Encoding::EUC_JP, :error => 'foo is NG.'
+      end
+
+      assert_equal(false, @r.validation)
+      assert_equal([ 'foo is NG.' ], @errors)
+      assert_equal(Encoding::EUC_JP, @c.foo.encoding)
+      assert_not_equal('あいうえお'.encode(Encoding::EUC_JP), @c.foo)
+    end
+
     def test_encoding_OK_list
       @Controller.class_eval{
         attr_accessor :foo
@@ -517,22 +549,6 @@ module Gluon::Test
       assert_equal('かきくけこ', @c.foo[1])
     end
 
-    def test_encoding_NG
-      @Controller.class_eval{
-        attr_accessor :foo
-      }
-      @c.foo = 'あいうえお'.force_encoding(Encoding::ASCII_8BIT)
-
-      @c.validation(@errors) do |v|
-        v.encoding :foo, :expected_encoding => Encoding::EUC_JP
-      end
-
-      assert_equal(false, @r.validation)
-      assert_equal([ "encoding of `foo' is not EUC-JP." ], @errors)
-      assert_equal(Encoding::EUC_JP, @c.foo.encoding)
-      assert_not_equal('あいうえお'.encode(Encoding::EUC_JP), @c.foo)
-    end
-
     def test_encoding_NG_list
       @Controller.class_eval{
         attr_accessor :foo
@@ -552,22 +568,6 @@ module Gluon::Test
       assert_not_equal('あいうえお'.encode(Encoding::EUC_JP), @c.foo[0])
       assert_equal(Encoding::EUC_JP, @c.foo[1].encoding)
       assert_equal('かきくけこ'.encode(Encoding::EUC_JP), @c.foo[1])
-    end
-
-    def test_encoding_NG_error_message
-      @Controller.class_eval{
-        attr_accessor :foo
-      }
-      @c.foo = 'あいうえお'.force_encoding(Encoding::ASCII_8BIT)
-
-      @c.validation(@errors) do |v|
-        v.encoding :foo, :expected_encoding => Encoding::EUC_JP, :error => 'foo is NG.'
-      end
-
-      assert_equal(false, @r.validation)
-      assert_equal([ 'foo is NG.' ], @errors)
-      assert_equal(Encoding::EUC_JP, @c.foo.encoding)
-      assert_not_equal('あいうえお'.encode(Encoding::EUC_JP), @c.foo)
     end
 
     def test_encoding_ignored_nil
