@@ -1,5 +1,8 @@
 2009-08-28  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/ckview.rb, lib/gluon/htmlview.rb: obsolete files for
+	restructured gluon for ruby19.
+
 	* lib/gluon/validation.rb: default of encoding-validation is root
 	controller's page-encoding.
 
