@@ -584,6 +584,128 @@ module Gluon::Test
       assert_equal([], @errors)
     end
 
+    def test_encoding_foreach_OK
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_foreach_reader :foo
+      }
+
+      component = Class.new{
+        def initialize(value)
+          @bar = value
+        end
+
+        attr_reader :bar
+      }
+
+      @c.foo = [
+        component.new('あ'.force_encoding(Encoding::ASCII_8BIT)),
+        component.new('い'.force_encoding(Encoding::ASCII_8BIT)),
+        component.new('う'.force_encoding(Encoding::ASCII_8BIT))
+      ]
+
+      @c.validation(@errors) do |v|
+        v.foreach :foo do |v|
+          v.encoding :bar
+        end
+      end
+
+      assert_equal(true, @r.validation)
+      assert_equal([], @errors)
+      assert_equal(Encoding::UTF_8, @c.foo[0].bar.encoding)
+      assert_equal(Encoding::UTF_8, @c.foo[1].bar.encoding)
+      assert_equal(Encoding::UTF_8, @c.foo[2].bar.encoding)
+      assert_equal('あ', @c.foo[0].bar)
+      assert_equal('い', @c.foo[1].bar)
+      assert_equal('う', @c.foo[2].bar)
+    end
+
+    def test_encoding_foreach_NG
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_foreach_reader :foo
+      }
+
+      component = Class.new{
+        def initialize(value)
+          @bar = value
+        end
+
+        attr_reader :bar
+      }
+
+      @c.foo = [
+        component.new('あ'.force_encoding(Encoding::ASCII_8BIT)),
+        component.new('い'.encode(Encoding::EUC_JP).force_encoding(Encoding::ASCII_8BIT)),
+        component.new('う'.force_encoding(Encoding::ASCII_8BIT))
+      ]
+
+      @c.validation(@errors) do |v|
+        v.foreach :foo do |v|
+          v.encoding :bar
+        end
+      end
+
+      assert_equal(false, @r.validation)
+      assert_equal([ "encoding of `foo(1).bar' is not UTF-8." ], @errors)
+    end
+
+    def test_encoding_import_OK
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_import_reader :foo
+      }
+
+      component = Class.new{
+        def initialize(value)
+          @bar = value
+        end
+
+        attr_reader :bar
+      }
+
+      @c.foo = component.new('あいうえお'.force_encoding(Encoding::ASCII_8BIT))
+
+      @c.validation(@errors) do |v|
+        v.import :foo do |v|
+          v.encoding :bar
+        end
+      end
+
+      assert_equal(true, @r.validation)
+      assert_equal([], @errors)
+      assert_equal(Encoding::UTF_8, @c.foo.bar.encoding)
+      assert_equal('あいうえお', @c.foo.bar)
+    end
+
+    def test_encoding_import_NG
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_import_reader :foo
+      }
+
+      component = Class.new{
+        def initialize(value)
+          @bar = value
+        end
+
+        attr_reader :bar
+      }
+
+      @c.foo = component.new('あいうえお'
+                             .encode(Encoding::EUC_JP)
+                             .force_encoding(Encoding::ASCII_8BIT))
+
+      @c.validation(@errors) do |v|
+        v.import :foo do |v|
+          v.encoding :bar
+        end
+      end
+
+      assert_equal(false, @r.validation)
+      assert_equal([ "encoding of `foo.bar' is not UTF-8." ], @errors)
+    end
+
     def test_encoding_everything_OK
       @Controller.class_eval{
         gluon_text_accessor :alpha
@@ -613,10 +735,6 @@ module Gluon::Test
 
       compo_bar = Class.new{
         extend Gluon::Component
-
-        def self.page_encoding
-          __ENCODING__
-        end
 
         def initialize(value)
           @iota = value
@@ -700,10 +818,6 @@ module Gluon::Test
 
       compo_bar = Class.new{
         extend Gluon::Component
-
-        def self.page_encoding
-          __ENCODING__
-        end
 
         def initialize(value)
           @iota = value

@@ -11,8 +11,9 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    def initialize(controller, errors, prefix='')
+    def initialize(controller, page_encoding, errors, prefix='')
       @c = controller
+      @page_encoding = page_encoding
       @errors = errors
       @prefix = prefix
       @fail_count = 0
@@ -46,7 +47,7 @@ module Gluon
         if (:foreach == form_entry[:type]) then
           if (list = @c.__send__(name)) then
             list.each_with_index do |c, i|
-              v = Validator.new(c, @errors, "#{prefix(name)}(#{i}).")
+              v = Validator.new(c, @page_encoding, @errors, "#{prefix(name)}(#{i}).")
               yield(v)
               unless (v.validated?) then
                 @fail_count += 1
@@ -67,7 +68,7 @@ module Gluon
       if (form_entry = @form_export[name]) then
         if (:import == form_entry[:type]) then
           if (c = @c.__send__(name)) then
-            v = Validator.new(c, @errors, "#{prefix(name)}.")
+            v = Validator.new(c, @page_encoding, @errors, "#{prefix(name)}.")
             yield(v)
             unless (v.validated?) then
               @fail_count += 1
@@ -114,7 +115,7 @@ module Gluon
     end
 
     def encoding(name, options={})
-      expected_encoding = options[:expected_encoding] || @c.class.page_encoding
+      expected_encoding = options[:expected_encoding] || @page_encoding
       error_message = options[:error] || "encoding of `#{prefix(name)}' is not #{expected_encoding}."
       value = @c.__send__(name)
       validate error_message do
@@ -142,13 +143,8 @@ module Gluon
       for name, form_entry in @form_export
         case (form_entry[:type])
         when :foreach
-          if (options.key? :expected_encoding) then
-            opts = options
-          else
-            opts = options.merge(:expected_encoding => @c.class.page_encoding)
-          end
           foreach name do |v|
-            v.encoding_everything(opts)
+            v.encoding_everything(options)
           end
         when :import
           import name do |v|
@@ -202,7 +198,7 @@ module Gluon
     end
 
     def validation(errors)
-      v = Validator.new(self, errors, '')
+      v = Validator.new(self, self.class.page_encoding, errors, '')
       yield(v)
 
       if (@r.validation.nil?) then
