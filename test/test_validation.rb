@@ -508,8 +508,6 @@ module Gluon::Test
 
       assert_equal(false, @r.validation)
       assert_equal([ "encoding of `foo' is not EUC-JP." ], @errors)
-      assert_equal(Encoding::EUC_JP, @c.foo.encoding)
-      assert_not_equal('あいうえお'.encode(Encoding::EUC_JP), @c.foo)
     end
 
     def test_encoding_NG_error_message
@@ -524,8 +522,6 @@ module Gluon::Test
 
       assert_equal(false, @r.validation)
       assert_equal([ 'foo is NG.' ], @errors)
-      assert_equal(Encoding::EUC_JP, @c.foo.encoding)
-      assert_not_equal('あいうえお'.encode(Encoding::EUC_JP), @c.foo)
     end
 
     def test_encoding_OK_list
@@ -564,10 +560,6 @@ module Gluon::Test
 
       assert_equal(false, @r.validation)
       assert_equal([ "encoding of `foo' is not EUC-JP." ], @errors)
-      assert_equal(Encoding::EUC_JP, @c.foo[0].encoding)
-      assert_not_equal('あいうえお'.encode(Encoding::EUC_JP), @c.foo[0])
-      assert_equal(Encoding::EUC_JP, @c.foo[1].encoding)
-      assert_equal('かきくけこ'.encode(Encoding::EUC_JP), @c.foo[1])
     end
 
     def test_encoding_ignored_nil
@@ -848,30 +840,6 @@ module Gluon::Test
       assert_equal([ "encoding of `gamma' is not UTF-8.",
                      "encoding of `foo(1).theta' is not UTF-8."
                    ], @errors)
-
-      assert_equal(Encoding::UTF_8, @c.alpha.encoding)
-      assert_equal(Encoding::UTF_8, @c.beta.encoding)
-      assert_equal(Encoding::UTF_8, @c.gamma.encoding)
-      assert_equal(Encoding::UTF_8, @c.delta.encoding)
-      assert_equal(Encoding::UTF_8, @c.zeta.encoding)
-      assert_equal(Encoding::UTF_8, @c.eta.encoding)
-      assert_equal(Encoding::UTF_8, @c.foo[0].theta.encoding)
-      assert_equal(Encoding::UTF_8, @c.foo[1].theta.encoding)
-      assert_equal(Encoding::UTF_8, @c.foo[2].theta.encoding)
-      assert_equal(Encoding::UTF_8, @c.bar.iota.encoding)
-
-      assert_equal('あ', @c.alpha)
-      assert_equal('い', @c.beta)
-      assert_not_equal('う', @c.gamma)
-      assert_equal('え', @c.delta)
-      assert_equal('イ', @c.zeta)
-      assert_equal('ヘ', @c.eta)
-      assert_equal('か', @c.foo[0].theta)
-      assert_not_equal('き', @c.foo[1].theta)
-      assert_equal('く', @c.foo[2].theta)
-      assert_equal('け', @c.bar.iota)
-
-      assert_equal(true, @c.epsilon, 'should be ignored by encoding validation.')
     end
 
     def test_match_OK
