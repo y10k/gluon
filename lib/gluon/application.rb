@@ -15,6 +15,11 @@ module Gluon
       @app = app
     end
 
+    # for debug
+    def inner
+      @app
+    end
+
     def call(env)
       env[:gluon_root_script_name] = env['SCRIPT_NAME']
       @app.call(env)

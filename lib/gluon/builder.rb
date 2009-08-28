@@ -145,9 +145,9 @@ module Gluon
     private :dsl_binding
 
     def eval_conf(expr, *args)
-      eval(expr, dsl_binding, *args)
+      r = eval(expr, dsl_binding, *args)
       @service_man.setup
-      nil
+      r                         # eval-result for debug.
     end
 
     def load_conf

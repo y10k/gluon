@@ -1,7 +1,6 @@
 #!/usr/local/bin/ruby
+# -*- coding: utf-8 -*-
 
-require 'digest'
-require 'fileutils'
 require 'gluon'
 require 'test/unit'
 
@@ -12,210 +11,120 @@ module Gluon::Test
 
     def setup
       @base_dir = File.dirname(__FILE__)
+      @lib_dir = File.join(@base_dir, 'lib')
       @view_dir = File.join(@base_dir, 'view')
-      @conf_path = File.join(@base_dir, 'config_test.rb')
-      @builder = Gluon::Builder.new(:base_dir => @base_dir,
-                                    :view_dir => @view_dir,
-                                    :conf_path => @conf_path)
-    end
-
-    def teardown
-      FileUtils.rm_f('access.log')
-      FileUtils.rm_f('gluon.log')
+      @config_rb = File.join(@base_dir, 'config.rb')
+      @builder = Gluon::Builder.new(@base_dir)
     end
 
     def test_attributes
       assert_equal(@base_dir, @builder.base_dir)
+      assert_equal(@lib_dir, @builder.lib_dir)
       assert_equal(@view_dir, @builder.view_dir)
-      assert_equal(@conf_path, @builder.conf_path)
-      assert_equal({}, @builder.session_conf.options)
+      assert_equal(@config_rb, @builder.config_rb)
     end
 
-    def test_config_access_log
-      @builder.eval_conf %q{
-        access_log 'foo.log'
-      }
-      assert_equal('foo.log', @builder.access_log)
+    def test_DSL_attributes_base_dir
+      assert_equal(@base_dir, @builder.eval_conf('base_dir'))
     end
 
-    def test_config_port
-      @builder.eval_conf %q{
-        port 80
-      }
-      assert_equal(80, @builder.port)
+    def test_DSL_attributes_lib_dir
+      assert_equal(@lib_dir, @builder.eval_conf('lib_dir'))
     end
 
-    def test_config_page_cache
-      @builder.eval_conf %q{
-        page_cache true
-      }
-      assert_equal(true, @builder.page_cache)
+    def test_DSL_attributes_view_dir
+      assert_equal(@view_dir, @builder.eval_conf('view_dir'))
     end
 
-    def test_config_default_handler
-      @builder.eval_conf %q{
-        default_handler Gluon::Web::NotFoundErrorPage
-      }
-      assert_equal(Gluon::Web::NotFoundErrorPage, @builder.default_handler)
+    def test_DSL_attributes_config_rb
+      assert_equal(@config_rb, @builder.eval_conf('config_rb'))
     end
 
     class Foo
+      include Gluon::Controller
     end
 
-    def test_config_mount
+    def test_to_app
       @builder.eval_conf %Q{
-        mount #{Foo}, '/foo'
+        map '/' do |entry|
+          entry.mount #{Foo}
+        end
       }
-      assert_equal(Foo, @builder.find('/foo'))
+      app = @builder.to_app
+      assert_instance_of(Gluon::Root, app)
+      assert_instance_of(Rack::URLMap, app.inner)
     end
 
-    def test_config_initial_plugin
-      @builder.eval_conf %q{
-        initial do
-          plugin :_foo => 'foo plugin'
-          plugin :_bar do
-            'bar plugin'
+    def test_use
+      @builder.eval_conf %Q{
+        use Rack::ShowExceptions
+        map '/' do |entry|
+          entry.mount #{Foo}
+        end
+      }
+      app = @builder.to_app
+      assert_instance_of(Gluon::Root, app)
+      assert_instance_of(Rack::ShowExceptions, app.inner)
+    end
+
+    def test_mount_use
+      @builder.eval_conf %Q{
+        map '/' do |entry|
+          entry.use Rack::ShowExceptions
+          entry.mount #{Foo}
+        end
+      }
+      # no way to prove internal application.
+    end
+
+    def test_mount_run
+      @builder.eval_conf %Q{
+        map '/' do |entry|
+          entry.run Rack::Directory.new('.')
+        end
+      }
+      # no way to prove internal application.
+    end
+
+    class Bar
+      class << self
+        attr_accessor :new_count
+        attr_accessor :final_count
+      end
+      self.new_count = 0
+      self.final_count = 0
+
+      def initialize
+        self.class.new_count += 1
+      end
+
+      def finalize
+        self.class.final_count += 1
+      end
+    end
+
+    def test_backend_service_start_stop
+      new_count = Bar.new_count
+      final_count = Bar.final_count
+
+      @builder.eval_conf %Q{
+        backend_service :bar do |service|
+          service.start do
+            #{Bar}.new
+          end
+          service.stop do |bar|
+            bar.finalize
           end
         end
       }
 
-      count = 0
-      @builder.build{|app, options|
-        assert_equal('foo plugin', @builder.plugin_get(:_foo))
-        assert_equal('bar plugin', @builder.plugin_get(:_bar))
-        @builder.plugin_get(:_foo) {|value|
-          assert_equal('foo plugin', value)
-        }
-        @builder.plugin_get(:_bar) {|value|
-          assert_equal('bar plugin', value)
-        }
-        count += 1
-      }
-      assert_equal(1, count)
-    end
+      assert_equal(new_count + 1, Bar.new_count)
+      assert_equal(final_count, Bar.final_count)
 
-    class FooAdaptor
-      include Gluon::BackendServiceAdaptor
+      @builder.shutdown
 
-      def gluon_service_key
-        :foo
-      end
-
-      def gluon_service_get
-        :foo_backend_service
-      end
-    end
-
-    def test_config_backend_service
-      @builder.eval_conf %Q{
-        backend_service #{FooAdaptor}.new
-      }
-    end
-
-    def test_config_backend_service_block
-      @builder.eval_conf %Q{
-        backend_service do
-          #{FooAdaptor}.new
-        end
-      }
-    end
-
-    def test_config_backend_service_syntax_error
-      assert_raise(RuntimeError) {
-        @builder.eval_conf %Q{
-          backend_service #{FooAdaptor}.new do
-            #{FooAdaptor}.new
-          end
-        }
-      }
-    end
-
-    def test_config_session_default_key
-      @builder.eval_conf %q{
-        session do
-          default_key 'foo'
-        end
-      }
-      assert_equal({ :default_key => 'foo' },
-                   @builder.session_conf.options)
-    end
-
-    def test_config_session_default_domain
-      @builder.eval_conf %q{
-        session do
-          default_domain 'www.foo.net'
-        end
-      }
-      assert_equal({ :default_domain => 'www.foo.net' },
-                   @builder.session_conf.options)
-    end
-
-    def test_config_session_default_path
-      @builder.eval_conf %q{
-        session do
-          default_path '/foo'
-        end
-      }
-      assert_equal({ :default_path => '/foo' },
-                   @builder.session_conf.options)
-    end
-
-    def test_config_session_id_max_length
-      @builder.eval_conf %q{
-        session do
-          id_max_length 100
-        end
-      }
-      assert_equal({ :id_max_length => 100 },
-                   @builder.session_conf.options)
-    end
-
-    def test_config_session_time_to_live
-      @builder.eval_conf %q{
-        session do
-          time_to_live 60 * 5
-        end
-      }
-      assert_equal({ :time_to_live => 60 * 5 },
-                   @builder.session_conf.options)
-    end
-
-    def test_config_session_auto_expire
-      @builder.eval_conf %q{
-        session do
-          auto_expire true
-        end
-      }
-      assert_equal({ :auto_expire => true },
-                   @builder.session_conf.options)
-    end
-
-    def test_config_session_digest
-      @builder.eval_conf %q{
-        session do
-          digest Digest::SHA512
-        end
-      }
-      assert_equal({ :digest => Digest::SHA512 },
-                   @builder.session_conf.options)
-    end
-
-    def test_config_session_store
-      @builder.eval_conf %q{
-        session do
-          store :DummyStore
-        end
-      }
-      assert_equal({ :store => :DummyStore },
-                   @builder.session_conf.options)
-    end
-
-    def test_config_rackup_use
-      @builder.eval_conf %q{
-        rackup do
-          use Rack::Deflater
-        end
-      }
+      assert_equal(new_count + 1, Bar.new_count)
+      assert_equal(final_count + 1, Bar.final_count)
     end
   end
 end
