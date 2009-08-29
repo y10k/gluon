@@ -1,5 +1,7 @@
 2009-08-29  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* Rakefile: gemspec.
+
 	* run/bin/cgi_server, run/cgi-bin/config.ru,
 	run/cgi-bin/gluon.cgi: CGI and CGI server.
 

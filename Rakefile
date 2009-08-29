@@ -43,6 +43,36 @@ task :local_test do
   end
 end
 
+require 'lib/gluon/version'
+require 'rake/gempackagetask'
+spec = Gem::Specification.new{|s|
+  s.name = 'gluon'
+  s.version = Gluon::VERSION
+  s.summary = 'component based web application framework'
+  s.author = 'TOKI Yoshinori'
+  s.email = 'toki@freedom.ne.jp'
+  s.executables << 'gluon_setup' << 'gluon_example' << 'gluon_local'
+  s.files =
+    %w[ ChangeLog Rakefile lib/LICENSE ] +
+    Dir['{lib,run,test}/**/Rakefile'] +
+    Dir['{lib,run,test}/**/*.{rb,erb,ru,cgi}'] +
+    Dir['run/bin/cgi_server']
+  s.test_files = [ 'test/run.rb' ]
+  s.has_rdoc = true
+  s.rdoc_options = %w[ -SNa -m Gluon ]
+}
+Rake::GemPackageTask.new(spec) do |pkg|
+  pkg.need_zip = true
+  pkg.need_tar = true
+end
+
+desc 'clean garbage files'
+task :clean => [ :clobber_package ] do
+  cd "#{base_dir}/test", :verbose => true do
+    sh "#{prefix}rake#{suffix} clean"
+  end
+end
+
 # Local Variables:
 # mode: Ruby
 # indent-tabs-mode: nil
