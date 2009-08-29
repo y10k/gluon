@@ -1,0 +1,19 @@
+#!/usr/local/bin/ruby
+
+require 'webrick'
+
+base_dir = File.join(File.dirname($0), '..')
+cgi_script = File.join(File.dirname($0), '..', 'cgi-bin', 'gluon.cgi')
+
+server = WEBrick::HTTPServer.new(:Port => 9292)
+server.mount('/gluon.cgi',
+             WEBrick::HTTPServlet::CGIHandler,
+             File.expand_path(cgi_script))
+
+trap('INT') { server.shutdown }
+server.start
+
+# Local Variables:
+# mode: Ruby
+# indent-tabs-mode: nil
+# End:
