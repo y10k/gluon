@@ -1,15 +1,11 @@
+# -*- coding: utf-8 -*-
 # = gluon - simple web application framework
-#
-# Author:: $Author$
-# Date:: $Date$
-# Revision:: $Revision$
-#
 # == license
 #   :include:../LICENSE
 #
 
 module Gluon
-  VERSION = '0.0.3'
+  VERSION = '0.1.0'
 end
 
 # Local Variables:
