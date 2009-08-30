@@ -1,5 +1,8 @@
 2009-08-31  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/web/404.rb, lib/gluon/web/500.rb: obsolete files for
+	restructured gluon for ruby19.
+
 	* bin/gluon_example, bin/gluon_setup, lib/gluon/setup.rb,
 	run/config.rb: restructured setup utilities for ruby19.
 
