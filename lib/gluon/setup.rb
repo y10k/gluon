@@ -1,9 +1,5 @@
+# -*- coding: utf-8 -*-
 # = gluon - simple web application framework
-#
-# Author:: $Author$
-# Date:: $Date$
-# Revision:: $Revision$
-#
 # == license
 #   :include:../LICENSE
 #
