@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# = gluon - simple web application framework
+# = gluon - component based web application framework
 # == license
 #   :include:../LICENSE
 #
