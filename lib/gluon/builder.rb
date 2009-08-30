@@ -69,9 +69,9 @@ module Gluon
         nil
       end
 
-      def mount(page_type, *init_args)
+      def mount(page_type)
         @cmap.mount(page_type, @location)
-        @app.mount(page_type, *init_args)
+        @app.mount(page_type)
         nil
       end
 

@@ -1,5 +1,10 @@
 2009-08-31  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/application.rb, lib/gluon/builder.rb:
+	initialization-arguments for mounted controller is obsolete.
+	initialization-arguments destroys implicit assumption that
+	controller and URL are 1 couple.
+
 	* lib/gluon/web/404.rb, lib/gluon/web/500.rb: obsolete files for
 	restructured gluon for ruby19.
 

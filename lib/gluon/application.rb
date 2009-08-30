@@ -37,11 +37,10 @@ module Gluon
       @default_app = nil
     end
 
-    def mount(page_type, *init_args)
+    def mount(page_type)
       @page_list.push [
         Controller.find_path_filter(page_type) || %r"^/?$",
-        page_type,
-        init_args
+        page_type
       ]
       nil
     end
@@ -52,11 +51,11 @@ module Gluon
     end
 
     def find_page(path_info)
-      for path_filter, page_type, init_args in @page_list
+      for path_filter, page_type in @page_list
         if (path_info =~ path_filter) then
           path_args = $~.to_a
           path_args.shift
-          return page_type, init_args, path_args
+          return page_type, path_args
         end
       end
 
@@ -73,7 +72,7 @@ module Gluon
       r.cmap = @cmap
       r.backend_service = @service_man.new_services
 
-      page_type, init_args, r.path_args = find_page(r.equest.path_info)
+      page_type, r.path_args = find_page(r.equest.path_info)
       unless (page_type) then
         if (@default_app) then
           return @default_app.call(env)
@@ -83,7 +82,7 @@ module Gluon
       end
 
       r.esponse['Content-Type'] = "text/html; charset=#{page_type.page_encoding}"
-      c = page_type.new(*init_args)
+      c = page_type.new
       r.controller = c
       c.r = r
       po = PresentationObject.new(c, r, @template_engine)
