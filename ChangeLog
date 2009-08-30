@@ -1,3 +1,8 @@
+2009-08-31  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* bin/gluon_example, bin/gluon_setup, lib/gluon/setup.rb,
+	run/config.rb: restructured setup utilities for ruby19.
+
 2009-08-30  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* run/Rakefile, run/config.rb: make random seed for cookie based

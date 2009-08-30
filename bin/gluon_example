@@ -1,4 +1,5 @@
 #!/usr/local/bin/ruby
+# -*- coding: utf-8 -*-
 
 require 'gluon'
 
@@ -13,8 +14,7 @@ unless (options[:target_directory]) then
   exit(1)
 end
 
-setup = Gluon::Setup.new(options[:target_directory],
-                         :verbose => options[:verbose])
+setup = Gluon::Setup.new(options[:target_directory], :verbose => options[:verbose])
 setup.command_example
 
 # Local Variables:

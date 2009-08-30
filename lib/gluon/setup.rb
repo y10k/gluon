@@ -13,12 +13,13 @@ module Gluon
     # for ident(1)
     CVS_ID = '$Id$'
 
-    RUNTIME = File.join(File.dirname(__FILE__), '..', '..', 'run')
+    BASE_DIR = File.join(File.dirname(__FILE__), '..', '..')
+    RUNTIME_DIR = File.join(BASE_DIR, 'run')
 
+    BIN_DIR    = 'bin'
+    CGI_DIR    = 'cgi-bin'
     LIB_DIR    = 'lib'
     VIEW_DIR   = 'view'
-    SERVER_DIR = 'server'
-    CGI_DIR    = 'cgi-bin'
 
     UMASK_MODE = 0022
     EXEC_MODE  = 0755
@@ -30,10 +31,10 @@ module Gluon
     end
 
     def make_top_dirs
-      [ LIB_DIR,
-        VIEW_DIR,
-        SERVER_DIR,
+      [ BIN_DIR,
         CGI_DIR,
+        LIB_DIR,
+        VIEW_DIR
       ].each do |top_dir|
         top_dir_path = File.join(@install_dir, top_dir)
         FileUtils.mkdir_p(top_dir_path, :verbose => @verbose)
@@ -41,20 +42,16 @@ module Gluon
     end
 
     def install_runtime
-      [ [ SERVER_DIR, EXEC_MODE, %w[ webrick mongrel webrick_cgi ] ],
-        [ CGI_DIR,    EXEC_MODE, %w[ gluon.cgi ] ],
-      ].each do |top_dir, mode, files|
-        from_dir = File.join(RUNTIME, top_dir)
-        to_dir = File.join(@install_dir, top_dir)
-        for f in files
-          from_path = File.join(from_dir, f)
-          FileUtils.install(from_path, to_dir, :mode => mode, :verbose => @verbose)
-        end
-      end
-
-      from_path = File.join(RUNTIME, 'Rakefile')
-      to_dir = @install_dir
-      FileUtils.install(from_path, to_dir, :mode => FILE_MODE, :verbose => @verbose)
+      FileUtils.install(File.join(BASE_DIR, 'bin', 'gluon_local'),
+                        File.join(@install_dir, BIN_DIR), :mode => EXEC_MODE, :verbose => @verbose)
+      FileUtils.install(File.join(RUNTIME_DIR, BIN_DIR, 'cgi_server'),
+                        File.join(@install_dir, BIN_DIR), :mode => EXEC_MODE, :verbose => @verbose)
+      FileUtils.install(File.join(RUNTIME_DIR, CGI_DIR, 'gluon.cgi'),
+                        File.join(@install_dir, CGI_DIR), :mode => EXEC_MODE, :verbose => @verbose)
+      FileUtils.install(File.join(RUNTIME_DIR, CGI_DIR, 'config.ru'),
+                        File.join(@install_dir, CGI_DIR), :mode => FILE_MODE, :verbose => @verbose)
+      FileUtils.install(File.join(RUNTIME_DIR, 'Rakefile'), @install_dir, :mode => FILE_MODE, :verbose => @verbose)
+      FileUtils.install(File.join(RUNTIME_DIR, 'config.ru'), @install_dir, :mode => FILE_MODE, :verbose => @verbose)
 
       nil
     end
@@ -62,7 +59,7 @@ module Gluon
     def install_libraries(from_dir, to_dir)
       Find.find(from_dir) do |path|
         case (path)
-        when /\.rb$/, /\.erb$/, /\.rhtml$/
+        when /\.rb$/, /\.erb$/
           target_path = to_dir + path[from_dir.length..-1]
           target_dir = File.dirname(target_path)
           FileUtils.mkdir_p(target_dir)
@@ -73,17 +70,9 @@ module Gluon
     private :install_libraries
 
     def install_example
-      [ LIB_DIR,
-        VIEW_DIR
-      ].each do |top_dir|
-        from_dir = File.join(RUNTIME, top_dir)
-        to_dir = File.join(@install_dir, top_dir)
-        install_libraries(from_dir, to_dir)
-      end
-
-      from_conf = File.join(RUNTIME, 'config.rb')
-      to_dir = @install_dir
-      FileUtils.install(from_conf, to_dir, :mode => FILE_MODE, :verbose => @verbose)
+      install_libraries(File.join(RUNTIME_DIR, LIB_DIR), File.join(@install_dir, LIB_DIR))
+      install_libraries(File.join(RUNTIME_DIR, VIEW_DIR), File.join(@install_dir, VIEW_DIR))
+      FileUtils.install(File.join(RUNTIME_DIR, 'config.rb'), @install_dir, :mode => FILE_MODE, :verbose => @verbose)
 
       nil
     end
@@ -112,7 +101,7 @@ module Gluon
         parsed_alist
       end
 
-      def config_render(parsed_alist)
+      def config_comment_out_example(parsed_alist)
         rendered_text = ''
         for tag, line in parsed_alist
           case (tag)
@@ -128,27 +117,12 @@ module Gluon
     end
 
     def install_config
-      from_path = File.join(RUNTIME, 'config.rb')
-      to_path = File.join(@install_dir, 'config.rb')
-      if (File.exist? to_path) then
-        to_path += '.new'
-      end
-
-      config_text = File.open(from_path, 'r') {|r|
-        r.binmode
-        r.read
-      }
-
-      config_rendered =
-        Setup.config_render(
-          Setup.config_parse(config_text))
-
-      File.open(to_path, 'w') {|w|
-        w.binmode
-        w.write(config_rendered)
-      }
-
-      FileUtils.chmod(FILE_MODE, to_path, :verbose => @verbose)
+      install_path = File.join(@install_dir, 'config.rb')
+      install_path += '.new' if (File.exist? install_path)
+      config_template = File.open(File.join(RUNTIME_DIR, 'config.rb'), "r:#{__ENCODING__}") {|r| r.read }
+      config_text = Setup.config_comment_out_example(Setup.config_parse(config_template))
+      File.open(install_path, "w:#{__ENCODING__}") {|w| w.write(config_text) }
+      FileUtils.chmod(FILE_MODE, install_path, :verbose => @verbose)
 
       nil
     end

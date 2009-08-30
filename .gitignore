@@ -6,3 +6,4 @@
 /run/cgi.env*
 /run/gems/*
 /run/seed
+/test/test_setup.*.install

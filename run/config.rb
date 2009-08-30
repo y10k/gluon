@@ -4,6 +4,8 @@ use Rack::ShowExceptions        # for debug
 use Rack::Reloader              # for debug
 use Rack::Session::Cookie, :secret => IO.read("#{base_dir}/seed")
 
+## :example:start
+
 require 'Example'
 require 'Welcom'
 
@@ -48,6 +50,8 @@ backend_service :bbs_db do |service|
     # nothing to do.
   end
 end
+
+## :example:stop
 
 # Local Variables:
 # mode: Ruby
