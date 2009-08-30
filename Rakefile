@@ -9,6 +9,7 @@ suffix = $2
 
 base_dir = File.join(File.dirname(__FILE__))
 rake_cmd = "#{prefix}rake#{suffix}"
+rdoc_cmd = "#{prefix}rdoc#{suffix}"
 gem_cmd = "#{prefix}gem#{suffix}"
 
 example = [ 'rackup', '-I', "#{base_dir}/lib" ]
@@ -24,6 +25,15 @@ desc 'unit-test.'
 task :test do
   cd "#{base_dir}/test", :verbose => true do
     sh rake_cmd
+  end
+end
+
+rdoc_opts = %w[ -SNa -m Gluon ]
+
+desc 'make document.'
+task :rdoc do
+  cd "#{base_dir}/lib", :verbose => true do
+    sh rdoc_cmd, '-o', '../api', *rdoc_opts
   end
 end
 
@@ -62,7 +72,7 @@ spec = Gem::Specification.new{|s|
     Dir['run/bin/cgi_server']
   s.test_files = [ 'test/run.rb' ]
   s.has_rdoc = true
-  s.rdoc_options = %w[ -SNa -m Gluon ]
+  s.rdoc_options = rdoc_opts
 }
 Rake::GemPackageTask.new(spec) do |pkg|
   pkg.need_zip = true
@@ -71,6 +81,7 @@ end
 
 desc 'clean garbage files'
 task :clean => [ :clobber_package ] do
+  rm_rf 'api'
   for subdir in [ "#{base_dir}/test", "#{base_dir}/run" ]
     cd subdir, :verbose => true do
       sh rake_cmd, 'clean'

@@ -1,5 +1,7 @@
 2009-08-31  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* Rakefile: task to make document.
+
 	* lib/gluon/application.rb, lib/gluon/builder.rb:
 	initialization-arguments for mounted controller is obsolete.
 	initialization-arguments destroys implicit assumption that

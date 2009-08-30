@@ -47,17 +47,17 @@ module Gluon
     end
     private :r
 
-    # usage: r.equest, @r.equest
+    # usage: <tt>r.equest</tt>, <tt>@r.equest</tt>
     def equest
       @req
     end
 
-    # usage: r.esponse, @r.esponse
+    # usage: <tt>r.esponse</tt>, <tt>@r.esponse</tt>
     def esponse
       @res
     end
 
-    # usage: r.oot_script_name, @r.oot_script_name
+    # usage: <tt>r.oot_script_name</tt>, <tt>@r.oot_script_name</tt>
     #
     # request attribute of <tt>:gluon_root_script_name</tt> is set by
     # rack-middleware of Rack::Root.
