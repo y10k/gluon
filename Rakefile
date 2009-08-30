@@ -10,6 +10,9 @@ CONFIG['RUBY_INSTALL_NAME'] =~ /^(.*)ruby(.*)$/i or raise 'not found RUBY_INSTAL
 prefix = $1
 suffix = $2
 
+RAKE_CMD = "#{prefix}rake#{suffix}"
+GEM_CMD = "#{prefix}gem#{suffix}"
+
 base_dir = File.join(File.dirname(__FILE__))
 gluon_local = [ "#{base_dir}/bin/gluon_local", '-d', base_dir ]
 example = [ 'rackup', '-I', "#{base_dir}/lib", "#{base_dir}/run/config.ru" ]
@@ -22,13 +25,13 @@ end
 desc 'unit-test.'
 task :test do
   cd "#{base_dir}/test", :verbose => true do
-    sh "#{prefix}rake#{suffix}"
+    sh RAKE_CMD
   end
 end
 
 desc 'project local RubyGems (optional parameters: GEM_ARGS).'
 task :local_gem do
-  ruby *gluon_local, "#{prefix}gem#{suffix} #{ENV['GEM_ARGS']}"
+  ruby *gluon_local, "#{GEM_CMD} #{ENV['GEM_ARGS']}"
 end
 
 desc 'start example (project local RubyGems environemnt).'
@@ -39,7 +42,7 @@ end
 desc 'unit-test (project local RubyGems environemnt).'
 task :local_test do
   cd "#{base_dir}/test", :verbose => true do
-    ruby '../bin/gluon_local', '-d', '..', "#{prefix}rake#{suffix}"
+    ruby '../bin/gluon_local', '-d', '..', RAKE_CMD
   end
 end
 
@@ -69,7 +72,7 @@ end
 desc 'clean garbage files'
 task :clean => [ :clobber_package ] do
   cd "#{base_dir}/test", :verbose => true do
-    sh "#{prefix}rake#{suffix} clean"
+    sh "#{RAKE_CMD} clean"
   end
 end
 
