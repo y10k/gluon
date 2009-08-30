@@ -19,7 +19,7 @@ example = [ 'rackup', '-I', "#{base_dir}/lib", "#{base_dir}/run/config.ru" ]
 
 desc 'start example.'
 task :example do
-  sh example.join(' ')
+  sh *example
 end
 
 desc 'unit-test.'
@@ -72,7 +72,7 @@ end
 desc 'clean garbage files'
 task :clean => [ :clobber_package ] do
   cd "#{base_dir}/test", :verbose => true do
-    sh "#{RAKE_CMD} clean"
+    sh RAKE_CMD, 'clean'
   end
 end
 
