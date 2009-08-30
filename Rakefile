@@ -10,14 +10,15 @@ CONFIG['RUBY_INSTALL_NAME'] =~ /^(.*)ruby(.*)$/i or raise 'not found RUBY_INSTAL
 prefix = $1
 suffix = $2
 
-RAKE_CMD = "#{prefix}rake#{suffix}"
-GEM_CMD = "#{prefix}gem#{suffix}"
-
 base_dir = File.join(File.dirname(__FILE__))
-gluon_local = [ "#{base_dir}/bin/gluon_local", '-d', base_dir ]
-example = [ 'rackup', '-I', "#{base_dir}/lib", "#{base_dir}/run/config.ru" ]
+rake_cmd = "#{prefix}rake#{suffix}"
+gem_cmd = "#{prefix}gem#{suffix}"
 
-desc 'start example.'
+example = [ 'rackup', '-I', "#{base_dir}/lib" ]
+example += [ ENV['RACKUP_OPTS'] ] if (ENV.key? 'RACKUP_OPTS')
+example += [ "#{base_dir}/run/config.ru" ]
+
+desc 'start example (optional parameters: RACKUP_OPTS).'
 task :example do
   sh *example
 end
@@ -25,13 +26,15 @@ end
 desc 'unit-test.'
 task :test do
   cd "#{base_dir}/test", :verbose => true do
-    sh RAKE_CMD
+    sh rake_cmd
   end
 end
 
+gluon_local = [ "#{base_dir}/bin/gluon_local", '-d', base_dir ]
+
 desc 'project local RubyGems (optional parameters: GEM_ARGS).'
 task :local_gem do
-  ruby *gluon_local, "#{GEM_CMD} #{ENV['GEM_ARGS']}"
+  ruby *gluon_local, "#{gem_cmd} #{ENV['GEM_ARGS']}"
 end
 
 desc 'start example (project local RubyGems environemnt).'
@@ -42,7 +45,7 @@ end
 desc 'unit-test (project local RubyGems environemnt).'
 task :local_test do
   cd "#{base_dir}/test", :verbose => true do
-    ruby '../bin/gluon_local', '-d', '..', RAKE_CMD
+    ruby '../bin/gluon_local', '-d', '..', rake_cmd
   end
 end
 
@@ -72,7 +75,7 @@ end
 desc 'clean garbage files'
 task :clean => [ :clobber_package ] do
   cd "#{base_dir}/test", :verbose => true do
-    sh RAKE_CMD, 'clean'
+    sh rake_cmd, 'clean'
   end
 end
 
