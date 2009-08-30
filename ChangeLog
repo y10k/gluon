@@ -1,5 +1,8 @@
 2009-08-30  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* run/Rakefile, run/config.rb: make random seed for cookie based
+	session.
+
 	* Rakefile, run/Rakefile: Rakefile for runtime.
 
 2009-08-29  TOKI Yoshinori  <toki@freedom.ne.jp>

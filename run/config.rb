@@ -2,7 +2,7 @@
 
 use Rack::ShowExceptions        # for debug
 use Rack::Reloader              # for debug
-use Rack::Session::Cookie, :secret => 'change_me'
+use Rack::Session::Cookie, :secret => IO.read("#{base_dir}/seed")
 
 require 'Example'
 require 'Welcom'

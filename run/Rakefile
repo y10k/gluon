@@ -16,13 +16,32 @@ server = [ 'rackup' ]
 server += [ ENV['RACKUP_OPTS'] ] if (ENV.key? 'RACKUP_OPTS')
 
 desc 'start server (optional parameters: RACKUP_OPTS).'
-task :server do
+task :server => [ :seed ] do
   sh *server
 end
 
 desc 'start CGI server.'
-task :cgi_server do
+task :cgi_server => [ :seed ] do
   ruby "#{base_dir}/bin/cgi_server"
+end
+
+desc 'make random seed for cookie based session.'
+task :seed do
+  seed = "#{base_dir}/seed"
+  unless File.exist? seed then
+    puts 'make random seed for cookie based session.'
+    require 'digest'
+    id = Digest::MD5.new
+    now = Time.now
+    id.update(now.to_s)
+    id.update(now.usec.to_s)
+    id.update(rand(0).to_s)
+    id.update($$.to_s)
+    id.update(Dir.getwd)
+    File.open(seed, 'w:us-ascii') do |f|
+      f.write id.hexdigest
+    end
+  end
 end
 
 desc 'clean garbage files'
@@ -40,14 +59,13 @@ task :local_gem do
 end
 
 desc 'start server (project local RubyGems repository).'
-task :local_server do
+task :local_server => [ :seed ] do
   ruby *gluon_local, *server
 end
 
-cgi_env = "#{base_dir}/cgi.env"
-
 desc 'make CGI environment for project local RubyGems repository.'
 task :local_cgi_env do
+  cgi_env = "#{base_dir}/cgi.env"
   if File.exist? cgi_env then
     mv cgi_env, cgi_env + File.stat(cgi_env).mtime.strftime(".backup_%Y%m%d_%H%M%S")
   end
