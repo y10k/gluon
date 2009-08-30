@@ -27,7 +27,7 @@ end
 desc 'clean garbage files'
 task :clean do
   for f in Dir['*.erbc'] + Dir['*~']
-    rm_f f
+    rm f
   end
 end
 
