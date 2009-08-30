@@ -1,3 +1,7 @@
-/gems/*
-*~
 *.erbc
+*~
+/gems/*
+/run/bbs_data.pstore
+/run/bin/gluon_local
+/run/cgi.env*
+/run/gems/*
