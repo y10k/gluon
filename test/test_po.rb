@@ -7,9 +7,6 @@ require 'test/unit'
 
 module Gluon::Test
   class PresentationObjectTest < Test::Unit::TestCase
-    # for ident(1)
-    CVS_ID = '$Id$'
-
     def setup
       @Controller = Class.new{ extend Gluon::Component }
       @c = @Controller.new

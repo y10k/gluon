@@ -10,9 +10,6 @@ require 'optparse'
 
 module Gluon
   class Setup
-    # for ident(1)
-    CVS_ID = '$Id$'
-
     BASE_DIR = File.join(File.dirname(__FILE__), '..', '..')
     RUNTIME_DIR = File.join(BASE_DIR, 'run')
 

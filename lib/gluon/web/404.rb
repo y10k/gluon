@@ -16,9 +16,6 @@ module Gluon
     class NotFoundErrorPage
       include Controller
 
-      # for ident(1)
-      CVS_ID = '$Id$'
-
       def page_start(*args)
         @c.res.status = 404
         @c.res['Content-Type'] = 'text/html'

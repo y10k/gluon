@@ -9,9 +9,6 @@ require 'gluon/template'
 
 module Gluon
   module ERBView
-    # for ident(1)
-    CVS_ID = '$Id$'
-
     class Engine < TemplateEngine::Skeleton
       alias _block_result block_result
       undef block_result

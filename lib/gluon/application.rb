@@ -28,9 +28,6 @@ module Gluon
 
   # = application for Rack
   class Application
-    # for ident(1)
-    CVS_ID = '$Id$'
-
     def initialize(logger, cmap, template_engine, service_man)
       @logger = logger
       @cmap = cmap

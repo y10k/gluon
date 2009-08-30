@@ -48,9 +48,6 @@ module Gluon
   #   end
   #
   module Controller
-    # for ident(1)
-    CVS_ID = '$Id$'
-
     extend Memoization
 
     class << self

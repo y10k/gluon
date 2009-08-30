@@ -3,9 +3,6 @@
 
 require 'gluon'
 
-# for ident(1)
-CVS_ID = '$Id$'
-
 options, opts = Gluon::Setup.common_options
 opts.parse!
 unless (options[:target_directory]) then

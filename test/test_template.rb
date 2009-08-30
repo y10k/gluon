@@ -6,9 +6,6 @@ require 'test/unit'
 
 module Gluon::Test
   class TemplateEngineTest < Test::Unit::TestCase
-    # for ident(1)
-    CVS_ID = '$Id$'
-
     def setup
       @template_dir = 'test_template.template_dir'
       @template_engine = Gluon::TemplateEngine.new(@template_dir)

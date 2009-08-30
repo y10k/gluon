@@ -16,9 +16,6 @@ require 'rack'
 
 module Gluon
   class Builder
-    # for ident(1)
-    CVS_ID = '$Id$'
-
     def self.require_path(lib_dir)
       unless ($:.include? lib_dir) then
         $: << lib_dir

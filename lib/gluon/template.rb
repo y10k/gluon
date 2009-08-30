@@ -6,9 +6,6 @@
 
 module Gluon
   class TemplateEngine
-    # for ident(1)
-    CVS_ID = '$Id$'
-
     class Skeleton
       def initialize(po, r)
 	@po = po

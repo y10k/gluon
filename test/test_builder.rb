@@ -6,9 +6,6 @@ require 'test/unit'
 
 module Gluon::Test
   class BuilderTest < Test::Unit::TestCase
-    # for ident(1)
-    CVS_ID = '$Id$'
-
     def setup
       @base_dir = File.dirname(__FILE__)
       @lib_dir = File.join(@base_dir, 'lib')

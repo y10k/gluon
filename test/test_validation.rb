@@ -7,9 +7,6 @@ require 'test/unit'
 
 module Gluon::Test
   class ValidationTest < Test::Unit::TestCase
-    # for ident(1)
-    CVS_ID = '$Id$'
-
     def setup
       @Controller = Class.new{
         include Gluon::Controller

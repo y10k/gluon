@@ -35,9 +35,6 @@ module Gluon
   end
 
   class RequestResponseContext
-    # for idnet(1)
-    CVS_ID = '$Id$'
-
     def initialize(request, response)
       @req = request
       @res = response

@@ -9,9 +9,6 @@ require 'gluon/controller'
 
 module Gluon
   class PresentationObject
-    # for ident(1)
-    CVS_ID = '$Id$'
-
     def initialize(controller, req_res, template_engine, prefix='', &block)
       @c_stack = [ controller ]
       @radio_stack = []

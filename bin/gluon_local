@@ -3,9 +3,6 @@
 
 require 'optparse'
 
-# for ident(1)
-CVS_ID = '$Id$'
-
 proj_dir = nil
 
 opts = OptionParser.new

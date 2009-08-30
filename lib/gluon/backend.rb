@@ -6,9 +6,6 @@
 
 module Gluon
   class BackendServiceManager
-    # for ident(1)
-    CVS_ID = '$Id$'
-
     NO_SERVICE = Struct.new(:__no_service__)
 
     def initialize

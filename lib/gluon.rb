@@ -13,9 +13,6 @@ require 'gluon/version'
 #   :include:LICENSE
 #
 module Gluon
-  # for ident(1)
-  CVS_ID = '$Id$'
-
   autoload :Application, 'gluon/application'
   autoload :BackendServiceManager, 'gluon/backend'
   autoload :Builder, 'gluon/builder'

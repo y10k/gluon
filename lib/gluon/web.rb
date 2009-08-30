@@ -11,9 +11,6 @@
 module Gluon
   # = namespace for web components
   module Web
-    # for ident(1)
-    CVS_ID = '$Id$'
-
     autoload :ErrorMessages, 'gluon/web/error'
     autoload :InternalServerErrorPage, 'gluon/web/500'
     autoload :NotFoundErrorPage, 'gluon/web/404'

@@ -7,9 +7,6 @@ require 'test/unit'
 
 module Gluon::Test
   class SetupTest < Test::Unit::TestCase
-    # for ident(1)
-    CVS_ID = '$Id$'
-
     def setup
       @install_dir = nil
       @saved_umask = File.umask

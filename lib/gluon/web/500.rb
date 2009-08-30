@@ -16,9 +16,6 @@ module Gluon
     class InternalServerErrorPage
       include Controller
 
-      # for ident(1)
-      CVS_ID = '$Id$'
-
       def initialize(exception)
         @exception = exception
       end

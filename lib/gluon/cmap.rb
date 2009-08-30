@@ -9,9 +9,6 @@ require 'gluon/controller'
 module Gluon
   # = class-URL mapping
   class ClassMap
-    # for ident(1)
-    CVS_ID = '$Id$'
-
     def initialize
       @cmap = {}
     end

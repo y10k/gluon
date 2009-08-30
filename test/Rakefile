@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# for idnet(1)
-CVS_ID = '$Id$'
-
 require 'rbconfig'
 include RbConfig
 

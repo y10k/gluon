@@ -17,9 +17,6 @@ module Gluon
     class Table
       include Controller
 
-      # for ident(1)
-      CVS_ID = '$Id$'
-
       class Cell
         def initialize(item, parent, nth, header_columns)
           @item = item

@@ -14,9 +14,6 @@ module Gluon
     class OneTimeToken
       extend Gluon::Component
 
-      # for ident(1)
-      CVS_ID = '$Id$'
-
       def self.page_encoding
         __ENCODING__
       end

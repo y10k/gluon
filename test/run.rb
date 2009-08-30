@@ -1,9 +1,6 @@
 #!/usr/local/bin/ruby
 # -*- coding: utf-8 -*-
 
-# for ident(1)
-CVS_ID = '$Id$'
-
 $:.unshift File.join(File.dirname($0))
 $:.unshift File.join(File.dirname($0), '..', 'lib')
 

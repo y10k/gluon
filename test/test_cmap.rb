@@ -6,9 +6,6 @@ require 'test/unit'
 
 module Gluon::Test
   class ClassMapTest < Test::Unit::TestCase
-    # for ident(1)
-    CVS_ID = '$Id$'
-
     def setup
       @cmap = Gluon::ClassMap.new
       @c = Class.new{ include Gluon::Controller }

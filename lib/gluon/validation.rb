@@ -8,9 +8,6 @@ require 'gluon/controller'
 
 module Gluon
   class Validator
-    # for ident(1)
-    CVS_ID = '$Id$'
-
     def initialize(controller, page_encoding, errors, prefix='')
       @c = controller
       @page_encoding = page_encoding
@@ -184,9 +181,6 @@ module Gluon
   end
 
   module Validation
-    # for ident(1)
-    CVS_ID = '$Id$'
-
     def self.included(controller_class)
       if (! (controller_class.is_a? Class) || ! (controller_class.include? Controller)) then
         raise "not a controller class of `#{controller_class}'"
