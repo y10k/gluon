@@ -1,39 +1,62 @@
-# for ident(1)
-CVS_ID = '$Id$'
+# -*- coding: utf-8 -*-
 
-THIS_DIR = File.dirname(__FILE__)
+base_dir = File.dirname(__FILE__)
 
-def run_server
-  sv_type = ENV['SERVER'] || 'webrick'
-  ruby "#{THIS_DIR}/server/#{sv_type}"
-end
+require 'rbconfig'
+include RbConfig
 
-task :default => [ :debug ]
+CONFIG['RUBY_INSTALL_NAME'] =~ /^(.*)ruby(.*)$/i or raise 'not found RUBY_INSTALL_NAME'
+prefix = $1
+suffix = $2
 
-desc 'start server for debug.'
-task :debug do
-  ENV['DEBUG'] = 't'
-  run_server
-end
+rake_cmd = "#{prefix}rake#{suffix}"
+gem_cmd = "#{prefix}gem#{suffix}"
 
-desc 'start server.'
-task :run do
-  run_server
+server = [ 'rackup' ]
+server += [ ENV['RACKUP_OPTS'] ] if (ENV.key? 'RACKUP_OPTS')
+
+desc 'start server (optional parameters: RACKUP_OPTS).'
+task :server do
+  sh *server
 end
 
 desc 'start CGI server.'
-task :cgi do
-  ruby "#{THIS_DIR}/server/webrick_cgi"
+task :cgi_server do
+  ruby "#{base_dir}/bin/cgi_server"
 end
 
-desc 'unit-test. (not implemented)'
-task :test do
-  raise 'not implemented test task.'
+desc 'clean garbage files'
+task :clean do
+  for f in Dir['**/*.erbc'] + Dir['*~']
+    rm f
+  end
 end
 
-desc 'update runtime libraries.'
-task :update_runtime do
-  sh 'gluon_example', '-d', THIS_DIR
+gluon_local = [ "#{base_dir}/bin/gluon_local", '-d', base_dir ]
+
+desc 'project local RubyGems (optional parameters: GEM_ARGS).'
+task :local_gem do
+  ruby *gluon_local, "#{gem_cmd} #{ENV['GEM_ARGS']}"
+end
+
+desc 'start server (project local RubyGems repository).'
+task :local_server do
+  ruby *gluon_local, *server
+end
+
+cgi_env = "#{base_dir}/cgi.env"
+
+desc 'make CGI environment for project local RubyGems repository.'
+task :local_cgi_env do
+  if File.exist? cgi_env then
+    mv cgi_env, cgi_env + File.stat(cgi_env).mtime.strftime(".backup_%Y%m%d_%H%M%S")
+  end
+  File.open(cgi_env, 'w:us-ascii') do |f|
+    f.puts '#!/bin/sh'
+    f.puts 'RUBYOPT=rubygems; export RUBYOPT'
+    f.puts 'GEM_HOME="$BASE_DIR/gems"; export GEM_HOME'
+    f.puts 'PATH="$PATH:$GEM_HOME/bin"; export PATH'
+  end
 end
 
 # Local Variables:

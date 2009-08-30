@@ -74,8 +74,10 @@ end
 
 desc 'clean garbage files'
 task :clean => [ :clobber_package ] do
-  cd "#{base_dir}/test", :verbose => true do
-    sh rake_cmd, 'clean'
+  for subdir in [ "#{base_dir}/test", "#{base_dir}/run" ]
+    cd subdir, :verbose => true do
+      sh rake_cmd, 'clean'
+    end
   end
 end
 
