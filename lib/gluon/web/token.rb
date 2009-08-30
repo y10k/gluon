@@ -32,7 +32,8 @@ module Gluon
         id.update(now.usec.to_s)
         id.update(rand(0).to_s)
         id.update($$.to_s)
-        id.update(CVS_ID)
+        id.update(Dir.getwd)
+        id.update(Thread.current.to_s)
         id.hexdigest
       end
       private :new_token
