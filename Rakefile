@@ -12,13 +12,13 @@ rake_cmd = "#{prefix}rake#{suffix}"
 rdoc_cmd = "#{prefix}rdoc#{suffix}"
 gem_cmd = "#{prefix}gem#{suffix}"
 
-example = [ 'rackup', '-I', "#{base_dir}/lib" ]
-example += [ ENV['RACKUP_OPTS'] ] if (ENV.key? 'RACKUP_OPTS')
-example += [ "#{base_dir}/run/config.ru" ]
+example = "rackup -I #{base_dir}/lib"
+example += ' ' + ENV['RACKUP_OPTS'] if (ENV.key? 'RACKUP_OPTS')
+example += " #{base_dir}/run/config.ru"
 
 desc 'start example (optional parameters: RACKUP_OPTS).'
 task :example do
-  sh *example
+  sh example
 end
 
 desc 'unit-test.'
@@ -46,7 +46,7 @@ end
 
 desc 'start example (project local RubyGems environemnt).'
 task :local_example do
-  ruby *gluon_local, *example
+  ruby *gluon_local, example
 end
 
 desc 'unit-test (project local RubyGems environemnt).'

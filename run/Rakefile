@@ -12,12 +12,12 @@ suffix = $2
 rake_cmd = "#{prefix}rake#{suffix}"
 gem_cmd = "#{prefix}gem#{suffix}"
 
-server = [ 'rackup' ]
-server += [ ENV['RACKUP_OPTS'] ] if (ENV.key? 'RACKUP_OPTS')
+server = 'rackup'
+server += ' ' + ENV['RACKUP_OPTS'] if (ENV.key? 'RACKUP_OPTS')
 
 desc 'start server (optional parameters: RACKUP_OPTS).'
 task :server => [ :seed ] do
-  sh *server
+  sh server
 end
 
 desc 'start CGI server.'
@@ -60,7 +60,7 @@ end
 
 desc 'start server (project local RubyGems repository).'
 task :local_server => [ :seed ] do
-  ruby *gluon_local, *server
+  ruby *gluon_local, server
 end
 
 desc 'make CGI environment for project local RubyGems repository.'
