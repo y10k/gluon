@@ -12,13 +12,23 @@ rake_cmd = "#{prefix}rake#{suffix}"
 rdoc_cmd = "#{prefix}rdoc#{suffix}"
 gem_cmd = "#{prefix}gem#{suffix}"
 
-example = "rackup -I #{base_dir}/lib"
-example += ' ' + ENV['RACKUP_OPTS'] if (ENV.key? 'RACKUP_OPTS')
-example += " #{base_dir}/run/config.ru"
+example = proc{|options|
+  "rackup -I #{base_dir}/lib #{options} ENV['RACKUP_OPTS'] #{base_dir}/run/config.ru"
+}
 
-desc 'start example (optional parameters: RACKUP_OPTS).'
-task :example do
-  sh example
+desc 'alias for example_develop.'
+task :example => [ :example_develop ]
+
+desc 'start example for development (optional parameters: RACKUP_OPTS).'
+task :example_develop do
+  ENV['GLUON_ENV'] = 'development'
+  sh example.call('-E development')
+end
+
+desc 'start example for deployment (optional parameters: RACKUP_OPTS).'
+task :example_deploy do
+  ENV['GLUON_ENV'] = 'deployment'
+  sh example.call('-E deployment')
 end
 
 desc 'unit-test.'
@@ -44,9 +54,19 @@ task :local_gem do
   ruby *gluon_local, "#{gem_cmd} #{ENV['GEM_ARGS']}"
 end
 
-desc 'start example (project local RubyGems environemnt).'
-task :local_example do
-  ruby *gluon_local, example
+desc 'alias for local_example_develop.'
+task :local_example => [ :local_example_develop ]
+
+desc 'start example for development (project local RubyGems environemnt).'
+task :local_example_develop do
+  ENV['GLUON_ENV'] = 'development'
+  ruby *gluon_local, example.call('-E development')
+end
+
+desc 'start example for deployment (project local RubyGems environemnt).'
+task :local_example_deploy do
+  ENV['GLUON_ENV'] = 'deployment'
+  ruby *gluon_local, example.call('-E deployment')
 end
 
 desc 'unit-test (project local RubyGems environemnt).'

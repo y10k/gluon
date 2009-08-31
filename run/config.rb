@@ -1,7 +1,18 @@
 # gluon configuration
 
-use Rack::ShowExceptions        # for debug
-use Rack::Reloader              # for debug
+case ENV['GLUON_ENV']
+when 'development'
+  use Rack::Reloader
+when 'deployment'
+  Gluon::Controller.memoize :find_path_filter
+  Gluon::Controller.memoize :find_path_block
+  Gluon::Controller.memoize :find_view_export
+  Gluon::Controller.memoize :find_form_export
+  Gluon::Controller.memoize :find_action_export
+else
+  raise "unknown gluon environment: #{ENV['GLUON_ENV']}"
+end
+
 use Rack::Session::Cookie, :secret => IO.read("#{base_dir}/seed")
 
 ## :example:start

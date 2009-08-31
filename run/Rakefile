@@ -12,12 +12,23 @@ suffix = $2
 rake_cmd = "#{prefix}rake#{suffix}"
 gem_cmd = "#{prefix}gem#{suffix}"
 
-server = 'rackup'
-server += ' ' + ENV['RACKUP_OPTS'] if (ENV.key? 'RACKUP_OPTS')
+server = proc{|options|
+  "rackup #{options} #{ENV['RACKUP_OPTS']}"
+}
 
-desc 'start server (optional parameters: RACKUP_OPTS).'
-task :server => [ :seed ] do
-  sh server
+desc 'alias for server_develop.'
+task :server => [ :server_develop ]
+
+desc 'start server for development (optional parameters: RACKUP_OPTS).'
+task :server_develop => [ :seed ] do
+  ENV['GLUON_ENV'] = 'development'
+  sh server.call('-E development')
+end
+
+desc 'start server for deployment (optional parameters: RACKUP_OPTS).'
+task :server_deploy => [ :seed ] do
+  ENV['GLUON_ENV'] = 'deployment'
+  sh server.call('-E deployment')
 end
 
 desc 'start CGI server.'
@@ -58,9 +69,19 @@ task :local_gem do
   ruby *gluon_local, "#{gem_cmd} #{ENV['GEM_ARGS']}"
 end
 
-desc 'start server (project local RubyGems repository).'
-task :local_server => [ :seed ] do
-  ruby *gluon_local, server
+desc 'alias for local_server_develop.'
+task :local_server => [ :local_server_develop ]
+
+desc 'start server for development (project local RubyGems repository).'
+task :local_server_develop => [ :seed ] do
+  ENV['GLUON_ENV'] = 'development'
+  ruby *gluon_local, server.call('-E development')
+end
+
+desc 'start server for deployment (project local RubyGems repository).'
+task :local_server_deploy => [ :seed ] do
+  ENV['GLUON_ENV'] = 'deployment'
+  ruby *gluon_local, server.call('-E deployment')
 end
 
 desc 'make CGI environment for project local RubyGems repository.'
@@ -74,6 +95,7 @@ task :local_cgi_env do
     f.puts 'RUBYOPT=rubygems; export RUBYOPT'
     f.puts 'GEM_HOME="$BASE_DIR/gems"; export GEM_HOME'
     f.puts 'PATH="$PATH:$GEM_HOME/bin"; export PATH'
+    f.puts 'GLUON_ENV=deployment; export GLUON_ENV'
   end
 end
 
