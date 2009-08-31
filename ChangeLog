@@ -1,5 +1,8 @@
 2009-09-01  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* run/Rakefile, run/config.rb: session secret file is renamed from
+	`seed' to `secret'.
+
 	* Rakefile, run/Rakefile, run/config.rb: ENVIRONMENT of
 	development and deployment can be used.
 

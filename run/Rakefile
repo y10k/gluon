@@ -20,27 +20,27 @@ desc 'alias for server_develop.'
 task :server => [ :server_develop ]
 
 desc 'start server for development (optional parameters: RACKUP_OPTS).'
-task :server_develop => [ :seed ] do
+task :server_develop => [ :secret ] do
   ENV['GLUON_ENV'] = 'development'
   sh server.call('-E development')
 end
 
 desc 'start server for deployment (optional parameters: RACKUP_OPTS).'
-task :server_deploy => [ :seed ] do
+task :server_deploy => [ :secret ] do
   ENV['GLUON_ENV'] = 'deployment'
   sh server.call('-E deployment')
 end
 
 desc 'start CGI server.'
-task :cgi_server => [ :seed ] do
+task :cgi_server => [ :secret ] do
   ruby "#{base_dir}/bin/cgi_server"
 end
 
-desc 'make random seed for cookie based session.'
-task :seed do
-  seed = "#{base_dir}/seed"
-  unless File.exist? seed then
-    puts 'make random seed for cookie based session.'
+desc 'make random secret for cookie based session.'
+task :secret do
+  secret = "#{base_dir}/secret"
+  unless File.exist? secret then
+    puts 'make random secret for cookie based session.'
     require 'digest'
     id = Digest::MD5.new
     now = Time.now
@@ -49,7 +49,7 @@ task :seed do
     id.update(rand(0).to_s)
     id.update($$.to_s)
     id.update(Dir.getwd)
-    File.open(seed, 'w:us-ascii') do |f|
+    File.open(secret, 'w:us-ascii') do |f|
       f.write id.hexdigest
     end
   end
@@ -73,13 +73,13 @@ desc 'alias for local_server_develop.'
 task :local_server => [ :local_server_develop ]
 
 desc 'start server for development (project local RubyGems repository).'
-task :local_server_develop => [ :seed ] do
+task :local_server_develop => [ :secret ] do
   ENV['GLUON_ENV'] = 'development'
   ruby *gluon_local, server.call('-E development')
 end
 
 desc 'start server for deployment (project local RubyGems repository).'
-task :local_server_deploy => [ :seed ] do
+task :local_server_deploy => [ :secret ] do
   ENV['GLUON_ENV'] = 'deployment'
   ruby *gluon_local, server.call('-E deployment')
 end

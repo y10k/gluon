@@ -6,5 +6,5 @@
 /run/bin/gluon_local
 /run/cgi.env*
 /run/gems/*
-/run/seed
+/run/secret
 /test/test_setup.*.install

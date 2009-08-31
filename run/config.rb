@@ -13,7 +13,7 @@ else
   raise "unknown gluon environment: #{ENV['GLUON_ENV']}"
 end
 
-use Rack::Session::Cookie, :secret => IO.read("#{base_dir}/seed")
+use Rack::Session::Cookie, :secret => IO.read("#{base_dir}/secret")
 
 ## :example:start
 
