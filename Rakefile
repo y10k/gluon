@@ -13,7 +13,7 @@ rdoc_cmd = "#{prefix}rdoc#{suffix}"
 gem_cmd = "#{prefix}gem#{suffix}"
 
 example = proc{|options|
-  "rackup -I #{base_dir}/lib #{options} ENV['RACKUP_OPTS'] #{base_dir}/run/config.ru"
+  "rackup -I #{base_dir}/lib #{options} #{ENV['RACKUP_OPTS']} #{base_dir}/run/config.ru"
 }
 
 desc 'alias for example_develop.'
