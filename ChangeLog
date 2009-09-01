@@ -3,6 +3,12 @@
 	* lib/gluon/application.rb, lib/gluon/builder.rb: late build of
 	application.
 
+2009-09-02  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/controller.rb: Gluon::Memoization is class instances
+	memoization. Gluon::SingleMemoization is single instance
+	memoization.
+
 2009-09-01  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* run/Rakefile, run/config.rb: session secret file is renamed from

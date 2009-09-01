@@ -23,6 +23,7 @@ module Gluon
   autoload :ERBView, 'gluon/erbview'
   autoload :HTMLEmbeddedView, 'gluon/htmlview'
   autoload :Memoization, 'gluon/controller'
+  autoload :SingleMemoization, 'gluon/controller'
   autoload :Mock, 'gluon/mock'
   autoload :NoLogger, 'gluon/rs'
   autoload :PresentationObject, 'gluon/po'
