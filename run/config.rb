@@ -1,5 +1,7 @@
 # gluon configuration
 
+ENV['GLUON_ENV'] ||= 'development'
+
 case ENV['GLUON_ENV']
 when 'development'
   use Rack::Reloader
