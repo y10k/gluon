@@ -16,6 +16,8 @@ require 'rack'
 
 module Gluon
   class Builder
+    extend Forwardable
+
     def self.require_path(lib_dir)
       unless ($:.include? lib_dir) then
         $: << lib_dir
@@ -28,11 +30,9 @@ module Gluon
       @lib_dir = options[:lib_dir] || File.join(base_dir, 'lib')
       @view_dir = options[:view_dir] || File.join(base_dir, 'view')
       @config_rb = options[:config_rb] || File.join(base_dir, 'config.rb')
-      @logger = NoLogger.instance
-      @cmap = ClassMap.new
-      @template_engine = TemplateEngine.new(@view_dir)
-      @builder = Rack::Builder.new
-      @builder.use(Root)
+      @middleware_setup = proc{|builder| builder }
+      @mount_tab = {}
+      @svc_tab = {}
       @service_man = BackendServiceManager.new
     end
 
@@ -46,58 +46,65 @@ module Gluon
     attr_reader :config_rb
 
     def use(middleware, *args, &block)
-      @builder.use(middleware, *args, &block)
+      parent = @middleware_setup
+      @middleware_setup = proc{|builder, options|
+        new_builder = parent.call(builder, options)
+        new_builder.use(middleware, *args, &block)
+        new_builder
+      }
       nil
     end
 
     class MapEntry
-      def initialize(logger, cmap, app, location)
-        @logger = logger
-        @cmap = cmap
-        @app = app
-        @location = location
+      extend Forwardable
+
+      def initialize
         @builder = Rack::Builder.new
+        @app_builder = proc{|location, options|
+          Application.new(options[:logger],
+                          options[:cmap],
+                          options[:template_engine],
+                          options[:service_man])
+        }
       end
 
-      def use(middleware, *args, &block)
-        @builder.use(middleware, *args, &block)
-        nil
-      end
+      def_delegator :@builder, :use
 
-      def run(app)
-        @app.run(app)
+      def run(rack_app)
+        parent = @app_builder
+        @app_builder = proc{|location, options|
+          parent.call(location, options).run rack_app
+        }
         nil
       end
 
       def mount(page_type)
-        @cmap.mount(page_type, @location)
-        @app.mount(page_type)
+        parent = @app_builder
+        @app_builder = proc{|location, options|
+          options[:cmap].mount(page_type, location)
+          parent.call(location, options).mount(page_type)
+        }
         nil
       end
 
-      def _to_app
-        @builder.run(@app)
-        @builder.to_app
+      def _to_builder
+        proc{|location, options|
+          @builder.run @app_builder.call(location, options)
+          @builder.to_app
+        }
       end
     end
 
     def map(location)
-      app = Application.new(@logger, @cmap, @template_engine, @service_man)
-      entry = MapEntry.new(@logger, @cmap, app, location)
+      entry = MapEntry.new
       yield(entry)
-      @builder.map(location) { run(entry._to_app) }
+      @mount_tab[location] = entry._to_builder
       nil
     end
 
     class ServiceEntry
-      def initialize(logger, service_man, name)
-        @logger = logger
-        @service_man = service_man
-        @name = name
-      end
-
-      def start
-        @value = yield
+      def start(&block)
+        @initializer = block
         nil
       end
 
@@ -106,16 +113,17 @@ module Gluon
         nil
       end
 
-      def _add_service
-        @service_man.add(@name, @value, &@finalizer)
-        nil
+      def _to_setup
+        proc{|service_man, service_name, options|
+          service_man.add(service_name, @initializer.call, &@finalizer)
+        }
       end
     end
 
     def backend_service(name)
-      entry = ServiceEntry.new(@logger, @service_man, name)
+      entry = ServiceEntry.new
       yield(entry)
-      entry._add_service
+      @svc_tab[name] = entry._to_setup
       nil
     end
 
@@ -142,9 +150,7 @@ module Gluon
     private :dsl_binding
 
     def eval_conf(expr, *args)
-      r = eval(expr, dsl_binding, *args)
-      @service_man.setup
-      r                         # eval-result for debug.
+      eval(expr, dsl_binding, *args) # return eval-result for debug.
     end
 
     def load_conf
@@ -153,7 +159,28 @@ module Gluon
     end
 
     def to_app
-      @builder.to_app
+      options = {
+        :logger => NoLogger.instance,
+        :cmap => ClassMap.new,
+        :template_engine => TemplateEngine.new(@view_dir),
+        :service_man => @service_man
+      }
+
+      for svc_name, svc_setup in @svc_tab
+        svc_setup.call(@service_man, svc_name, options)
+      end
+      @service_man.setup
+
+      builder = Rack::Builder.new
+      builder.use Root
+      @middleware_setup.call(builder, options)
+      for location, app_builder in @mount_tab
+        builder.map location do
+          run app_builder.call(location, options)
+        end
+      end
+
+      builder.to_app
     end
 
     def shutdown

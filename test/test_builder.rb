@@ -115,6 +115,11 @@ module Gluon::Test
         end
       }
 
+      assert_equal(new_count, Bar.new_count)
+      assert_equal(final_count, Bar.final_count)
+
+      @builder.to_app
+
       assert_equal(new_count + 1, Bar.new_count)
       assert_equal(final_count, Bar.final_count)
 

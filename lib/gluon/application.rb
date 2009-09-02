@@ -42,12 +42,13 @@ module Gluon
         Controller.find_path_filter(page_type) || %r"^/?$",
         page_type
       ]
-      nil
+
+      self                      # for Gluon::Builder::MapEntry
     end
 
     def run(app)
       @default_app = app
-      nil
+      self                      # for Gluon::Builder::MapEntry
     end
 
     def find_page(path_info)

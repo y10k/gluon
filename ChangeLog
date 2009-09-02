@@ -1,3 +1,8 @@
+2009-09-03  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/application.rb, lib/gluon/builder.rb: late build of
+	application.
+
 2009-09-01  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* run/Rakefile, run/config.rb: session secret file is renamed from
