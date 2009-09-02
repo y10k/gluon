@@ -4,8 +4,6 @@
 #   :include:../LICENSE
 #
 
-require 'gluon/erbview'
-
 class Module
   def gluon_metainfo
     @gluon_metainfo ||= {
@@ -40,8 +38,8 @@ module Gluon
   #   end
   #
   module Memoization
-    def initialize
-      super if (defined? super)
+    def initialize(*args)
+      super
 
       cache = {}
       self.class.ancestors.reverse_each do |module_or_class|
