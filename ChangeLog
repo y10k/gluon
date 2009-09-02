@@ -1,5 +1,8 @@
 2009-09-03  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/template.rb, run/config.rb: memoization for template
+	engine.
+
 	* lib/gluon/application.rb, lib/gluon/builder.rb: late build of
 	application.
 

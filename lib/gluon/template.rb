@@ -4,8 +4,12 @@
 #   :include:../LICENSE
 #
 
+require 'gluon/controller'
+
 module Gluon
   class TemplateEngine
+    include Memoization
+
     class Skeleton
       def initialize(po, r)
 	@po = po
@@ -30,6 +34,7 @@ module Gluon
     end
 
     def initialize(template_dir)
+      super()
       @template_dir = template_dir
     end
 
@@ -61,7 +66,8 @@ module Gluon
       script
     end
 
-    def create_engine(view, template_path, script)
+    def create_engine(view, encoding, template_path, inline_template=nil)
+      script = compile(view, encoding, template_path, inline_template)
       engine = Class.new(view.engine_skeleton)
       engine.class_eval("def call\n#{script}\nend", "#{template_path}c", 0)
       engine
@@ -71,8 +77,7 @@ module Gluon
       unless (template_path) then
 	template_path = default_template(po.controller.class)
       end
-      script = compile(view, encoding, template_path, inline_template)
-      engine = create_engine(view, template_path, script)
+      engine = create_engine(view, encoding, template_path, inline_template)
       v = engine.new(po, r)
       v.call
     end

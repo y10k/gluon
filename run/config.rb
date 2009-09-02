@@ -11,6 +11,9 @@ when 'deployment'
   Gluon::Controller.memoize :find_view_export
   Gluon::Controller.memoize :find_form_export
   Gluon::Controller.memoize :find_action_export
+  class Gluon::TemplateEngine
+    memoize :create_engine
+  end
 else
   raise "unknown gluon environment: #{ENV['GLUON_ENV']}"
 end
