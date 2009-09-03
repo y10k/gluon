@@ -13,6 +13,7 @@ module Gluon
   #     include Gluon::Memoization
   #
   #     def initialize
+  #       # to initialize memoize-cache slots, need a call of `Gluon::Memoization#initialize'
   #       super
   #     end
   #
