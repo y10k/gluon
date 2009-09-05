@@ -14,7 +14,7 @@ module Gluon
 
     def add(name, value, &block)
       @service_set[name] = [ value, block ]
-      nil
+      self                      # for Gluon::Builder::ServiceEntry
     end
 
     def setup

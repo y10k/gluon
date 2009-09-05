@@ -32,7 +32,7 @@ module Gluon
       @config_rb = options[:config_rb] || File.join(base_dir, 'config.rb')
       @middleware_setup = proc{|builder| builder }
       @mount_tab = {}
-      @svc_tab = {}
+      @svc_setup = proc{|service_man, options| service_man }
       @service_man = BackendServiceManager.new
     end
 
@@ -103,6 +103,11 @@ module Gluon
     end
 
     class ServiceEntry
+      def initialize(service_name, parent)
+        @service_name = service_name
+        @parent = parent
+      end
+
       def start(&block)
         @initializer = block
         nil
@@ -114,16 +119,16 @@ module Gluon
       end
 
       def _to_setup
-        proc{|service_man, service_name, options|
-          service_man.add(service_name, @initializer.call, &@finalizer)
+        proc{|service_man, options|
+          @parent.call(service_man, options).add(@service_name, @initializer.call, &@finalizer)
         }
       end
     end
 
     def backend_service(name)
-      entry = ServiceEntry.new
+      entry = ServiceEntry.new(name, @svc_setup)
       yield(entry)
-      @svc_tab[name] = entry._to_setup
+      @svc_setup = entry._to_setup
       nil
     end
 
@@ -166,11 +171,7 @@ module Gluon
         :service_man => @service_man
       }
 
-      for svc_name, svc_setup in @svc_tab
-        svc_setup.call(@service_man, svc_name, options)
-      end
-      @service_man.setup
-
+      @svc_setup.call(@service_man, options).setup
       builder = Rack::Builder.new
       builder.use Root
       @middleware_setup.call(builder, options)
