@@ -127,6 +127,7 @@ module Gluon
           else
             @logger.debug "#{c}: no action." if @logger.debug?
           end
+          @logger.debug "#{c}: process view." if @logger.debug?
           page_result = c.class.process_view(po)
         ensure
           @logger.debug "#{c}: page_end." if @logger.debug?
