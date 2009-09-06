@@ -102,6 +102,7 @@ module Gluon
         @logger.debug "controller: #{c}"
         @logger.debug "#{c}: page_around start."
       end
+
       c.page_around{
         @logger.debug "#{c}: page_start." if @logger.debug?
         c.page_start
@@ -132,9 +133,9 @@ module Gluon
           c.page_end
         end
       }
-      @logger.debug "#{c}: page_around end." if @logger.debug?
 
       if (@logger.debug?) then
+        @logger.debug "#{c}: page_around end."
         @logger.debug "#{c}: content-length: #{page_result.bytesize}"
         @logger.debug "#{c}: content-type: #{r.esponse['Content-Type']}"
       end
