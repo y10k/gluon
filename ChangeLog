@@ -1,5 +1,7 @@
 2009-09-07  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* run/config.rb: access log.
+
 	* lib/gluon/application.rb, lib/gluon/builder.rb, run/config.rb:
 	logging.
 

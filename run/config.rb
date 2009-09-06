@@ -20,9 +20,13 @@ else
   raise "unknown gluon environment: #{ENV['GLUON_ENV']}"
 end
 
-log = Logger.new("#{base_dir}/gluon.log")
-log.level = log_level
-logger log
+gluon_log = Logger.new("#{base_dir}/gluon.log")
+gluon_log.level = log_level
+logger gluon_log
+
+access_log = File.open("#{base_dir}/access.log", 'a')
+access_log.sync = true
+use Rack::CommonLogger, access_log
 
 use Rack::Session::Cookie, :secret => IO.read("#{base_dir}/secret")
 
