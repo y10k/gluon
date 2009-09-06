@@ -111,7 +111,7 @@ module Gluon
           c.page_validation_preprocess
           @logger.debug "#{c}: set form parameters." if @logger.debug?
           Controller.set_form_params(c, r.equest.params)
-          @logger.debug "#{c}: page_request." if @logger.debug?
+          @logger.debug "#{c}: page_request(#{r.path_args.map{|s| s.inspect }.join(', ')})" if @logger.debug?
           c.page_request(*r.path_args)
           if (action = Controller.find_first_action(c, r.equest.params)) then
             @logger.debug "#{c}: validation is #{r.validation.inspect}." if @logger.debug?
