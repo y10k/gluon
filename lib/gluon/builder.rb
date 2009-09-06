@@ -16,8 +16,6 @@ require 'rack'
 
 module Gluon
   class Builder
-    extend Forwardable
-
     def self.require_path(lib_dir)
       unless ($:.include? lib_dir) then
         $: << lib_dir
@@ -30,9 +28,10 @@ module Gluon
       @lib_dir = options[:lib_dir] || File.join(base_dir, 'lib')
       @view_dir = options[:view_dir] || File.join(base_dir, 'view')
       @config_rb = options[:config_rb] || File.join(base_dir, 'config.rb')
-      @middleware_setup = proc{|builder| builder }
+      @logger = NoLogger.instance
+      @middleware_setup = proc{|builder, logger, options| builder }
       @mount_tab = {}
-      @svc_setup = proc{|service_man, options| service_man }
+      @svc_setup = proc{|service_man, logger, options| service_man }
       @service_man = BackendServiceManager.new
     end
 
@@ -44,11 +43,13 @@ module Gluon
     attr_reader :lib_dir
     attr_reader :view_dir
     attr_reader :config_rb
+    attr_writer :logger
 
     def use(middleware, *args, &block)
       parent = @middleware_setup
-      @middleware_setup = proc{|builder, options|
-        new_builder = parent.call(builder, options)
+      @middleware_setup = proc{|builder, logger, options|
+        logger.info "use #{middleware}"
+        new_builder = parent.call(builder, logger, options)
         new_builder.use(middleware, *args, &block)
         new_builder
       }
@@ -56,40 +57,47 @@ module Gluon
     end
 
     class MapEntry
-      extend Forwardable
-
       def initialize
         @builder = Rack::Builder.new
-        @app_builder = proc{|location, options|
-          Application.new(options[:logger],
+        @app_builder = proc{|location, logger, options|
+          Application.new(logger,
                           options[:cmap],
                           options[:template_engine],
                           options[:service_man])
         }
       end
 
-      def_delegator :@builder, :use
+      def use(middleware, *args, &block)
+        parent = @app_builder
+        @app_builder = proc{|location, logger, options|
+          logger.info "use #{middleware} for location: #{location}"
+          @builder.use(middleware, *args, &block)
+          parent.call(location, logger, options)
+        }
+      end
 
       def run(rack_app)
         parent = @app_builder
-        @app_builder = proc{|location, options|
-          parent.call(location, options).run rack_app
+        @app_builder = proc{|location, logger, options|
+          logger.info "run #{rack_app} for location: #{location}"
+          parent.call(location, logger, options).run rack_app
         }
         nil
       end
 
       def mount(page_type)
         parent = @app_builder
-        @app_builder = proc{|location, options|
+        @app_builder = proc{|location, logger, options|
+          logger.info "mount #{page_type} for location: #{location}"
           options[:cmap].mount(page_type, location)
-          parent.call(location, options).mount(page_type)
+          parent.call(location, logger, options).mount(page_type)
         }
         nil
       end
 
       def _to_builder
-        proc{|location, options|
-          @builder.run @app_builder.call(location, options)
+        proc{|location, logger, options|
+          @builder.run @app_builder.call(location, logger, options)
           @builder.to_app
         }
       end
@@ -119,8 +127,13 @@ module Gluon
       end
 
       def _to_setup
-        proc{|service_man, options|
-          @parent.call(service_man, options).add(@service_name, @initializer.call, &@finalizer)
+        proc{|service_man, logger, options|
+          init_service = @initializer.call
+          logger.info "backend service start: #{@service_name} => #{init_service}"
+          @parent.call(service_man, logger, options).add(@service_name, init_service) do |final_service|
+            logger.info "backend service stop: #{@service_name} => #{final_service}"
+            @finalizer.call(final_service) if @finalizer
+          end
         }
       end
     end
@@ -143,6 +156,7 @@ module Gluon
       def_delegator :@builder, :lib_dir
       def_delegator :@builder, :view_dir
       def_delegator :@builder, :config_rb
+      def_delegator :@builder, :logger=, :logger
       def_delegator :@builder, :use
       def_delegator :@builder, :map
       def_delegator :@builder, :backend_service
@@ -165,19 +179,20 @@ module Gluon
 
     def to_app
       options = {
-        :logger => NoLogger.instance,
         :cmap => ClassMap.new,
         :template_engine => TemplateEngine.new(@view_dir),
         :service_man => @service_man
       }
 
-      @svc_setup.call(@service_man, options).setup
+      @logger.info 'gluon start.'
+      @svc_setup.call(@service_man, @logger, options).setup
       builder = Rack::Builder.new
-      builder.use Root
-      @middleware_setup.call(builder, options)
+      builder.use Root, @logger
+      @middleware_setup.call(builder, @logger, options)
       for location, app_builder in @mount_tab
+        logger = @logger
         builder.map location do
-          run app_builder.call(location, options)
+          run app_builder.call(location, logger, options)
         end
       end
 
@@ -186,6 +201,8 @@ module Gluon
 
     def shutdown
       @service_man.shutdown
+      @logger.info 'gluon stop.'
+      @logger.close
       nil
     end
   end

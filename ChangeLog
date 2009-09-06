@@ -1,3 +1,8 @@
+2009-09-07  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/application.rb, lib/gluon/builder.rb, run/config.rb:
+	logging.
+
 2009-09-04  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/controller.rb, lib/gluon/memoize.rb,

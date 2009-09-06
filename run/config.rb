@@ -4,8 +4,10 @@ ENV['GLUON_ENV'] ||= 'development'
 
 case ENV['GLUON_ENV']
 when 'development'
+  log_level = Logger::DEBUG
   use Rack::Reloader
 when 'deployment'
+  log_level = Logger::INFO
   Gluon::Controller.memoize :find_path_filter
   Gluon::Controller.memoize :find_path_block
   Gluon::Controller.memoize :find_view_export
@@ -17,6 +19,10 @@ when 'deployment'
 else
   raise "unknown gluon environment: #{ENV['GLUON_ENV']}"
 end
+
+log = Logger.new("#{base_dir}/gluon.log")
+log.level = log_level
+logger log
 
 use Rack::Session::Cookie, :secret => IO.read("#{base_dir}/secret")
 
