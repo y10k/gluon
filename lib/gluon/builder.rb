@@ -48,8 +48,8 @@ module Gluon
     def use(middleware, *args, &block)
       parent = @middleware_setup
       @middleware_setup = proc{|builder, logger, options|
-        logger.info "use #{middleware}"
         new_builder = parent.call(builder, logger, options)
+        logger.info "use #{middleware}"
         new_builder.use(middleware, *args, &block)
         new_builder
       }
@@ -70,17 +70,19 @@ module Gluon
       def use(middleware, *args, &block)
         parent = @app_builder
         @app_builder = proc{|location, logger, options|
+          app = parent.call(location, logger, options)
           logger.info "use #{middleware} for location: #{location}"
           @builder.use(middleware, *args, &block)
-          parent.call(location, logger, options)
+          app
         }
       end
 
       def run(rack_app)
         parent = @app_builder
         @app_builder = proc{|location, logger, options|
+          app = parent.call(location, logger, options)
           logger.info "run #{rack_app} for location: #{location}"
-          parent.call(location, logger, options).run rack_app
+          app.run rack_app
         }
         nil
       end
@@ -88,9 +90,10 @@ module Gluon
       def mount(page_type)
         parent = @app_builder
         @app_builder = proc{|location, logger, options|
+          app = parent.call(location, logger, options)
           logger.info "mount #{page_type} for location: #{location}"
           options[:cmap].mount(page_type, location)
-          parent.call(location, logger, options).mount(page_type)
+          app.mount(page_type)
         }
         nil
       end
@@ -128,9 +131,10 @@ module Gluon
 
       def _to_setup
         proc{|service_man, logger, options|
+          svc_man = @parent.call(service_man, logger, options)
           init_service = @initializer.call
           logger.info "backend service start: #{@service_name} => #{init_service}"
-          @parent.call(service_man, logger, options).add(@service_name, init_service) do |final_service|
+          svc_man.add(@service_name, init_service) do |final_service|
             logger.info "backend service stop: #{@service_name} => #{final_service}"
             @finalizer.call(final_service) if @finalizer
           end
