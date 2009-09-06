@@ -1,5 +1,8 @@
 2009-09-07  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon.rb, run/config.rb: compact declaration for
+	memoization.
+
 	* run/config.rb: access log.
 
 	* lib/gluon/application.rb, lib/gluon/builder.rb, run/config.rb:

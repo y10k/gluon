@@ -8,14 +8,7 @@ when 'development'
   use Rack::Reloader
 when 'deployment'
   log_level = Logger::INFO
-  Gluon::Controller.memoize :find_path_filter
-  Gluon::Controller.memoize :find_path_block
-  Gluon::Controller.memoize :find_view_export
-  Gluon::Controller.memoize :find_form_export
-  Gluon::Controller.memoize :find_action_export
-  class Gluon::TemplateEngine
-    memoize :create_engine
-  end
+  Gluon.use_memoization
 else
   raise "unknown gluon environment: #{ENV['GLUON_ENV']}"
 end
