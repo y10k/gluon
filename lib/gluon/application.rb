@@ -91,8 +91,25 @@ module Gluon
       end
       @logger.debug "page_type(#{page_type}) + path_args(#{r.path_args.map{|s| s.inspect }.join(', ')})" if @logger.debug?
 
-      r.esponse['Content-Type'] = "text/html; charset=#{page_type.page_encoding}"
+      page_result = nil
       c = page_type.new
+      begin
+        c = catch(:GLUON_CONTROLLER_SWITCH_TO) {
+          page_result = process_controller(c, r)
+          nil
+        }
+      end while (c)
+
+      r.esponse.write(page_result)
+      r.esponse.finish
+    end
+
+    def self.controller_switch_to(c)
+      throw(:GLUON_CONTROLLER_SWITCH_TO, c)
+    end
+
+    def process_controller(c, r)
+      r.esponse['Content-Type'] = "text/html; charset=#{c.class.page_encoding}"
       r.controller = c
       c.r = r
       po = PresentationObject.new(c, r, @template_engine)
@@ -141,9 +158,9 @@ module Gluon
         @logger.debug "#{c}: content-type: #{r.esponse['Content-Type']}"
       end
 
-      r.esponse.write(page_result)
-      r.esponse.finish
+      page_result
     end
+    private :process_controller
   end
 end
 

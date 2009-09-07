@@ -4,6 +4,7 @@
 #   :include:../LICENSE
 #
 
+require 'gluon/application'
 require 'singleton'
 
 module Gluon
@@ -115,6 +116,10 @@ module Gluon
 
     def redirect_to(page_type, *path_args)
       location(class2path(page_type, *path_args))
+    end
+
+    def switch_to(controller)
+      Application.controller_switch_to(controller)
     end
 
     def backend_service

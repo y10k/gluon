@@ -1,5 +1,8 @@
 2009-09-07  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/application.rb, lib/gluon/rs.rb: a way to switch to
+	other controller on response.
+
 	* lib/gluon.rb, run/config.rb: compact declaration for
 	memoization.
 
