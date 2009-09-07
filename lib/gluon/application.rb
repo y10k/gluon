@@ -79,7 +79,7 @@ module Gluon
       r.cmap = @cmap
       r.backend_service = @service_man.new_services
 
-      @logger.debug "script_name(#{r.equest.script_name.inspect}) + path_info(#{r.equest.path_info.inspect})"
+      @logger.debug "script_name(#{r.equest.script_name.inspect}) + path_info(#{r.equest.path_info.inspect})" if @logger.debug?
       page_type, r.path_args = find_page(r.equest.path_info)
       unless (page_type) then
         if (@default_app) then
