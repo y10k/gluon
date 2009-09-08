@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-# = gluon - component based web application framework
-# == license
-#   :include:../LICENSE
-#
 
 class Module
   # = meta information for gluon framework

@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-# = gluon - component based web application framework
-# == license
-#   :include:../LICENSE
-#
 
 require 'gluon/metainfo'
 
