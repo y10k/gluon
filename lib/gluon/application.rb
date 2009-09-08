@@ -6,6 +6,8 @@ require 'gluon/rs'
 require 'rack'
 
 module Gluon
+  # 1. save <tt>SCRIPT_NAME</tt> for Gluon::RequestResponseContext#oot_script_name.
+  # 2. error logging of framework.
   class Root
     def initialize(app, logger)
       @app = app
