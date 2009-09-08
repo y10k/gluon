@@ -38,7 +38,7 @@ task :test do
   end
 end
 
-rdoc_opts = %w[ -SNa -m Gluon ]
+rdoc_opts = [ '-SNa', '-m', 'Gluon', '-t', 'gluon - component based web application framework' ]
 
 desc 'make document.'
 task :rdoc do
