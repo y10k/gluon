@@ -57,7 +57,7 @@ module Gluon
     # usage: <tt>r.oot_script_name</tt>, <tt>@r.oot_script_name</tt>
     #
     # request attribute of <tt>:gluon_root_script_name</tt> is set by
-    # rack-middleware of Rack::Root.
+    # rack-middleware of Gluon::Root.
     #
     def oot_script_name
       @req.env[:gluon_root_script_name]
