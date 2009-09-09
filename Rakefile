@@ -42,9 +42,7 @@ rdoc_opts = [ '-SNa', '-m', 'Gluon', '-t', 'gluon - component based web applicat
 
 desc 'make document.'
 task :rdoc do
-  cd "#{base_dir}/lib", :verbose => true do
-    sh rdoc_cmd, '-o', '../api', *rdoc_opts
-  end
+  sh rdoc_cmd, *rdoc_opts, '-o', 'api', 'lib', 'run/lib'
 end
 
 gluon_local = [ "#{base_dir}/bin/gluon_local", '-d', base_dir ]
