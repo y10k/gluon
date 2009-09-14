@@ -109,21 +109,29 @@ module Gluon
 
     def encoding(name, options={})
       expected_encoding = options[:expected_encoding] || @page_encoding
+      delete_on_fail = (options.key? :delete_on_fail) ? options[:delete_on_fail] : true
       error_message = options[:error] || "encoding of `#{prefix(name)}' is not #{expected_encoding}."
       value = @c.__send__(name)
       validate error_message do
         if (value) then
+          fail_count = 0
           if (value.is_a? Array) then
-            fail_count = 0
             for v in value
               v.force_encoding(expected_encoding)
-              v.valid_encoding? or fail_count += 1
+              unless (v.valid_encoding?) then
+                v.clear if delete_on_fail
+                fail_count += 1
+              end
             end
-            fail_count == 0
           else
             value.force_encoding(expected_encoding)
-            value.valid_encoding?
+            unless (value.valid_encoding?) then
+              value.clear if delete_on_fail
+              fail_count +=- 1
+            end
           end
+
+          fail_count == 0
         else
           true                  # ignored nil.
         end

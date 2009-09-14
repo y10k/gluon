@@ -1,5 +1,7 @@
 2009-09-15  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/validation.rb: delete on fail at encoding validation.
+
 	* lib/gluon/web.rb, lib/gluon/web/table.erb,
 	lib/gluon/web/table.rb, lib/gluon/web/table_item.erb: table
 	utility.
