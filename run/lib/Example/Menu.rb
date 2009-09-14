@@ -38,7 +38,7 @@ class Example
     Items = {}
     for example in [ Value, Cond, Foreach, Link, Action, Import,
         Submit, Text, Passwd, Checkbox, Radio, Select, Textarea,
-        CompositeForm, ErrorMessages, OneTimeToken, BackendService ]
+        CompositeForm, ErrorMessages, OneTimeToken, Table, BackendService ]
       Items[Item.key(example)] = Item.new(example)
     end
 

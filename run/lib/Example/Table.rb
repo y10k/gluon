@@ -1,95 +1,120 @@
+# -*- coding: utf-8 -*-
+
 class Example
   class Table
-    include Gluon::Controller
-    include Gluon::ERBView
+    extend Gluon::Component
+
+    def self.page_encoding
+      __ENCODING__
+    end
+
+    # for Example::Menu and Example::Panel
+    def self.description
+      'table utility'
+    end
 
     class Character
-      include Gluon::Controller
-      include Gluon::ERBView
+      extend Gluon::Component
+
+      def self.page_encoding
+        __ENCODING__
+      end
 
       def initialize(char)
         @char = char
       end
 
-      def page_import
-      end
-
-      attr_reader :char
+      gluon_value_reader :char
 
       def code
-        format('0x%02X', @char[0])
+        format('0x%02X', @char.ord)
       end
+      gluon_value :code
     end
 
-    class Emphasis
-      include Gluon::Controller
-      include Gluon::ERBView
+    class Number
+      extend Gluon::Component
 
-      def initialize(text)
-        @text = text
+      def initialize(number)
+        @number = number
       end
 
-      def page_import
-      end
-
-      attr_reader :text
+      gluon_value_reader :number
     end
 
     class Check
-      include Gluon::Controller
-      include Gluon::ERBView
+      extend Gluon::Component
 
-      def initialize(text, options={})
+      def initialize(id, text)
         @text = text
-        @check_id = options[:id]
+        @check_id = id
         @checked = false
       end
 
-      def page_import
+      gluon_value_reader :text
+      gluon_value_reader :check_id
+      gluon_checkbox_accessor :checked, :attrs => { 'id' => :check_id }
+    end
+
+    def initialize
+      @import_table = Gluon::Web::ImportTable.new(:summary => 'import table', :border => 1)
+      @import_table.caption = 'import table'
+      t = @import_table         # alias
+      t.tr.th('X').th('A').th('B').th('C').th('D').th('E')
+      t.tr{|r| r.th('1'); ('a'..'e').each{|c| r.td(Character.new(c)) } }
+      t.tr{|r| r.th('2'); ('f'..'j').each{|c| r.td(Character.new(c)) } }
+      t.tr{|r| r.th('3'); ('k'..'o').each{|c| r.td(Character.new(c)) } }
+      t.tr{|r| r.th('4'); ('p'..'t').each{|c| r.td(Character.new(c)) } }
+      t.tr{|r| r.th('5'); ('u'..'y').each{|c| r.td(Character.new(c)) } }
+      t.tr{|r| r.th('6'); r.td(Character.new('z')); 4.times{ r.td('-', :align => 'center') } }
+
+      @foreach_table = Gluon::Web::ForeachTable.new
+      u = @foreach_table        # alias
+      [ %w[ 17 24  1  8 15 ],
+        %w[ 23  5  7 14 16 ],
+        %w[  4  6 13 20 22 ],
+        %w[ 10 12 19 21  3 ],
+        %w[ 11 18 25  2  9 ]
+      ].each do |numbers|
+        u.tr{|r|
+          for n in numbers
+            r.td(Number.new(n))
+          end
+        }
       end
 
-      attr_reader :text
-      attr_reader :check_id
-      gluon_export_accessor :checked
+      @form_table = Gluon::Web::ForeachTable.new
+      @check_list = []
+      v = @form_table
+      [ 'a'..'e',
+        'f'..'j',
+        'k'..'o',
+        'p'..'t',
+        'u'..'y',
+        'z'..'dd'
+      ].each do |chars|
+        v.tr{|r|
+          for c in chars
+            check = Check.new("check-#{c}", c)
+            r.td(check)
+            @check_list << check
+          end
+        }
+      end
     end
 
-    def page_start
-      @auto_table = Gluon::Web::Table.new(:columns => 5,
-                                          :items => ('a'..'z').map{|c| Character.new(c) },
-                                          :header_rows => 1,
-                                          :header_columns => 1,
-                                          :summary => 'auto import table',
-                                          :caption => Emphasis.new('automatic (import)'),
-                                          :border => false,
-                                          :class => 'example',
-                                          :id => 'auto-import-table')
+    gluon_import_reader :import_table
+    gluon_foreach_reader :foreach_table
+    gluon_foreach_reader :form_table
 
-      @manual_table = Gluon::Web::Table.new(:columns => 5,
-                                            :items => 'a'..'z')
-
-      @auto_form_table = Gluon::Web::Table.new(:columns => 5,
-                                               :items => ('a'..'z').map{|c| Check.new(c, :id => "auto-check-#{c}") },
-                                               :summary => 'auto form table',
-                                               :caption => 'automatic (form)',
-                                               :id => 'auto-form-table')
-
-      @manual_form_table = Gluon::Web::Table.new(:columns => 5,
-                                                 :items => ('a'..'z').map{|c| Check.new(c) })
+    def checked_values
+      @check_list.find_all{|c| c.checked }.map{|c| c.text }.join(', ')
     end
+    gluon_value :checked_values
 
-    #def page_start
-    #def page_post
-    def page_import
+    def ok
     end
-
-    def action_path
-      @c.class2path(ExamplePanel, Table)
-    end
-
-    attr_reader :auto_table
-    attr_reader :manual_table
-    gluon_export_reader :auto_form_table
-    gluon_export_reader :manual_form_table
+    gluon_submit :ok
   end
 end
 

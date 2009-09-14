@@ -39,6 +39,7 @@ class Example
   autoload :Radio, 'Example/Radio'
   autoload :Select, 'Example/Select'
   autoload :Submit, 'Example/Submit'
+  autoload :Table, 'Example/Table'
   autoload :Text, 'Example/Text'
   autoload :Textarea, 'Example/Textarea'
   autoload :Value, 'Example/Value'

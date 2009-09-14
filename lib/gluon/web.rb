@@ -4,8 +4,8 @@ module Gluon
   # = namespace for web components
   module Web
     autoload :ErrorMessages, 'gluon/web/error'
+    autoload :ImportTable, 'gluon/web/table'
     autoload :OneTimeToken, 'gluon/web/token'
-    autoload :Table, 'gluon/web/table'
   end
 end
 

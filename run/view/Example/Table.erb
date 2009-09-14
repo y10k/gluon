@@ -1,62 +1,38 @@
-<h2>1. automatic embedded table</h2>
+<h2>1. import table</h2>
 
-<%= import Gluon::Web::Table.new(:columns => 7,
-                                 :items => 'a'..'z',
-                                 :header_rows => 1,
-                                 :summary => 'auto string table',
-                                 :caption => 'automatic (embedded)',
-                                 :frame => 'box',
-                                 :rules => 'all',
-                                 :id => 'auto-embedded-table')
-%>
+<% gluon :import_table %>
 
-<h2>2. automatic import table</h2>
+<h2>2. foreach table</h2>
 
-<%= import :auto_table %>
-
-<h2>3. manual table</h2>
-
-<table id="manual-table" summary="manual table" border="1">
-  <caption>manual</caption>
-  <% foreach :manual_table do |i| %>
+<table summary="foreach table" border="1">
+  <caption>foreach table</caption>
+  <% gluon :foreach_table do %>
     <tr>
-      <% foreach do |j| %>
-        <td>[<%= h "#{i+1}-#{j+1}" %>] <%= value %></td>
-      <% end %>
-      <% foreach :last_empty_cells do %>
-        <td align="center">-</td>
+      <% gluon :cells do %>
+        <td align="right"><% gluon :number %></td>
       <% end %>
     </tr>
   <% end %>
 </table>
 
-<h2>3. automatic table on form</h2>
+<h3>3. form table</h3>
 
-<form action="<%= value :action_path %>" target="main">
-<%= import :auto_form_table %>
-<p><input type="submit" /></p>
-</form>
-
-<h2>4. manual table on form</h2>
-
-<form action="<%= value :action_path %>" target="main">
-<table id="manual-form-table" summary="manual form table" border="1">
-  <caption>manual (form)</caption>
-  <% foreach :manual_form_table do |i| %>
-    <tr>
-      <% foreach do |j| %>
-        <td>
-          <%= checkbox :checked, :id => "manual-check-#{i}-#{j}" %>
-          <label for="<%= h "manual-check-#{i}-#{j}" %>"><%= value :text %></label>
-        </td>
-      <% end %>
-      <% foreach :last_empty_cells do %>
-        <td align="center">-</td>
-      <% end %>
-    </tr>
-  <% end %>
-</table>
-<p><input type="submit" /></p>
+<form target="main">
+  <table summary="form table" border="1">
+    <caption>foreach table</caption>
+    <% gluon :form_table do %>
+      <tr>
+        <% gluon :cells do %>
+          <td>
+            <% gluon :checked %>
+            <label for="<% gluon :check_id %>"><% gluon :text %></label>
+          </td>
+        <% end %>
+      </tr>
+    <% end %>
+  </table>
+  <p>checked: <% gluon :checked_values %></p>
+  <p><% gluon :ok %></p>
 </form>
 
 <%#

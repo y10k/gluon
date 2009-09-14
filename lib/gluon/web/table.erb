@@ -1,0 +1,21 @@
+<table<% gluon :attrs do %> <% gluon :name %>="<% gluon :value %>"<% end %>>
+  <% gluon :exist_caption? do %><caption><% gluon :caption %></caption><% end %>
+  <% gluon :rows do %>
+    <tr<% gluon :attrs do %> <% gluon :name %>="<% gluon :value %>"<% end %>>
+      <% gluon :cells do %>
+        <% gluon :header? do %>
+          <th<% gluon :attrs do %> <% gluon :name %>="<% gluon :value %>"<% end %>><% gluon :item %></th>
+        <% end %>
+        <% gluon :data? do %>
+          <td<% gluon :attrs do %> <% gluon :name %>="<% gluon :value %>"<% end %>><% gluon :item %></td>
+        <% end %>
+      <% end %>
+    </tr>
+  <% end %>
+</table>
+<%#
+  Local Variables:
+  mode: HTML
+  indent-tabs-mode: nil
+  End:
+%>

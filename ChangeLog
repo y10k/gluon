@@ -1,3 +1,9 @@
+2009-09-15  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/web.rb, lib/gluon/web/table.erb,
+	lib/gluon/web/table.rb, lib/gluon/web/table_item.erb: table
+	utility.
+
 2009-09-07  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/application.rb, lib/gluon/rs.rb: a way to switch to

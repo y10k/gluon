@@ -1,150 +1,191 @@
 # -*- coding: utf-8 -*-
 
 require 'gluon/controller'
-require 'gluon/erbview'
 
 module Gluon
   module Web
-    # = table rendering utility
-    class Table
-      include Controller
+    class StringTableItem
+      extend Gluon::Component
+
+      def self.page_encoding
+        __ENCODING__
+      end
+
+      def self.page_template
+        File.join(File.dirname(__FILE__), File.basename(__FILE__, '.rb') + '_item.erb')
+      end
+
+      def initialize(value)
+        @value = value
+      end
+
+      gluon_value_reader :value
+    end
+
+    class ImportTable
+      extend Gluon::Component
+
+      def self.page_encoding
+        __ENCODING__
+      end
+
+      def self.page_template
+        File.join(File.dirname(__FILE__), File.basename(__FILE__, '.rb') + '.erb')
+      end
+
+      class AttrPair
+        extend Gluon::Component
+
+        def initialize(name, value)
+          @name = name
+          @value = value
+        end
+
+        gluon_value_reader :name
+        gluon_value_reader :value
+      end
 
       class Cell
-        def initialize(item, parent, nth, header_columns)
+        extend Gluon::Component
+
+        def initialize(type, item, attrs={})
+          @type = type
           @item = item
-          @parent = parent
-          @nth = nth
-          @header_columns = header_columns
-        end
-
-        gluon_export_reader :item
-
-        def string?
-          @item.kind_of? String
-        end
-
-        def header_column?
-          @nth < @header_columns
+          @attrs = attrs.map{|n, v| AttrPair.new(n, v) }
         end
 
         def header?
-          header_column? || @parent.header_row?
+          @type == :header
+        end
+        gluon_cond :header?
+
+        def data?
+          @type == :data
+        end
+        gluon_cond :data?
+
+        gluon_import_reader :item
+        gluon_foreach_reader :attrs
+      end
+
+      class Header < Cell
+        def initialize(*args)
+          super(:header, *args)
+        end
+      end
+
+      class Data < Cell
+        def initialize(*args)
+          super(:data, *args)
         end
       end
 
       class Row
-        def initialize(columns, nth, header_rows, header_columns)
-          @columns = columns
-          @nth = nth
-          @header_rows = header_rows
-          @header_columns = header_columns
-          @row = []
-          @cells = nil
+        extend Gluon::Component
+
+        def initialize(cells, attrs={})
+          @cells = cells
+          @attrs = attrs.map{|n, v| AttrPair.new(n, v) }
         end
 
-        def <<(item)
-          @row << item
+        gluon_foreach_reader :cells
+        gluon_foreach_reader :attrs
+      end
+
+      class DslRow
+        def initialize(cells)
+          @cells = cells
+        end
+
+        def th(item, attrs={})
+          item = StringTableItem.new(item) if (item.is_a? String)
+          @cells << Header.new(item, attrs)
           self
         end
 
-        def [](index)
-          @row[index]
-        end
-
-        def each
-          for c in @row
-            yield(c)
-          end
-          nil
-        end
-
-        def to_a
+        def td(item, attrs={})
+          item = StringTableItem.new(item) if (item.is_a? String)
+          @cells << Data.new(item, attrs)
           self
-        end
-
-        def header_row?
-          @nth < @header_rows
-        end
-
-        def cells
-          unless (@cells) then
-            count = 0
-            @cells = []
-            for i in @row
-              @cells << Cell.new(i, self, count, @header_columns)
-              count += 1
-            end
-          end
-          @cells
-        end
-        gluon_export :cells, :accessor => true
-
-        def last_empty_cells
-          (0...(@columns - @row.length)).to_a
         end
       end
 
-      def initialize(options={})
-        @columns = options[:columns] or raise 'need for columns'
-        items = options[:items] or raise 'need for items'
+      def initialize(attrs={})
+        @attrs = attrs.map{|n, v| AttrPair.new(n, v) }
+        @caption = nil
         @rows = []
-        @header_rows = options[:header_rows] || 0
-        @header_columns = options[:header_columns] || 0
+      end
 
-        count = 0
-        for i in items
-          if (count % @columns == 0) then
-            row = Row.new(@columns, count, @header_rows, @header_columns)
-            @rows << row
-          end
-          row << i
-          count += 1
+      attr_accessor :caption
+
+      def tr(attrs={})
+        cells = []
+        @rows << Row.new(cells, attrs)
+        row = DslRow.new(cells)
+        if (block_given?) then
+          yield(row)
         end
 
-        @id = options[:id]
-        @summary = options[:summary]
-        @width = options[:width]
-        @border = (options.key? :border) ? options[:border] : 1
-        @frame = options[:frame]
-        @rules = options[:rules]
-        @css_class = options[:class]
-        @caption = options[:caption]
+        row
       end
 
-      def page_import
-      end
+      gluon_foreach_reader :attrs
+      gluon_value :caption
+      alias exist_caption? caption
+      gluon_cond :exist_caption?
+      gluon_foreach_reader :rows
+    end
 
-      def page_render(po)
-        template = File.join(File.dirname(__FILE__), 'table.rhtml')
-        @c.view_render(ERBView, template, po)
-      end
+    class ForeachTable
+      extend Gluon::Component
+      include Enumerable
 
-      def [](index)
-        @rows[index]
-      end
+      class Row
+        extend Gluon::Component
 
-      def each
-        for r in @rows
-          yield(r)
+        def initialize(cells)
+          @cells = cells
         end
-        nil
+
+        gluon_foreach_reader :cells
       end
 
-      def to_a
-        self
+      class DslRow
+        def initialize(cells)
+          @cells = cells
+        end
+
+        def th(item, attrs={})
+          @cells << item
+          self
+        end
+
+        def td(item, attrs={})
+          @cells << item
+          self
+        end
       end
 
-      attr_reader :id
-      attr_reader :summary
-      attr_reader :width
-      attr_reader :border
-      attr_reader :frame
-      attr_reader :rules
-      attr_reader :css_class
-      attr_reader :caption
+      def initialize(attrs={})
+        @rows = []
+      end
 
-      def string_caption?
-        @caption.kind_of? String
+      def tr(attrs={})
+        cells = []
+        @rows << Row.new(cells)
+        row = DslRow.new(cells)
+        if (block_given?) then
+          yield(row)
+        end
+        row
+      end
+
+      def [](*args)
+        @rows[*args]
+      end
+
+      def each(&block)
+        @rows.each(&block)
       end
     end
   end
