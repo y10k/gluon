@@ -1,3 +1,8 @@
+2009-09-16  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/validation.rb: invalid data encoding is always
+	ascii-8bit.
+
 2009-09-15  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/validation.rb: delete on fail at encoding validation.

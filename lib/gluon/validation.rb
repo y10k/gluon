@@ -119,6 +119,7 @@ module Gluon
             for v in value
               v.force_encoding(expected_encoding)
               unless (v.valid_encoding?) then
+                v.force_encoding(Encoding::ASCII_8BIT)
                 v.clear if delete_on_fail
                 fail_count += 1
               end
@@ -126,6 +127,7 @@ module Gluon
           else
             value.force_encoding(expected_encoding)
             unless (value.valid_encoding?) then
+              value.force_encoding(Encoding::ASCII_8BIT)
               value.clear if delete_on_fail
               fail_count +=- 1
             end

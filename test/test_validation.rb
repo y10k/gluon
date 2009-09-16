@@ -535,10 +535,8 @@ module Gluon::Test
 
       assert_equal(false, @r.validation)
       assert_equal([ "encoding of `foo' is not EUC-JP." ], @errors)
-      assert_equal(Encoding::EUC_JP, @c.foo.encoding, 'changed encoding.')
-      assert_equal('あいうえお'.force_encoding(Encoding::ASCII_8BIT),
-                   @c.foo.dup.force_encoding(Encoding::ASCII_8BIT),
-                   'no changed bytes.')
+      assert_equal(Encoding::ASCII_8BIT, @c.foo.encoding)
+      assert_equal('あいうえお'.force_encoding(Encoding::ASCII_8BIT), @c.foo)
     end
 
     def test_encoding_OK_list
@@ -595,10 +593,10 @@ module Gluon::Test
 
       assert_equal(false, @r.validation)
       assert_equal([ "encoding of `foo' is not UTF-8." ], @errors)
-      assert_equal(Encoding::UTF_8, @c.foo[1].encoding, 'changed encoding.')
-      assert_equal('かきくけこ'.encode(Encoding::EUC_JP).force_encoding(Encoding::ASCII_8BIT),
-                   @c.foo[1].dup.force_encoding(Encoding::ASCII_8BIT),
-                   'no changed bytes.')
+      assert_equal(Encoding::ASCII_8BIT, @c.foo[1].encoding)
+      assert_equal('かきくけこ'
+                   .encode(Encoding::EUC_JP)
+                   .force_encoding(Encoding::ASCII_8BIT), @c.foo[1])
     end
 
     def test_encoding_ignored_nil
@@ -886,12 +884,12 @@ module Gluon::Test
 
       assert_equal(Encoding::UTF_8, @c.alpha.encoding)
       assert_equal(Encoding::UTF_8, @c.beta.encoding)
-      assert_equal(Encoding::UTF_8, @c.gamma.encoding)
+      assert_equal(Encoding::ASCII_8BIT, @c.gamma.encoding, 'invalid encoding.')
       assert_equal(Encoding::UTF_8, @c.delta.encoding)
       assert_equal(Encoding::UTF_8, @c.zeta.encoding)
       assert_equal(Encoding::UTF_8, @c.eta.encoding)
       assert_equal(Encoding::UTF_8, @c.foo[0].theta.encoding)
-      assert_equal(Encoding::UTF_8, @c.foo[1].theta.encoding)
+      assert_equal(Encoding::ASCII_8BIT, @c.foo[1].theta.encoding, 'invalid encoding.')
       assert_equal(Encoding::UTF_8, @c.foo[2].theta.encoding)
       assert_equal(Encoding::UTF_8, @c.bar.iota.encoding)
 
