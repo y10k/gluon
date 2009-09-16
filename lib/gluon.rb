@@ -3,6 +3,15 @@
 require 'gluon/version'
 
 # = gluon - component based web application framework
+# == features
+# * component based. one component is one class. one page is composed
+#   of one or more components.
+# * simple view command. view command is one kind of
+#   <tt>gluon</tt>. the behavior of <tt>gluon</tt> command is
+#   controlled by controller.
+# * project local rubygems repository. you can have the rubygems
+#   environment only for your project.
+#
 # == license
 #
 # BSD style license.
