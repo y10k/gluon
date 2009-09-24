@@ -6,7 +6,7 @@ require 'gluon/version'
 # == license
 #
 # BSD style license.
-#   :include:LICENSE
+#   :include:../LICENSE
 #
 module Gluon
   autoload :Application, 'gluon/application'
