@@ -85,7 +85,7 @@ spec = Gem::Specification.new{|s|
   s.email = 'toki@freedom.ne.jp'
   s.executables << 'gluon_setup' << 'gluon_example' << 'gluon_local'
   s.files =
-    %w[ ChangeLog Rakefile LICENSE ] +
+    %w[ ChangeLog Rakefile LICENSE EXAMPLE ] +
     Dir['{lib,run,test}/**/Rakefile'] +
     Dir['{lib,run,test}/**/*.{rb,erb,ru,cgi}'] +
     Dir['run/bin/cgi_server']

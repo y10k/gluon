@@ -12,8 +12,10 @@ require 'gluon/version'
 # * project local rubygems repository. you can have the rubygems
 #   environment only for your project.
 #
-# == license
+# == example
+# :include:../EXAMPLE
 #
+# == license
 # BSD style license.
 #   :include:../LICENSE
 #

@@ -1,3 +1,7 @@
+2009-09-29  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* EXAMPLE: text to run example.
+
 2009-09-16  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/validation.rb: invalid data encoding is always

@@ -1,0 +1,34 @@
+=== run example
+
+  gluon_example -d example
+  cd example
+  rake
+
+see http://localhost:9292 for default.
+
+=== run example at deployment mode
+
+  gluon_example -d example
+  cd example
+  rake server_deploy
+
+see http://localhost:9292 for default.
+
+=== run example with project local rubygems repository
+
+  gluon_example -d example
+  cd example
+  rake local_gem "GEM_ARGS=install gluon"
+  rake local_server
+
+see http://localhost:9292 for default.
+
+=== run example CGI
+
+  gluon_example -d example
+  cd example
+  rake local_gem "GEM_ARGS=install gluon"
+  rake local_cgi_env
+  rake cgi_server
+
+see http://localhost:9292/gluon.cgi for default.
