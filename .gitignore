@@ -2,6 +2,7 @@
 *~
 /api/
 /gems/
+/pkg/
 /run/bbs_data.pstore
 /run/bin/gluon_local
 /run/cgi.env*
