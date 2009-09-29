@@ -21,7 +21,8 @@ see http://localhost:9292 for default.
   rake local_gem "GEM_ARGS=install gluon"
   rake local_server
 
-see http://localhost:9292 for default.
+see http://localhost:9292 for default.<br>
+see <tt>example/gems</tt> for local rubygems repository.
 
 === run example CGI
 
