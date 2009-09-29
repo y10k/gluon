@@ -4,6 +4,7 @@ require 'gluon/version'
 
 # = gluon - component based web application framework
 # == features
+# * need for ruby 1.9 or later. ruby 1.8 is not usable.
 # * component based. one component is one class. one page is composed
 #   of one or more components.
 # * simple view command. view command is one kind of
