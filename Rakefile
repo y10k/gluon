@@ -92,6 +92,7 @@ spec = Gem::Specification.new{|s|
   s.test_files = [ 'test/run.rb' ]
   s.has_rdoc = true
   s.rdoc_options = rdoc_opts
+  s.add_dependency 'rack'
 }
 
 Rake::GemPackageTask.new(spec) do |pkg|

@@ -1,3 +1,7 @@
+2009-10-01  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* Rakefile: gemspec dependency.
+
 2009-09-16  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/validation.rb: invalid data encoding is always
