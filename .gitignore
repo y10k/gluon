@@ -3,6 +3,7 @@
 /api/
 /gems/
 /pkg/
+/run/*.log
 /run/bbs_data.pstore
 /run/bin/gluon_local
 /run/cgi.env*
