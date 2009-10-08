@@ -1,12 +1,12 @@
 *.erbc
 *~
-/api/
-/gems/
-/pkg/
+/api/*
+/gems/*
+/pkg/*
 /run/*.log
 /run/bbs_data.pstore
 /run/bin/gluon_local
 /run/cgi.env*
-/run/gems/
+/run/gems/*
 /run/secret
 /test/test_setup.*.install
