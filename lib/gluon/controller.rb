@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+require 'forwardable'
 require 'gluon/erbview'
 require 'gluon/memoize'
 require 'gluon/metainfo'
@@ -12,89 +13,100 @@ module Gluon
   #   end
   #
   module Controller
+    module MetaInfo
+      class << self
+        def gluon_path_filter(page_type, path_filter, &block)
+          page_type.gluon_metainfo[:path_filter] = {
+            :filter => path_filter,
+            :block => block
+          }
+          nil
+        end
+
+        def gluon_export(page_type, export_type, name, type, options)
+          name = name.to_sym
+          unless (page_type.public_method_defined? name) then
+            raise NoMethodError, "not defineid method `#{name}' of `#{page_type}'"
+          end
+          page_type.gluon_metainfo[export_type][name] = { :type => type, :options => options }
+          nil
+        end
+        private :gluon_export
+
+        def gluon_view_export(page_type, name, type, options)
+          gluon_export(page_type, :view_export, name, type, options)
+        end
+
+        def gluon_form_export(page_type, name, type, options)
+          gluon_export(page_type, :view_export, name, type, options)
+          gluon_export(page_type, :form_export, name, type, options)
+        end
+
+        # action is additional export.
+        def gluon_action_export(page_type, name, type, options)
+          gluon_export(page_type, :action_export, name, type, options)
+        end
+
+        def gluon_form_params(page_type, name, params={})
+          page_type.gluon_metainfo[:form_export][name].update(params)
+        end
+
+        def find_path_filter_entry(page_type)
+          page_type.ancestors.each do |module_or_class|
+            if (entry = module_or_class.gluon_metainfo[:path_filter]) then
+              return entry
+            end
+          end
+
+          nil
+        end
+        private :find_path_filter_entry
+
+        def find_path_filter(page_type)
+          entry = find_path_filter_entry(page_type) and return entry[:filter]
+        end
+
+        def find_path_block(page_type)
+          entry = find_path_filter_entry(page_type) and return entry[:block]
+        end
+
+        def find_export(export_type, page_type)
+          export = {}
+          page_type.ancestors.reverse_each do |module_or_class|
+            export.update(module_or_class.gluon_metainfo[export_type])
+          end
+
+          export
+        end
+        private :find_export
+
+        def find_view_export(page_type)
+          find_export(:view_export, page_type)
+        end
+
+        def find_form_export(page_type)
+          find_export(:form_export, page_type)
+        end
+
+        def find_action_export(page_type)
+          find_export(:action_export, page_type)
+        end
+      end
+    end
+
+    extend SingleForwardable
     extend SingleMemoization
+
+    def_delegator MetaInfo.name, :find_path_filter
+    def_delegator MetaInfo.name, :find_path_block
+    def_delegator MetaInfo.name, :find_view_export
+    def_delegator MetaInfo.name, :find_form_export
+    def_delegator MetaInfo.name, :find_action_export
 
     class << self
       def included(module_or_class)
         module_or_class.extend(Component)
         super
-      end
-
-      def gluon_path_filter(page_type, path_filter, &block)
-        page_type.gluon_metainfo[:path_filter] = {
-          :filter => path_filter,
-          :block => block
-        }
-        nil
-      end
-
-      def gluon_export(page_type, export_type, name, type, options)
-        name = name.to_sym
-        unless (page_type.public_method_defined? name) then
-          raise NoMethodError, "not defineid method `#{name}' of `#{page_type}'"
-        end
-        page_type.gluon_metainfo[export_type][name] = { :type => type, :options => options }
-        nil
-      end
-      private :gluon_export
-
-      def gluon_view_export(page_type, name, type, options)
-        gluon_export(page_type, :view_export, name, type, options)
-      end
-
-      def gluon_form_export(page_type, name, type, options)
-        gluon_export(page_type, :view_export, name, type, options)
-        gluon_export(page_type, :form_export, name, type, options)
-      end
-
-      # action is additional export.
-      def gluon_action_export(page_type, name, type, options)
-        gluon_export(page_type, :action_export, name, type, options)
-      end
-
-      def gluon_form_params(page_type, name, params={})
-        page_type.gluon_metainfo[:form_export][name].update(params)
-      end
-
-      def find_path_filter_entry(page_type)
-        page_type.ancestors.each do |module_or_class|
-          if (entry = module_or_class.gluon_metainfo[:path_filter]) then
-            return entry
-          end
-        end
-
-        nil
-      end
-      private :find_path_filter_entry
-
-      def find_path_filter(page_type)
-        entry = find_path_filter_entry(page_type) and return entry[:filter]
-      end
-
-      def find_path_block(page_type)
-        entry = find_path_filter_entry(page_type) and return entry[:block]
-      end
-
-      def find_export(export_type, page_type)
-        export = {}
-        page_type.ancestors.reverse_each do |module_or_class|
-          export.update(module_or_class.gluon_metainfo[export_type])
-        end
-
-        export
-      end
-      private :find_export
-
-      def find_view_export(page_type)
-        find_export(:view_export, page_type)
-      end
-
-      def find_form_export(page_type)
-        find_export(:form_export, page_type)
-      end
-
-      def find_action_export(page_type)
-        find_export(:action_export, page_type)
       end
 
       def set_form_params(controller, req_params, prefix='')
@@ -235,13 +247,13 @@ module Gluon
   #
   module Component
     def gluon_path_filter(path_filter, &block)
-      Controller.gluon_path_filter(self, path_filter, &block)
+      Controller::MetaInfo.gluon_path_filter(self, path_filter, &block)
     end
     private :gluon_path_filter
 
     def gluon_value(name, options={})
       options = { :escape => true }.merge(options)
-      Controller.gluon_view_export(self, name, :value, options)
+      Controller::MetaInfo.gluon_view_export(self, name, :value, options)
     end
     private :gluon_value
 
@@ -252,7 +264,7 @@ module Gluon
     private :gluon_value_reader
 
     def gluon_cond(name, options={})
-      Controller.gluon_view_export(self, name, :cond, options)
+      Controller::MetaInfo.gluon_view_export(self, name, :cond, options)
     end
     private :gluon_cond
 
@@ -276,8 +288,8 @@ module Gluon
     private :gluon_cond_not
 
     def gluon_foreach(name, options={})
-      Controller.gluon_form_export(self, name, :foreach, options)
-      Controller.gluon_action_export(self, name, :foreach, options)
+      Controller::MetaInfo.gluon_form_export(self, name, :foreach, options)
+      Controller::MetaInfo.gluon_action_export(self, name, :foreach, options)
     end
     private :gluon_foreach
 
@@ -288,7 +300,7 @@ module Gluon
     private :gluon_foreach_reader
 
     def gluon_link(name, options={})
-      Controller.gluon_view_export(self, name, :link, options)
+      Controller::MetaInfo.gluon_view_export(self, name, :link, options)
     end
     private :gluon_link
 
@@ -299,13 +311,13 @@ module Gluon
     private :gluon_link_reader
 
     def gluon_action(name, options={})
-      Controller.gluon_view_export(self, name, :action, options)
-      Controller.gluon_action_export(self, name, :action, options)
+      Controller::MetaInfo.gluon_view_export(self, name, :action, options)
+      Controller::MetaInfo.gluon_action_export(self, name, :action, options)
     end
     private :gluon_action
 
     def gluon_frame(name, options={})
-      Controller.gluon_view_export(self, name, :frame, options)
+      Controller::MetaInfo.gluon_view_export(self, name, :frame, options)
     end
     private :gluon_frame
 
@@ -317,8 +329,8 @@ module Gluon
 
     def gluon_import(name, options={}, &block)
       options = options.merge(:block => block)
-      Controller.gluon_form_export(self, name, :import, options)
-      Controller.gluon_action_export(self, name, :import, options)
+      Controller::MetaInfo.gluon_form_export(self, name, :import, options)
+      Controller::MetaInfo.gluon_action_export(self, name, :import, options)
     end
     private :gluon_import
 
@@ -329,14 +341,14 @@ module Gluon
     private :gluon_import_reader
 
     def gluon_submit(name, options={})
-      Controller.gluon_view_export(self, name, :submit, options)
-      Controller.gluon_action_export(self, name, :submit, options)
+      Controller::MetaInfo.gluon_view_export(self, name, :submit, options)
+      Controller::MetaInfo.gluon_action_export(self, name, :submit, options)
     end
     private :gluon_submit
 
     def gluon_text(name, options={})
-      Controller.gluon_form_export(self, name, :text, options)
-      Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
+      Controller::MetaInfo.gluon_form_export(self, name, :text, options)
+      Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
     private :gluon_text
 
@@ -347,8 +359,8 @@ module Gluon
     private :gluon_text_accessor
 
     def gluon_passwd(name, options={})
-      Controller.gluon_form_export(self, name, :passwd, options)
-      Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
+      Controller::MetaInfo.gluon_form_export(self, name, :passwd, options)
+      Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
     private :gluon_passwd
 
@@ -359,8 +371,8 @@ module Gluon
     private :gluon_passwd_accessor
 
     def gluon_hidden(name, options={})
-      Controller.gluon_form_export(self, name, :hidden, options)
-      Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
+      Controller::MetaInfo.gluon_form_export(self, name, :hidden, options)
+      Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
     private :gluon_hidden
 
@@ -371,8 +383,8 @@ module Gluon
     private :gluon_hidden_accessor
 
     def gluon_checkbox(name, options={})
-      Controller.gluon_form_export(self, name, :checkbox, options)
-      Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
+      Controller::MetaInfo.gluon_form_export(self, name, :checkbox, options)
+      Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
     private :gluon_checkbox
 
@@ -384,8 +396,8 @@ module Gluon
 
     def gluon_radio_group(name, list, options={})
       options = options.merge(:list => list)
-      Controller.gluon_form_export(self, name, :radio_group, options)
-      Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
+      Controller::MetaInfo.gluon_form_export(self, name, :radio_group, options)
+      Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
     private :gluon_radio_group
 
@@ -397,7 +409,7 @@ module Gluon
 
     def gluon_radio_button(name, group, options={})
       options = options.merge(:group => group.to_sym)
-      Controller.gluon_view_export(self, name, :radio_button, options)
+      Controller::MetaInfo.gluon_view_export(self, name, :radio_button, options)
     end
     private :gluon_radio_button
 
@@ -410,8 +422,8 @@ module Gluon
     def gluon_select(name, list, options={})
       options = options.merge(:list => list)
       options = { :multiple => false }.merge(options)
-      Controller.gluon_form_export(self, name, :select, options)
-      Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
+      Controller::MetaInfo.gluon_form_export(self, name, :select, options)
+      Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
     private :gluon_select
 
@@ -422,8 +434,8 @@ module Gluon
     private :gluon_select_accessor
 
     def gluon_textarea(name, options={})
-      Controller.gluon_form_export(self, name, :textarea, options)
-      Controller.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
+      Controller::MetaInfo.gluon_form_export(self, name, :textarea, options)
+      Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
     end
     private :gluon_textarea
 
