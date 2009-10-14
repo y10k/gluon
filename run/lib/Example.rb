@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-class Example
-  include Gluon::Controller
-
+class Example < Gluon::Controller
   def self.page_encoding
     __ENCODING__
   end

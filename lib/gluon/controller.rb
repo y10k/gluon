@@ -237,7 +237,7 @@ module Gluon
   #     include Gluon::Controller
   #   end
   #
-  module Controller
+  class Controller
     module MetaInfo
       class << self
         def gluon_path_filter(page_type, path_filter, &block)
@@ -329,11 +329,6 @@ module Gluon
     def_delegator MetaInfo.name, :find_action_export
 
     class << self
-      def included(module_or_class)
-        module_or_class.extend(Component)
-        super
-      end
-
       def set_form_params(controller, req_params, prefix='')
         form_export = find_form_export(controller.class)
         for name, form_entry in form_export
@@ -428,6 +423,8 @@ module Gluon
         nil
       end
     end
+
+    extend Component
 
     attr_writer :r
 

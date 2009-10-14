@@ -187,12 +187,6 @@ module Gluon
   end
 
   module Validation
-    def self.included(controller_class)
-      if (! (controller_class.is_a? Class) || ! (controller_class.include? Controller)) then
-        raise "not a controller class of `#{controller_class}'"
-      end
-    end
-
     def page_validation_preprocess
       @r.validation = nil
     end

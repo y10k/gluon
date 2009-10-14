@@ -37,8 +37,7 @@ module Gluon::Test
       assert_equal(@config_rb, @builder.eval_conf('config_rb'))
     end
 
-    class Foo
-      include Gluon::Controller
+    class Foo < Gluon::Controller
     end
 
     def test_to_app

@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
 class Example
-  class Panel
-    include Gluon::Controller
-
+  class Panel < Gluon::Controller
     gluon_path_filter %r"^/([A-Za-z]+)$" do |example_type|
       '/' + Menu::Item.key(example_type)
     end

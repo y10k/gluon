@@ -8,8 +8,7 @@ require 'test/unit'
 module Gluon::Test
   class ValidationTest < Test::Unit::TestCase
     def setup
-      @Controller = Class.new{
-        include Gluon::Controller
+      @Controller = Class.new(Gluon::Controller) {
         include Gluon::Validation
 
         def self.page_encoding

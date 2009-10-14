@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 class Example
-  class OneTimeToken
-    include Gluon::Controller
+  class OneTimeToken < Gluon::Controller
     include Gluon::Validation
 
     def self.page_encoding

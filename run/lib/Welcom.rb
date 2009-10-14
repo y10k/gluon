@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 # Welcom application
 
-class Welcom
-  include Gluon::Controller
-
+class Welcom < Gluon::Controller
   def self.page_encoding
     __ENCODING__
   end

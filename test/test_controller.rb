@@ -7,7 +7,7 @@ require 'test/unit'
 module Gluon::Test
   class ControllerTest < Test::Unit::TestCase
     def setup
-      @Controller = Class.new{ include Gluon::Controller }
+      @Controller = Class.new(Gluon::Controller)
     end
 
     def test_gluon_path_filter

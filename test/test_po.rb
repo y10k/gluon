@@ -139,7 +139,7 @@ module Gluon::Test
     end
 
     def test_link_class
-      foo = Class.new{ include Gluon::Controller }
+      foo = Class.new(Gluon::Controller)
       @cmap.mount(foo, '/halo')
 
       @Controller.class_eval{
@@ -153,8 +153,7 @@ module Gluon::Test
     end
 
     def test_link_class_args
-      foo = Class.new{
-        include Gluon::Controller
+      foo = Class.new(Gluon::Controller) {
         gluon_path_filter %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$" do |year, mon, day|
           format('/%04d-%02d-%02d', year, mon, day)
         end

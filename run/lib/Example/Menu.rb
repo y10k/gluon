@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
 class Example
-  class Menu
-    include Gluon::Controller
-
+  class Menu < Gluon::Controller
     def self.page_encoding
       __ENCODING__
     end

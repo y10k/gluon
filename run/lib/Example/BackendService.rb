@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 class Example
-  class BackendService
-    include Gluon::Controller
+  class BackendService < Gluon::Controller
     include Gluon::Validation
 
     def self.page_encoding
