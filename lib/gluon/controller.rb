@@ -6,6 +6,231 @@ require 'gluon/memoize'
 require 'gluon/metainfo'
 
 module Gluon
+  # = component
+  # defined controller syntax.
+  #
+  # usage:
+  #   class YourComponent
+  #     extend Gluon::Component
+  #   end
+  #
+  module Component
+    def gluon_path_filter(path_filter, &block)
+      Controller::MetaInfo.gluon_path_filter(self, path_filter, &block)
+    end
+    private :gluon_path_filter
+
+    def gluon_value(name, options={})
+      options = { :escape => true }.merge(options)
+      Controller::MetaInfo.gluon_view_export(self, name, :value, options)
+    end
+    private :gluon_value
+
+    def gluon_value_reader(name, options={})
+      class_eval{ attr_reader(name) } # why is class_eval necessary?
+      gluon_value(name, options)
+    end
+    private :gluon_value_reader
+
+    def gluon_cond(name, options={})
+      Controller::MetaInfo.gluon_view_export(self, name, :cond, options)
+    end
+    private :gluon_cond
+
+    def gluon_cond_reader(name, options={})
+      class_eval{ attr_reader(name) } # why is class_eval necessary?
+      gluon_cond(name, options)
+    end
+    private :gluon_cond_reader
+
+    def gluon_cond_not(name, options={})
+      unless (public_method_defined? name) then
+        raise NoMethodError, "not defineid method `#{name}' of `#{self}'"
+      end
+      class_eval(<<-EOF, "#{__FILE__}:gluon_cond_not(#{name})", __LINE__ + 1)
+        def not_#{name}
+          ! #{name}
+        end
+      EOF
+      gluon_cond("not_#{name}", options)
+    end
+    private :gluon_cond_not
+
+    def gluon_foreach(name, options={})
+      Controller::MetaInfo.gluon_form_export(self, name, :foreach, options)
+      Controller::MetaInfo.gluon_action_export(self, name, :foreach, options)
+    end
+    private :gluon_foreach
+
+    def gluon_foreach_reader(name, options={})
+      class_eval{ attr_reader(name) } # why is class_eval necessary?
+      gluon_foreach(name, options)
+    end
+    private :gluon_foreach_reader
+
+    def gluon_link(name, options={})
+      Controller::MetaInfo.gluon_view_export(self, name, :link, options)
+    end
+    private :gluon_link
+
+    def gluon_link_reader(name, options={})
+      class_eval{ attr_reader(name) } # why is class_eval necessary?
+      gluon_link(name, options)
+    end
+    private :gluon_link_reader
+
+    def gluon_action(name, options={})
+      Controller::MetaInfo.gluon_view_export(self, name, :action, options)
+      Controller::MetaInfo.gluon_action_export(self, name, :action, options)
+    end
+    private :gluon_action
+
+    def gluon_frame(name, options={})
+      Controller::MetaInfo.gluon_view_export(self, name, :frame, options)
+    end
+    private :gluon_frame
+
+    def gluon_frame_reader(name, options={})
+      class_eval{ attr_reader(name) } # why is class_eval necessary?
+      gluon_frame(name, options)
+    end
+    private :gluon_frame_reader
+
+    def gluon_import(name, options={}, &block)
+      options = options.merge(:block => block)
+      Controller::MetaInfo.gluon_form_export(self, name, :import, options)
+      Controller::MetaInfo.gluon_action_export(self, name, :import, options)
+    end
+    private :gluon_import
+
+    def gluon_import_reader(name, options={}, &block)
+      class_eval{ attr_reader(name) } # why is class_eval necessary?
+      gluon_import(name, options, &block)
+    end
+    private :gluon_import_reader
+
+    def gluon_submit(name, options={})
+      Controller::MetaInfo.gluon_view_export(self, name, :submit, options)
+      Controller::MetaInfo.gluon_action_export(self, name, :submit, options)
+    end
+    private :gluon_submit
+
+    def gluon_text(name, options={})
+      Controller::MetaInfo.gluon_form_export(self, name, :text, options)
+      Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
+    end
+    private :gluon_text
+
+    def gluon_text_accessor(name, options={})
+      class_eval{ attr_accessor(name) } # why is class_eval necessary?
+      gluon_text(name, options)
+    end
+    private :gluon_text_accessor
+
+    def gluon_passwd(name, options={})
+      Controller::MetaInfo.gluon_form_export(self, name, :passwd, options)
+      Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
+    end
+    private :gluon_passwd
+
+    def gluon_passwd_accessor(name, options={})
+      class_eval{ attr_accessor(name) } # why is class_eval necessary?
+      gluon_passwd(name, options)
+    end
+    private :gluon_passwd_accessor
+
+    def gluon_hidden(name, options={})
+      Controller::MetaInfo.gluon_form_export(self, name, :hidden, options)
+      Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
+    end
+    private :gluon_hidden
+
+    def gluon_hidden_accessor(name, options={})
+      class_eval{ attr_accessor(name) } # why is class_eval necessary?
+      gluon_hidden(name, options)
+    end
+    private :gluon_hidden_accessor
+
+    def gluon_checkbox(name, options={})
+      Controller::MetaInfo.gluon_form_export(self, name, :checkbox, options)
+      Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
+    end
+    private :gluon_checkbox
+
+    def gluon_checkbox_accessor(name, options={})
+      class_eval{ attr_accessor(name) } # why is class_eval necessary?
+      gluon_checkbox(name, options)
+    end
+    private :gluon_checkbox_accessor
+
+    def gluon_radio_group(name, list, options={})
+      options = options.merge(:list => list)
+      Controller::MetaInfo.gluon_form_export(self, name, :radio_group, options)
+      Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
+    end
+    private :gluon_radio_group
+
+    def gluon_radio_group_accessor(name, list, options={})
+      class_eval{ attr_accessor(name) } # why is class_eval necessary?
+      gluon_radio_group(name, list, options)
+    end
+    private :gluon_radio_group_accessor
+
+    def gluon_radio_button(name, group, options={})
+      options = options.merge(:group => group.to_sym)
+      Controller::MetaInfo.gluon_view_export(self, name, :radio_button, options)
+    end
+    private :gluon_radio_button
+
+    def gluon_radio_button_reader(name, group, options={})
+      class_eval{ attr_reader(name) } # why is class_eval necessary?
+      gluon_radio_button(name, group, options)
+    end
+    private :gluon_radio_button_reader
+
+    def gluon_select(name, list, options={})
+      options = options.merge(:list => list)
+      options = { :multiple => false }.merge(options)
+      Controller::MetaInfo.gluon_form_export(self, name, :select, options)
+      Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
+    end
+    private :gluon_select
+
+    def gluon_select_accessor(name, list, options={})
+      class_eval{ attr_accessor(name) } # why is class_eval necessary?
+      gluon_select(name, list, options)
+    end
+    private :gluon_select_accessor
+
+    def gluon_textarea(name, options={})
+      Controller::MetaInfo.gluon_form_export(self, name, :textarea, options)
+      Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
+    end
+    private :gluon_textarea
+
+    def gluon_textarea_accessor(name, options={})
+      class_eval{ attr_accessor(name) } # why is class_eval necessary?
+      gluon_textarea(name, options)
+    end
+    private :gluon_textarea_accessor
+
+    def page_view
+      ERBView
+    end
+
+    def page_encoding
+      raise "not defined page encoding for component of `#{self}'"
+    end
+
+    def page_template
+      nil
+    end
+
+    def process_view(po)
+      po.template_render(page_view, page_encoding, page_template)
+    end
+  end
+
   # = controller and meta-data
   # usage:
   #   class YourController
@@ -234,231 +459,6 @@ module Gluon
     end
 
     def page_end
-    end
-  end
-
-  # = component
-  # defined controller syntax.
-  #
-  # usage:
-  #   class YourComponent
-  #     extend Gluon::Component
-  #   end
-  #
-  module Component
-    def gluon_path_filter(path_filter, &block)
-      Controller::MetaInfo.gluon_path_filter(self, path_filter, &block)
-    end
-    private :gluon_path_filter
-
-    def gluon_value(name, options={})
-      options = { :escape => true }.merge(options)
-      Controller::MetaInfo.gluon_view_export(self, name, :value, options)
-    end
-    private :gluon_value
-
-    def gluon_value_reader(name, options={})
-      class_eval{ attr_reader(name) } # why is class_eval necessary?
-      gluon_value(name, options)
-    end
-    private :gluon_value_reader
-
-    def gluon_cond(name, options={})
-      Controller::MetaInfo.gluon_view_export(self, name, :cond, options)
-    end
-    private :gluon_cond
-
-    def gluon_cond_reader(name, options={})
-      class_eval{ attr_reader(name) } # why is class_eval necessary?
-      gluon_cond(name, options)
-    end
-    private :gluon_cond_reader
-
-    def gluon_cond_not(name, options={})
-      unless (public_method_defined? name) then
-        raise NoMethodError, "not defineid method `#{name}' of `#{self}'"
-      end
-      class_eval(<<-EOF, "#{__FILE__}:gluon_cond_not(#{name})", __LINE__ + 1)
-        def not_#{name}
-          ! #{name}
-        end
-      EOF
-      gluon_cond("not_#{name}", options)
-    end
-    private :gluon_cond_not
-
-    def gluon_foreach(name, options={})
-      Controller::MetaInfo.gluon_form_export(self, name, :foreach, options)
-      Controller::MetaInfo.gluon_action_export(self, name, :foreach, options)
-    end
-    private :gluon_foreach
-
-    def gluon_foreach_reader(name, options={})
-      class_eval{ attr_reader(name) } # why is class_eval necessary?
-      gluon_foreach(name, options)
-    end
-    private :gluon_foreach_reader
-
-    def gluon_link(name, options={})
-      Controller::MetaInfo.gluon_view_export(self, name, :link, options)
-    end
-    private :gluon_link
-
-    def gluon_link_reader(name, options={})
-      class_eval{ attr_reader(name) } # why is class_eval necessary?
-      gluon_link(name, options)
-    end
-    private :gluon_link_reader
-
-    def gluon_action(name, options={})
-      Controller::MetaInfo.gluon_view_export(self, name, :action, options)
-      Controller::MetaInfo.gluon_action_export(self, name, :action, options)
-    end
-    private :gluon_action
-
-    def gluon_frame(name, options={})
-      Controller::MetaInfo.gluon_view_export(self, name, :frame, options)
-    end
-    private :gluon_frame
-
-    def gluon_frame_reader(name, options={})
-      class_eval{ attr_reader(name) } # why is class_eval necessary?
-      gluon_frame(name, options)
-    end
-    private :gluon_frame_reader
-
-    def gluon_import(name, options={}, &block)
-      options = options.merge(:block => block)
-      Controller::MetaInfo.gluon_form_export(self, name, :import, options)
-      Controller::MetaInfo.gluon_action_export(self, name, :import, options)
-    end
-    private :gluon_import
-
-    def gluon_import_reader(name, options={}, &block)
-      class_eval{ attr_reader(name) } # why is class_eval necessary?
-      gluon_import(name, options, &block)
-    end
-    private :gluon_import_reader
-
-    def gluon_submit(name, options={})
-      Controller::MetaInfo.gluon_view_export(self, name, :submit, options)
-      Controller::MetaInfo.gluon_action_export(self, name, :submit, options)
-    end
-    private :gluon_submit
-
-    def gluon_text(name, options={})
-      Controller::MetaInfo.gluon_form_export(self, name, :text, options)
-      Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
-    end
-    private :gluon_text
-
-    def gluon_text_accessor(name, options={})
-      class_eval{ attr_accessor(name) } # why is class_eval necessary?
-      gluon_text(name, options)
-    end
-    private :gluon_text_accessor
-
-    def gluon_passwd(name, options={})
-      Controller::MetaInfo.gluon_form_export(self, name, :passwd, options)
-      Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
-    end
-    private :gluon_passwd
-
-    def gluon_passwd_accessor(name, options={})
-      class_eval{ attr_accessor(name) } # why is class_eval necessary?
-      gluon_passwd(name, options)
-    end
-    private :gluon_passwd_accessor
-
-    def gluon_hidden(name, options={})
-      Controller::MetaInfo.gluon_form_export(self, name, :hidden, options)
-      Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
-    end
-    private :gluon_hidden
-
-    def gluon_hidden_accessor(name, options={})
-      class_eval{ attr_accessor(name) } # why is class_eval necessary?
-      gluon_hidden(name, options)
-    end
-    private :gluon_hidden_accessor
-
-    def gluon_checkbox(name, options={})
-      Controller::MetaInfo.gluon_form_export(self, name, :checkbox, options)
-      Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
-    end
-    private :gluon_checkbox
-
-    def gluon_checkbox_accessor(name, options={})
-      class_eval{ attr_accessor(name) } # why is class_eval necessary?
-      gluon_checkbox(name, options)
-    end
-    private :gluon_checkbox_accessor
-
-    def gluon_radio_group(name, list, options={})
-      options = options.merge(:list => list)
-      Controller::MetaInfo.gluon_form_export(self, name, :radio_group, options)
-      Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
-    end
-    private :gluon_radio_group
-
-    def gluon_radio_group_accessor(name, list, options={})
-      class_eval{ attr_accessor(name) } # why is class_eval necessary?
-      gluon_radio_group(name, list, options)
-    end
-    private :gluon_radio_group_accessor
-
-    def gluon_radio_button(name, group, options={})
-      options = options.merge(:group => group.to_sym)
-      Controller::MetaInfo.gluon_view_export(self, name, :radio_button, options)
-    end
-    private :gluon_radio_button
-
-    def gluon_radio_button_reader(name, group, options={})
-      class_eval{ attr_reader(name) } # why is class_eval necessary?
-      gluon_radio_button(name, group, options)
-    end
-    private :gluon_radio_button_reader
-
-    def gluon_select(name, list, options={})
-      options = options.merge(:list => list)
-      options = { :multiple => false }.merge(options)
-      Controller::MetaInfo.gluon_form_export(self, name, :select, options)
-      Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
-    end
-    private :gluon_select
-
-    def gluon_select_accessor(name, list, options={})
-      class_eval{ attr_accessor(name) } # why is class_eval necessary?
-      gluon_select(name, list, options)
-    end
-    private :gluon_select_accessor
-
-    def gluon_textarea(name, options={})
-      Controller::MetaInfo.gluon_form_export(self, name, :textarea, options)
-      Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
-    end
-    private :gluon_textarea
-
-    def gluon_textarea_accessor(name, options={})
-      class_eval{ attr_accessor(name) } # why is class_eval necessary?
-      gluon_textarea(name, options)
-    end
-    private :gluon_textarea_accessor
-
-    def page_view
-      ERBView
-    end
-
-    def page_encoding
-      raise "not defined page encoding for component of `#{self}'"
-    end
-
-    def page_template
-      nil
-    end
-
-    def process_view(po)
-      po.template_render(page_view, page_encoding, page_template)
     end
   end
 end
