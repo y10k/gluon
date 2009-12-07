@@ -233,8 +233,7 @@ module Gluon
 
   # = controller and meta-data
   # usage:
-  #   class YourController
-  #     include Gluon::Controller
+  #   class YourController < Gluon::Controller
   #   end
   #
   class Controller
