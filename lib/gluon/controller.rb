@@ -319,8 +319,6 @@ module Gluon
     end
 
     extend SingleForwardable
-    extend SingleMemoization
-
     def_delegator MetaInfo.name, :find_path_filter
     def_delegator MetaInfo.name, :find_path_block
     def_delegator MetaInfo.name, :find_view_export

@@ -41,12 +41,18 @@ module Gluon
   autoload :Web, 'gluon/web'
 
   def self.use_memoization
+    Controller.extend SingleMemoization
     Controller.memoize :find_path_filter
     Controller.memoize :find_path_block
     Controller.memoize :find_view_export
     Controller.memoize :find_form_export
     Controller.memoize :find_action_export
-    TemplateEngine.class_eval{ memoize :create_engine }
+
+    TemplateEngine.class_eval{
+      extend Memoization
+      memoize :create_engine
+    }
+
     nil
   end
 end

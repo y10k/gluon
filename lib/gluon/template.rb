@@ -4,8 +4,6 @@ require 'gluon/controller'
 
 module Gluon
   class TemplateEngine
-    include Memoization
-
     class Skeleton
       def initialize(po, r)
 	@po = po
@@ -30,7 +28,6 @@ module Gluon
     end
 
     def initialize(template_dir)
-      super()
       @template_dir = template_dir
     end
 
