@@ -8,10 +8,9 @@ require 'test/unit'
 module Gluon::Test
   class MemoizationTest < Test::Unit::TestCase
     class Foo
-      include Gluon::Memoization
+      extend Gluon::Memoization
 
       def initialize
-        super
         @count = 0
       end
 

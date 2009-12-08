@@ -1,17 +1,10 @@
 # -*- coding: utf-8 -*-
 
-require 'gluon/metainfo'
-
 module Gluon
   # = memoization for class instances
   # usage:
   #   class Frac
-  #     include Gluon::Memoization
-  #
-  #     def initialize
-  #       # to initialize memoize-cache slots, need a call of `Gluon::Memoization#initialize'
-  #       super
-  #     end
+  #     extend Gluon::Memoization
   #
   #     def call(n)
   #       if (n > 0) then
@@ -25,44 +18,31 @@ module Gluon
   #   end
   #
   module Memoization
-    def initialize(*args)
-      super
+    def memoize(name, &cache_factory)
+      cache_factory = proc{ Hash.new } unless cache_factory
+      cache_ivar = "@__memoize_cache_#{name}".to_sym
 
-      cache = {}
-      self.class.ancestors.reverse_each do |module_or_class|
-        cache.update(module_or_class.gluon_metainfo[:memoize_cache])
-      end
+      class_eval{
+        orig_method = instance_method(name)
+        remove_method(name)
 
-      for name, factory in cache
-        instance_variable_set("@__memoize_cache_#{name}", factory.call)
-      end
-    end
-
-    module Syntax
-      def memoize(name, &cache_factory)
-        gluon_metainfo[:memoize_cache][name] = cache_factory || proc{ Hash.new }
-        cache_var = "@__memoize_cache_#{name}"
-        class_eval(<<-EOF, "#{__FILE__}:MEMOIZE(#{self}\##{name})", __LINE__ + 1)
-          alias __no_memoize_#{name} #{name}
-
-          def #{name}(*args, &block)
-            if (#{cache_var}.key? args) then
-              #{cache_var}[args]
-            else
-              #{cache_var}[args] = __no_memoize_#{name}(*args, &block)
-            end
+        define_method(name) {|*args, &block|
+          unless (cache = instance_variable_get(cache_ivar)) then
+            cache = cache_factory.call
+            instance_variable_set(cache_ivar, cache)
           end
-        EOF
 
-        nil
-      end
-      private :memoize
-    end
+          if (cache.key? args) then
+            cache[args]
+          else
+            cache[args] = orig_method.bind(self).call(*args, &block)
+          end
+        }
+      }
 
-    def self.included(module_or_class)
-      module_or_class.extend(Syntax)
-      super
+      nil
     end
+    private :memoize
   end
 
   # = memoization for single instance
@@ -83,21 +63,21 @@ module Gluon
   #
   module SingleMemoization
     def memoize(name, cache={})
-      cache_var = "@__memoize_cache_#{name}"
-      instance_variable_set(cache_var, cache)
-      instance_eval(<<-EOF, "#{__FILE__}:SINGLE_MEMOIZE(#{self}.#{name})", __LINE__ + 1)
-        class << self
-          alias __no_memoize_#{name} #{name}
+      cache_ivar = "@__memoize_cache_#{name}".to_sym
+      instance_variable_set(cache_ivar, cache)
 
-          def #{name}(*args, &block)
-            if (#{cache_var}.key? args) then
-              #{cache_var}[args]
-            else
-              #{cache_var}[args] = __no_memoize_#{name}(*args, &block)
-            end
+      m = Module.new
+      m.module_eval{
+        define_method(name) {|*args, &block|
+          cache = instance_variable_get(cache_ivar)
+          if (cache.key? args) then
+            cache[args]
+          else
+            cache[args] = super(*args, &block)
           end
-        end
-      EOF
+        }
+      }
+      extend(m)
 
       nil
     end
