@@ -20,7 +20,7 @@ module Gluon
     def class2path(page_type, *path_args)
       location = @cmap[page_type] or raise ArgumentError, "not mounted class: #{page_type}"
 
-      if (block = Controller.find_path_block(page_type)) then
+      if (block = Controller.find_path_match_block(page_type)) then
         path_info = block.call(*path_args)
       else
         unless (path_args.empty?) then

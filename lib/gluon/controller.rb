@@ -15,10 +15,10 @@ module Gluon
   #   end
   #
   module Component
-    def gluon_path_filter(path_filter, &block)
-      Controller::MetaInfo.gluon_path_filter(self, path_filter, &block)
+    def gluon_path_match(pattern, &block)
+      Controller::MetaInfo.gluon_path_match(self, pattern, &block)
     end
-    private :gluon_path_filter
+    private :gluon_path_match
 
     def gluon_value(name, options={})
       options = { :escape => true }.merge(options)
@@ -239,9 +239,9 @@ module Gluon
   class Controller
     module MetaInfo
       class << self
-        def gluon_path_filter(page_type, path_filter, &block)
-          page_type.gluon_metainfo[:path_filter] = {
-            :filter => path_filter,
+        def gluon_path_match(page_type, pattern, &block)
+          page_type.gluon_metainfo[:path_match] = {
+            :pattern => pattern,
             :block => block
           }
           nil
@@ -275,23 +275,23 @@ module Gluon
           page_type.gluon_metainfo[:form_export][name].update(params)
         end
 
-        def find_path_filter_entry(page_type)
+        def find_path_match_entry(page_type)
           page_type.ancestors.each do |module_or_class|
-            if (entry = module_or_class.gluon_metainfo[:path_filter]) then
+            if (entry = module_or_class.gluon_metainfo[:path_match]) then
               return entry
             end
           end
 
           nil
         end
-        private :find_path_filter_entry
+        private :find_path_match_entry
 
-        def find_path_filter(page_type)
-          entry = find_path_filter_entry(page_type) and return entry[:filter]
+        def find_path_match_pattern(page_type)
+          entry = find_path_match_entry(page_type) and return entry[:pattern]
         end
 
-        def find_path_block(page_type)
-          entry = find_path_filter_entry(page_type) and return entry[:block]
+        def find_path_match_block(page_type)
+          entry = find_path_match_entry(page_type) and return entry[:block]
         end
 
         def find_export(export_type, page_type)
@@ -319,8 +319,8 @@ module Gluon
     end
 
     extend SingleForwardable
-    def_delegator MetaInfo.name, :find_path_filter
-    def_delegator MetaInfo.name, :find_path_block
+    def_delegator MetaInfo.name, :find_path_match_pattern
+    def_delegator MetaInfo.name, :find_path_match_block
     def_delegator MetaInfo.name, :find_view_export
     def_delegator MetaInfo.name, :find_form_export
     def_delegator MetaInfo.name, :find_action_export

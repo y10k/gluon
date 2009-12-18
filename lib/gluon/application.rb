@@ -43,7 +43,7 @@ module Gluon
 
     def mount(page_type)
       @page_list.push [
-        Controller.find_path_filter(page_type) || %r"^/?$",
+        Controller.find_path_match_pattern(page_type) || %r"^/?$",
         page_type
       ]
 
@@ -56,8 +56,8 @@ module Gluon
     end
 
     def find_page(path_info)
-      for path_filter, page_type in @page_list
-        if (path_info =~ path_filter) then
+      for path_match_pattern, page_type in @page_list
+        if (path_info =~ path_match_pattern) then
           path_args = $~.to_a
           path_args.shift
           return page_type, path_args

@@ -154,7 +154,7 @@ module Gluon::Test
 
     def test_link_class_args
       foo = Class.new(Gluon::Controller) {
-        gluon_path_filter %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$" do |year, mon, day|
+        gluon_path_match %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$" do |year, mon, day|
           format('/%04d-%02d-%02d', year, mon, day)
         end
       }

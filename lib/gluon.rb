@@ -42,8 +42,8 @@ module Gluon
 
   def self.use_memoization
     Controller.extend SingleMemoization
-    Controller.memoize :find_path_filter
-    Controller.memoize :find_path_block
+    Controller.memoize :find_path_match_pattern
+    Controller.memoize :find_path_match_block
     Controller.memoize :find_view_export
     Controller.memoize :find_form_export
     Controller.memoize :find_action_export

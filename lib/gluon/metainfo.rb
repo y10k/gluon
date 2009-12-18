@@ -4,7 +4,7 @@ class Module
   # = meta information for gluon framework
   def gluon_metainfo
     @gluon_metainfo ||= {
-      :path_filter => nil,
+      :path_match => nil,
       :view_export => {},
       :form_export => {},
       :action_export => {},
