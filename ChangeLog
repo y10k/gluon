@@ -1,3 +1,7 @@
+2009-12-18  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/memoize.rb: closure cache at Gluon::SingleMemoization.
+
 2009-10-15  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/controller.rb: controller base is not module but

@@ -63,13 +63,9 @@ module Gluon
   #
   module SingleMemoization
     def memoize(name, cache={})
-      cache_ivar = "@__memoize_cache_#{name}".to_sym
-      instance_variable_set(cache_ivar, cache)
-
       m = Module.new
       m.module_eval{
         define_method(name) {|*args, &block|
-          cache = instance_variable_get(cache_ivar)
           if (cache.key? args) then
             cache[args]
           else
