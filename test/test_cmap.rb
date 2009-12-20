@@ -24,7 +24,7 @@ module Gluon::Test
 
     def test_mount_root_path_block
       @c.class_eval{
-        gluon_path_match %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$" do |year, mon, day|
+        gluon_path_match '^/(\d\d\d\d)-(\d\d)-(\d\d)$' do |year, mon, day|
           format("/%04d-%02d-%02d", year, mon, day)
         end
       }
@@ -34,7 +34,7 @@ module Gluon::Test
 
     def test_mount_root_path_block_no_slash
       @c.class_eval{
-        gluon_path_match %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$" do |year, mon, day|
+        gluon_path_match '^/(\d\d\d\d)-(\d\d)-(\d\d)$' do |year, mon, day|
           format("%04d-%02d-%02d", year, mon, day)
         end
       }
@@ -56,7 +56,7 @@ module Gluon::Test
 
     def test_mount_plain_path_block
       @c.class_eval{
-        gluon_path_match %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$" do |year, mon, day|
+        gluon_path_match '^/(\d\d\d\d)-(\d\d)-(\d\d)$' do |year, mon, day|
           format("/%04d-%02d-%02d", year, mon, day)
         end
       }
@@ -66,7 +66,7 @@ module Gluon::Test
 
     def test_mount_plain_path_block_no_slash
       @c.class_eval{
-        gluon_path_match %r"^/(\d\d\d\d)-(\d\d)-(\d\d)$" do |year, mon, day|
+        gluon_path_match '^/(\d\d\d\d)-(\d\d)-(\d\d)$' do |year, mon, day|
           format("%04d-%02d-%02d", year, mon, day)
         end
       }

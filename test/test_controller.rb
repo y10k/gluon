@@ -44,6 +44,12 @@ module Gluon::Test
       assert_equal('/1975-11-19', block.call(1975, 11, 19))
     end
 
+    def test_gluon_path_match_string
+      @Controller.class_eval{ gluon_path_match '/foo/([^/]+)' }
+      assert_equal(%r"^(?:/foo/([^/]+))$",
+                   Gluon::Controller.find_path_match_pattern(@Controller))
+    end
+
     def test_gluon_value
       @Controller.class_eval{ gluon_value_reader :foo }
       assert(entry = Gluon::Controller.find_view_export(@Controller))

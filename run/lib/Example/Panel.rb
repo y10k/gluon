@@ -2,7 +2,7 @@
 
 class Example
   class Panel < Gluon::Controller
-    gluon_path_match %r"^/([A-Za-z]+)$" do |example_type|
+    gluon_path_match '/([A-Za-z]+)' do |example_type|
       '/' + Menu::Item.key(example_type)
     end
 

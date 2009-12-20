@@ -240,6 +240,7 @@ module Gluon
     module MetaInfo
       class << self
         def gluon_path_match(page_type, pattern, &block)
+          pattern = Regexp.compile("^(?:#{pattern})$") if (pattern.is_a? String)
           page_type.gluon_metainfo[:path_match] = {
             :pattern => pattern,
             :block => block
