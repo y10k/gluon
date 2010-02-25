@@ -35,16 +35,18 @@ module Gluon
     end
 
     def install_runtime
-      FileUtils.install(File.join(BASE_DIR, 'bin', 'gluon_local'),
-                        File.join(@install_dir, BIN_DIR), :mode => EXEC_MODE, :verbose => @verbose)
       FileUtils.install(File.join(RUNTIME_DIR, BIN_DIR, 'cgi_server'),
                         File.join(@install_dir, BIN_DIR), :mode => EXEC_MODE, :verbose => @verbose)
       FileUtils.install(File.join(RUNTIME_DIR, CGI_DIR, 'gluon.cgi'),
                         File.join(@install_dir, CGI_DIR), :mode => EXEC_MODE, :verbose => @verbose)
       FileUtils.install(File.join(RUNTIME_DIR, CGI_DIR, 'config.ru'),
                         File.join(@install_dir, CGI_DIR), :mode => FILE_MODE, :verbose => @verbose)
-      FileUtils.install(File.join(RUNTIME_DIR, 'Rakefile'), @install_dir, :mode => FILE_MODE, :verbose => @verbose)
-      FileUtils.install(File.join(RUNTIME_DIR, 'config.ru'), @install_dir, :mode => FILE_MODE, :verbose => @verbose)
+      FileUtils.install(File.join(BASE_DIR, '.local_ruby_env'),
+                        @install_dir, :mode => FILE_MODE, :verbose => @verbose)
+      FileUtils.install(File.join(RUNTIME_DIR, 'Rakefile'),
+                        @install_dir, :mode => FILE_MODE, :verbose => @verbose)
+      FileUtils.install(File.join(RUNTIME_DIR, 'config.ru'),
+                        @install_dir, :mode => FILE_MODE, :verbose => @verbose)
 
       nil
     end

@@ -1,3 +1,7 @@
+2010-02-27  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* bin/gluon_local: obsoleted.
+
 2010-02-25  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* Rakefile, test/Rakefile: `.local_ruby_env' used.

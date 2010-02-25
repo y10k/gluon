@@ -67,7 +67,7 @@ spec = Gem::Specification.new{|s|
   s.summary = 'component based web application framework'
   s.author = 'TOKI Yoshinori'
   s.email = 'toki@freedom.ne.jp'
-  s.executables << 'gluon_setup' << 'gluon_example' << 'gluon_local'
+  s.executables << 'gluon_setup' << 'gluon_example'
   s.files =
     %w[ ChangeLog Rakefile LICENSE EXAMPLE ] +
     Dir['{lib,run,test}/**/Rakefile'] +

@@ -1,44 +1,34 @@
 # -*- coding: utf-8 -*-
 
-base_dir = File.dirname(__FILE__)
+load File.join(File.dirname(__FILE__), '.local_ruby_env')
 
-require 'rbconfig'
-include RbConfig
-
-CONFIG['RUBY_INSTALL_NAME'] =~ /^(.*)ruby(.*)$/i or raise 'not found RUBY_INSTALL_NAME'
-prefix = $1
-suffix = $2
-
-rake_cmd = "#{prefix}rake#{suffix}"
-gem_cmd = "#{prefix}gem#{suffix}"
-
-server = proc{|options|
-  "rackup #{options} #{ENV['RACKUP_OPTS']}"
-}
+def server(*options)
+  [ 'rackup', '-I', get_project_libdir ] + options + get_command_options
+end
 
 desc 'alias for server_develop.'
 task :server => [ :server_develop ]
 
-desc 'start server for development (optional parameters: RACKUP_OPTS).'
+desc 'start server for development (rackup options for o1, o2, ...).'
 task :server_develop => [ :secret ] do
   ENV['GLUON_ENV'] = 'development'
-  sh server.call('-E development')
+  sh *server('-E', 'development')
 end
 
-desc 'start server for deployment (optional parameters: RACKUP_OPTS).'
+desc 'start server for deployment (rackup options for o1, o2, ...).'
 task :server_deploy => [ :secret ] do
   ENV['GLUON_ENV'] = 'deployment'
-  sh server.call('-E deployment')
+  sh *server('-E', 'deployment')
 end
 
 desc 'start CGI server.'
 task :cgi_server => [ :secret ] do
-  ruby "#{base_dir}/bin/cgi_server"
+  ruby *get_ruby_options, "#{get_project_dir}/bin/cgi_server"
 end
 
 desc 'make random secret for cookie based session.'
 task :secret do
-  secret = "#{base_dir}/secret"
+  secret = "#{get_project_dir}/secret"
   unless File.exist? secret then
     puts 'make random secret for cookie based session.'
     require 'digest'
@@ -62,31 +52,24 @@ task :clean do
   end
 end
 
-gluon_local = [ "#{base_dir}/bin/gluon_local", '-d', base_dir ]
-
-desc 'project local RubyGems (optional parameters: GEM_ARGS).'
-task :local_gem do
-  ruby *gluon_local, "#{gem_cmd} #{ENV['GEM_ARGS']}"
-end
-
 desc 'alias for local_server_develop.'
 task :local_server => [ :local_server_develop ]
 
 desc 'start server for development (project local RubyGems repository).'
 task :local_server_develop => [ :secret ] do
   ENV['GLUON_ENV'] = 'development'
-  ruby *gluon_local, server.call('-E development')
+  run_local_command *server('-E', 'development')
 end
 
 desc 'start server for deployment (project local RubyGems repository).'
 task :local_server_deploy => [ :secret ] do
   ENV['GLUON_ENV'] = 'deployment'
-  ruby *gluon_local, server.call('-E deployment')
+  run_local_command *server('-E', 'deployment')
 end
 
 desc 'make CGI environment for project local RubyGems repository.'
 task :local_cgi_env do
-  cgi_env = "#{base_dir}/cgi.env"
+  cgi_env = "#{get_project_dir}/cgi.env"
   if File.exist? cgi_env then
     mv cgi_env, cgi_env + File.stat(cgi_env).mtime.strftime(".backup_%Y%m%d_%H%M%S")
   end
