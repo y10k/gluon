@@ -1,3 +1,10 @@
+2010-02-25  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* Rakefile, test/Rakefile: `.local_ruby_env' used.
+
+	* .local_ruby_env: portable rake rules for project local RubyGems
+	environemnt.
+
 2009-12-20  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/controller.rb: easy string pattern for

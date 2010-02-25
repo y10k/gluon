@@ -1,40 +1,31 @@
 # -*- coding: utf-8 -*-
 
-require 'rbconfig'
-include RbConfig
+load File.join(File.dirname(__FILE__), '.local_ruby_env')
 
-CONFIG['RUBY_INSTALL_NAME'] =~ /^(.*)ruby(.*)$/i or raise 'not found RUBY_INSTALL_NAME'
-prefix = $1
-suffix = $2
-
-base_dir = File.join(File.dirname(__FILE__))
-rake_cmd = "#{prefix}rake#{suffix}"
-rdoc_cmd = "#{prefix}rdoc#{suffix}"
-gem_cmd = "#{prefix}gem#{suffix}"
-
-example = proc{|options|
-  "rackup -I #{base_dir}/lib #{options} #{ENV['RACKUP_OPTS']} #{base_dir}/run/config.ru"
-}
+def example(*options)
+  [ 'rackup', '-I', get_project_libdir ] + options + get_command_options +
+    [ "#{get_project_dir}/run/config.ru" ]
+end
 
 desc 'alias for example_develop.'
 task :example => [ :example_develop ]
 
-desc 'start example for development (optional parameters: RACKUP_OPTS).'
+desc 'start example for development (rackup options for o1, o2, ...).'
 task :example_develop do
   ENV['GLUON_ENV'] = 'development'
-  sh example.call('-E development')
+  sh *example('-E', 'development')
 end
 
-desc 'start example for deployment (optional parameters: RACKUP_OPTS).'
+desc 'start example for deployment (rackup options for o1, o2, ...).'
 task :example_deploy do
   ENV['GLUON_ENV'] = 'deployment'
-  sh example.call('-E deployment')
+  sh *example('-E', 'deployment')
 end
 
 desc 'unit-test.'
 task :test do
-  cd "#{base_dir}/test", :verbose => true do
-    sh rake_cmd
+  cd "#{get_project_dir}/test", :verbose => true do
+    run_ruby_tool 'rake'
   end
 end
 
@@ -42,14 +33,7 @@ rdoc_opts = [ '-SNa', '-m', 'Gluon', '-t', 'gluon - component based web applicat
 
 desc 'make document.'
 task :rdoc do
-  sh rdoc_cmd, *rdoc_opts, '-o', 'api', 'lib', 'run/lib'
-end
-
-gluon_local = [ "#{base_dir}/bin/gluon_local", '-d', base_dir ]
-
-desc 'project local RubyGems (optional parameters: GEM_ARGS).'
-task :local_gem do
-  ruby *gluon_local, "#{gem_cmd} #{ENV['GEM_ARGS']}"
+  run_ruby_tool 'rdoc', *rdoc_opts, '-o', 'api', 'lib', 'run/lib'
 end
 
 desc 'alias for local_example_develop.'
@@ -58,19 +42,19 @@ task :local_example => [ :local_example_develop ]
 desc 'start example for development (project local RubyGems environemnt).'
 task :local_example_develop do
   ENV['GLUON_ENV'] = 'development'
-  ruby *gluon_local, example.call('-E development')
+  run_local_command *example('-E', 'development')
 end
 
 desc 'start example for deployment (project local RubyGems environemnt).'
 task :local_example_deploy do
   ENV['GLUON_ENV'] = 'deployment'
-  ruby *gluon_local, example.call('-E deployment')
+  run_local_command *example('-E', 'deployment')
 end
 
 desc 'unit-test (project local RubyGems environemnt).'
 task :local_test do
-  cd "#{base_dir}/test", :verbose => true do
-    ruby '../bin/gluon_local', '-d', '..', rake_cmd
+  cd "#{get_project_dir}/test", :verbose => true do
+    run_ruby_tool 'rake', 'local_test'
   end
 end
 
@@ -103,9 +87,9 @@ end
 desc 'clean garbage files'
 task :clean => [ :clobber_package ] do
   rm_rf 'api'
-  for subdir in [ "#{base_dir}/test", "#{base_dir}/run" ]
+  for subdir in [ "#{get_project_dir}/test", "#{get_project_dir}/run" ]
     cd subdir, :verbose => true do
-      sh rake_cmd, 'clean'
+      run_ruby_tool 'rake', 'clean'
     end
   end
 end

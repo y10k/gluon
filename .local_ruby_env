@@ -1,0 +1,151 @@
+# -*- coding: utf-8 -*-
+
+require 'rbconfig'
+
+def get_ruby_bindir
+  RbConfig::CONFIG['bindir']
+end
+
+def get_ruby_program_prefix
+  if (RbConfig::CONFIG['RUBY_INSTALL_NAME'] =~ /ruby/i) then
+    $`
+  else
+    ''
+  end
+end
+
+def get_ruby_program_suffix
+  if (RbConfig::CONFIG['RUBY_INSTALL_NAME'] =~ /ruby/i) then
+    $'
+  else
+    ''
+  end
+end
+
+def get_project_dir
+  File.dirname(__FILE__)
+end
+
+def get_project_bindir
+  File.join(get_project_dir, 'bin')
+end
+
+def get_project_libdir
+  File.join(get_project_dir, 'lib')
+end
+
+def get_project_gem_home
+  File.join(get_project_dir, 'gems')
+end
+
+def get_project_gem_bindir
+  File.join(get_project_gem_home, 'bin')
+end
+
+def setup_local_ruby_environment
+  if (ENV.key? 'RUBYLIB') then
+    ENV['RUBYLIB'] = [
+      get_project_libdir,
+      ENV['RUBYLIB']
+    ].join(File::PATH_SEPARATOR)
+  else
+    ENV['RUBYLIB'] = get_project_libdir
+  end
+  ENV['RUBYOPT'] = 'rubygems'
+  ENV['GEM_HOME'] = get_project_gem_home
+  ENV['PATH'] = [
+    get_project_bindir,
+    get_project_gem_bindir,
+    ENV['PATH']
+  ].join(File::PATH_SEPARATOR)
+
+  nil
+end
+
+def run_ruby_tool(name, *args)
+  tool_path = File.join(get_ruby_bindir,
+                        "#{get_ruby_program_prefix}#{name}#{get_ruby_program_suffix}")
+  sh tool_path, *args
+end
+
+def run_local_ruby_tool(name, *args)
+  setup_local_ruby_environment
+  run_ruby_tool name, *args
+end
+
+def run_local_ruby_script(name, *args)
+  setup_local_ruby_environment
+  ruby name, *args
+end
+
+def run_local_command(name, *args)
+  setup_local_ruby_environment
+  sh name, *args
+end
+
+def get_command_parameters(name)
+  params = []
+
+  i = 1
+  while (v = ENV.delete("#{name}#{i}"))
+    params << v
+    i += 1
+  end
+
+  params
+end
+
+def get_ruby_options
+  get_command_parameters('r')
+end
+
+def get_command_options
+  get_command_parameters('o')
+end
+
+def get_command_arguments
+  get_command_parameters('a')
+end
+
+def get_cmd_args
+  get_command_options + get_command_arguments
+end
+
+desc 'run project local command (parameters: name, o1, o2, ..., a1, a2, ...).'
+task :local_command do
+  unless (ENV.key? 'name') then
+    raise %q"need for `name' parameter."
+  end
+  run_local_command ENV['name'], *get_cmd_args
+end
+
+desc 'run project local ruby-script (parameters: r1, r2, ..., name, o1, o2, ..., a1, a2, ...).'
+task :local_ruby_script do
+  unless (ENV.key? 'name') then
+    raise %q"need for `name' parameter."
+  end
+  run_local_ruby_script *get_ruby_options, ENV['name'], *get_cmd_args
+end
+
+desc 'run ruby-tool at project local environment (parameters: name, o1, o2, ..., a1, a2, ...).'
+task :local_ruby_tool do
+  unless (ENV.key? 'name') then
+    raise %q"need for `name' parameter."
+  end
+  run_local_ruby_tool ENV['name'], *get_cmd_args
+end
+
+desc 'project local RubyGems (parameters: o1, o2, ..., a1, a2, ...).'
+task :local_gem do
+  run_local_ruby_tool 'gem', *get_cmd_args
+end
+
+desc 'project local ri (parameters: o1, o2, ..., a1, a2, ...).'
+task :local_ri do
+  run_local_ruby_tool 'ri', *get_cmd_args
+end
+
+# Local Variables:
+# mode: Ruby
+# indent-tabs-mode: nil
+# End:
