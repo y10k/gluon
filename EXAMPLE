@@ -18,7 +18,7 @@ see http://localhost:9292 for default.
 
   gluon_example -d example
   cd example
-  rake local_gem "GEM_ARGS=install gluon"
+  rake local_gem a1=install a2=gluon
   rake local_server
 
 see http://localhost:9292 for default.<br>
@@ -28,7 +28,7 @@ see <tt>example/gems</tt> for local rubygems repository.
 
   gluon_example -d example
   cd example
-  rake local_gem "GEM_ARGS=install gluon"
+  rake local_gem a1=install a2=gluon
   rake local_cgi_env
   rake cgi_server
 

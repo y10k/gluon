@@ -1,5 +1,7 @@
 2010-02-27  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* EXAMPLE: updated for `.local_ruby_env'.
+
 	* bin/gluon_local: obsoleted.
 
 2010-02-25  TOKI Yoshinori  <toki@freedom.ne.jp>
