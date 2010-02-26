@@ -106,8 +106,21 @@ module Gluon
       throw(:GLUON_CONTROLLER_SWITCH_TO, c)
     end
 
+    def ascii_8bit?(penc)
+      case (penc)
+      when String, Symbol
+        penc = Encoding.find(penc)
+      end
+      penc == Encoding::ASCII_8BIT
+    end
+    private :ascii_8bit?
+
     def process_controller(c, r)
-      r.esponse['Content-Type'] = "text/html; charset=#{c.class.page_encoding}"
+      if (ascii_8bit? c.class.page_encoding) then
+        r.esponse['Content-Type'] = 'application/octet-stream'
+      else
+        r.esponse['Content-Type'] = "text/html; charset=#{c.class.page_encoding}"
+      end
       r.controller = c
       c.r = r
       po = PresentationObject.new(c, r, @template_engine)

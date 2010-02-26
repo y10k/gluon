@@ -1,5 +1,8 @@
 2010-02-27  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/application.rb: content-type of ascii-8bit encoding is
+	application/octet-stream.
+
 	* EXAMPLE: updated for `.local_ruby_env'.
 
 	* bin/gluon_local: obsoleted.
