@@ -1,5 +1,7 @@
 2010-02-27  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/setup.rb: unit test driver is added to setup runtime.
+
 	* lib/gluon/application.rb: content-type of ascii-8bit encoding is
 	application/octet-stream.
 

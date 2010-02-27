@@ -31,6 +31,7 @@ module Gluon::Test
       assert(File.directory? File.join(@install_dir, Gluon::Setup::CGI_DIR))
       assert(File.directory? File.join(@install_dir, Gluon::Setup::LIB_DIR))
       assert(File.directory? File.join(@install_dir, Gluon::Setup::VIEW_DIR))
+      assert(File.directory? File.join(@install_dir, Gluon::Setup::TEST_DIR))
     end
 
     def test_install_runtime
@@ -46,6 +47,12 @@ module Gluon::Test
 
       assert(File.file? File.join(@install_dir, Gluon::Setup::CGI_DIR, 'config.ru'))
       assert(! (File.executable? File.join(@install_dir, Gluon::Setup::CGI_DIR, 'config.ru')))
+
+      assert(File.file? File.join(@install_dir, Gluon::Setup::TEST_DIR, 'run.rb'))
+      assert(File.executable? File.join(@install_dir, Gluon::Setup::TEST_DIR, 'run.rb'))
+
+      assert(File.file? File.join(@install_dir, Gluon::Setup::TEST_DIR, 'Rakefile'))
+      assert(! (File.executable? File.join(@install_dir, Gluon::Setup::TEST_DIR, 'Rakefile')))
 
       assert(File.file? File.join(@install_dir, '.local_ruby_env'))
       assert(! (File.executable? File.join(@install_dir, '.local_ruby_env')))

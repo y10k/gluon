@@ -13,6 +13,7 @@ module Gluon
     CGI_DIR    = 'cgi-bin'
     LIB_DIR    = 'lib'
     VIEW_DIR   = 'view'
+    TEST_DIR   = 'test'
 
     UMASK_MODE = 0022
     EXEC_MODE  = 0755
@@ -27,7 +28,8 @@ module Gluon
       [ BIN_DIR,
         CGI_DIR,
         LIB_DIR,
-        VIEW_DIR
+        VIEW_DIR,
+        TEST_DIR
       ].each do |top_dir|
         top_dir_path = File.join(@install_dir, top_dir)
         FileUtils.mkdir_p(top_dir_path, :verbose => @verbose)
@@ -41,6 +43,10 @@ module Gluon
                         File.join(@install_dir, CGI_DIR), :mode => EXEC_MODE, :verbose => @verbose)
       FileUtils.install(File.join(RUNTIME_DIR, CGI_DIR, 'config.ru'),
                         File.join(@install_dir, CGI_DIR), :mode => FILE_MODE, :verbose => @verbose)
+      FileUtils.install(File.join(BASE_DIR, TEST_DIR, 'run.rb'),
+                        File.join(@install_dir, TEST_DIR), :mode => EXEC_MODE, :verbose => @verbose)
+      FileUtils.install(File.join(BASE_DIR, TEST_DIR, 'Rakefile'),
+                        File.join(@install_dir, TEST_DIR), :mode => FILE_MODE, :verbose => @verbose)
       FileUtils.install(File.join(BASE_DIR, '.local_ruby_env'),
                         @install_dir, :mode => FILE_MODE, :verbose => @verbose)
       FileUtils.install(File.join(RUNTIME_DIR, 'Rakefile'),

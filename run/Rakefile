@@ -45,10 +45,20 @@ task :secret do
   end
 end
 
+desc 'unit-test.'
+task :test do
+  cd "#{get_project_dir}/test", :verbose => true do
+    run_ruby_tool 'rake'
+  end
+end
+
 desc 'clean garbage files'
 task :clean do
   for f in Dir['**/*.erbc'] + Dir['*~']
     rm f
+  end
+  cd "#{get_project_dir}/test", :verbose => true do
+    run_ruby_tool 'rake', 'clean'
   end
 end
 
@@ -79,6 +89,13 @@ task :local_cgi_env do
     f.puts 'GEM_HOME="$BASE_DIR/gems"; export GEM_HOME'
     f.puts 'PATH="$PATH:$GEM_HOME/bin"; export PATH'
     f.puts 'GLUON_ENV=deployment; export GLUON_ENV'
+  end
+end
+
+desc 'unit-test (project local RubyGems environemnt).'
+task :local_test do
+  cd "#{get_project_dir}/test", :verbose => true do
+    run_ruby_tool 'rake', 'local_test'
   end
 end
 
