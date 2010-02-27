@@ -87,10 +87,11 @@ end
 desc 'clean garbage files'
 task :clean => [ :clobber_package ] do
   rm_rf 'api'
-  for subdir in [ "#{get_project_dir}/test", "#{get_project_dir}/run" ]
-    cd subdir, :verbose => true do
-      run_ruby_tool 'rake', 'clean'
-    end
+  for f in Dir['**/*.erbc'] + Dir['*~']
+    rm f
+  end
+  cd "#{get_project_dir}/test", :verbose => true do
+    run_ruby_tool 'rake', 'clean'
   end
 end
 
