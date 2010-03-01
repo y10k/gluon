@@ -10,10 +10,7 @@ module Gluon::Test
     def setup
       @Controller = Class.new(Gluon::Controller) {
         include Gluon::Validation
-
-        def self.page_encoding
-          __ENCODING__
-        end
+        def_page_encoding __ENCODING__
       }
       @c = @Controller.new
       @env = Rack::MockRequest.env_for('http://www.foo.com/run.cgi')
