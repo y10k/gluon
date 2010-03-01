@@ -218,13 +218,42 @@ module Gluon
       ERBView
     end
 
+    def def_page_view(view)
+      m = Module.new
+      m.module_eval{
+        define_method(:page_view) { view }
+      }
+      extend(m)
+    end
+    private :def_page_view
+
     def page_encoding
       raise "not defined page encoding for component of `#{self}'"
     end
 
+    def def_page_encoding(penc)
+      penc = Encoding.find(penc) unless (penc.is_a? Encoding)
+      m = Module.new
+      m.module_eval{
+        define_method(:page_encoding) { penc }
+      }
+      extend(m)
+    end
+    private :def_page_encoding
+
     def page_template
       nil
     end
+
+    def def_page_template(path)
+      path = path.dup.freeze
+      m = Module.new
+      m.module_eval{
+        define_method(:page_template) { path }
+      }
+      extend(m)
+    end
+    private :def_page_template
 
     def process_view(po)
       po.template_render(page_view, page_encoding, page_template)

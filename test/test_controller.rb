@@ -5,6 +5,59 @@ require 'gluon'
 require 'test/unit'
 
 module Gluon::Test
+  class ComponentTest < Test::Unit::TestCase
+    def setup
+      @Component = Class.new
+      @Component.extend Gluon::Component
+    end
+
+    def test_default_page_view
+      assert_equal(Gluon::ERBView, @Component.page_view)
+    end
+
+    def test_def_page_view
+      @Component.class_eval{ def_page_view :DummyView }
+      assert_equal(:DummyView, @Component.page_view)
+    end
+
+    def test_default_page_encoding
+      assert_raise(RuntimeError) { @Component.page_encoding }
+    end
+
+    def test_def_page_encoding
+      @Component.class_eval{ def_page_encoding Encoding::UTF_8 }
+      assert_equal(Encoding::UTF_8, @Component.page_encoding)
+    end
+
+    def test_def_page_encoding_string
+      @Component.class_eval{ def_page_encoding 'utf-8' }
+      assert_equal(Encoding::UTF_8, @Component.page_encoding)
+    end
+
+    def test_def_page_encoding_string_unknown
+      assert_raise(ArgumentError) {
+        @Component.class_eval{ def_page_encoding 'no-encoding' }
+      }
+    end
+
+    def test_default_page_template
+      assert_nil(@Component.page_template)
+    end
+
+    def test_def_page_template
+      @Component.class_eval{ def_page_template '/foo/bar.erb' }
+      assert_equal('/foo/bar.erb', @Component.page_template)
+    end
+
+    def test_def_page_template_immutable
+      s = '/foo/bar.erb'
+      @Component.class_eval{ def_page_template s}
+      s.sub!(/\.erb$/, '.rhtml')
+      assert_not_equal('/foo/bar.erb', s)
+      assert_equal('/foo/bar.erb', @Component.page_template)
+    end
+  end
+
   class ControllerTest < Test::Unit::TestCase
     def setup
       @Controller = Class.new(Gluon::Controller)
