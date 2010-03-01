@@ -623,7 +623,7 @@ module Gluon::Test
           @bar = value
         end
 
-        attr_reader :bar
+        attr_accessor :bar
       }
 
       @c.foo = [
@@ -659,7 +659,7 @@ module Gluon::Test
           @bar = value
         end
 
-        attr_reader :bar
+        attr_accessor :bar
       }
 
       @c.foo = [
@@ -692,7 +692,7 @@ module Gluon::Test
           @bar = value
         end
 
-        attr_reader :bar
+        attr_accessor :bar
       }
 
       @c.foo = component.new('あいうえお'.force_encoding(Encoding::ASCII_8BIT))

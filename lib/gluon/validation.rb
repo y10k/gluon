@@ -116,20 +116,22 @@ module Gluon
         if (value) then
           fail_count = 0
           if (value.is_a? Array) then
-            for v in value
-              v.force_encoding(expected_encoding)
-              unless (v.valid_encoding?) then
-                v.force_encoding(Encoding::ASCII_8BIT)
-                v.clear if delete_on_fail
+            value.each_with_index do |v, i|
+              v = v.dup.force_encoding(expected_encoding)
+              if (v.valid_encoding?) then
+                value[i] = v
+              else
+                value[i].clear if delete_on_fail
                 fail_count += 1
               end
             end
           else
-            value.force_encoding(expected_encoding)
-            unless (value.valid_encoding?) then
-              value.force_encoding(Encoding::ASCII_8BIT)
+            v = value.dup.force_encoding(expected_encoding)
+            if (v.valid_encoding?) then
+              @c.__send__("#{name}=", v)
+            else
               value.clear if delete_on_fail
-              fail_count +=- 1
+              fail_count += 1
             end
           end
 
