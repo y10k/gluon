@@ -1,3 +1,8 @@
+2010-03-01  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/controller.rb: simple syntax is defined for
+	`page_view', `page_encoding', `page_template'.
+
 2010-02-27  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/setup.rb: unit test driver is added to setup runtime.
