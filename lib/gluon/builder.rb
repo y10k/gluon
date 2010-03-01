@@ -87,7 +87,7 @@ module Gluon
         parent = @app_builder
         @app_builder = proc{|location, logger, options|
           app = parent.call(location, logger, options)
-          logger.info "mount #{page_type} for location: #{location}"
+          logger.info "mount #{page_type} at location: #{location}"
           options[:cmap].mount(page_type, location)
           app.mount(page_type)
         }
