@@ -6,13 +6,9 @@ class Example
       '/' + Menu::Item.key(example_type)
     end
 
-    def page_start
-      key = @r.path_args[0]
+    def page_start(key)
       @example_type = Menu::Items[key].example_type
       @header_footer = HeaderFooter.new(@r, @example_type)
-    end
-
-    def request_GET(key)
     end
 
     gluon_import_reader :header_footer

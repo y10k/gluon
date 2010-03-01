@@ -1,5 +1,11 @@
 2010-03-01  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/application.rb, lib/gluon/controller.rb: timing of
+	passing `path_args' is changed. `path_args' is passed to
+	`page_start' of first hook. `page_request' hook takes no arguments
+	and default empty `request_GET' hook is defined. in many cases,
+	`request_GET' hook may be omitted because it is verbose.
+
 	* lib/gluon/controller.rb: simple syntax is defined for
 	`page_view', `page_encoding', `page_template'.
 

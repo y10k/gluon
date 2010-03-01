@@ -466,20 +466,23 @@ module Gluon
       @r.validation = true
     end
 
-    def page_request(*path_args)
+    def page_request
       if (@r.equest.get?) then
-        request_GET(*path_args)
+        request_GET
       elsif (@r.equest.head?) then
-        request_HEAD(*path_args)
+        request_HEAD
       elsif (@r.equest.post?) then
-        request_POST(*path_args)
+        request_POST
       else
         __send__('request_' + @r.equest.request_method, *path_args)
       end
     end
 
-    def request_HEAD(*path_args)
-      request_GET(*path_args)
+    def request_GET
+    end
+
+    def request_HEAD
+      request_GET
     end
 
     def page_end

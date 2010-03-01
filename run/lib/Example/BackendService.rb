@@ -33,9 +33,6 @@ class Example
       @clear_on_post = true
     end
 
-    def request_GET
-    end
-
     def request_POST
       validation(@errors) do |v|
         v.one_time_token

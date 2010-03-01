@@ -4,9 +4,6 @@ class Example
   class Menu < Gluon::Controller
     def_page_encoding __ENCODING__
 
-    def request_GET
-    end
-
     class Item
       extend Gluon::Component
 

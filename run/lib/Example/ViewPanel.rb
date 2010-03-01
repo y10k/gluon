@@ -47,7 +47,7 @@ class Example
     end
     private :search_child_components
 
-    def page_start
+    def page_start(key)
       super
       @component_type = { @example_type => true }
       search_child_components(@example_type.new)

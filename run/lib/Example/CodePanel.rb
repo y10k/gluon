@@ -8,10 +8,9 @@ class Example
 
     LIB_DIR = File.join(File.dirname(__FILE__), '..')
 
-    def page_start
+    def page_start(key)
       super
-      @source_path = File.join(LIB_DIR,
-                               @example_type.name.gsub(/::/, '/') + '.rb')
+      @source_path = File.join(LIB_DIR, @example_type.name.gsub(/::/, '/') + '.rb')
     end
 
     def filename

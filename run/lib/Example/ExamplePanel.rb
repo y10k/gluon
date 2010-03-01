@@ -6,7 +6,7 @@ class Example
   class ExamplePanel < Panel
     def_page_encoding __ENCODING__
 
-    def page_start
+    def page_start(key)
       super
       @example = @example_type.new
     end

@@ -4,9 +4,6 @@
 class Welcom < Gluon::Controller
   def_page_encoding __ENCODING__
 
-  def request_GET
-  end
-
   def title
     'Welcom to Gluon'
   end

@@ -3,9 +3,6 @@
 class Example < Gluon::Controller
   def_page_encoding __ENCODING__
 
-  def request_GET
-  end
-
   def menu
     Example::Menu
   end
