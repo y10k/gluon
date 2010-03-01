@@ -4,9 +4,7 @@ class Example
   class Value
     extend Gluon::Component
 
-    def self.page_encoding
-      __ENCODING__
-    end
+    def_page_encoding __ENCODING__
 
     # for Example::Menu and Example::Panel
     def self.description

@@ -4,9 +4,7 @@ class Example
   class Import
     extend Gluon::Component
 
-    def self.page_encoding
-      __ENCODING__
-    end
+    def_page_encoding __ENCODING__
 
     # for Example::Menu and Example::Panel
     def self.description
@@ -16,9 +14,7 @@ class Example
     class Foo
       extend Gluon::Component
 
-      def self.page_encoding
-        __ENCODING__
-      end
+      def_page_encoding __ENCODING__
 
       def initialize(message)
         @message = message
@@ -30,17 +26,13 @@ class Example
     class Bar
       extend Gluon::Component
 
-      def self.page_encoding
-        __ENCODING__
-      end
+      def_page_encoding __ENCODING__
     end
 
     class Baz
       extend Gluon::Component
 
-      def self.page_encoding
-        __ENCODING__
-      end
+      def_page_encoding __ENCODING__
     end
 
     def initialize

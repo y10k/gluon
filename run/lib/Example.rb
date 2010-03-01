@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
 class Example < Gluon::Controller
-  def self.page_encoding
-    __ENCODING__
-  end
+  def_page_encoding __ENCODING__
 
   def request_GET
   end

@@ -4,9 +4,7 @@ require 'Example/Panel'
 
 class Example
   class ExamplePanel < Panel
-    def self.page_encoding
-      __ENCODING__
-    end
+    def_page_encoding __ENCODING__
 
     def page_start
       super
