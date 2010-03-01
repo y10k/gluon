@@ -7,13 +7,10 @@ module Gluon
     class StringTableItem
       extend Gluon::Component
 
-      def self.page_encoding
-        __ENCODING__
-      end
+      def_page_encoding __ENCODING__
 
-      def self.page_template
-        File.join(File.dirname(__FILE__), File.basename(__FILE__, '.rb') + '_item.erb')
-      end
+      def_page_template File.join(File.dirname(__FILE__),
+                                  File.basename(__FILE__, '.rb') + '_item.erb')
 
       def initialize(value)
         @value = value
@@ -25,13 +22,10 @@ module Gluon
     class ImportTable
       extend Gluon::Component
 
-      def self.page_encoding
-        __ENCODING__
-      end
+      def_page_encoding __ENCODING__
 
-      def self.page_template
-        File.join(File.dirname(__FILE__), File.basename(__FILE__, '.rb') + '.erb')
-      end
+      def_page_template File.join(File.dirname(__FILE__),
+                                  File.basename(__FILE__, '.rb') + '.erb')
 
       class AttrPair
         extend Gluon::Component

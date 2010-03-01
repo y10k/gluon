@@ -1,5 +1,8 @@
 2010-03-01  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/controller.rb: simple syntax is defined for
+	`page_view', `page_encoding', `page_template'.
+
 	* lib/gluon/validation.rb: string copy on changing encoding of
 	form value.
 

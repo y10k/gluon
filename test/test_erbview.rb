@@ -76,14 +76,11 @@ module Gluon::Test
       component = Class.new{
         extend Gluon::Component
 
-        def self.page_encoding
-          __ENCODING__
-        end
+        def_page_encoding __ENCODING__
 
-        def self.page_template
-          File.join(File.dirname(__FILE__),
-                    File.basename(__FILE__, '.rb') + ".test_gluon_content.component.erb")
-        end
+        def_page_template File.join(File.dirname(__FILE__),
+                                    File.basename(__FILE__, '.rb') +
+                                    ".test_gluon_content.component.erb")
       }
 
       @Controller.class_eval{
@@ -100,14 +97,11 @@ module Gluon::Test
       component = Class.new{
         extend Gluon::Component
 
-        def self.page_encoding
-          __ENCODING__
-        end
+        def_page_encoding __ENCODING__
 
-        def self.page_template
-          File.join(File.dirname(__FILE__),
-                    File.basename(__FILE__, '.rb') + ".test_gluon_content_block.component.erb")
-        end
+        def_page_template File.join(File.dirname(__FILE__),
+                                    File.basename(__FILE__, '.rb') +
+                                    ".test_gluon_content_block.component.erb")
       }
 
       @Controller.class_eval{

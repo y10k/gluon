@@ -4,9 +4,7 @@ class Example
   class HeaderFooter
     extend Gluon::Component
 
-    def self.page_encoding
-      __ENCODING__
-    end
+    def_page_encoding __ENCODING__
 
     def initialize(req_res, example_type)
       @r = req_res

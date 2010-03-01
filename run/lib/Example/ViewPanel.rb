@@ -4,9 +4,7 @@ require 'Example/Panel'
 
 class Example
   class ViewPanel < Panel
-    def self.page_encoding
-      __ENCODING__
-    end
+    def_page_encoding __ENCODING__
 
     VIEW_DIR = File.join(File.dirname(__FILE__), '..', '..', 'view')
 

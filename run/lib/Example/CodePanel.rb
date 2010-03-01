@@ -4,9 +4,7 @@ require 'Example/Panel'
 
 class Example
   class CodePanel < Panel
-    def self.page_encoding
-      __ENCODING__
-    end
+    def_page_encoding __ENCODING__
 
     LIB_DIR = File.join(File.dirname(__FILE__), '..')
 

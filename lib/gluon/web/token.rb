@@ -10,13 +10,10 @@ module Gluon
     class OneTimeToken
       extend Gluon::Component
 
-      def self.page_encoding
-        __ENCODING__
-      end
+      def_page_encoding __ENCODING__
 
-      def self.page_template
-        File.join(File.dirname(__FILE__), File.basename(__FILE__, '.rb') + '.erb')
-      end
+      def_page_template File.join(File.dirname(__FILE__),
+                                  File.basename(__FILE__, '.rb') + '.erb')
 
       def new_token
         now = Time.now
