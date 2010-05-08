@@ -5,6 +5,7 @@ module Gluon
   module Web
     autoload :ErrorMessages, 'gluon/web/error'
     autoload :ImportTable, 'gluon/web/table'
+    autoload :ForeachTable, 'gluon/web/table'
     autoload :OneTimeToken, 'gluon/web/token'
   end
 end
