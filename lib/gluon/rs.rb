@@ -104,7 +104,7 @@ module Gluon
     end
 
     def location(path, status=302)
-      @logger.debug("#{self}.location() -> #{path}") if @logger.debug?
+      logger.debug("#{self}.location() -> #{path}") if logger.debug?
       @res['Location'] = path
       @res.status = status
       self
