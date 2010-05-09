@@ -57,6 +57,22 @@ module Gluon
       end
       gluon_cond :exist_css_class?
       gluon_cond_not :exist_css_class?
+
+      module AddOn
+        extend Gluon::Component
+
+        def create_error_messages
+          ErrorMessages.new
+        end
+
+        def __addon_init__
+          super                 # for add-on chain.
+          @r.logger.debug("#{self.class}: __addon_init__.") if @r.logger.debug?
+          @errors = create_error_messages
+        end
+
+        gluon_import_reader :errors
+      end
     end
   end
 end
