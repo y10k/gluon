@@ -4,6 +4,7 @@
 /gems/*
 /pkg/*
 /run/*.log
+/run/.local_ruby_env
 /run/bbs_data.pstore
 /run/bin/gluon_local
 /run/cgi.env*
