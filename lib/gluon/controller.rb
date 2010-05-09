@@ -455,6 +455,16 @@ module Gluon
 
     attr_writer :r
 
+    def __addon_around__
+      yield
+    end
+
+    def __addon_init__
+    end
+
+    def __addon_final__
+    end
+
     def page_around
       yield
     end

@@ -128,43 +128,54 @@ module Gluon
 
       if (@logger.debug?) then
         @logger.debug "controller: #{c}"
-        @logger.debug "#{c}: page_around start."
+        @logger.debug "#{c}: __addon_around__ start."
       end
 
-      c.page_around{
-        @logger.debug "#{c}: page_start(#{r.path_args.map{|s| s.inspect }.join(', ')})" if @logger.debug?
-        c.page_start(*r.path_args)
+      c.__addon_around__{
+        @logger.debug "#{c}: __addon_init__." if @logger.debug?
+        c.__addon_init__
         begin
-          @logger.debug "#{c}: page_validation_preprocess." if @logger.debug?
-          c.page_validation_preprocess
-          @logger.debug "#{c}: set form parameters." if @logger.debug?
-          Controller.set_form_params(c, r.equest.params)
-          @logger.debug "#{c}: page_request" if @logger.debug?
-          c.page_request
-          if (action = Controller.find_first_action(c, r.equest.params)) then
-            @logger.debug "#{c}: validation is #{r.validation.inspect}." if @logger.debug?
-            if (r.validation) then
-              @logger.debug "#{c}: call action: #{action.name}" if @logger.debug?
-              action.call
-            else
-              @logger.debug "#{c}: not validated action: #{action.name}" if @logger.debug?
-              if (r.validation.nil?) then
-                raise "not validated page of `#{c}'"
+          @logger.debug "#{c}: page_around start." if @logger.debug?
+          c.page_around{
+            @logger.debug "#{c}: page_start(#{r.path_args.map{|s| s.inspect }.join(', ')})" if @logger.debug?
+            c.page_start(*r.path_args)
+            begin
+              @logger.debug "#{c}: page_validation_preprocess." if @logger.debug?
+              c.page_validation_preprocess
+              @logger.debug "#{c}: set form parameters." if @logger.debug?
+              Controller.set_form_params(c, r.equest.params)
+              @logger.debug "#{c}: page_request" if @logger.debug?
+              c.page_request
+              if (action = Controller.find_first_action(c, r.equest.params)) then
+                @logger.debug "#{c}: validation is #{r.validation.inspect}." if @logger.debug?
+                if (r.validation) then
+                  @logger.debug "#{c}: call action: #{action.name}" if @logger.debug?
+                  action.call
+                else
+                  @logger.debug "#{c}: not validated action: #{action.name}" if @logger.debug?
+                  if (r.validation.nil?) then
+                    raise "not validated page of `#{c}'"
+                  end
+                end
+              else
+                @logger.debug "#{c}: no action." if @logger.debug?
               end
+              @logger.debug "#{c}: process_view." if @logger.debug?
+              page_result = c.class.process_view(po)
+            ensure
+              @logger.debug "#{c}: page_end." if @logger.debug?
+              c.page_end
             end
-          else
-            @logger.debug "#{c}: no action." if @logger.debug?
-          end
-          @logger.debug "#{c}: process view." if @logger.debug?
-          page_result = c.class.process_view(po)
+          }
+          @logger.debug "#{c}: page_around end." if @logger.debug?
         ensure
-          @logger.debug "#{c}: page_end." if @logger.debug?
-          c.page_end
+          @logger.debug "#{c}: __addon_final__." if @logger.debug?
+          c.__addon_final__
         end
       }
 
       if (@logger.debug?) then
-        @logger.debug "#{c}: page_around end."
+        @logger.debug "#{c}: __addon_around__ end."
         @logger.debug "#{c}: content-length: #{page_result.bytesize}"
         @logger.debug "#{c}: content-type: #{r.esponse['Content-Type']}"
       end

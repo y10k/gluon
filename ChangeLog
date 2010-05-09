@@ -1,5 +1,7 @@
 2010-05-09  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/application.rb, lib/gluon/controller.rb: add-on hooks.
+
 	* lib/gluon/rs.rb: fixed a bug of logging.
 
 2010-03-01  TOKI Yoshinori  <toki@freedom.ne.jp>
