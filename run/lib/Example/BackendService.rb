@@ -3,6 +3,8 @@
 class Example
   class BackendService < Gluon::Controller
     include Gluon::Validation
+    include Gluon::Web::ErrorMessages::AddOn
+    include Gluon::Web::OneTimeToken::AddOn
 
     def_page_encoding __ENCODING__
 
@@ -16,6 +18,10 @@ class Example
     end
     gluon_value :title
 
+    def create_error_messages
+      Gluon::Web::ErrorMessages.new(:head_level => 3)
+    end
+
     def page_around
       read_only = ! @r.equest.post?
       @bbs_db = @r.svc.bbs_db
@@ -26,8 +32,6 @@ class Example
 
     def page_start
       @header_footer = HeaderFooter.new(@r, self.class)
-      @errors = Gluon::Web::ErrorMessages.new(:head_level => 3)
-      @one_time_token = Gluon::Web::OneTimeToken.new(@r)
       @comment = nil
       @name = nil
       @clear_on_post = true
@@ -42,17 +46,9 @@ class Example
       end
     end
 
-    def page_end
-      @one_time_token.next_token
-    end
-
     gluon_import_reader :header_footer
-    gluon_import_reader :errors
-    gluon_import_reader :one_time_token
-
     gluon_textarea_accessor :comment,
       :attrs => { 'id' => 'comment', 'cols' => 80, 'rows' => 8 }
-
     gluon_text_accessor :name, :attrs => { 'id' => 'name' }
     gluon_checkbox_accessor :clear_on_post, :attrs => { 'id' => 'clear-on-post' }
 

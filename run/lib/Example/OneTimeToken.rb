@@ -3,6 +3,8 @@
 class Example
   class OneTimeToken < Gluon::Controller
     include Gluon::Validation
+    include Gluon::Web::ErrorMessages::AddOn
+    include Gluon::Web::OneTimeToken::AddOn
 
     def_page_encoding __ENCODING__
 
@@ -18,8 +20,6 @@ class Example
 
     def page_start
       @header_footer = HeaderFooter.new(@r, self.class)
-      @errors = Gluon::Web::ErrorMessages.new
-      @one_time_token = Gluon::Web::OneTimeToken.new(@r)
       @count = @r.equest.session[:count] || 0
       @now = Time.now
     end
@@ -30,13 +30,7 @@ class Example
       end
     end
 
-    def page_end
-      @one_time_token.next_token
-    end
-
     gluon_import_reader :header_footer
-    gluon_import_reader :errors
-    gluon_import_reader :one_time_token
     gluon_value_reader :count
 
     def now
