@@ -28,7 +28,7 @@ module Gluon
       end
       private :new_token
 
-      # recommended to be initialized at Gluon::Controller#page_start hook.
+      # recommended to be initialized at Gluon::Controller#page_start or former hook.
       def initialize(req_res)
         @r = req_res
         @prev_token = nil
@@ -50,10 +50,28 @@ module Gluon
         @prev_token && @prev_token == @r.equest.session[:gluon_one_time_token]
       end
 
-      # recommended to be called at Gluon::Controller#page_end hook.
+      # recommended to be called at Gluon::Controller#page_end or latter hook.
       def next_token
         @r.equest.session[:gluon_one_time_token] = @next_token
         self
+      end
+
+      module AddOn
+        extend Gluon::Component 
+
+        def __addon_init__
+          super                 # for add-on chain.
+          @r.logger.debug("#{self.class}: __addon_init__.") if @r.logger.debug?
+          @one_time_token = OneTimeToken.new(@r)
+        end
+
+        def __addon_final__
+          @r.logger.debug("#{self.class}: __addon__final__.") if @r.logger.debug?
+          @one_time_token.next_token
+          super                 # for add-on chain.
+        end
+
+        gluon_import_reader :one_time_token
       end
     end
   end

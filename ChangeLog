@@ -1,5 +1,7 @@
 2010-05-09  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/web/token.rb: defined add-on.
+
 	* lib/gluon/web/error.rb: defined add-on.
 
 	* lib/gluon/application.rb, lib/gluon/controller.rb: add-on hooks.
