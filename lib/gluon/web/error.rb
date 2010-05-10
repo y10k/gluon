@@ -67,7 +67,7 @@ module Gluon
 
         def __addon_init__
           super                 # for add-on chain.
-          @r.logger.debug("#{self.class}: __addon_init__.") if @r.logger.debug?
+          @r.logger.debug("#{self}: __addon_init__ at #{AddOn}.") if @r.logger.debug?
           @errors = create_error_messages
         end
 

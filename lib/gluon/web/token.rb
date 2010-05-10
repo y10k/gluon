@@ -61,12 +61,12 @@ module Gluon
 
         def __addon_init__
           super                 # for add-on chain.
-          @r.logger.debug("#{self.class}: __addon_init__.") if @r.logger.debug?
+          @r.logger.debug("#{self}: __addon_init__ at #{AddOn}.") if @r.logger.debug?
           @one_time_token = OneTimeToken.new(@r)
         end
 
         def __addon_final__
-          @r.logger.debug("#{self.class}: __addon__final__.") if @r.logger.debug?
+          @r.logger.debug("#{self}: __addon__final__ at #{AddOn}.") if @r.logger.debug?
           @one_time_token.next_token
           super                 # for add-on chain.
         end
