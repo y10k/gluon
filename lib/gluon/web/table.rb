@@ -19,7 +19,50 @@ module Gluon
       gluon_value_reader :value
     end
 
-    class ImportTable
+    class Table
+      class << self
+        def each_row(num_col, list)
+          if (num_col <= 0) then
+            raise ArgumentError, "not positive number of columns: #{num_col}"
+          end
+
+          unless (block_given?) then
+            return to_enum(:each_row, num_col, list)
+          end
+
+          row = []
+          for value in list
+            row << value
+            if (row.length >= num_col) then
+              yield(row)
+              row = []
+            end
+          end
+          yield(row) unless row.empty?
+
+          nil
+        end
+
+        def build(num_col, list, *args)
+          tbl = new(*args)
+          if (block_given?) then
+            yield(tbl, each_row(num_col, list))
+          else
+            each_row(num_col, list) do |row|
+              tbl.tr{|tr|
+                for value in row
+                  tr.td(value)
+                end
+              }
+            end
+          end
+
+          tbl
+        end
+      end
+    end
+
+    class ImportTable < Table
       extend Gluon::Component
 
       def_page_encoding __ENCODING__
@@ -130,7 +173,7 @@ module Gluon
       gluon_foreach_reader :rows
     end
 
-    class ForeachTable
+    class ForeachTable < Table
       extend Gluon::Component
       include Enumerable
 

@@ -1,5 +1,7 @@
 2010-05-13  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/web/table.rb: table utility.
+
 	* lib/gluon/application.rb: logging for non StandardError
 	exception.
 
