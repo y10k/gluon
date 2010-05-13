@@ -23,9 +23,8 @@ module Gluon
       begin
         env[:gluon_root_script_name] = env['SCRIPT_NAME']
         @app.call(env)
-      rescue
-        @logger.error($!)
-        raise
+      ensure
+        @logger.error($!) if $!
       end
     end
   end
