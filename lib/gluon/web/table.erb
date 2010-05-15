@@ -2,7 +2,7 @@
   <% gluon :exist_caption? do %><caption><% gluon :caption %></caption><% end %>
   <% gluon :rows do %>
     <tr<% gluon :attrs do %> <% gluon :name %>="<% gluon :value %>"<% end %>>
-      <% gluon :cells do %>
+      <% gluon :table_cells do %>
         <% gluon :header? do %>
           <th<% gluon :attrs do %> <% gluon :name %>="<% gluon :value %>"<% end %>><% gluon :item %></th>
         <% end %>

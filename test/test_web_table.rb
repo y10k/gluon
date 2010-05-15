@@ -49,9 +49,9 @@ module Gluon::Test
                                              7, 8, 9 ])
 
       rows = tbl.each
-      assert_equal([ 1, 2, 3 ], rows.next.cells)
-      assert_equal([ 4, 5, 6 ], rows.next.cells)
-      assert_equal([ 7, 8, 9 ], rows.next.cells)
+      assert_equal([ 1, 2, 3 ], rows.next.table_cells)
+      assert_equal([ 4, 5, 6 ], rows.next.table_cells)
+      assert_equal([ 7, 8, 9 ], rows.next.table_cells)
       assert_raise(StopIteration) { rows.next }
     end
 
@@ -69,29 +69,29 @@ module Gluon::Test
 
       assert_equal(3, tbl.rows.length)
 
-      assert_equal(3, tbl.rows[0].cells.length)
-      assert(tbl.rows[0].cells[0].header?)
-      assert_equal('A', tbl.rows[0].cells[0].item.value)
-      assert(tbl.rows[0].cells[1].header?)
-      assert_equal('B', tbl.rows[0].cells[1].item.value)
-      assert(tbl.rows[0].cells[2].header?)
-      assert_equal('C', tbl.rows[0].cells[2].item.value)
+      assert_equal(3, tbl.rows[0].table_cells.length)
+      assert(tbl.rows[0].table_cells[0].header?)
+      assert_equal('A', tbl.rows[0].table_cells[0].item.value)
+      assert(tbl.rows[0].table_cells[1].header?)
+      assert_equal('B', tbl.rows[0].table_cells[1].item.value)
+      assert(tbl.rows[0].table_cells[2].header?)
+      assert_equal('C', tbl.rows[0].table_cells[2].item.value)
 
-      assert_equal(3, tbl.rows[1].cells.length)
-      assert(tbl.rows[1].cells[0].header?)
-      assert_equal('X', tbl.rows[1].cells[0].item.value)
-      assert(tbl.rows[1].cells[1].data?)
-      assert_equal('1', tbl.rows[1].cells[1].item.value)
-      assert(tbl.rows[1].cells[2].data?)
-      assert_equal('2', tbl.rows[1].cells[2].item.value)
+      assert_equal(3, tbl.rows[1].table_cells.length)
+      assert(tbl.rows[1].table_cells[0].header?)
+      assert_equal('X', tbl.rows[1].table_cells[0].item.value)
+      assert(tbl.rows[1].table_cells[1].data?)
+      assert_equal('1', tbl.rows[1].table_cells[1].item.value)
+      assert(tbl.rows[1].table_cells[2].data?)
+      assert_equal('2', tbl.rows[1].table_cells[2].item.value)
 
-      assert_equal(3, tbl.rows[2].cells.length)
-      assert(tbl.rows[2].cells[0].header?)
-      assert_equal('Y', tbl.rows[2].cells[0].item.value)
-      assert(tbl.rows[2].cells[1].data?)
-      assert_equal('3', tbl.rows[2].cells[1].item.value)
-      assert(tbl.rows[2].cells[2].data?)
-      assert_equal('4', tbl.rows[2].cells[2].item.value)
+      assert_equal(3, tbl.rows[2].table_cells.length)
+      assert(tbl.rows[2].table_cells[0].header?)
+      assert_equal('Y', tbl.rows[2].table_cells[0].item.value)
+      assert(tbl.rows[2].table_cells[1].data?)
+      assert_equal('3', tbl.rows[2].table_cells[1].item.value)
+      assert(tbl.rows[2].table_cells[2].data?)
+      assert_equal('4', tbl.rows[2].table_cells[2].item.value)
     end
   end
 end

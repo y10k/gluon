@@ -127,7 +127,11 @@ module Gluon
           @attrs = attrs.map{|n, v| AttrPair.new(n, v) }
         end
 
-        gluon_foreach_reader :cells
+        def table_cells
+          @cells
+        end
+        gluon_foreach :table_cells
+
         gluon_foreach_reader :attrs
 
         def each(&block)
@@ -195,7 +199,10 @@ module Gluon
           @cells = cells
         end
 
-        gluon_foreach_reader :cells
+        def table_cells
+          @cells
+        end
+        gluon_foreach :table_cells
 
         def each(&block)
           @cells.each(&block)

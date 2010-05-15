@@ -8,7 +8,7 @@
   <caption>foreach table</caption>
   <% gluon :foreach_table do %>
     <tr>
-      <% gluon :cells do %>
+      <% gluon :table_cells do %>
         <td align="right"><% gluon :number %></td>
       <% end %>
     </tr>
@@ -22,7 +22,7 @@
     <caption>foreach table</caption>
     <% gluon :form_table do %>
       <tr>
-        <% gluon :cells do %>
+        <% gluon :table_cells do %>
           <td>
             <% gluon :checked %>
             <label for="<% gluon :check_id %>"><% gluon :text %></label>
