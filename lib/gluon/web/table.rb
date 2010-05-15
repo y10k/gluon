@@ -64,6 +64,7 @@ module Gluon
 
     class ImportTable < Table
       extend Gluon::Component
+      include Enumerable
 
       def_page_encoding __ENCODING__
 
@@ -119,6 +120,7 @@ module Gluon
 
       class Row
         extend Gluon::Component
+        include Enumerable
 
         def initialize(cells, attrs={})
           @cells = cells
@@ -127,6 +129,10 @@ module Gluon
 
         gluon_foreach_reader :cells
         gluon_foreach_reader :attrs
+
+        def each(&block)
+          @cells.map{|c| c.item }.each(&block)
+        end
       end
 
       class DslRow
@@ -171,6 +177,10 @@ module Gluon
       alias exist_caption? caption
       gluon_cond :exist_caption?
       gluon_foreach_reader :rows
+
+      def each(&block)
+        @rows.each(&block)
+      end
     end
 
     class ForeachTable < Table
@@ -179,12 +189,17 @@ module Gluon
 
       class Row
         extend Gluon::Component
+        include Enumerable
 
         def initialize(cells)
           @cells = cells
         end
 
         gluon_foreach_reader :cells
+
+        def each(&block)
+          @cells.each(&block)
+        end
       end
 
       class DslRow
