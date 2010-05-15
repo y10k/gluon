@@ -97,7 +97,7 @@ module Gluon
         }
       end while (c)
 
-      r.esponse.write(page_result)
+      r.esponse.write(page_result) if (page_result.bytesize > 0)
       r.esponse.finish
     end
 

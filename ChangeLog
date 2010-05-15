@@ -1,3 +1,8 @@
+2010-05-15  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/application.rb: `write' method should not be called at
+	a response without message body.
+
 2010-05-13  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/web/table.rb: table utility.
