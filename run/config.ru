@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # gluon application
 
 require 'gluon'

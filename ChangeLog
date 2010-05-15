@@ -1,5 +1,7 @@
 2010-05-15  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* magic comment for runtime ruby scripts.
+
 	* lib/gluon/web/table.rb: each method for loop.
 
 	* lib/gluon/application.rb: `write' method should not be called at

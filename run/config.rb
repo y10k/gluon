@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # gluon configuration
 
 ENV['GLUON_ENV'] ||= 'development'

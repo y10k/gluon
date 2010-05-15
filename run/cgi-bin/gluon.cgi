@@ -1,4 +1,5 @@
 #!/bin/sh
+# -*- coding: utf-8 -*-
 
 BASE_DIR="`dirname $0`/.."
 CGI_ENV="$BASE_DIR/cgi.env"
