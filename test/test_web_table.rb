@@ -62,8 +62,8 @@ module Gluon::Test
                                               Y 3 4 ]) do |tbl, rows|
         tbl.tr{|tr| rows.next.each{|v| tr.th(v) } }
         loop do
-          r = rows.next
-          tbl.tr{|tr| tr.th(r.shift); r.each{|v| tr.td(v) } }
+          head, *data = rows.next
+          tbl.tr{|tr| tr.th(head); data.each{|v| tr.td(v) } }
         end
       end
 

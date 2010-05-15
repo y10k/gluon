@@ -53,49 +53,66 @@ class Example
     end
 
     def initialize
-      @import_table = Gluon::Web::ImportTable.new(:summary => 'import table', :border => 1)
-      @import_table.caption = 'import table'
-      t = @import_table         # alias
-      t.tr.th('X').th('A').th('B').th('C').th('D').th('E')
-      t.tr{|r| r.th('1'); ('a'..'e').each{|c| r.td(Character.new(c)) } }
-      t.tr{|r| r.th('2'); ('f'..'j').each{|c| r.td(Character.new(c)) } }
-      t.tr{|r| r.th('3'); ('k'..'o').each{|c| r.td(Character.new(c)) } }
-      t.tr{|r| r.th('4'); ('p'..'t').each{|c| r.td(Character.new(c)) } }
-      t.tr{|r| r.th('5'); ('u'..'y').each{|c| r.td(Character.new(c)) } }
-      t.tr{|r| r.th('6'); r.td(Character.new('z')); 4.times{ r.td('-', :align => 'center') } }
-
-      @foreach_table = Gluon::Web::ForeachTable.new
-      u = @foreach_table        # alias
-      [ %w[ 17 24  1  8 15 ],
-        %w[ 23  5  7 14 16 ],
-        %w[  4  6 13 20 22 ],
-        %w[ 10 12 19 21  3 ],
-        %w[ 11 18 25  2  9 ]
-      ].each do |numbers|
-        u.tr{|r|
-          for n in numbers
-            r.td(Number.new(n))
+      import_data = %w[
+        X A B C D E
+        1 a b c d e
+        2 f g h i j
+        3 k l m n o
+        4 p q r s t
+        5 u v w x y
+        6 z
+      ]
+      @import_table = Gluon::Web::ImportTable.build(6, import_data,
+                                                    'summary' => 'import table',
+                                                    'border' => 1) do |tbl, rows|
+        tbl.caption = 'import table'
+        tbl.tr{|tr|
+          for v in rows.next
+            tr.th(v)
           end
         }
+        loop do
+          head, *data = rows.next
+          tbl.tr{|tr|
+            tr.th(head)
+            for c in data
+              tr.td(Character.new(c))
+            end
+            (5 - data.length).times do
+              tr.td('-', 'align' => 'center')
+            end
+          }
+        end
       end
 
-      @form_table = Gluon::Web::ForeachTable.new
+      foreach_data = %w[
+        17 24  1  8 15
+        23  5  7 14 16
+         4  6 13 20 22
+        10 12 19 21  3
+        11 18 25  2  9
+      ]
+      @foreach_table = Gluon::Web::ForeachTable.build(5, foreach_data.map{|n| Number.new(n) })
+
+      form_data = %w[
+        a b c d e
+        f g h i j
+        k l m n o
+        p q r s t
+        u v w x y
+        z aa bb cc dd
+      ]
       @check_list = []
-      v = @form_table
-      [ 'a'..'e',
-        'f'..'j',
-        'k'..'o',
-        'p'..'t',
-        'u'..'y',
-        'z'..'dd'
-      ].each do |chars|
-        v.tr{|r|
-          for c in chars
-            check = Check.new("check-#{c}", c)
-            r.td(check)
-            @check_list << check
-          end
-        }
+      @form_table = Gluon::Web::ForeachTable.build(5, form_data) do |tbl, rows|
+        loop do
+          tbl.tr{|tr|
+            for c in rows.next
+              check = Check.new("check-#{c}", c)
+              tr.td(check)
+              @check_list << check
+            end
+          }
+        end
       end
     end
 
