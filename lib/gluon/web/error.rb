@@ -61,17 +61,28 @@ module Gluon
       module AddOn
         extend Gluon::Component
 
-        def create_error_messages
-          ErrorMessages.new
+        def error_messages_params
+          []
         end
 
         def __addon_init__
           super                 # for add-on chain.
-          @r.logger.debug("#{self}: __addon_init__ at #{AddOn}.") if @r.logger.debug?
-          @errors = create_error_messages
+          args = error_messages_params
+          if (@r.logger.debug?) then
+            args_log = args.map{|i| i.inspect }.join(',')
+            @r.logger.debug("#{self}: __addon_init__ at #{AddOn}(#{args_log}).")
+          end
+          @errors = ErrorMessages.new(*args)
         end
 
         gluon_import_reader :errors
+      end
+
+      def self.AddOn(*args)
+        Module.new{
+          include Gluon::Web::ErrorMessages::AddOn
+          define_method(:error_messages_params) { args }
+        }
       end
     end
   end

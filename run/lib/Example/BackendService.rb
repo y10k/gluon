@@ -3,7 +3,7 @@
 class Example
   class BackendService < Gluon::Controller
     include Gluon::Validation
-    include Gluon::Web::ErrorMessages::AddOn
+    include Gluon::Web::ErrorMessages::AddOn(:head_level => 3)
     include Gluon::Web::Form::AddOn('post', 'enctype' => 'multipart/form-data', 'target' => 'main')
     include Gluon::Web::OneTimeToken::AddOn
 
@@ -18,10 +18,6 @@ class Example
       self.class.description
     end
     gluon_value :title
-
-    def create_error_messages
-      Gluon::Web::ErrorMessages.new(:head_level => 3)
-    end
 
     def page_around
       read_only = ! @r.equest.post?

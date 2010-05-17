@@ -1,5 +1,7 @@
 2010-05-17  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/web/error.rb: parametrized error messages add-on.
+
 	* lib/gluon/web/form.rb: form add-on.
 
 2010-05-15  TOKI Yoshinori  <toki@freedom.ne.jp>
