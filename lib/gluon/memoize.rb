@@ -63,8 +63,7 @@ module Gluon
   #
   module SingleMemoization
     def memoize(name, cache={})
-      m = Module.new
-      m.module_eval{
+      m = Module.new{
         define_method(name) {|*args, &block|
           if (cache.key? args) then
             cache[args]

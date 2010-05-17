@@ -219,8 +219,7 @@ module Gluon
     end
 
     def def_page_view(view)
-      m = Module.new
-      m.module_eval{
+      m = Module.new{
         define_method(:page_view) { view }
       }
       extend(m)
@@ -233,8 +232,7 @@ module Gluon
 
     def def_page_encoding(penc)
       penc = Encoding.find(penc) unless (penc.is_a? Encoding)
-      m = Module.new
-      m.module_eval{
+      m = Module.new{
         define_method(:page_encoding) { penc }
       }
       extend(m)
@@ -247,8 +245,7 @@ module Gluon
 
     def def_page_template(path)
       path = path.dup.freeze
-      m = Module.new
-      m.module_eval{
+      m = Module.new{
         define_method(:page_template) { path }
       }
       extend(m)
