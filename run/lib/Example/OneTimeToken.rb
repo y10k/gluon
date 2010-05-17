@@ -4,6 +4,7 @@ class Example
   class OneTimeToken < Gluon::Controller
     include Gluon::Validation
     include Gluon::Web::ErrorMessages::AddOn
+    include Gluon::Web::Form::AddOn('post', 'target' => 'main')
     include Gluon::Web::OneTimeToken::AddOn
 
     def_page_encoding __ENCODING__

@@ -11,7 +11,7 @@
 
   <% gluon :errors %>
 
-  <form target="main" method="post">
+  <% gluon :form do %>
     <% gluon :one_time_token %>
     <p>
       <label for="comment">Comment:</label><br />
@@ -22,7 +22,7 @@
       <% gluon :post_comment %>
       <% gluon :clear_on_post %><label for="clear-on-post">clear comment on post.</label>
     </p>
-  </form>
+  <% end %>
 
   <% gluon :posted_comments do %>
     <hr />

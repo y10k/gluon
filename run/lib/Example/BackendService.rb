@@ -4,6 +4,7 @@ class Example
   class BackendService < Gluon::Controller
     include Gluon::Validation
     include Gluon::Web::ErrorMessages::AddOn
+    include Gluon::Web::Form::AddOn('post', 'enctype' => 'multipart/form-data', 'target' => 'main')
     include Gluon::Web::OneTimeToken::AddOn
 
     def_page_encoding __ENCODING__

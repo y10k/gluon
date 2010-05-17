@@ -10,12 +10,12 @@
   <p>This form is guarded by defense of form reload.</p>
 
   <% gluon :errors %>
-  <form target="main" method="post">
+  <% gluon :form do %>
     <% gluon :one_time_token %>
     <p><% gluon :now %></p>
     <p>Counter: <% gluon :count %></p>
     <p><% gluon :count_up %> <% gluon :count_reset %></p>
-  </form>
+  <% end %>
 
   <hr />
 <% end %>
