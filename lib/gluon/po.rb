@@ -102,6 +102,7 @@ module Gluon
 
     def value(c, name, options)
       s = c.__send__(name)
+      s = prefix(s) if getopt(:autoid_prefix, options, c)
       s = ERB::Util.html_escape(s) if getopt(:escape, options, c)
       s
     end

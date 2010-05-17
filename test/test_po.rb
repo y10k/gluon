@@ -47,6 +47,15 @@ module Gluon::Test
       assert_equal('&<>', @po.gluon(:foo))
     end
 
+    def test_value_autoid_prefix
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_value_reader :foo, :autoid_prefix => true
+      }
+      @c.foo = 'foo'
+      assert_equal('foo', @po.gluon(:foo))
+    end
+
     def test_cond
       @Controller.class_eval{
         attr_writer :foo
@@ -104,6 +113,27 @@ module Gluon::Test
       ]
       assert_equal('[Apple][Banana][Orange]',
                    @po.gluon(:foo) { '[' << @po.gluon(:bar) << ']' })
+    end
+
+    def test_foreach_value_autoid_prefix
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_foreach_reader :foo
+      }
+
+      component = Class.new{
+        extend Gluon::Component
+
+        def initialize(text)
+          @bar = text
+        end
+
+        gluon_value_reader :bar, :autoid_prefix => true
+      }
+
+      @c.foo = [ component.new('apple'), component.new('banana') ]
+      assert_equal('[foo(0).apple][foo(1).banana]',
+                   @po.gluon(:foo) { '[' << @po.gluon(:bar) << ']'  })
     end
 
     def test_foreach_action
@@ -284,6 +314,32 @@ module Gluon::Test
 
       @c.foo = component.new('Hello world.')
       assert_equal('Hello world.', @po.gluon(:foo))
+    end
+
+    def test_import_value_autoid_prefix
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_import_reader :foo
+      }
+
+      component = Class.new{
+        extend Gluon::Component
+
+        def_page_encoding __ENCODING__
+
+        def_page_template File.join(File.dirname(__FILE__),
+                                    File.basename(__FILE__, '.rb') + 
+                                    '.test_import_autoid_value.erb')
+
+        def initialize(messg)
+          @bar = messg
+        end
+
+        gluon_value_reader :bar, :autoid_prefix => true
+      }
+
+      @c.foo = component.new('apple')
+      assert_equal('foo.apple', @po.gluon(:foo))
     end
 
     def test_import_action

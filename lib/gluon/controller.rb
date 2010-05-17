@@ -21,7 +21,7 @@ module Gluon
     private :gluon_path_match
 
     def gluon_value(name, options={})
-      options = { :escape => true }.merge(options)
+      options = { :escape => true, :autoid_prefix => false }.merge(options)
       Controller::MetaInfo.gluon_view_export(self, name, :value, options)
     end
     private :gluon_value

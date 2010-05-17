@@ -1,5 +1,8 @@
 2010-05-17  TOKI Yoshinori  <toki@freedom.ne.jp>
 
+	* lib/gluon/controller.rb, lib/gluon/po.rb: optional prefix for
+	autoid is defined at gluon-value.
+
 	* lib/gluon/web/error.rb: parametrized error messages add-on.
 
 	* lib/gluon/web/form.rb: form add-on.
