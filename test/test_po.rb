@@ -261,7 +261,6 @@ module Gluon::Test
         attr_writer :foo
         gluon_link_reader :foo, :attrs => :attributes
 
-
         def attributes
           { 'id' => 'foo', 'style' => 'font-weight: bold' }
         end
