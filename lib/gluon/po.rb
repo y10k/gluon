@@ -152,6 +152,19 @@ module Gluon
     end
     private :mkpath
 
+    def autoid(c, name)
+      export_entry = @export[c.class][name]
+      s = ''
+      if (export_entry[:options][:autoid]) then
+        s << ' id="'
+        s << ERB::Util.html_escape(prefix(c.__send__(export_entry[:autoid_value])))
+        s << '"'
+      end
+
+      s
+    end
+    private :autoid
+
     def mkattrs(c, options)
       s = ''
       if (attrs = getopt(:attrs, options, c)) then
@@ -188,6 +201,7 @@ module Gluon
 
     def link(c, name, options, &block)
       s = '<a'
+      s << autoid(c, name)
       s << ' href="' << mkpath(c, name) << '"'
       s << mkattrs(c, options)
       s << '>'
@@ -198,6 +212,7 @@ module Gluon
 
     def action(c, name, options, &block)
       s = '<a'
+      s << autoid(c, name)
       s << ' href="' << ERB::Util.html_escape("#{@r.equest.path}?#{prefix(name)}") << '"'
       s << mkattrs(c, options)
       s << '>'
@@ -208,6 +223,7 @@ module Gluon
 
     def frame(c, name, options)
       s = '<frame'
+      s << autoid(c, name)
       s << ' src="' << mkpath(c, name) << '"'
       s << mkattrs(c, options)
       s << ' />'
@@ -223,6 +239,7 @@ module Gluon
 
     def mkinput(c, type, name, value, checked, options)
       s = '<input'
+      s << autoid(c, name)
       s << ' type="' << ERB::Util.html_escape(type) << '"'
       s << ' name="' << ERB::Util.html_escape("#{prefix(name)}") << '"'
       s << ' value="' << ERB::Util.html_escape(value) << '"' if value
@@ -298,6 +315,7 @@ module Gluon
       end
 
       s = '<input'
+      s << autoid(c, name)
       s << ' type="radio"'
       s << ' name="' << ERB::Util.html_escape(entry[:name]) << '"'
       s << ' value="' << ERB::Util.html_escape(value) << '"' if value
@@ -313,6 +331,7 @@ module Gluon
       multiple = getopt(:multiple, options, c)
 
       s = '<select'
+      s << autoid(c, name)
       if (multiple) then
         s << ' name="' << ERB::Util.html_escape("#{prefix(name)}[]") << '"'
         s << ' multiple="multiple"'
@@ -348,6 +367,7 @@ module Gluon
 
     def textarea(c, name, options)
       s = '<textarea'
+      s << autoid(c, name)
       s << ' name="' << ERB::Util.html_escape("#{prefix(name)}") << '"'
       s << mkattrs(c, options)
       s << '>'

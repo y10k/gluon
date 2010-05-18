@@ -70,6 +70,7 @@ module Gluon
 
     def gluon_link(name, options={})
       Controller::MetaInfo.gluon_view_export(self, name, :link, options)
+      Controller::MetaInfo.gluon_autoid(self, name, options)
     end
     private :gluon_link
 
@@ -82,11 +83,13 @@ module Gluon
     def gluon_action(name, options={})
       Controller::MetaInfo.gluon_view_export(self, name, :action, options)
       Controller::MetaInfo.gluon_action_export(self, name, :action, options)
+      Controller::MetaInfo.gluon_autoid(self, name, options)
     end
     private :gluon_action
 
     def gluon_frame(name, options={})
       Controller::MetaInfo.gluon_view_export(self, name, :frame, options)
+      Controller::MetaInfo.gluon_autoid(self, name, options)
     end
     private :gluon_frame
 
@@ -112,12 +115,14 @@ module Gluon
     def gluon_submit(name, options={})
       Controller::MetaInfo.gluon_view_export(self, name, :submit, options)
       Controller::MetaInfo.gluon_action_export(self, name, :submit, options)
+      Controller::MetaInfo.gluon_autoid(self, name, options)
     end
     private :gluon_submit
 
     def gluon_text(name, options={})
       Controller::MetaInfo.gluon_form_export(self, name, :text, options)
       Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
+      Controller::MetaInfo.gluon_autoid(self, name, options)
     end
     private :gluon_text
 
@@ -130,6 +135,7 @@ module Gluon
     def gluon_passwd(name, options={})
       Controller::MetaInfo.gluon_form_export(self, name, :passwd, options)
       Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
+      Controller::MetaInfo.gluon_autoid(self, name, options)
     end
     private :gluon_passwd
 
@@ -142,6 +148,7 @@ module Gluon
     def gluon_hidden(name, options={})
       Controller::MetaInfo.gluon_form_export(self, name, :hidden, options)
       Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
+      Controller::MetaInfo.gluon_autoid(self, name, options)
     end
     private :gluon_hidden
 
@@ -154,6 +161,7 @@ module Gluon
     def gluon_checkbox(name, options={})
       Controller::MetaInfo.gluon_form_export(self, name, :checkbox, options)
       Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
+      Controller::MetaInfo.gluon_autoid(self, name, options)
     end
     private :gluon_checkbox
 
@@ -179,6 +187,7 @@ module Gluon
     def gluon_radio_button(name, group, options={})
       options = options.merge(:group => group.to_sym)
       Controller::MetaInfo.gluon_view_export(self, name, :radio_button, options)
+      Controller::MetaInfo.gluon_autoid(self, name, options)
     end
     private :gluon_radio_button
 
@@ -193,6 +202,7 @@ module Gluon
       options = { :multiple => false }.merge(options)
       Controller::MetaInfo.gluon_form_export(self, name, :select, options)
       Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
+      Controller::MetaInfo.gluon_autoid(self, name, options)
     end
     private :gluon_select
 
@@ -205,6 +215,7 @@ module Gluon
     def gluon_textarea(name, options={})
       Controller::MetaInfo.gluon_form_export(self, name, :textarea, options)
       Controller::MetaInfo.gluon_form_params(self, name, :writer => "#{name}=".to_sym)
+      Controller::MetaInfo.gluon_autoid(self, name, options)
     end
     private :gluon_textarea
 
@@ -300,6 +311,20 @@ module Gluon
 
         def gluon_form_params(page_type, name, params={})
           page_type.gluon_metainfo[:form_export][name].update(params)
+        end
+
+        def gluon_autoid(page_type, name, options)
+          if (options[:autoid]) then
+            id_val = (options[:autoid].is_a? TrueClass) ? name.to_s : options[:autoid]
+            id_name = "#{name}_id".to_sym
+            page_type.module_eval{
+              define_method(id_name) { id_val }
+              gluon_value id_name, :autoid_prefix => true
+            }
+            page_type.gluon_metainfo[:view_export][name].update(:autoid_value => id_name)
+          end
+
+          nil
         end
 
         def find_path_match_entry(page_type)

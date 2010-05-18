@@ -168,6 +168,44 @@ module Gluon::Test
                    @po.gluon(:foo) { @po.gluon(:bar) << @po.gluon(:baz) })
     end
 
+    def test_foreach_action_autoid_true
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_foreach_reader :foo
+      }
+
+      component = Class.new{
+        extend Gluon::Component
+
+        def bar
+        end
+        gluon_action :bar, :autoid => true
+
+        def baz
+        end
+        gluon_submit :baz, :autoid => true
+      }
+
+      @c.foo = [
+        component.new,
+        component.new,
+        component.new
+      ]
+      assert_equal('<a id="foo(0).bar" href="/run.cgi?foo(0).bar">id: foo(0).bar</a>' +
+                   '<input id="foo(0).baz" type="submit" name="foo(0).baz" />' + 
+                   '<label for="foo(0).baz">baz</label>' +
+                   '<a id="foo(1).bar" href="/run.cgi?foo(1).bar">id: foo(1).bar</a>' +
+                   '<input id="foo(1).baz" type="submit" name="foo(1).baz" />'+
+                   '<label for="foo(1).baz">baz</label>' +
+                   '<a id="foo(2).bar" href="/run.cgi?foo(2).bar">id: foo(2).bar</a>' +
+                   '<input id="foo(2).baz" type="submit" name="foo(2).baz" />' +
+                   '<label for="foo(2).baz">baz</label>',
+                   @po.gluon(:foo) {
+                     @po.gluon(:bar) { 'id: ' << @po.gluon(:bar_id) } <<
+                       @po.gluon(:baz) << '<label for="' << @po.gluon(:baz_id) << '">baz</label>'
+                   })
+    end
+
     def test_link_class
       foo = Class.new(Gluon::Controller)
       @cmap.mount(foo, '/halo')
@@ -270,6 +308,26 @@ module Gluon::Test
                    @po.gluon(:foo) { 'Hello world.' })
     end
 
+    def test_link_autoid_true
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_link_reader :foo, :autoid => true
+      }
+      @c.foo = '/halo'
+      assert_equal('<a id="foo" href="/halo">id: foo</a>',
+                   @po.gluon(:foo) { 'id: ' << @po.gluon(:foo_id) })
+    end
+
+    def test_link_autoid_value
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_link_reader :foo, :autoid => 'apple'
+      }
+      @c.foo = '/halo'
+      assert_equal('<a id="apple" href="/halo">id: apple</a>',
+                   @po.gluon(:foo) { 'id: ' << @po.gluon(:foo_id) })
+    end
+
     def test_action
       @Controller.class_eval{
         def foo
@@ -280,6 +338,26 @@ module Gluon::Test
                    @po.gluon(:foo) { 'Hello world.' })
     end
 
+    def test_action_autoid_true
+      @Controller.class_eval{
+        def foo
+        end
+        gluon_action :foo, :autoid => true
+      }
+      assert_equal('<a id="foo" href="/run.cgi?foo">id: foo</a>',
+                   @po.gluon(:foo) { 'id: ' << @po.gluon(:foo_id) })
+    end
+
+    def test_action_autoid_valule
+      @Controller.class_eval{
+        def foo
+        end
+        gluon_action :foo, :autoid => 'apple'
+      }
+      assert_equal('<a id="apple" href="/run.cgi?foo">id: apple</a>',
+                   @po.gluon(:foo) { 'id: ' << @po.gluon(:foo_id) })
+    end
+
     def test_frame
       @Controller.class_eval{
         attr_writer :foo
@@ -287,6 +365,26 @@ module Gluon::Test
       }
       @c.foo = '/halo'
       assert_equal('<frame src="/halo" />', @po.gluon(:foo))
+    end
+
+    def test_frame_autoid_true
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_frame_reader :foo, :autoid => true
+      }
+      @c.foo = '/halo'
+      assert_equal('<frame id="foo" src="/halo" />, id: foo',
+                   @po.gluon(:foo) << ', id: ' << @po.gluon(:foo_id))
+    end
+
+    def test_frame_autoid_value
+      @Controller.class_eval{
+        attr_writer :foo
+        gluon_frame_reader :foo, :autoid => 'apple'
+      }
+      @c.foo = '/halo'
+      assert_equal('<frame id="apple" src="/halo" />, id: apple',
+                   @po.gluon(:foo) << ', id: ' << @po.gluon(:foo_id))
     end
 
     def test_import
@@ -488,12 +586,50 @@ module Gluon::Test
       assert_equal('<input type="submit" name="foo" />', @po.gluon(:foo))
     end
 
+    def test_submit_autoid_true
+      @Controller.class_eval{
+        def foo
+        end
+        gluon_submit :foo, :autoid => true
+      }
+      assert_equal('<input id="foo" type="submit" name="foo" />, id: foo',
+                   @po.gluon(:foo) << ', id: ' << @po.gluon(:foo_id))
+    end
+
+    def test_submit_autoid_value
+      @Controller.class_eval{
+        def foo
+        end
+        gluon_submit :foo, :autoid => 'apple'
+      }
+      assert_equal('<input id="apple" type="submit" name="foo" />, id: apple',
+                   @po.gluon(:foo) << ', id: ' << @po.gluon(:foo_id))
+    end
+
     def test_text
       @Controller.class_eval{
         gluon_text_accessor :foo
       }
       @c.foo = 'Hello world.'
       assert_equal('<input type="text" name="foo" value="Hello world." />', @po.gluon(:foo))
+    end
+
+    def test_text_autoid_true
+      @Controller.class_eval{
+        gluon_text_accessor :foo, :autoid => true
+      }
+      @c.foo = 'Hello world.'
+      assert_equal('<input id="foo" type="text" name="foo" value="Hello world." />, id: foo',
+                   @po.gluon(:foo) << ', id: ' << @po.gluon(:foo_id))
+    end
+
+    def test_text_autoid_value
+      @Controller.class_eval{
+        gluon_text_accessor :foo, :autoid => 'apple'
+      }
+      @c.foo = 'Hello world.'
+      assert_equal('<input id="apple" type="text" name="foo" value="Hello world." />, id: apple',
+                   @po.gluon(:foo) << ', id: ' << @po.gluon(:foo_id))
     end
 
     def test_passwd
@@ -504,12 +640,48 @@ module Gluon::Test
       assert_equal('<input type="password" name="foo" value="Hello world." />', @po.gluon(:foo))
     end
 
+    def test_passwd_autoid_true
+      @Controller.class_eval{
+        gluon_passwd_accessor :foo, :autoid => true
+      }
+      @c.foo = 'Hello world.'
+      assert_equal('<input id="foo" type="password" name="foo" value="Hello world." />, id: foo',
+                   @po.gluon(:foo) << ', id: ' << @po.gluon(:foo_id))
+    end
+
+    def test_passwd_autoid_value
+      @Controller.class_eval{
+        gluon_passwd_accessor :foo, :autoid => 'apple'
+      }
+      @c.foo = 'Hello world.'
+      assert_equal('<input id="apple" type="password" name="foo" value="Hello world." />, id: apple',
+                   @po.gluon(:foo) << ', id: ' << @po.gluon(:foo_id))
+    end
+
     def test_hidden
       @Controller.class_eval{
         gluon_hidden_accessor :foo
       }
       @c.foo = 'Hello world.'
       assert_equal('<input type="hidden" name="foo" value="Hello world." />', @po.gluon(:foo))
+    end
+
+    def test_hidden_autoid_true
+      @Controller.class_eval{
+        gluon_hidden_accessor :foo, :autoid => true
+      }
+      @c.foo = 'Hello world.'
+      assert_equal('<input id="foo" type="hidden" name="foo" value="Hello world." />, id: foo',
+                   @po.gluon(:foo) << ', id: ' << @po.gluon(:foo_id))
+    end
+
+    def test_hidden_autoid_value
+      @Controller.class_eval{
+        gluon_hidden_accessor :foo, :autoid => 'apple'
+      }
+      @c.foo = 'Hello world.'
+      assert_equal('<input id="apple" type="hidden" name="foo" value="Hello world." />, id: apple',
+                   @po.gluon(:foo) << ', id: ' << @po.gluon(:foo_id))
     end
 
     def test_checkbox_checked
@@ -542,6 +714,26 @@ module Gluon::Test
                    @po.gluon(:foo))
     end
 
+    def test_checkbox_autoid_true
+      @Controller.class_eval{
+        gluon_checkbox_accessor :foo, :autoid => true
+      }
+      @c.foo = true
+      assert_equal('<input type="hidden" name="foo:checkbox" value="submit" style="display: none" />' +
+                   '<input id="foo" type="checkbox" name="foo" value="" checked="checked" />, id: foo',
+                   @po.gluon(:foo) << ', id: ' << @po.gluon(:foo_id))
+    end
+
+    def test_checkbox_autoid_value
+      @Controller.class_eval{
+        gluon_checkbox_accessor :foo, :autoid => 'apple'
+      }
+      @c.foo = true
+      assert_equal('<input type="hidden" name="foo:checkbox" value="submit" style="display: none" />' +
+                   '<input id="apple" type="checkbox" name="foo" value="" checked="checked" />, id: apple',
+                   @po.gluon(:foo) << ', id: ' << @po.gluon(:foo_id))
+    end
+
     def test_radio_group_button
       @Controller.class_eval{
         gluon_radio_group_accessor :foo, %w[ Apple Banana Orange ]
@@ -568,6 +760,62 @@ module Gluon::Test
                    @po.gluon(:foo) { @po.gluon(:banana) })
       assert_equal('<input type="radio" name="foo" value="Orange" />',
                    @po.gluon(:foo) { @po.gluon(:orange) })
+    end
+
+    def test_radio_group_button_autoid_true
+      @Controller.class_eval{
+        gluon_radio_group_accessor :foo, %w[ Apple Banana Orange ]
+
+        def apple
+          'Apple'
+        end
+        gluon_radio_button :apple, :foo, :autoid => true
+
+        def banana
+          'Banana'
+        end
+        gluon_radio_button :banana, :foo, :autoid => true
+
+        def orange
+          'Orange'
+        end
+        gluon_radio_button :orange, :foo, :autoid => true
+      }
+      @c.foo = 'Banana'
+      assert_equal('<input id="apple" type="radio" name="foo" value="Apple" />, id: apple',
+                   @po.gluon(:foo) { @po.gluon(:apple) << ', id: ' << @po.gluon(:apple_id) })
+      assert_equal('<input id="banana" type="radio" name="foo" value="Banana" checked="checked" />, id: banana',
+                   @po.gluon(:foo) { @po.gluon(:banana) << ', id: ' << @po.gluon(:banana_id) })
+      assert_equal('<input id="orange" type="radio" name="foo" value="Orange" />, id: orange',
+                   @po.gluon(:foo) { @po.gluon(:orange) << ', id: ' << @po.gluon(:orange_id) })
+    end
+
+    def test_radio_group_button_autoid_value
+      @Controller.class_eval{
+        gluon_radio_group_accessor :foo, %w[ Apple Banana Orange ]
+
+        def apple
+          'Apple'
+        end
+        gluon_radio_button :apple, :foo, :autoid => 'Alice'
+
+        def banana
+          'Banana'
+        end
+        gluon_radio_button :banana, :foo, :autoid => 'Bob'
+
+        def orange
+          'Orange'
+        end
+        gluon_radio_button :orange, :foo, :autoid => 'Kate'
+      }
+      @c.foo = 'Banana'
+      assert_equal('<input id="Alice" type="radio" name="foo" value="Apple" />, id: Alice',
+                   @po.gluon(:foo) { @po.gluon(:apple) << ', id: ' << @po.gluon(:apple_id) })
+      assert_equal('<input id="Bob" type="radio" name="foo" value="Banana" checked="checked" />, id: Bob',
+                   @po.gluon(:foo) { @po.gluon(:banana) << ', id: ' << @po.gluon(:banana_id) })
+      assert_equal('<input id="Kate" type="radio" name="foo" value="Orange" />, id: Kate',
+                   @po.gluon(:foo) { @po.gluon(:orange) << ', id: ' << @po.gluon(:orange_id) })
     end
 
     def test_radio_group_button_foreach
@@ -675,6 +923,32 @@ module Gluon::Test
                    @po.gluon(:foo))
     end
 
+    def test_select_autoid_true
+      @Controller.class_eval{
+        gluon_select_accessor :foo, %w[ Apple Banana Orange ], :autoid => true
+      }
+      @c.foo = 'Banana'
+      assert_equal('<select id="foo" name="foo">' +
+                   '<option value="Apple">Apple</option>' +
+                   '<option value="Banana" selected="selected">Banana</option>' +
+                   '<option value="Orange">Orange</option>' +
+                   '</select>, id: foo',
+                   @po.gluon(:foo) << ', id: ' << @po.gluon(:foo_id))
+    end
+
+    def test_select_autoid_value
+      @Controller.class_eval{
+        gluon_select_accessor :foo, %w[ Apple Banana Orange ], :autoid => 'apple'
+      }
+      @c.foo = 'Banana'
+      assert_equal('<select id="apple" name="foo">' +
+                   '<option value="Apple">Apple</option>' +
+                   '<option value="Banana" selected="selected">Banana</option>' +
+                   '<option value="Orange">Orange</option>' +
+                   '</select>, id: apple',
+                   @po.gluon(:foo) << ', id: ' << @po.gluon(:foo_id))
+    end
+
     def test_select_multiple
       @Controller.class_eval{
         gluon_select_accessor :foo, %w[ Apple Banana Orange ], :multiple => true
@@ -707,6 +981,24 @@ module Gluon::Test
       }
       @c.foo = 'Hello world.'
       assert_equal('<textarea name="foo">Hello world.</textarea>', @po.gluon(:foo))
+    end
+
+    def test_textarea_autoid_true
+      @Controller.class_eval{
+        gluon_textarea_accessor :foo, :autoid => true
+      }
+      @c.foo = 'Hello world.'
+      assert_equal('<textarea id="foo" name="foo">Hello world.</textarea>, id: foo',
+                   @po.gluon(:foo) << ', id: ' << @po.gluon(:foo_id))
+    end
+
+    def test_textarea_autoid_value
+      @Controller.class_eval{
+        gluon_textarea_accessor :foo, :autoid => 'apple'
+      }
+      @c.foo = 'Hello world.'
+      assert_equal('<textarea id="apple" name="foo">Hello world.</textarea>, id: apple',
+                   @po.gluon(:foo) << ', id: ' << @po.gluon(:foo_id))
     end
 
     def test_gluon_no_view_export
