@@ -1,8 +1,8 @@
 <% gluon :person do %>
   <p>
-    <% gluon :alice %> <label for="alice">Alice</label>
-    <% gluon :bob %> <label for="bob">Bob</label>
-    <% gluon :kate %> <label for="kate">Kate</label>
+    <% gluon :alice %> <label for="<% gluon :alice_id %>">Alice</label>
+    <% gluon :bob %> <label for="<% gluon :bob_id %>">Bob</label>
+    <% gluon :kate %> <label for="<% gluon :kate_id %>">Kate</label>
   </p>
 <% end %>
 

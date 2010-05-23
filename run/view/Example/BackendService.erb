@@ -14,13 +14,13 @@
   <% gluon :form do %>
     <% gluon :one_time_token %>
     <p>
-      <label for="comment">Comment:</label><br />
+      <label for="<% gluon :comment_id %>">Comment:</label><br />
       <% gluon :comment %>
     </p>
     <p>
-      <label for="name">Name:</label> <% gluon :name %>
+      <label for="<% gluon :name_id %>">Name:</label> <% gluon :name %>
       <% gluon :post_comment %>
-      <% gluon :clear_on_post %><label for="clear-on-post">clear comment on post.</label>
+      <% gluon :clear_on_post %><label for="<% gluon :clear_on_post_id %>">clear comment on post.</label>
     </p>
   <% end %>
 

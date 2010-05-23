@@ -17,9 +17,9 @@ class Example
       @baz = true
     end
 
-    gluon_checkbox_accessor :foo, :attrs => { 'id' => 'foo' }
-    gluon_checkbox_accessor :bar, :attrs => { 'id' => 'bar' }
-    gluon_checkbox_accessor :baz, :attrs => { 'id' => 'baz' }
+    gluon_checkbox_accessor :foo, :autoid => true
+    gluon_checkbox_accessor :bar, :autoid => true
+    gluon_checkbox_accessor :baz, :autoid => true
 
     def ok
       # nothing to do.

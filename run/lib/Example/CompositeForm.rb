@@ -21,15 +21,17 @@ class Example
 
       gluon_value_reader :count
 
-      def foo_id
-        "foo-#{@count}"
+      def foo
+        @value
       end
-      gluon_value :foo_id
 
-      gluon_text_accessor :value, :attrs => { 'id' => :foo_id }
+      def foo=(value)
+        @value = value
+      end
+      gluon_text :foo, :autoid => true
 
-      alias form_value value
-      gluon_value :form_value
+      alias foo_value foo
+      gluon_value :foo_value
     end
 
     class Bar
@@ -46,17 +48,17 @@ class Example
       def alice
         'Alice'
       end
-      gluon_radio_button :alice, :person, :attrs => { 'id' => 'alice' }
+      gluon_radio_button :alice, :person, :autoid => true
 
       def bob
         'Bob'
       end
-      gluon_radio_button :bob, :person, :attrs => { 'id' => 'bob' }
+      gluon_radio_button :bob, :person, :autoid => true
 
       def kate
         'Kate'
       end
-      gluon_radio_button :kate, :person, :attrs => { 'id' => 'kate' }
+      gluon_radio_button :kate, :person, :autoid => true
     end
 
     def initialize

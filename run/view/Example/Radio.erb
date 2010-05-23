@@ -3,9 +3,9 @@
 <h2>1. radio group and buttons</h2>
 <% gluon :foo do %>
   <p>
-    <% gluon :apple %> <label for="apple">Apple</label>,
-    <% gluon :banana %> <label for="banana">Banana</label>,
-    <% gluon :orange %> <label for="orange">Orange</label>
+    <% gluon :apple %> <label for="<% gluon :apple_id %>">Apple</label>,
+    <% gluon :banana %> <label for="<% gluon :banana_id %>">Banana</label>,
+    <% gluon :orange %> <label for="<% gluon :orange_id %>">Orange</label>
   </p>
 <% end %>
 <p><% gluon :ok %></p>

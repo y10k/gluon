@@ -16,10 +16,10 @@ class Example
       @bar = %w[ Earth Jupiter ]
     end
 
-    gluon_select_accessor :foo, %w[ Apple Banana Orange ], :attrs => { 'id' => 'foo' }
+    gluon_select_accessor :foo, %w[ Apple Banana Orange ], :autoid => true
     gluon_select_accessor :bar,
       %w[ Mercury Venus Earth Mars Jupiter Saturn Uranus Neptune ],
-      :multiple => true, :attrs => { 'id' => 'bar', 'size' => 5 }
+      :multiple => true, :autoid => true, :attrs => { 'size' => 5 }
 
     alias foo_value foo
     gluon_value :foo_value

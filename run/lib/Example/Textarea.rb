@@ -15,7 +15,7 @@ class Example
       @foo = nil
     end
 
-    gluon_textarea_accessor :foo, :attrs => { 'id' => 'foo', 'cols' => 80, 'rows' => 25 }
+    gluon_textarea_accessor :foo, :autoid => true, :attrs => { 'cols' => 80, 'rows' => 25 }
 
     alias form_value foo
     gluon_value :form_value

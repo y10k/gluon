@@ -41,15 +41,13 @@ class Example
     class Check
       extend Gluon::Component
 
-      def initialize(id, text)
+      def initialize(text)
         @text = text
-        @check_id = id
         @checked = false
       end
 
       gluon_value_reader :text
-      gluon_value_reader :check_id
-      gluon_checkbox_accessor :checked, :attrs => { 'id' => :check_id }
+      gluon_checkbox_accessor :checked, :autoid => true
     end
 
     def initialize
@@ -107,7 +105,7 @@ class Example
         loop do
           tbl.tr{|tr|
             for c in rows.next
-              check = Check.new("check-#{c}", c)
+              check = Check.new(c)
               tr.td(check)
               @check_list << check
             end

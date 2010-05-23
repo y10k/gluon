@@ -1,12 +1,12 @@
 <form target="main">
 
 <h2>1. single select</h2>
-<p><label for="foo">foo:</label> <% gluon :foo %> <% gluon :ok %></p>
+<p><label for="<% gluon :foo_id %>">foo:</label> <% gluon :foo %> <% gluon :ok %></p>
 <p>result: <% gluon :foo_value %></p>
 
 
 <h2>2. multiple select</h2>
-<p><label for="bar">bar:</label> <% gluon :bar %> <% gluon :ok %></p>
+<p><label for="<% gluon :bar_id %>">bar:</label> <% gluon :bar %> <% gluon :ok %></p>
 <p>result: <% gluon :bar_values %></p>
 
 </form>

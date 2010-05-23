@@ -44,10 +44,9 @@ class Example
     end
 
     gluon_import_reader :header_footer
-    gluon_textarea_accessor :comment,
-      :attrs => { 'id' => 'comment', 'cols' => 80, 'rows' => 8 }
-    gluon_text_accessor :name, :attrs => { 'id' => 'name' }
-    gluon_checkbox_accessor :clear_on_post, :attrs => { 'id' => 'clear-on-post' }
+    gluon_textarea_accessor :comment, :autoid => true, :attrs => { 'cols' => 80, 'rows' => 8 }
+    gluon_text_accessor :name, :autoid => true
+    gluon_checkbox_accessor :clear_on_post, :autoid => true
 
     def post_comment
       @bbs_db[:comments] ||= []

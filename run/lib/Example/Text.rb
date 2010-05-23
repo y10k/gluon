@@ -15,7 +15,7 @@ class Example
       @foo = nil
     end
 
-    gluon_text_accessor :foo, :attrs => { 'id' => 'foo' }
+    gluon_text_accessor :foo, :autoid => true
 
     alias form_value foo
     gluon_value :form_value
