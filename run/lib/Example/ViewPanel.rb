@@ -6,8 +6,6 @@ class Example
   class ViewPanel < Panel
     def_page_encoding __ENCODING__
 
-    VIEW_DIR = File.join(File.dirname(__FILE__), '..', '..', 'view')
-
     class ViewCode
       extend Gluon::Component
 
@@ -58,7 +56,7 @@ class Example
           @view_code_list.push ViewCode.new(example_type, view_code_path)
         else
           @view_code_list.push ViewCode.new(example_type,
-                                            File.join(VIEW_DIR,
+                                            File.join(Gluon.view_dir,
                                                       example_type.name.gsub(/::/, '/') +
                                                       example_type.page_view.suffix))
         end

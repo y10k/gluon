@@ -1,3 +1,9 @@
+2010-05-23  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/builder.rb: defined builder attributes. builder
+	attributes are used in controller class methods to access project
+	path (like lib_dir, view_dir, ...).
+
 2010-05-19  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/controller.rb, lib/gluon/po.rb: autoid option is

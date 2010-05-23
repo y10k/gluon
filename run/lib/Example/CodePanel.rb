@@ -6,11 +6,9 @@ class Example
   class CodePanel < Panel
     def_page_encoding __ENCODING__
 
-    LIB_DIR = File.join(File.dirname(__FILE__), '..')
-
     def page_start(key)
       super
-      @source_path = File.join(LIB_DIR, @example_type.name.gsub(/::/, '/') + '.rb')
+      @source_path = File.join(Gluon.lib_dir, @example_type.name.gsub(/::/, '/') + '.rb')
     end
 
     def filename

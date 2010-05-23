@@ -11,6 +11,22 @@ require 'logger'
 require 'rack'
 
 module Gluon
+  BUILDER_ATTRS = Struct.new(:base_dir, :lib_dir, :view_dir).new
+
+  class << self
+    def base_dir
+      BUILDER_ATTRS.base_dir or raise "not initialized `Gluon.base_dir'"
+    end
+
+    def lib_dir
+      BUILDER_ATTRS.lib_dir or raise "not initialized `Gluon.lib_dir'"
+    end
+
+    def view_dir
+      BUILDER_ATTRS.view_dir or raise "not initialized `Gluon.view_dir'"
+    end
+  end
+
   class Builder
     def self.require_path(lib_dir)
       unless ($:.include? lib_dir) then
@@ -178,6 +194,10 @@ module Gluon
     end
 
     def to_app
+      BUILDER_ATTRS.base_dir = @base_dir
+      BUILDER_ATTRS.lib_dir = @lib_dir
+      BUILDER_ATTRS.view_dir = @view_dir
+
       options = {
         :cmap => ClassMap.new,
         :template_engine => TemplateEngine.new(@view_dir),
