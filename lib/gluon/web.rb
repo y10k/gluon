@@ -8,6 +8,7 @@ module Gluon
     autoload :Form, 'gluon/web/form'
     autoload :ImportTable, 'gluon/web/table'
     autoload :OneTimeToken, 'gluon/web/token'
+    autoload :SessionAddOn, 'gluon/web/session'
     autoload :Table, 'gluon/web/table'
   end
 end
