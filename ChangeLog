@@ -1,3 +1,8 @@
+2010-06-08  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/application.rb, lib/gluon/builder.rb, lib/gluon/rs.rb:
+	add-on configuration.
+
 2010-05-23  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/builder.rb: defined builder attributes. builder

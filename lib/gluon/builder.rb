@@ -76,6 +76,7 @@ module Gluon
           Application.new(logger,
                           options[:cmap],
                           options[:template_engine],
+                          options[:config],
                           options[:service_man])
         }
       end

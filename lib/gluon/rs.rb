@@ -118,6 +118,15 @@ module Gluon
       Application.controller_switch_to(controller)
     end
 
+    def config(mod)
+      config = @req.env[:gluon_config]
+      config[mod] or config[mod] = mod.create_config.freeze
+    end
+
+    def config=(config)
+      @req.env[:gluon_config] = config
+    end
+
     def backend_service
       @req.env[:gluon_backend_service]
     end
