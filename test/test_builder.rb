@@ -37,13 +37,13 @@ module Gluon::Test
       assert_equal(@config_rb, @builder.eval_conf('config_rb'))
     end
 
-    class Foo < Gluon::Controller
+    class MockController < Gluon::Controller
     end
 
     def test_to_app
       @builder.eval_conf %Q{
         map '/' do |entry|
-          entry.mount #{Foo}
+          entry.mount #{MockController}
         end
       }
       app = @builder.to_app
@@ -55,7 +55,7 @@ module Gluon::Test
       @builder.eval_conf %Q{
         use Rack::ShowExceptions
         map '/' do |entry|
-          entry.mount #{Foo}
+          entry.mount #{MockController}
         end
       }
       app = @builder.to_app
@@ -67,7 +67,7 @@ module Gluon::Test
       @builder.eval_conf %Q{
         map '/' do |entry|
           entry.use Rack::ShowExceptions
-          entry.mount #{Foo}
+          entry.mount #{MockController}
         end
       }
       # no way to prove internal application.
@@ -82,7 +82,7 @@ module Gluon::Test
       # no way to prove internal application.
     end
 
-    class Bar
+    class MockService
       class << self
         attr_accessor :new_count
         attr_accessor :final_count
@@ -100,13 +100,13 @@ module Gluon::Test
     end
 
     def test_backend_service_start_stop
-      new_count = Bar.new_count
-      final_count = Bar.final_count
+      new_count = MockService.new_count
+      final_count = MockService.final_count
 
       @builder.eval_conf %Q{
         backend_service :bar do |service|
           service.start do
-            #{Bar}.new
+            #{MockService}.new
           end
           service.stop do |bar|
             bar.finalize
@@ -114,18 +114,18 @@ module Gluon::Test
         end
       }
 
-      assert_equal(new_count, Bar.new_count)
-      assert_equal(final_count, Bar.final_count)
+      assert_equal(new_count, MockService.new_count)
+      assert_equal(final_count, MockService.final_count)
 
       @builder.to_app
 
-      assert_equal(new_count + 1, Bar.new_count)
-      assert_equal(final_count, Bar.final_count)
+      assert_equal(new_count + 1, MockService.new_count)
+      assert_equal(final_count, MockService.final_count)
 
       @builder.shutdown
 
-      assert_equal(new_count + 1, Bar.new_count)
-      assert_equal(final_count + 1, Bar.final_count)
+      assert_equal(new_count + 1, MockService.new_count)
+      assert_equal(final_count + 1, MockService.final_count)
     end
   end
 end
