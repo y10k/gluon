@@ -82,6 +82,23 @@ module Gluon::Test
       # no way to prove internal application.
     end
 
+    module MockAddOn
+      Config = Struct.new(:foo, :bar)
+
+      def self.create_config
+        Config.new('apple', 'banana')
+      end
+    end
+
+    def test_config
+      @builder.eval_conf %Q{
+        config #{MockAddOn} do |conf|
+          conf.foo = 'Orange'
+        end
+      }
+      # no way to prove internal application.
+    end
+
     class MockService
       class << self
         attr_accessor :new_count

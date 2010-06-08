@@ -43,6 +43,7 @@ module Gluon
       @logger = NoLogger.instance
       @middleware_setup = proc{|builder, logger, options| builder }
       @mount_tab = {}
+      @mod_config = {}
       @svc_setup = proc{|service_man, logger, options| service_man }
       @service_man = BackendServiceManager.new
     end
@@ -125,6 +126,13 @@ module Gluon
       nil
     end
 
+    def config(mod)
+      conf = mod.create_config
+      yield(conf)
+      @mod_config[mod] = conf.freeze
+      nil
+    end
+
     class ServiceEntry
       def initialize(service_name, parent)
         @service_name = service_name
@@ -175,6 +183,7 @@ module Gluon
       def_delegator :@builder, :logger=, :logger
       def_delegator :@builder, :use
       def_delegator :@builder, :map
+      def_delegator :@builder, :config
       def_delegator :@builder, :backend_service
     end
 
@@ -201,10 +210,14 @@ module Gluon
       options = {
         :cmap => ClassMap.new,
         :template_engine => TemplateEngine.new(@view_dir),
+        :config => @mod_config,
         :service_man => @service_man
       }
 
       @logger.info 'gluon start.'
+      for mod, conf in @mod_config
+        @logger.info("config #{mod}: #{conf}")
+      end
       @svc_setup.call(@service_man, @logger, options).setup
       builder = Rack::Builder.new
       builder.use Root, @logger
