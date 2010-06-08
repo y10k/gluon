@@ -6,6 +6,7 @@ class Example
     include Gluon::Web::ErrorMessages::AddOn
     include Gluon::Web::Form::AddOn('post', 'target' => 'main')
     include Gluon::Web::OneTimeToken::AddOn
+    include Gluon::Web::SessionAddOn
 
     def_page_encoding __ENCODING__
 
@@ -20,8 +21,9 @@ class Example
     gluon_value :title
 
     def page_start
+      create_session
       @header_footer = HeaderFooter.new(@r, self.class)
-      @count = @r.equest.session[:count] || 0
+      @session[:count] = 0 unless (@session.key? :count)
       @now = Time.now
     end
 
@@ -32,7 +34,11 @@ class Example
     end
 
     gluon_import_reader :header_footer
-    gluon_value_reader :count
+
+    def count
+      @session[:count]
+    end
+    gluon_value :count
 
     def now
       @now.to_s
@@ -40,14 +46,12 @@ class Example
     gluon_value :now
 
     def count_up
-      @count += 1
-      @r.equest.session[:count] = @count
+      @session[:count] += 1
     end
     gluon_submit :count_up, :value => 'Count Up'
 
     def count_reset
-      @count = 0
-      @r.equest.session.delete(:count)
+      @session[:count] = 0
     end
     gluon_submit :count_reset, :value => 'Reset'
   end
