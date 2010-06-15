@@ -44,6 +44,7 @@ module Gluon
       @middleware_setup = proc{|builder, logger, options| builder }
       @mount_tab = {}
       @mod_config = {}
+      @service = {}
       @svc_setup = proc{|service_man, logger, options| service_man }
       @service_man = BackendServiceManager.new
     end
@@ -134,6 +135,65 @@ module Gluon
       nil
     end
 
+    def service_create(klass, &block)
+      entry = {
+        :object => nil,
+        :create => proc{|logger, options|
+          logger.info "service start: #{klass}"
+          obj = block.call(klass)
+          entry[:object] = obj
+          options[:service][klass] = obj
+          logger.info "create service object: #{entry[:object]}"
+          nil
+        },
+        :destroy => nil
+      }
+
+      @service[klass] = entry
+      service_destroy(klass) {|obj|
+        # nothing to do.
+      }
+
+      nil
+    end
+
+    def service_destroy(klass, &block)
+      entry = @service[klass] or raise "not initialized service of `#{klass}'."
+      entry[:destroy] = proc{|logger|
+        entry[:object] or raise "not created service of `#{klass}'."
+        logger.info "destroy service object: #{entry[:object]}"
+        block.call(entry[:object])
+        logger.info "service stop: #{klass}"
+        nil
+      }
+
+      nil
+    end
+
+    class ServiceEntry
+      def initialize(klass, parent)
+        @class = klass
+        @parent = parent
+      end
+
+      def create(&block)
+        @parent.service_create(@class, &block)
+      end
+
+      def destroy(&block)
+        @parent.service_destroy(@class, &block)
+      end
+    end
+
+    def service(klass)
+      service_create(klass) {|c| c.new }
+      if (block_given?) then
+        entry = ServiceEntry.new(klass, self)
+        yield(entry)
+      end
+      nil
+    end
+
     class BackendServiceEntry
       def initialize(service_name, parent)
         @service_name = service_name
@@ -185,6 +245,7 @@ module Gluon
       def_delegator :@builder, :use
       def_delegator :@builder, :map
       def_delegator :@builder, :config
+      def_delegator :@builder, :service
       def_delegator :@builder, :backend_service
     end
 
@@ -212,12 +273,16 @@ module Gluon
         :cmap => ClassMap.new,
         :template_engine => TemplateEngine.new(@view_dir),
         :config => @mod_config,
+        :service => {},
         :service_man => @service_man
       }
 
       @logger.info 'gluon start.'
       for mod, conf in @mod_config
         @logger.info("config #{mod}: #{conf}")
+      end
+      @service.each_value do |entry|
+        entry[:create].call(@logger, options)
       end
       @svc_setup.call(@service_man, @logger, options).setup
       builder = Rack::Builder.new
@@ -235,6 +300,18 @@ module Gluon
 
     def shutdown
       @service_man.shutdown
+
+      last_error = nil
+      @service.each_value do |entry|
+        begin
+          entry[:destroy].call(@logger)
+        rescue
+          last_error = $!
+          @logger.error($!)
+        end
+      end
+      raise if last_error
+
       @logger.info 'gluon stop.'
       @logger.close
       nil
