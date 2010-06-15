@@ -134,7 +134,7 @@ module Gluon
       nil
     end
 
-    class ServiceEntry
+    class BackendServiceEntry
       def initialize(service_name, parent)
         @service_name = service_name
         @parent = parent
@@ -164,7 +164,7 @@ module Gluon
     end
 
     def backend_service(name)
-      entry = ServiceEntry.new(name, @svc_setup)
+      entry = BackendServiceEntry.new(name, @svc_setup)
       yield(entry)
       @svc_setup = entry._to_setup
       nil
