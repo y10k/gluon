@@ -31,6 +31,8 @@ module Gluon
       # recommended to be initialized at Gluon::Controller#page_start or former hook.
       def initialize(req_res)
         @r = req_res
+        @session = @r.equest.session
+        @path = @r.equest.path
         @prev_token = nil
         @next_token = new_token
       end
@@ -47,12 +49,18 @@ module Gluon
 
       # recommended to be called by Gluon::Validator#one_time_token.
       def valid_token?
-        @prev_token && @prev_token == @r.equest.session[:gluon_one_time_token]
+        if (@prev_token && @session[:gluon_one_time_token]) then
+          @prev_token == @session[:gluon_one_time_token][@path]
+        else
+          false
+        end
       end
 
       # recommended to be called at Gluon::Controller#page_end or latter hook.
       def next_token
-        @r.equest.session[:gluon_one_time_token] = @next_token
+        @r.logger.debug("#{self}: next token of `#{@path}': #{@next_token}") if @r.logger.debug?
+        @session[:gluon_one_time_token] = {} unless (@session.key? :gluon_one_time_token)
+        @session[:gluon_one_time_token][@path] = @next_token
         self
       end
 
@@ -63,6 +71,7 @@ module Gluon
           super                 # for add-on chain.
           @r.logger.debug("#{self}: __addon_init__ at #{AddOn}.") if @r.logger.debug?
           @one_time_token = OneTimeToken.new(@r)
+          @r.logger.debug("#{self}: #{AddOn}: one time token object: #{@one_time_token}")
         end
 
         def __addon_final__

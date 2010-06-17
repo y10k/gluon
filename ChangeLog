@@ -1,3 +1,8 @@
+2010-06-18  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/web/token.rb: one time token session exists in each
+	path_info.
+
 2010-06-08  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/web/session.rb: sessioin add-on.
