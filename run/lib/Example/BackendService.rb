@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+require 'pstore'
+
 class Example
   class BackendService < Gluon::Controller
     include Gluon::Validation
@@ -21,7 +23,7 @@ class Example
 
     def page_around
       read_only = ! @r.equest.post?
-      @bbs_db = @r.svc.bbs_db
+      @bbs_db = @r.service(PStore)
       @bbs_db.transaction(read_only) {
         yield
       }
