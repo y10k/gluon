@@ -127,6 +127,14 @@ module Gluon
       @req.env[:gluon_config] = config
     end
 
+    def service(klass)
+      @req.env[:gluon_service][klass] or raise "not defined service of `#{klass}'."
+    end
+
+    def service=(service)
+      @req.env[:gluon_service] = service
+    end
+
     def backend_service
       @req.env[:gluon_backend_service]
     end

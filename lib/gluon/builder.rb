@@ -78,6 +78,7 @@ module Gluon
                           options[:cmap],
                           options[:template_engine],
                           options[:config],
+                          options[:service],
                           options[:service_man])
         }
       end

@@ -31,11 +31,12 @@ module Gluon
 
   # = application for Rack
   class Application
-    def initialize(logger, cmap, template_engine, config, service_man)
+    def initialize(logger, cmap, template_engine, config, service, service_man)
       @logger = logger
       @cmap = cmap
       @template_engine = template_engine
       @config = config
+      @service = service
       @service_man = service_man
       @page_list = []
       @default_app = nil
@@ -76,6 +77,7 @@ module Gluon
       r.logger = @logger
       r.cmap = @cmap
       r.config = @config
+      r.service = @service
       r.backend_service = @service_man.new_services
 
       @logger.debug "script_name(#{r.equest.script_name.inspect}) + path_info(#{r.equest.path_info.inspect})" if @logger.debug?
