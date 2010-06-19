@@ -134,16 +134,6 @@ module Gluon
     def service=(service)
       @req.env[:gluon_service] = service
     end
-
-    def backend_service
-      @req.env[:gluon_backend_service]
-    end
-
-    def backend_service=(backend_service)
-      @req.env[:gluon_backend_service] = backend_service
-    end
-
-    alias svc backend_service
   end
 end
 

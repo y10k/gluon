@@ -22,7 +22,6 @@ require 'gluon/version'
 #
 module Gluon
   autoload :Application, 'gluon/application'
-  autoload :BackendServiceManager, 'gluon/backend'
   autoload :Builder, 'gluon/builder'
   autoload :ClassMap, 'gluon/cmap'
   autoload :Component, 'gluon/controller'

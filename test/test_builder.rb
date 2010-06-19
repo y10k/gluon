@@ -213,35 +213,6 @@ module Gluon::Test
       assert_equal(1, MockService.new_count)
       assert_equal(1, MockService.final_count)
     end
-
-    def test_backend_service_start_stop
-      new_count = MockService.new_count
-      final_count = MockService.final_count
-
-      @builder.eval_conf %Q{
-        backend_service :bar do |service|
-          service.start do
-            #{MockService}.new
-          end
-          service.stop do |bar|
-            bar.finalize
-          end
-        end
-      }
-
-      assert_equal(new_count, MockService.new_count)
-      assert_equal(final_count, MockService.final_count)
-
-      @builder.to_app
-
-      assert_equal(new_count + 1, MockService.new_count)
-      assert_equal(final_count, MockService.final_count)
-
-      @builder.shutdown
-
-      assert_equal(new_count + 1, MockService.new_count)
-      assert_equal(final_count + 1, MockService.final_count)
-    end
   end
 end
 

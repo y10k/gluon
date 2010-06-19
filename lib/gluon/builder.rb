@@ -2,7 +2,6 @@
 
 require 'forwardable'
 require 'gluon/application'
-require 'gluon/backend'
 require 'gluon/cmap'
 require 'gluon/rs'
 require 'gluon/template'
@@ -45,8 +44,6 @@ module Gluon
       @mount_tab = {}
       @mod_config = {}
       @service = {}
-      @svc_setup = proc{|service_man, logger, options| service_man }
-      @service_man = BackendServiceManager.new
     end
 
     def enable_local_library
@@ -78,8 +75,7 @@ module Gluon
                           options[:cmap],
                           options[:template_engine],
                           options[:config],
-                          options[:service],
-                          options[:service_man])
+                          options[:service])
         }
       end
 
@@ -195,42 +191,6 @@ module Gluon
       nil
     end
 
-    class BackendServiceEntry
-      def initialize(service_name, parent)
-        @service_name = service_name
-        @parent = parent
-      end
-
-      def start(&block)
-        @initializer = block
-        nil
-      end
-
-      def stop(&block)
-        @finalizer = block
-        nil
-      end
-
-      def _to_setup
-        proc{|service_man, logger, options|
-          svc_man = @parent.call(service_man, logger, options)
-          init_service = @initializer.call
-          logger.info "backend service start: #{@service_name} => #{init_service}"
-          svc_man.add(@service_name, init_service) do |final_service|
-            logger.info "backend service stop: #{@service_name} => #{final_service}"
-            @finalizer.call(final_service) if @finalizer
-          end
-        }
-      end
-    end
-
-    def backend_service(name)
-      entry = BackendServiceEntry.new(name, @svc_setup)
-      yield(entry)
-      @svc_setup = entry._to_setup
-      nil
-    end
-
     class DSL
       extend Forwardable
 
@@ -247,7 +207,6 @@ module Gluon
       def_delegator :@builder, :map
       def_delegator :@builder, :config
       def_delegator :@builder, :service
-      def_delegator :@builder, :backend_service
     end
 
     def dsl_binding
@@ -274,8 +233,7 @@ module Gluon
         :cmap => ClassMap.new,
         :template_engine => TemplateEngine.new(@view_dir),
         :config => @mod_config,
-        :service => {},
-        :service_man => @service_man
+        :service => {}
       }
 
       @logger.info 'gluon start.'
@@ -285,7 +243,6 @@ module Gluon
       @service.each_value do |entry|
         entry[:create].call(@logger, options)
       end
-      @svc_setup.call(@service_man, @logger, options).setup
       builder = Rack::Builder.new
       builder.use Root, @logger
       @middleware_setup.call(builder, @logger, options)
@@ -300,8 +257,6 @@ module Gluon
     end
 
     def shutdown
-      @service_man.shutdown
-
       last_error = nil
       @service.each_value do |entry|
         begin
