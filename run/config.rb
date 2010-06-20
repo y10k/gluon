@@ -61,13 +61,11 @@ map '/example/ex_panel/BackendService' do |entry|
   entry.mount Example::BackendService
 end
 
-backend_service :bbs_db do |service|
-  require 'pstore'
-  service.start do
-    PStore.new("#{base_dir}/bbs_data.pstore")
-  end
-  service.stop do |bbs_db|
-    # nothing to do.
+require 'pstore'
+
+service PStore do |svc|
+  svc.create do |c|
+    c.new("#{base_dir}/bbs_data.pstore")
   end
 end
 

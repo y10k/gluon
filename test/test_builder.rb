@@ -12,6 +12,9 @@ module Gluon::Test
       @view_dir = File.join(@base_dir, 'view')
       @config_rb = File.join(@base_dir, 'config.rb')
       @builder = Gluon::Builder.new(@base_dir)
+      MockService.new_args = nil
+      MockService.new_count = 0
+      MockService.final_count = 0
     end
 
     def test_attributes
@@ -101,13 +104,13 @@ module Gluon::Test
 
     class MockService
       class << self
+        attr_accessor :new_args
         attr_accessor :new_count
         attr_accessor :final_count
       end
-      self.new_count = 0
-      self.final_count = 0
 
-      def initialize
+      def initialize(*args)
+        self.class.new_args = args
         self.class.new_count += 1
       end
 
@@ -116,33 +119,99 @@ module Gluon::Test
       end
     end
 
-    def test_backend_service_start_stop
-      new_count = MockService.new_count
-      final_count = MockService.final_count
-
+    def test_service_default
       @builder.eval_conf %Q{
-        backend_service :bar do |service|
-          service.start do
-            #{MockService}.new
-          end
-          service.stop do |bar|
-            bar.finalize
+        service #{MockService}
+      }
+
+      assert_equal(0, MockService.new_count)
+      assert_equal(0, MockService.final_count)
+
+      @builder.to_app
+
+      assert_equal([], MockService.new_args)
+      assert_equal(1, MockService.new_count)
+      assert_equal(0, MockService.final_count)
+
+      @builder.shutdown
+
+      assert_equal(1, MockService.new_count)
+      assert_equal(0, MockService.final_count)
+    end
+
+    def test_service_create
+      @builder.eval_conf %Q{
+        service #{MockService} do |svc|
+          svc.create do |c|
+            c.new('HALO')
           end
         end
       }
 
-      assert_equal(new_count, MockService.new_count)
-      assert_equal(final_count, MockService.final_count)
+      assert_equal(0, MockService.new_count)
+      assert_equal(0, MockService.final_count)
 
       @builder.to_app
 
-      assert_equal(new_count + 1, MockService.new_count)
-      assert_equal(final_count, MockService.final_count)
+      assert_equal([ 'HALO' ], MockService.new_args)
+      assert_equal(1, MockService.new_count)
+      assert_equal(0, MockService.final_count)
 
       @builder.shutdown
 
-      assert_equal(new_count + 1, MockService.new_count)
-      assert_equal(final_count + 1, MockService.final_count)
+      assert_equal(1, MockService.new_count)
+      assert_equal(0, MockService.final_count)
+    end
+
+    def test_service_destroy
+      @builder.eval_conf %Q{
+        service #{MockService} do |svc|
+          svc.destroy do |o|
+            o.finalize
+          end
+        end
+      }
+
+      assert_equal(0, MockService.new_count)
+      assert_equal(0, MockService.final_count)
+
+      @builder.to_app
+
+      assert_equal([], MockService.new_args)
+      assert_equal(1, MockService.new_count)
+      assert_equal(0, MockService.final_count)
+
+      @builder.shutdown
+
+      assert_equal(1, MockService.new_count)
+      assert_equal(1, MockService.final_count)
+    end
+
+    def test_service_create_destroy
+      @builder.eval_conf %Q{
+        service #{MockService} do |svc|
+          svc.create do |c|
+            c.new('HALO')
+          end
+          svc.destroy do |o|
+            o.finalize
+          end
+        end
+      }
+
+      assert_equal(0, MockService.new_count)
+      assert_equal(0, MockService.final_count)
+
+      @builder.to_app
+
+      assert_equal([ 'HALO' ], MockService.new_args)
+      assert_equal(1, MockService.new_count)
+      assert_equal(0, MockService.final_count)
+
+      @builder.shutdown
+
+      assert_equal(1, MockService.new_count)
+      assert_equal(1, MockService.final_count)
     end
   end
 end

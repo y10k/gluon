@@ -1,3 +1,8 @@
+2010-06-20  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* lib/gluon/application.rb, lib/gluon/builder.rb, lib/gluon/rs.rb:
+	service configuration.
+
 2010-06-18  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/web/token.rb: one time token session exists in each

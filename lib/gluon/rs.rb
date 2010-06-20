@@ -127,15 +127,13 @@ module Gluon
       @req.env[:gluon_config] = config
     end
 
-    def backend_service
-      @req.env[:gluon_backend_service]
+    def service(klass)
+      @req.env[:gluon_service][klass] or raise "not defined service of `#{klass}'."
     end
 
-    def backend_service=(backend_service)
-      @req.env[:gluon_backend_service] = backend_service
+    def service=(service)
+      @req.env[:gluon_service] = service
     end
-
-    alias svc backend_service
   end
 end
 
