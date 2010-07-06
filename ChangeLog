@@ -1,3 +1,8 @@
+2010-07-06  TOKI Yoshinori  <toki@freedom.ne.jp>
+
+	* test/test_addon_mod_order.rb: module inclusion order test for
+	add-on framework of gluon.
+
 2010-06-20  TOKI Yoshinori  <toki@freedom.ne.jp>
 
 	* lib/gluon/application.rb, lib/gluon/builder.rb, lib/gluon/rs.rb:
