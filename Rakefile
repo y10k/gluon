@@ -58,7 +58,7 @@ task :local_test do
   end
 end
 
-require 'lib/gluon/version'
+load File.join(get_project_libdir, 'gluon/version.rb')
 require 'rake/gempackagetask'
 
 spec = Gem::Specification.new{|s|
